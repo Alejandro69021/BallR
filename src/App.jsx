@@ -12,13 +12,14 @@ import PerformanceRadar from './components/PerformanceRadar';
 import FitnessStrip from './components/FitnessStrip';
 import AICoachCard from './components/AICoachCard';
 import InteractiveMatchHub from './components/InteractiveMatchHub';
+import GrowthBioBandingTab from './components/GrowthBioBandingTab';
 import VideoModal from './components/VideoModal';
 import CoachAssessmentView from './components/CoachAssessmentView';
 import StoryFlexCardModal from './components/StoryFlexCardModal';
 import PinAuthModal from './components/PinAuthModal';
 import LoadingSkeleton from './components/LoadingSkeleton';
 import Toast from './components/Toast';
-import { ShieldCheck, Download, Edit3, ArrowLeft, Sparkles, Lock, Unlock } from 'lucide-react';
+import { ShieldCheck, Download, Edit3, ArrowLeft, Sparkles, Lock, Unlock, Zap, Film, TrendingUp } from 'lucide-react';
 
 export default function App() {
   // 1. Role Guard state (default to 'public', persist in localStorage)
@@ -39,6 +40,9 @@ export default function App() {
     const role = localStorage.getItem('ballr_user_role') || 'public';
     return role === 'coach' ? 'roster' : 'passport';
   });
+
+  // Talent Passport Sub-Tabs: 'overview' | 'video' | 'growth'
+  const [passportTab, setPassportTab] = useState('overview');
   
   // Modal & Toast states
   const [activeClip, setActiveClip] = useState(null);
@@ -319,25 +323,85 @@ export default function App() {
                   onOpenStoryCard={handleOpenShare}
                 />
 
-                {/* 3. Performance Attributes (Radar Chart with Teammate Comparison & Stats) */}
-                <PerformanceRadar
-                  attributes={activePlayer.radar_attributes}
-                  athleteName={activePlayer.personal_info.full_name}
-                  teammates={teammates}
-                />
+                {/* Passport Sub-Tab Navigation Bar */}
+                <div className="flex items-center gap-1.5 p-1.5 bg-[#111827] border border-[#1F2937] rounded-2xl overflow-x-auto shadow-md">
+                  <button
+                    type="button"
+                    onClick={() => setPassportTab('overview')}
+                    className={`flex-1 min-w-[130px] flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                      passportTab === 'overview'
+                        ? 'bg-[#CCFF00] text-black shadow-[0_0_12px_rgba(204,255,0,0.35)]'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                    }`}
+                  >
+                    <Zap className="w-4 h-4 fill-current" />
+                    <span>⚡ Overview & Radar</span>
+                  </button>
 
-                {/* 4. Physical Fitness Test Strip */}
-                <FitnessStrip benchmarks={activePlayer.fitness_benchmarks} />
+                  <button
+                    type="button"
+                    onClick={() => setPassportTab('video')}
+                    className={`flex-1 min-w-[140px] flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                      passportTab === 'video'
+                        ? 'bg-cyan-500 text-black shadow-[0_0_12px_rgba(6,182,212,0.35)]'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                    }`}
+                  >
+                    <Film className="w-4 h-4" />
+                    <span>🎥 Match Video Reel</span>
+                  </button>
 
-                {/* 5. AI Coach Evaluation Card */}
-                <AICoachCard evaluation={activePlayer.ai_coach_evaluation} />
+                  <button
+                    type="button"
+                    onClick={() => setPassportTab('growth')}
+                    className={`flex-1 min-w-[160px] flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                      passportTab === 'growth'
+                        ? 'bg-emerald-400 text-black shadow-[0_0_12px_rgba(52,211,153,0.35)]'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                    }`}
+                  >
+                    <TrendingUp className="w-4 h-4" />
+                    <span>📈 Growth & Bio-Banding</span>
+                  </button>
+                </div>
 
-                {/* 6. Interactive Video Match Reel & Performance Hub (Video-to-Stat Synced) */}
-                <InteractiveMatchHub
-                  player={activePlayer}
-                  onShareClip={(clip) => setActiveClip(clip)}
-                  onToast={(t) => setToastInfo(t)}
-                />
+                {/* Sub-Tab 1: OVERVIEW & RADAR */}
+                {passportTab === 'overview' && (
+                  <div className="space-y-4 sm:space-y-6 animate-fadeIn">
+                    {/* 3. Performance Attributes (Radar Chart with Teammate Comparison & Stats) */}
+                    <PerformanceRadar
+                      attributes={activePlayer.radar_attributes}
+                      athleteName={activePlayer.personal_info.full_name}
+                      teammates={teammates}
+                    />
+
+                    {/* 4. Physical Fitness Test Strip */}
+                    <FitnessStrip benchmarks={activePlayer.fitness_benchmarks} />
+
+                    {/* 5. AI Coach Evaluation Card */}
+                    <AICoachCard evaluation={activePlayer.ai_coach_evaluation} />
+                  </div>
+                )}
+
+                {/* Sub-Tab 2: MATCH VIDEO REEL */}
+                {passportTab === 'video' && (
+                  <div className="animate-fadeIn">
+                    {/* 6. Interactive Video Match Reel & Performance Hub (Video-to-Stat Synced) */}
+                    <InteractiveMatchHub
+                      player={activePlayer}
+                      onShareClip={(clip) => setActiveClip(clip)}
+                      onToast={(t) => setToastInfo(t)}
+                    />
+                  </div>
+                )}
+
+                {/* Sub-Tab 3: GROWTH & BIO-BANDING TRAJECTORY */}
+                {passportTab === 'growth' && (
+                  <div className="animate-fadeIn">
+                    {/* 7. Player Growth & Bio-Banding Trajectory */}
+                    <GrowthBioBandingTab player={activePlayer} />
+                  </div>
+                )}
 
                 {/* Passport Footer Meta */}
                 <footer className="mt-8 p-4 rounded-2xl bg-[#111827]/70 border border-[#1F2937] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
