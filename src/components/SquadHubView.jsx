@@ -14,11 +14,13 @@ import {
   Edit3,
   Flame,
   Zap,
-  Activity
+  Activity,
+  Lock
 } from 'lucide-react';
 
 export default function SquadHubView({
   players,
+  userRole = 'public',
   onViewPassport,
   onEvaluatePlayer
 }) {
@@ -461,8 +463,17 @@ export default function SquadHubView({
                     onClick={() => onEvaluatePlayer(player_id)}
                     className="min-h-[40px] px-2.5 py-1.5 rounded-xl bg-[#1F2937] hover:bg-[#CCFF00] text-slate-200 hover:text-black border border-slate-700 hover:border-transparent text-xs font-athletic font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95"
                   >
-                    <Edit3 className="w-3.5 h-3.5" />
-                    <span>Evaluate</span>
+                    {userRole === 'coach' ? (
+                      <>
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>Evaluate</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="w-3.5 h-3.5 text-[#CCFF00]" />
+                        <span>Evaluate</span>
+                      </>
+                    )}
                   </button>
                 </div>
 

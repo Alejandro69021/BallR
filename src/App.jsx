@@ -15,25 +15,37 @@ import MatchMoments from './components/MatchMoments';
 import VideoModal from './components/VideoModal';
 import CoachAssessmentView from './components/CoachAssessmentView';
 import StoryFlexCardModal from './components/StoryFlexCardModal';
+import PinAuthModal from './components/PinAuthModal';
 import LoadingSkeleton from './components/LoadingSkeleton';
 import Toast from './components/Toast';
-import { ShieldCheck, Download, Edit3, ArrowLeft, Sparkles, Database } from 'lucide-react';
+import { ShieldCheck, Download, Edit3, ArrowLeft, Sparkles, Lock, Unlock } from 'lucide-react';
 
 export default function App() {
+  // 1. Role Guard state (default to 'public', persist in localStorage)
+  const [userRole, setUserRole] = useState(() => {
+    return localStorage.getItem('ballr_user_role') || 'public';
+  });
+
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+  const [pendingTargetView, setPendingTargetView] = useState('assessment');
+
   // Live Supabase Players State
   const [players, setPlayers] = useState(playersRoster);
   const [selectedPlayerId, setSelectedPlayerId] = useState(playersRoster[0].player_id);
   const [isLoadingLive, setIsLoadingLive] = useState(true);
   
   // 3 view modes: 'roster' | 'passport' | 'assessment'
-  const [currentView, setCurrentView] = useState('roster');
+  const [currentView, setCurrentView] = useState(() => {
+    const role = localStorage.getItem('ballr_user_role') || 'public';
+    return role === 'coach' ? 'roster' : 'passport';
+  });
   
   // Modal & Toast states
   const [activeClip, setActiveClip] = useState(null);
   const [isStoryCardOpen, setIsStoryCardOpen] = useState(false);
   const [toastInfo, setToastInfo] = useState(null);
 
-  // 1. Fetch live data from Supabase on initial load
+  // Fetch live data from Supabase on mount
   useEffect(() => {
     let isSubscribed = true;
 
@@ -44,8 +56,9 @@ export default function App() {
         if (isSubscribed && livePlayers && livePlayers.length > 0) {
           setPlayers(livePlayers);
 
-          // Find Dimas Arya or default to first player
-          const dimas = livePlayers.find((p) => p.personal_info.full_name.includes('Dimas') || p.personal_info.jersey_number === 10);
+          const dimas = livePlayers.find(
+            (p) => p.personal_info.full_name.includes('Dimas') || p.personal_info.jersey_number === 10
+          );
           if (dimas) {
             setSelectedPlayerId(dimas.player_id);
           } else {
@@ -79,30 +92,67 @@ export default function App() {
     };
   }, []);
 
-  // Active player object
   const activePlayer = players.find((p) => p.player_id === selectedPlayerId) || players[0];
   const teammates = players.filter((p) => p.player_id !== activePlayer.player_id);
+
+  // PIN Unlock & Lock Handlers
+  const handleOpenPinModal = (target = 'assessment') => {
+    setPendingTargetView(target);
+    setIsPinModalOpen(true);
+  };
+
+  const handlePinSuccess = (targetView) => {
+    setUserRole('coach');
+    localStorage.setItem('ballr_user_role', 'coach');
+    setIsPinModalOpen(false);
+    if (targetView) setCurrentView(targetView);
+    setToastInfo({
+      title: "Sesi Pelatih Terverifikasi! 🔓",
+      subtext: "Mode Coach Logger & Squad Hub aktif untuk sesi latihan."
+    });
+  };
+
+  const handleLockCoachSession = () => {
+    setUserRole('public');
+    localStorage.setItem('ballr_user_role', 'public');
+    setCurrentView('passport');
+    setToastInfo({
+      title: "Sesi Pelatih Dikunci 🔒",
+      subtext: "Aplikasi kembali ke Mode Publik (Talent Passport)."
+    });
+  };
+
+  // Safe view switcher with role protection
+  const handleSwitchView = (view) => {
+    if (userRole === 'public' && (view === 'assessment' || view === 'roster')) {
+      handleOpenPinModal(view);
+      return;
+    }
+    setCurrentView(view);
+  };
 
   // Share / Export handler (opens 9:16 Story Flex Card Modal)
   const handleOpenShare = () => {
     setIsStoryCardOpen(true);
   };
 
-  // Switch to Passport with player selected
   const handleViewPassport = (playerId) => {
     setSelectedPlayerId(playerId);
     setCurrentView('passport');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Switch to Assessment with player selected
   const handleEvaluatePlayer = (playerId) => {
     setSelectedPlayerId(playerId);
-    setCurrentView('assessment');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (userRole === 'public') {
+      handleOpenPinModal('assessment');
+    } else {
+      setCurrentView('assessment');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
-  // 2. Live Write Mutation: Upsert assessment & update player's ovr_rating in Supabase
+  // Live Write Mutation: Upsert assessment & update player's ovr_rating in Supabase
   const handleSaveAssessment = async (updatedPlayerData) => {
     try {
       const savedRecord = await saveAssessmentToSupabase(
@@ -112,7 +162,6 @@ export default function App() {
         updatedPlayerData.db_assessment_id
       );
 
-      // Update local state with latest assessment id and changes
       setPlayers((prev) =>
         prev.map((p) => {
           if (p.player_id === updatedPlayerData.player_id) {
@@ -133,7 +182,6 @@ export default function App() {
       setCurrentView('passport');
     } catch (err) {
       console.error('Supabase save error:', err);
-      // Fallback local update
       setPlayers((prev) =>
         prev.map((p) => (p.player_id === updatedPlayerData.player_id ? updatedPlayerData : p))
       );
@@ -145,7 +193,7 @@ export default function App() {
     }
   };
 
-  // 3. Live Write Mutation: Edge-AI camera recorded fitness test insert into fitness_records
+  // Live Write Mutation: Edge-AI camera recorded fitness test insert
   const handleSaveFitnessRecord = async (playerId, testResult) => {
     try {
       const fitnessPayload = {
@@ -171,11 +219,14 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#090D16] text-white flex flex-col items-center justify-start pb-12 selection:bg-[#CCFF00] selection:text-black">
       
-      {/* 1. Top Navigation & 3-Mode Switcher */}
+      {/* 1. Top Navigation & Role Guard Switcher */}
       <TopNav
         academy={activePlayer.personal_info.academy}
         currentView={currentView}
-        onSwitchView={(view) => setCurrentView(view)}
+        userRole={userRole}
+        onSwitchView={handleSwitchView}
+        onOpenPinModal={handleOpenPinModal}
+        onLockCoachSession={handleLockCoachSession}
         onShare={handleOpenShare}
         verifiedText={`Verified by ${activePlayer.personal_info.academy.name}`}
       />
@@ -188,16 +239,17 @@ export default function App() {
           <LoadingSkeleton />
         ) : (
           <>
-            {/* VIEW 1: SQUAD HUB & ROSTER EXPLORER */}
+            {/* VIEW 1: SQUAD HUB & ROSTER EXPLORER (Only accessible to coach or preview) */}
             {currentView === 'roster' && (
               <SquadHubView
                 players={players}
+                userRole={userRole}
                 onViewPassport={handleViewPassport}
                 onEvaluatePlayer={handleEvaluatePlayer}
               />
             )}
 
-            {/* VIEW 2: COACH ASSESSMENT MODE */}
+            {/* VIEW 2: COACH ASSESSMENT MODE (Protected view) */}
             {currentView === 'assessment' && (
               <CoachAssessmentView
                 players={players}
@@ -210,18 +262,25 @@ export default function App() {
               />
             )}
 
-            {/* VIEW 3: DIGITAL YOUTH TALENT PASSPORT */}
+            {/* VIEW 3: DIGITAL YOUTH TALENT PASSPORT (100% interactive for Public & Coach) */}
             {currentView === 'passport' && (
               <>
-                {/* Breadcrumb & Navigation Bar back to Squad Roster */}
+                {/* Header Action Bar */}
                 <div className="flex items-center justify-between p-3 rounded-xl bg-[#111827] border border-[#1F2937] text-xs">
-                  <button
-                    onClick={() => setCurrentView('roster')}
-                    className="flex items-center gap-1.5 text-slate-300 hover:text-[#CCFF00] font-semibold transition-colors cursor-pointer"
-                  >
-                    <ArrowLeft className="w-4 h-4 text-[#CCFF00]" />
-                    <span>Kembali ke Squad Roster</span>
-                  </button>
+                  {userRole === 'coach' ? (
+                    <button
+                      onClick={() => setCurrentView('roster')}
+                      className="flex items-center gap-1.5 text-slate-300 hover:text-[#CCFF00] font-semibold transition-colors cursor-pointer"
+                    >
+                      <ArrowLeft className="w-4 h-4 text-[#CCFF00]" />
+                      <span>Kembali ke Squad Roster</span>
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-2 text-slate-400">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                      <span>Public Viewer Mode (Scouts & Parents)</span>
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-2">
                     <button
@@ -232,13 +291,25 @@ export default function App() {
                       <span>Story Flex Card</span>
                     </button>
 
-                    <button
-                      onClick={() => setCurrentView('assessment')}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#090D16] hover:bg-[#1F2937] border border-slate-700 text-slate-300 hover:text-white font-athletic font-bold text-xs transition-colors cursor-pointer"
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                      <span>Evaluasi</span>
-                    </button>
+                    {/* Only show evaluate action if coach */}
+                    {userRole === 'coach' ? (
+                      <button
+                        onClick={() => setCurrentView('assessment')}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#090D16] hover:bg-[#1F2937] border border-slate-700 text-slate-300 hover:text-white font-athletic font-bold text-xs transition-colors cursor-pointer"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>Evaluasi</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleOpenPinModal('assessment')}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#090D16] hover:bg-[#1F2937] border border-slate-700 text-slate-400 hover:text-white text-xs font-semibold transition-colors cursor-pointer"
+                        title="Buka akses pelatih"
+                      >
+                        <Lock className="w-3 h-3 text-[#CCFF00]" />
+                        <span>Coach Login</span>
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -320,6 +391,15 @@ export default function App() {
           player={activePlayer}
           onClose={() => setIsStoryCardOpen(false)}
           onToast={(t) => setToastInfo(t)}
+        />
+      )}
+
+      {/* Coach Quick-PIN Security Modal */}
+      {isPinModalOpen && (
+        <PinAuthModal
+          targetView={pendingTargetView}
+          onSuccess={handlePinSuccess}
+          onClose={() => setIsPinModalOpen(false)}
         />
       )}
 

@@ -42,6 +42,16 @@
   animation: pulseGlow 3s infinite ease-in-out;
 }
 
+@keyframes shakeKeyframe {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+.animate-shake {
+  animation: shakeKeyframe 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
 /* Print optimizations for Scout Dossier export */
 @media print {
   body {
