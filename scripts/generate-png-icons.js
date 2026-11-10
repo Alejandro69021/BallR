@@ -100,3 +100,4 @@ function crc32(buf) {
 fs.writeFileSync('public/icon-192.png', createPng(192, 192));
 fs.writeFileSync('public/icon-512.png', createPng(512, 512));
 console.log('Successfully generated public/icon-192.png and public/icon-512.png');
+
