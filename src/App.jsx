@@ -19,6 +19,8 @@ import StoryFlexCardModal from './components/StoryFlexCardModal';
 import PinAuthModal from './components/PinAuthModal';
 import LoadingSkeleton from './components/LoadingSkeleton';
 import Toast from './components/Toast';
+import InstallAppBanner from './components/InstallAppBanner';
+import OfflineIndicator from './components/OfflineIndicator';
 import { ShieldCheck, Download, Edit3, ArrowLeft, Sparkles, Lock, Unlock, Zap, Film, TrendingUp } from 'lucide-react';
 
 export default function App() {
@@ -239,8 +241,11 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090D16] text-white flex flex-col items-center justify-start pb-12 selection:bg-[#CCFF00] selection:text-black">
+    <div className="min-h-screen bg-[#05070B] text-white flex flex-col items-center justify-start pb-12 selection:bg-[#CCFF00] selection:text-black">
       
+      {/* Offline Connectivity Status Indicator */}
+      <OfflineIndicator />
+
       {/* 1. Top Navigation & Role Guard Switcher */}
       <TopNav
         academy={activePlayer.personal_info.academy}
@@ -495,6 +500,9 @@ export default function App() {
           onClose={() => setToastInfo(null)}
         />
       )}
+
+      {/* PWA Mobile Install Banner */}
+      <InstallAppBanner />
     </div>
   );
 }
