@@ -419,106 +419,106 @@ export default function FastPitchLogger({
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           
-          {/* Button 1: Successful Pass (Volt Green) */}
+          {/* Button 1: Successful Pass */}
           <button
             type="button"
             onClick={() =>
               logEvent(
                 'pass_success',
-                '✓ Successful Pass',
+                'Pass Akurat',
                 'text-[#84CC16]',
                 { passesCompleted: 1, passesTotal: 1 },
                 'positive'
               )
             }
-            className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#111827] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-lg select-none ${
+            className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#0E131F] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-md select-none ${
               flashingBtn === 'pass_success'
-                ? 'bg-lime-500/40 border-[#CCFF00] shadow-[0_0_20px_#CCFF00]'
-                : 'border-lime-500/40 hover:border-[#CCFF00] hover:bg-slate-800'
+                ? 'bg-lime-500/25 border-[#84CC16]'
+                : 'border-lime-500/30 hover:border-[#84CC16] hover:bg-[#151C2C]'
             }`}
           >
-            <div className="flex items-center gap-1.5 text-[#CCFF00] font-athletic font-black text-sm sm:text-base">
-              <Check className="w-5 h-5 stroke-[3]" />
-              <span>PASS SUKSES</span>
+            <div className="flex items-center gap-1.5 text-[#84CC16] font-athletic font-bold text-sm sm:text-base">
+              <Check className="w-5 h-5 stroke-[2.5]" />
+              <span>PASS AKURAT</span>
             </div>
             <span className="text-[10px] text-slate-400 font-mono mt-0.5">
-              +1 Selesai ({passAccuracy}%)
+              +1 Sukses ({passAccuracy}%)
             </span>
           </button>
 
-          {/* Button 2: Misplaced Pass (Rose Red) */}
+          {/* Button 2: Misplaced Pass */}
           <button
             type="button"
             onClick={() =>
               logEvent(
                 'pass_misplaced',
-                '✗ Misplaced Pass',
+                'Pass Meleset',
                 'text-rose-400',
                 { passesTotal: 1 },
                 'error'
               )
             }
-            className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#111827] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-lg select-none ${
+            className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#0E131F] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-md select-none ${
               flashingBtn === 'pass_misplaced'
-                ? 'bg-rose-500/40 border-rose-500 shadow-[0_0_20px_#F43F5E]'
-                : 'border-rose-500/40 hover:border-rose-500 hover:bg-slate-800'
+                ? 'bg-rose-500/25 border-rose-500'
+                : 'border-rose-500/30 hover:border-rose-500 hover:bg-[#151C2C]'
             }`}
           >
-            <div className="flex items-center gap-1.5 text-rose-400 font-athletic font-black text-sm sm:text-base">
-              <X className="w-5 h-5 stroke-[3]" />
-              <span>PASS GAGAL</span>
+            <div className="flex items-center gap-1.5 text-rose-400 font-athletic font-bold text-sm sm:text-base">
+              <X className="w-5 h-5 stroke-[2.5]" />
+              <span>PASS MELESET</span>
             </div>
             <span className="text-[10px] text-slate-400 font-mono mt-0.5">
               Salah Umpan / Out
             </span>
           </button>
 
-          {/* Button 3: Key / Through Pass (Electric Cyan) */}
+          {/* Button 3: Key / Through Pass */}
           <button
             type="button"
             onClick={() =>
               logEvent(
                 'key_pass',
-                '🎯 Key / Through Pass',
+                'Umpan Kunci (xA)',
                 'text-cyan-400',
                 { keyPasses: 1, passesCompleted: 1, passesTotal: 1 },
                 'creative'
               )
             }
-            className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#111827] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-lg select-none ${
+            className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#0E131F] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-md select-none ${
               flashingBtn === 'key_pass'
-                ? 'bg-cyan-500/40 border-cyan-400 shadow-[0_0_20px_#06B6D4]'
-                : 'border-cyan-500/40 hover:border-cyan-400 hover:bg-slate-800'
+                ? 'bg-cyan-500/25 border-cyan-400'
+                : 'border-cyan-500/30 hover:border-cyan-400 hover:bg-[#151C2C]'
             }`}
           >
-            <div className="flex items-center gap-1.5 text-cyan-400 font-athletic font-black text-sm sm:text-base">
+            <div className="flex items-center gap-1.5 text-cyan-400 font-athletic font-bold text-sm sm:text-base">
               <Target className="w-5 h-5" />
               <span>UMPAN KUNCI</span>
             </div>
             <span className="text-[10px] text-slate-400 font-mono mt-0.5">
-              Through Ball / Assist
+              Through Ball / Peluang
             </span>
           </button>
 
-          {/* Button 4: Tackle / Intercept Won (Emerald Green) */}
+          {/* Button 4: Tackle / Intercept Won */}
           <button
             type="button"
             onClick={() =>
               logEvent(
                 'tackle_won',
-                '🛡️ Tackle / Intercept Won',
+                'Tekel & Intersep',
                 'text-emerald-400',
                 { tacklesWon: 1, tacklesTotal: 1 },
                 'positive'
               )
             }
-            className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#111827] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-lg select-none ${
+            className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#0E131F] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-md select-none ${
               flashingBtn === 'tackle_won'
-                ? 'bg-emerald-500/40 border-emerald-400 shadow-[0_0_20px_#10B981]'
-                : 'border-emerald-500/40 hover:border-emerald-400 hover:bg-slate-800'
+                ? 'bg-emerald-500/25 border-emerald-400'
+                : 'border-emerald-500/30 hover:border-emerald-400 hover:bg-[#151C2C]'
             }`}
           >
-            <div className="flex items-center gap-1.5 text-emerald-400 font-athletic font-black text-sm sm:text-base">
+            <div className="flex items-center gap-1.5 text-emerald-400 font-athletic font-bold text-sm sm:text-base">
               <Shield className="w-5 h-5" />
               <span>REBUT / TEKEL</span>
             </div>
@@ -527,46 +527,46 @@ export default function FastPitchLogger({
             </span>
           </button>
 
-          {/* Button 5: Ball Turnover / Lost (Amber) */}
+          {/* Button 5: Ball Turnover / Lost */}
           <button
             type="button"
             onClick={() =>
               logEvent(
                 'turnover',
-                '⚠️ Ball Turnover / Lost',
+                'Kehilangan Bola',
                 'text-amber-400',
                 { turnovers: 1 },
                 'error'
               )
             }
-            className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#111827] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-lg select-none ${
+            className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#0E131F] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-md select-none ${
               flashingBtn === 'turnover'
-                ? 'bg-amber-500/40 border-amber-400 shadow-[0_0_20px_#F59E0B]'
-                : 'border-amber-500/40 hover:border-amber-400 hover:bg-slate-800'
+                ? 'bg-amber-500/25 border-amber-400'
+                : 'border-amber-500/30 hover:border-amber-400 hover:bg-[#151C2C]'
             }`}
           >
-            <div className="flex items-center gap-1.5 text-amber-400 font-athletic font-black text-sm sm:text-base">
+            <div className="flex items-center gap-1.5 text-amber-400 font-athletic font-bold text-sm sm:text-base">
               <AlertTriangle className="w-5 h-5" />
-              <span>KEHILANGAN BOLA</span>
+              <span>TURNOVER BOLA</span>
             </div>
             <span className="text-[10px] text-slate-400 font-mono mt-0.5">
-              Turnover / Dispossessed
+              Kehilangan Penguasaan
             </span>
           </button>
 
-          {/* Button 6: Shot On Target / Goal (Volt Yellow / Modal Trigger) */}
+          {/* Button 6: Shot On Target / Goal */}
           <button
             type="button"
             onClick={() => setShowShotModal(true)}
-            className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#111827] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-lg select-none ${
+            className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#0E131F] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-md select-none ${
               flashingBtn === 'shot'
-                ? 'bg-yellow-500/40 border-yellow-400 shadow-[0_0_20px_#EAB308]'
-                : 'border-yellow-500/40 hover:border-yellow-400 hover:bg-slate-800'
+                ? 'bg-yellow-500/25 border-yellow-400'
+                : 'border-yellow-500/30 hover:border-yellow-400 hover:bg-[#151C2C]'
             }`}
           >
-            <div className="flex items-center gap-1.5 text-yellow-300 font-athletic font-black text-sm sm:text-base">
+            <div className="flex items-center gap-1.5 text-yellow-300 font-athletic font-bold text-sm sm:text-base">
               <Flame className="w-5 h-5" />
-              <span>SHOOT / GOL ⚽</span>
+              <span>TEMBAKAN / GOL</span>
             </div>
             <span className="text-[10px] text-slate-400 font-mono mt-0.5">
               Pilih On Target / Gol

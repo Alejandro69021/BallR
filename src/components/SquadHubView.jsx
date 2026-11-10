@@ -246,6 +246,22 @@ export default function SquadHubView({
         </div>
       </section>
 
+      {/* Notice if non-active age group is clicked */}
+      {activeAgeGroup !== 'U-13' && (
+        <div className="p-3.5 rounded-2xl bg-[#0E131F] border border-amber-500/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-300">
+          <div>
+            <span>Kategori <strong>{activeAgeGroup}</strong> sedang proses verifikasi administrasi PSSI. Menampilkan data skuad kompetisi aktif <strong>U-13 Elite</strong>.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setActiveAgeGroup('U-13')}
+            className="px-3 py-1.5 rounded-xl bg-[#84CC16] text-black font-athletic font-bold text-xs uppercase shrink-0 cursor-pointer shadow-sm active:scale-95"
+          >
+            Pilih U-13 Elite
+          </button>
+        </div>
+      )}
+
       {/* 2. Search, Filter & Quick Sort Controls */}
       <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-3.5 sm:p-4 shadow-xl shadow-black/50 space-y-3">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">

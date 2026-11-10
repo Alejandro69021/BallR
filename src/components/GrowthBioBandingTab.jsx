@@ -320,20 +320,21 @@ export default function GrowthBioBandingTab({ player }) {
           </div>
 
           {/* Metric Switcher Buttons */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#090D16] border border-[#1F2937] overflow-x-auto self-start sm:self-auto">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#090D16] border border-[#1E2638] overflow-x-auto self-start sm:self-auto">
             <button
               type="button"
               onClick={() => {
                 setActiveMetric('sprint');
                 setSelectedPointIndex(3);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-athletic font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 activeMetric === 'sprint'
-                  ? 'bg-cyan-500 text-black shadow-[0_0_12px_rgba(6,182,212,0.4)]'
+                  ? 'bg-cyan-500 text-black shadow-sm'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <span>🏃 20m Sprint (Speed)</span>
+              <Clock className="w-3.5 h-3.5" />
+              <span>Sprint 20m (Kecepatan)</span>
             </button>
 
             <button
@@ -342,13 +343,14 @@ export default function GrowthBioBandingTab({ player }) {
                 setActiveMetric('jump');
                 setSelectedPointIndex(3);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-athletic font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 activeMetric === 'jump'
-                  ? 'bg-[#CCFF00] text-black shadow-[0_0_12px_rgba(204,255,0,0.4)]'
+                  ? 'bg-[#84CC16] text-black shadow-sm'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <span>🦘 Vertical Jump (Power)</span>
+              <Activity className="w-3.5 h-3.5" />
+              <span>Vertical Jump (Daya Ledak)</span>
             </button>
 
             <button
@@ -357,13 +359,14 @@ export default function GrowthBioBandingTab({ player }) {
                 setActiveMetric('ovr');
                 setSelectedPointIndex(3);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-athletic font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 activeMetric === 'ovr'
-                  ? 'bg-amber-400 text-black shadow-[0_0_12px_rgba(245,158,11,0.4)]'
+                  ? 'bg-amber-400 text-black shadow-sm'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <span>🏆 OVR Progression</span>
+              <Award className="w-3.5 h-3.5" />
+              <span>Rating OVR (Performa)</span>
             </button>
           </div>
         </div>
