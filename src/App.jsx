@@ -21,6 +21,7 @@ import LoadingSkeleton from './components/LoadingSkeleton';
 import Toast from './components/Toast';
 import InstallAppBanner from './components/InstallAppBanner';
 import OfflineIndicator from './components/OfflineIndicator';
+import OfficialDossierFooter from './components/OfficialDossierFooter';
 import { ShieldCheck, Download, Edit3, ArrowLeft, Sparkles, Lock, Unlock, Zap, Film, TrendingUp } from 'lucide-react';
 
 export default function App() {
@@ -427,35 +428,12 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Passport Footer Meta */}
-                <footer className="mt-8 p-4 rounded-2xl bg-[#111827]/70 border border-[#1F2937] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-[#CCFF00]" />
-                    <span>
-                      ID Paspor: <strong className="text-slate-200 font-mono">{activePlayer.player_id}</strong>
-                    </span>
-                    <span className="text-slate-600">•</span>
-                    <span>{activePlayer.personal_info.academy.name}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={handleOpenShare}
-                      className="px-3.5 py-1.5 rounded-lg bg-[#1F2937] hover:bg-[#CCFF00] hover:text-black border border-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-[#CCFF00]" />
-                      <span>9:16 Story Card</span>
-                    </button>
-
-                    <button
-                      onClick={handlePrintDossier}
-                      className="px-3.5 py-1.5 rounded-lg bg-[#090D16] hover:bg-[#1F2937] border border-[#1F2937] hover:border-[#CCFF00]/40 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Download className="w-3.5 h-3.5 text-[#CCFF00]" />
-                      <span>Cetak Dossier</span>
-                    </button>
-                  </div>
-                </footer>
+                {/* Official Federation & Academy Endorsement Dossier Footer */}
+                <OfficialDossierFooter
+                  player={activePlayer}
+                  onOpenStoryCard={handleOpenShare}
+                  onToast={(t) => setToastInfo(t)}
+                />
               </>
             )}
           </>

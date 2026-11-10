@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  BrainCircuit,
-  Sparkles,
+  ClipboardCheck,
   CheckCircle,
   Play,
   Pause,
@@ -10,7 +9,8 @@ import {
   Target,
   Flame,
   Award,
-  Volume2
+  Volume2,
+  Dumbbell
 } from 'lucide-react';
 
 export default function AICoachCard({ evaluation }) {
@@ -96,39 +96,37 @@ export default function AICoachCard({ evaluation }) {
 
   return (
     <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl shadow-black/50 space-y-5">
-      {/* Header: AI Assisted Report Badge & Coach Credentials */}
+      {/* Header: Official Technical Report Badge & Coach Credentials */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#1F2937]">
         <div className="flex items-start gap-3">
-          <div className="relative p-2 rounded-xl bg-gradient-to-tr from-cyan-500/20 via-[#CCFF00]/10 to-transparent border border-cyan-500/30 text-cyan-400">
-            <BrainCircuit className="w-5 h-5 text-[#CCFF00]" />
-            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#CCFF00] animate-ping"></span>
+          <div className="p-2.5 rounded-xl bg-[#090D16] border border-[#84CC16]/60 text-[#CCFF00] shadow-md">
+            <ClipboardCheck className="w-5 h-5 text-[#CCFF00]" />
           </div>
 
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] font-bold tracking-wider uppercase">
-                <Sparkles className="w-3 h-3 text-[#CCFF00]" />
-                AI Assisted Report
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-lime-500/15 border border-[#CCFF00]/40 text-[#CCFF00] text-[10px] font-athletic font-bold tracking-wider uppercase">
+                Official Technical Scouting Assessment
               </span>
-              <span className="text-[10px] text-slate-400 font-medium">
+              <span className="text-[11px] font-mono text-slate-400">
                 Periode: {period}
               </span>
             </div>
 
-            <h3 className="font-athletic text-base sm:text-lg font-bold text-white tracking-tight mt-0.5">
-              Evaluasi Pelatih & Analisis AI
+            <h3 className="font-athletic text-base sm:text-lg font-black text-white tracking-tight mt-0.5">
+              Evaluasi Taktik & Rekomendasi Pelatih
             </h3>
 
             <p className="text-xs text-slate-400 font-medium">
-              Penilai: <strong className="text-slate-200">{coach_name}</strong>
+              Penilai Resmi: <strong className="text-slate-200">{coach_name}</strong>
             </p>
           </div>
         </div>
 
         <div className="self-start sm:self-center">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 text-xs font-athletic font-bold">
             <CheckCircle className="w-3.5 h-3.5" />
-            Terverifikasi MPFA
+            TERVALIDASI DEWAN TEKNIS MPFA
           </span>
         </div>
       </div>
