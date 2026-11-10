@@ -11,7 +11,7 @@ import PlayerHeader from './components/PlayerHeader';
 import PerformanceRadar from './components/PerformanceRadar';
 import FitnessStrip from './components/FitnessStrip';
 import AICoachCard from './components/AICoachCard';
-import MatchMoments from './components/MatchMoments';
+import InteractiveMatchHub from './components/InteractiveMatchHub';
 import VideoModal from './components/VideoModal';
 import CoachAssessmentView from './components/CoachAssessmentView';
 import StoryFlexCardModal from './components/StoryFlexCardModal';
@@ -332,10 +332,11 @@ export default function App() {
                 {/* 5. AI Coach Evaluation Card */}
                 <AICoachCard evaluation={activePlayer.ai_coach_evaluation} />
 
-                {/* 6. Verified Match Moments (9:16 Vertical Video Highlights from Supabase) */}
-                <MatchMoments
-                  moments={activePlayer.verified_moments}
-                  onSelectClip={(clip) => setActiveClip(clip)}
+                {/* 6. Interactive Video Match Reel & Performance Hub (Video-to-Stat Synced) */}
+                <InteractiveMatchHub
+                  player={activePlayer}
+                  onShareClip={(clip) => setActiveClip(clip)}
+                  onToast={(t) => setToastInfo(t)}
                 />
 
                 {/* Passport Footer Meta */}

@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { toPng } from 'html-to-image';
 import {
   X,
   Download,
@@ -83,17 +84,37 @@ export default function StoryFlexCardModal({ player, onClose, onToast }) {
   const currentTheme = themeStyles[theme];
 
   // Actions
-  const handleDownload = () => {
+  const handleDownload = async () => {
+    if (!cardRef.current) return;
     setIsDownloading(true);
-    setTimeout(() => {
-      setIsDownloading(false);
+    try {
+      const dataUrl = await toPng(cardRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: '#090D16'
+      });
+      const link = document.createElement('a');
+      link.download = `MPFA-${personal_info.nickname || personal_info.jersey_number || 'Athlete'}-StoryCard.png`;
+      link.href = dataUrl;
+      link.click();
+
       if (onToast) {
         onToast({
-          title: 'Story Flex Card Berhasil Disimpan! 📸',
-          subtext: `Grafik 9:16 ${personal_info.full_name} siap diposting ke Instagram Stories & WA Status.`
+          title: 'Story Flex Card Berhasil Diunduh! 📸',
+          subtext: `Grafik HD 9:16 ${personal_info.full_name} tersimpan ke galeri perangkat.`
         });
       }
-    }, 1200);
+    } catch (err) {
+      console.warn('html-to-image canvas capture notice:', err);
+      if (onToast) {
+        onToast({
+          title: 'Story Flex Card Siap Diposting! 📸',
+          subtext: `Silakan screenshot atau bagikan langsung kartu 9:16 ${personal_info.full_name}.`
+        });
+      }
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleShareWhatsApp = () => {
