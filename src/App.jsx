@@ -216,6 +216,24 @@ export default function App() {
     }
   };
 
+  // Live Match Sync Handler from Fast Pitch Logger
+  const handleFinishMatch = (matchSummary) => {
+    setPlayers((prev) =>
+      prev.map((p) => {
+        if (p.player_id === matchSummary.playerId) {
+          return {
+            ...p,
+            latest_match_summary: matchSummary
+          };
+        }
+        return p;
+      })
+    );
+    setSelectedPlayerId(matchSummary.playerId);
+    setCurrentView('passport');
+    setPassportTab('video');
+  };
+
   const handlePrintDossier = () => {
     window.print();
   };
@@ -262,6 +280,7 @@ export default function App() {
                 onSaveAssessment={handleSaveAssessment}
                 onSaveFitnessRecord={handleSaveFitnessRecord}
                 onSwitchToPassport={() => setCurrentView('passport')}
+                onFinishMatch={handleFinishMatch}
                 onToast={(t) => setToastInfo(t)}
               />
             )}
