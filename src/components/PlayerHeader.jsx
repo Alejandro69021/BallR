@@ -102,37 +102,37 @@ export default function PlayerHeader({ personalInfo, onOpenStoryCard }) {
           </p>
 
           {/* Physical Specs Strip */}
-          <div className="mt-3 sm:mt-4 grid grid-cols-4 gap-2 py-2.5 px-3.5 rounded-xl bg-[#0E131F] border border-[#1E2638] text-left">
-            <div className="flex flex-col">
-              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1">
-                <Calendar className="w-3 h-3 text-slate-500" /> Usia
+          <div className="mt-3 sm:mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 py-2.5 px-3 rounded-xl bg-[#0E131F] border border-[#1E2638] text-left">
+            <div className="flex flex-col min-w-0">
+              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1 truncate">
+                <Calendar className="w-3 h-3 text-slate-500 shrink-0" /> Usia
               </span>
-              <span className="font-athletic text-sm sm:text-base font-bold text-white">
+              <span className="font-athletic text-sm sm:text-base font-bold text-white truncate">
                 {age} <span className="text-[10px] font-normal text-slate-400">thn</span>
               </span>
             </div>
 
-            <div className="flex flex-col border-l border-slate-800 pl-2 sm:pl-3">
-              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1">
-                <Ruler className="w-3 h-3 text-slate-500" /> Tinggi
+            <div className="flex flex-col min-w-0 sm:border-l sm:border-slate-800 sm:pl-3">
+              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1 truncate">
+                <Ruler className="w-3 h-3 text-slate-500 shrink-0" /> Tinggi
               </span>
-              <span className="font-athletic text-sm sm:text-base font-bold text-white">
+              <span className="font-athletic text-sm sm:text-base font-bold text-white truncate">
                 {height_cm} <span className="text-[10px] font-normal text-slate-400">cm</span>
               </span>
             </div>
 
-            <div className="flex flex-col border-l border-slate-800 pl-2 sm:pl-3">
-              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1">
-                <Scale className="w-3 h-3 text-slate-500" /> Berat
+            <div className="flex flex-col min-w-0 sm:border-l sm:border-slate-800 sm:pl-3">
+              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1 truncate">
+                <Scale className="w-3 h-3 text-slate-500 shrink-0" /> Berat
               </span>
-              <span className="font-athletic text-sm sm:text-base font-bold text-white">
+              <span className="font-athletic text-sm sm:text-base font-bold text-white truncate">
                 {weight_kg} <span className="text-[10px] font-normal text-slate-400">kg</span>
               </span>
             </div>
 
-            <div className="flex flex-col border-l border-slate-800 pl-2 sm:pl-3">
-              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1">
-                <Footprints className="w-3 h-3 text-slate-500" /> Kaki
+            <div className="flex flex-col min-w-0 sm:border-l sm:border-slate-800 sm:pl-3">
+              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1 truncate">
+                <Footprints className="w-3 h-3 text-slate-500 shrink-0" /> Kaki Utama
               </span>
               <span className="font-athletic text-xs sm:text-sm font-bold text-[#84CC16] truncate" title={preferred_foot}>
                 {preferred_foot}

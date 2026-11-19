@@ -7,7 +7,9 @@ import {
   Users,
   User,
   Timer,
-  ClipboardEdit
+  ClipboardEdit,
+  Film,
+  TrendingUp
 } from 'lucide-react';
 
 export default function TopNav({
@@ -102,22 +104,8 @@ export default function TopNav({
         {/* Center / Right: Primary Navigation Bar */}
         <div className="w-full md:w-auto flex items-center justify-between md:justify-end gap-2.5">
           
-          <nav className="flex items-center p-1 rounded-xl bg-[#0E131F] border border-[#1E2638] w-full md:w-auto overflow-x-auto">
-            {/* 1. Squad Hub */}
-            <button
-              type="button"
-              onClick={() => onSwitchView('roster')}
-              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all min-h-[34px] cursor-pointer whitespace-nowrap ${
-                currentView === 'roster'
-                  ? 'bg-[#84CC16] text-black shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>Skuad</span>
-            </button>
-
-            {/* 2. Talent Passport */}
+          <nav className="flex items-center gap-1 p-1 rounded-xl bg-[#0E131F] border border-[#1E2638] w-full md:w-auto overflow-x-auto scrollbar-none">
+            {/* 1. Paspor Atlet */}
             <button
               type="button"
               onClick={() => onSwitchView('passport')}
@@ -131,7 +119,49 @@ export default function TopNav({
               <span>Paspor</span>
             </button>
 
-            {/* Coach Only: 3. Fast Pitch Logger */}
+            {/* 2. Analisis Laga */}
+            <button
+              type="button"
+              onClick={() => onSwitchView('match')}
+              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all min-h-[34px] cursor-pointer whitespace-nowrap ${
+                currentView === 'match'
+                  ? 'bg-[#84CC16] text-black shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Film className="w-3.5 h-3.5" />
+              <span>Analisis Laga</span>
+            </button>
+
+            {/* 3. Pertumbuhan & Bio-Banding */}
+            <button
+              type="button"
+              onClick={() => onSwitchView('growth')}
+              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all min-h-[34px] cursor-pointer whitespace-nowrap ${
+                currentView === 'growth'
+                  ? 'bg-[#84CC16] text-black shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <TrendingUp className="w-3.5 h-3.5" />
+              <span>Pertumbuhan</span>
+            </button>
+
+            {/* 4. Skuad */}
+            <button
+              type="button"
+              onClick={() => onSwitchView('roster')}
+              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all min-h-[34px] cursor-pointer whitespace-nowrap ${
+                currentView === 'roster'
+                  ? 'bg-[#84CC16] text-black shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>Skuad</span>
+            </button>
+
+            {/* Coach Only: 5. Fast Pitch Logger */}
             {isCoach && (
               <button
                 type="button"
@@ -143,11 +173,11 @@ export default function TopNav({
                 }`}
               >
                 <Timer className="w-3.5 h-3.5" />
-                <span>Match Logger</span>
+                <span>Pitch Logger</span>
               </button>
             )}
 
-            {/* Coach Only: 4. Rapor Pelatih */}
+            {/* Coach Only: 6. Rapor Pelatih */}
             {isCoach && (
               <button
                 type="button"

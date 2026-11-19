@@ -22,6 +22,7 @@ export default function TacticalAnalyticsHub({ player, onToast, onSwitchToVideo 
   // Selected tactical filter: 'all' | 'attacking' | 'trans_neg' | 'defending' | 'trans_pos'
   const [activePhase, setActivePhase] = useState('all');
   const [isCopied, setIsCopied] = useState(false);
+  const [showCitations, setShowCitations] = useState(false);
 
   // Match stats fallback or live summary
   const matchStats = latest_match_summary?.stats || {
@@ -262,24 +263,30 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
     <div className="space-y-5 animate-fadeIn">
       
       {/* 1. TOP HEADER & METRIC BANNER */}
-      <div className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl relative overflow-hidden">
+      <div className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl relative overflow-hidden space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#1F2937]">
-          <div>
-            <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-athletic font-extrabold uppercase tracking-wider bg-lime-500/15 text-[#84CC16] border border-[#84CC16]/30 flex items-center gap-1.5">
-                <BrainCircuit className="w-3.5 h-3.5" />
-                <span>Sports Science Tactical Analytics</span>
+          <div className="space-y-1">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="px-2 py-0.5 rounded text-[10px] font-athletic font-extrabold uppercase tracking-wider bg-lime-500/15 text-[#84CC16] border border-[#84CC16]/30 flex items-center gap-1">
+                <BrainCircuit className="w-3 h-3" />
+                <span>Tactical Engine</span>
               </span>
-              <span className="text-[11px] font-mono text-slate-400">
-                PSSI Filanesia & SoccerAction Engine
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono text-cyan-300 bg-cyan-500/10 border border-cyan-500/25">
+                SoccerAction (VAEP)
+              </span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono text-amber-300 bg-amber-500/10 border border-amber-500/25">
+                Filanesia PSSI
+              </span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono text-slate-300 bg-slate-800 border border-slate-700">
+                Kloppy & mplsoccer
               </span>
             </div>
 
             <h3 className="font-athletic text-lg sm:text-2xl font-black text-white tracking-tight">
-              Post-Match Tactical Intelligence & Match Value Report
+              Post-Match Tactical Intelligence
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Analisis performa laga berbasis model data terbuka (Decroos et al. 2019) dan 4 fase permainan Kurikulum Filanesia PSSI.
+            <p className="text-xs text-slate-400">
+              Evaluasi teknis & spasial laga U-13 berbasis model aksi ilmiah terbuka dan 4 fase Filanesia.
             </p>
           </div>
 
@@ -292,65 +299,65 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
               {isCopied ? (
                 <>
                   <CheckCircle2 className="w-3.5 h-3.5 text-[#84CC16]" />
-                  <span className="text-[#84CC16]">Tersalin!</span>
+                  <span className="text-[#84CC16]">Tersalin</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-3.5 h-3.5 text-[#84CC16]" />
-                  <span>Salin Dossier Taktis</span>
+                  <span>Salin Laporan</span>
                 </>
               )}
             </button>
           </div>
         </div>
 
-        {/* 4 Quick Telemetry Badges */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
-          <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638]">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              Net Action Value (VAEP)
+        {/* 4 Quick Telemetry Badges (Responsive, No Overflow) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
+          <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638] min-w-0">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
+              Net VAEP Value
             </div>
-            <div className="font-athletic text-2xl font-black text-[#84CC16] mt-1">
+            <div className="font-athletic text-2xl font-black text-[#84CC16] mt-0.5">
               {vaepMetrics.netVaep}
             </div>
-            <div className="text-[10px] text-lime-400 font-medium">
-              Offensive: {vaepMetrics.offensiveVaep}
+            <div className="text-[10px] text-lime-400 font-medium truncate">
+              Offense: {vaepMetrics.offensiveVaep}
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638]">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+          <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638] min-w-0">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
               Passing Accuracy
             </div>
-            <div className="font-athletic text-2xl font-black text-cyan-400 mt-1">
+            <div className="font-athletic text-2xl font-black text-cyan-400 mt-0.5">
               {matchStats.passAccuracy}%
             </div>
-            <div className="text-[10px] text-slate-400">
-              {matchStats.passesCompleted}/{matchStats.passesTotal} Umpan Tuntas
+            <div className="text-[10px] text-slate-400 truncate">
+              {matchStats.passesCompleted}/{matchStats.passesTotal} Operan
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638]">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              Defensive Duels Won
+          <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638] min-w-0">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
+              Tekel & Intersep
             </div>
-            <div className="font-athletic text-2xl font-black text-emerald-400 mt-1">
+            <div className="font-athletic text-2xl font-black text-emerald-400 mt-0.5">
               {matchStats.tackleAccuracy}%
             </div>
-            <div className="text-[10px] text-emerald-400/80 font-medium">
-              {matchStats.tacklesWon}/{matchStats.tacklesTotal} Tekel Berhasil
+            <div className="text-[10px] text-emerald-400/80 font-medium truncate">
+              {matchStats.tacklesWon}/{matchStats.tacklesTotal} Menang Duel
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638]">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              Overall Match Rating
+          <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638] min-w-0">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
+              Rating Laga
             </div>
-            <div className="font-athletic text-2xl font-black text-amber-400 mt-1">
+            <div className="font-athletic text-2xl font-black text-amber-400 mt-0.5">
               {matchStats.matchRating} <span className="text-xs font-normal text-slate-400">/ 10</span>
             </div>
-            <div className="text-[10px] text-amber-300 font-medium">
-              Man of the Match
+            <div className="text-[10px] text-amber-300 font-medium truncate">
+              Playmaker Kunci
             </div>
           </div>
         </div>
@@ -389,15 +396,15 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
                 key={idx}
                 className="p-3 rounded-xl bg-[#090D16]/80 border border-[#1E2638] flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:border-slate-700 transition-colors"
               >
-                <div className="flex items-center gap-3">
-                  <span className="font-athletic text-sm font-black text-[#84CC16] min-w-[28px]">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="font-athletic text-sm font-black text-[#84CC16] min-w-[28px] shrink-0">
                     {act.minute}
                   </span>
-                  <div>
-                    <div className="font-athletic text-xs font-bold text-white">
+                  <div className="min-w-0">
+                    <div className="font-athletic text-xs font-bold text-white truncate">
                       {act.action}
                     </div>
-                    <div className="text-[10px] text-slate-400 flex items-center gap-2 mt-0.5">
+                    <div className="text-[10px] text-slate-400 flex items-center gap-2 mt-0.5 flex-wrap">
                       <span className="px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">
                         {act.phase}
                       </span>
@@ -407,7 +414,7 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 self-end sm:self-center">
+                <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
                   <span className="px-2.5 py-1 rounded-lg bg-lime-500/15 border border-[#84CC16]/40 text-[#84CC16] font-mono text-xs font-bold">
                     {act.vaepValue} VAEP
                   </span>
@@ -420,7 +427,7 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
         <div className="p-3 rounded-xl bg-[#0E131F] border border-[#1E2638] text-xs text-slate-300 flex items-start gap-2.5">
           <Award className="w-4 h-4 text-[#84CC16] shrink-0 mt-0.5" />
           <p className="leading-relaxed text-[11px]">
-            <strong>Interpretasi Ilmiah:</strong> Skor Net VAEP <span className="text-[#84CC16] font-bold">+0.84</span> menempatkan Dimas di kuartil teratas (top 3%) gelandang U-13 se-provinsi. Aksi umpan terobosan menit ke-24 menyumbang nilai tertinggi (+0.49 VAEP) karena melipatgandakan peluang tembakan bebas striker.
+            <strong>Interpretasi Ilmiah:</strong> Skor Net VAEP <span className="text-[#84CC16] font-bold">+0.84</span> (Top 3% Nasional U-13). Umpan terobosan menit ke-24 bernilai tertinggi (+0.49 VAEP) karena melipatgandakan peluang gol terbuka striker.
           </p>
         </div>
       </section>
@@ -664,26 +671,37 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
 
       {/* 6. SECTION 5: ACADEMIC & METHODOLOGY CITATIONS */}
       <section className="rounded-2xl bg-[#0E131F] border border-[#1E2638] p-4 sm:p-5 shadow-lg space-y-3">
-        <div className="flex items-center gap-2 text-xs font-athletic font-bold uppercase tracking-wider text-slate-300">
-          <BookOpen className="w-4 h-4 text-[#84CC16]" />
-          <span>Daftar Pustaka & Metodologi Sepakbola Resmi (Peer-Reviewed References)</span>
-        </div>
+        <button
+          type="button"
+          onClick={() => setShowCitations(!showCitations)}
+          className="w-full flex items-center justify-between text-xs font-athletic font-bold uppercase tracking-wider text-slate-300 hover:text-white cursor-pointer"
+        >
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-[#84CC16]" />
+            <span>Daftar Pustaka & Metodologi Resmi (5 Referensi Jurnal)</span>
+          </div>
+          <span className="text-[11px] font-mono text-[#84CC16]">
+            {showCitations ? 'Tutup ▲' : 'Lihat Sitasi ▼'}
+          </span>
+        </button>
 
-        <div className="space-y-2">
-          {academicCitations.map((cite, i) => (
-            <div
-              key={i}
-              className="p-2.5 rounded-lg bg-[#090D16]/90 border border-slate-800 text-[11px] text-slate-400 space-y-0.5"
-            >
-              <div className="text-slate-300 font-medium">
-                {i + 1}. <strong>{cite.author}</strong> ({cite.year}). <em>"{cite.title}"</em>.
+        {showCitations && (
+          <div className="space-y-2 pt-2 border-t border-slate-800 animate-fadeIn">
+            {academicCitations.map((cite, i) => (
+              <div
+                key={i}
+                className="p-2.5 rounded-lg bg-[#090D16]/90 border border-slate-800 text-[11px] text-slate-400 space-y-0.5"
+              >
+                <div className="text-slate-300 font-medium">
+                  {i + 1}. <strong>{cite.author}</strong> ({cite.year}). <em>"{cite.title}"</em>.
+                </div>
+                <div className="text-slate-400 text-[10px]">
+                  {cite.venue}. <span className="font-mono text-cyan-400/80">Ref: {cite.doi}</span>
+                </div>
               </div>
-              <div className="text-slate-400 text-[10px]">
-                {cite.venue}. <span className="font-mono text-cyan-400/80">Ref: {cite.doi}</span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
     </div>

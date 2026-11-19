@@ -265,13 +265,13 @@ export default function InteractiveMatchHub({
           {matchInfo.kpis.map((kpi, idx) => (
             <div
               key={idx}
-              className="p-3 rounded-xl bg-[#090D16]/80 border border-[#1F2937] flex flex-col justify-between"
+              className="p-3 rounded-xl bg-[#090D16]/80 border border-[#1F2937] flex flex-col justify-between min-w-0"
             >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] uppercase font-bold text-slate-400">
+              <div className="flex items-center justify-between mb-1 gap-1">
+                <span className="text-[10px] uppercase font-bold text-slate-400 truncate">
                   {kpi.label}
                 </span>
-                <div className="p-1 rounded bg-[#111827]">
+                <div className="p-1 rounded bg-[#111827] shrink-0">
                   {kpi.icon}
                 </div>
               </div>
@@ -279,7 +279,7 @@ export default function InteractiveMatchHub({
                 <div className="font-athletic text-xl font-black text-white">
                   {kpi.value}
                 </div>
-                <div className="text-[10px] text-slate-400 font-medium mt-0.5">
+                <div className="text-[10px] text-slate-400 font-medium mt-0.5 truncate" title={kpi.subtext}>
                   {kpi.subtext}
                 </div>
               </div>

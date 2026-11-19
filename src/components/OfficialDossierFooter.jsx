@@ -93,10 +93,10 @@ Verifikasi: ${window.location.href}`;
           </div>
 
           {/* Status Paspor Digital & Tombol Audit */}
-          <div className="flex items-center gap-2 self-start md:self-center">
-            <div className="px-3.5 py-1.5 rounded-xl bg-black/70 border border-emerald-500/40 text-xs font-athletic font-bold text-emerald-400 flex items-center gap-2 shadow-inner">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>DOKUMEN TERVERIFIKASI & TERKUNCI</span>
+          <div className="flex items-center gap-2 self-start md:self-center flex-wrap">
+            <div className="px-2.5 py-1.5 rounded-xl bg-black/70 border border-emerald-500/40 text-xs font-athletic font-bold text-emerald-400 flex items-center gap-1.5 shadow-inner">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>TERVERIFIKASI PSSI</span>
             </div>
 
             <button
@@ -226,13 +226,9 @@ Verifikasi: ${window.location.href}`;
         </div>
 
         {/* 5. DATA GOVERNANCE & FIFA PROTECTION OF MINORS DISCLAIMER */}
-        <div className="pt-3 border-t border-[#1F2937]/70 text-[11px] text-slate-500 leading-relaxed space-y-1">
-          <p>
-            <strong>Pemberitahuan Perlindungan Data & Regulasi FIFA:</strong> Dokumen paspor bakat ini tunduk pada <em>FIFA Regulations on the Status and Transfer of Players (Article 19: Protection of Minors)</em> serta <em>Undang-Undang Perlindungan Data Pribadi (UU PDP No. 27 Tahun 2022)</em> Republik Indonesia.
-          </p>
-          <p>
-            Seluruh data biometrik, rekaman video pertandingan, dan evaluasi medis disimpan secara terenkripsi oleh Mataram Putra Football Academy. Penggunaan dokumen di luar kepentingan pemanduan bakat resmi berizin wajib memperoleh persetujuan tertulis dari orang tua/wali pemain dan direksi akademi.
-          </p>
+        <div className="pt-3 border-t border-[#1F2937]/70 text-[11px] text-slate-500 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <span>Data atlet terproteksi statuta FIFA Protection of Minors (Art. 19) & UU PDP No. 27/2022.</span>
+          <span className="font-mono text-slate-400">PSSI DIY • No: 2026-0042</span>
         </div>
 
       </footer>

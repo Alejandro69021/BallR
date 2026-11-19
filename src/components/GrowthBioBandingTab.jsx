@@ -218,57 +218,57 @@ export default function GrowthBioBandingTab({ player }) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4">
           
           {/* Card 1: Current Stature */}
-          <div className="p-3.5 rounded-xl bg-[#090D16]/90 border border-[#1F2937] flex flex-col justify-between">
+          <div className="p-3.5 rounded-xl bg-[#090D16]/90 border border-[#1F2937] flex flex-col justify-between min-w-0">
             <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
-              <span className="uppercase font-bold tracking-wider text-[10px]">Stature & Mass Saat Ini</span>
-              <Ruler className="w-4 h-4 text-cyan-400" />
+              <span className="uppercase font-bold tracking-wider text-[10px] truncate">Stature & Mass Saat Ini</span>
+              <Ruler className="w-4 h-4 text-cyan-400 shrink-0" />
             </div>
             <div>
               <div className="font-athletic text-2xl font-black text-white">
                 {bioSpecs.currentHeight} <span className="text-xs font-mono text-slate-400">cm</span>
               </div>
-              <div className="text-xs text-slate-300 font-medium mt-0.5 flex items-center gap-2">
+              <div className="text-xs text-slate-300 font-medium mt-0.5 flex items-center gap-2 truncate">
                 <span>Berat: <strong>{bioSpecs.currentWeight} kg</strong></span>
                 <span className="text-slate-600">•</span>
                 <span>BMI: <strong>18.4</strong></span>
               </div>
             </div>
-            <div className="mt-3 pt-2 border-t border-slate-800 text-[10px] text-slate-400 font-mono">
+            <div className="mt-3 pt-2 border-t border-slate-800 text-[10px] text-slate-400 font-mono truncate">
               Usia Biologis: {bioSpecs.biologicalAge} th (Kronologis: {bioSpecs.chronologicalAge} th)
             </div>
           </div>
 
           {/* Card 2: Predicted Adult Height */}
-          <div className="p-3.5 rounded-xl bg-[#090D16]/90 border border-[#1F2937] flex flex-col justify-between">
+          <div className="p-3.5 rounded-xl bg-[#090D16]/90 border border-[#1F2937] flex flex-col justify-between min-w-0">
             <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
-              <span className="uppercase font-bold tracking-wider text-[10px]">Prediksi Tinggi Dewasa</span>
-              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              <span className="uppercase font-bold tracking-wider text-[10px] truncate">Prediksi Tinggi Dewasa</span>
+              <TrendingUp className="w-4 h-4 text-emerald-400 shrink-0" />
             </div>
             <div>
               <div className="font-athletic text-2xl font-black text-emerald-400">
                 ~{bioSpecs.predictedAdultHeight} <span className="text-xs font-mono text-slate-400">cm</span>
               </div>
-              <div className="text-xs text-slate-300 font-medium mt-0.5">
+              <div className="text-xs text-slate-300 font-medium mt-0.5 truncate">
                 Khamis-Roche Formula (±2.1 cm)
               </div>
             </div>
-            <div className="mt-3 pt-2 border-t border-slate-800 text-[10px] text-slate-400">
-              Berdasarkan genetika & rasio pertumbuhan tulang
+            <div className="mt-3 pt-2 border-t border-slate-800 text-[10px] text-slate-400 truncate">
+              Berdasarkan genetika & rasio tulang
             </div>
           </div>
 
           {/* Card 3: Adult Stature Percentage */}
-          <div className="p-3.5 rounded-xl bg-[#090D16]/90 border border-[#1F2937] flex flex-col justify-between">
+          <div className="p-3.5 rounded-xl bg-[#090D16]/90 border border-[#1F2937] flex flex-col justify-between min-w-0">
             <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
-              <span className="uppercase font-bold tracking-wider text-[10px]">% Tinggi Dewasa Tercapai</span>
-              <Activity className="w-4 h-4 text-[#CCFF00]" />
+              <span className="uppercase font-bold tracking-wider text-[10px] truncate">% Tinggi Dewasa Tercapai</span>
+              <Activity className="w-4 h-4 text-[#CCFF00] shrink-0" />
             </div>
             <div>
               <div className="flex items-baseline gap-2">
                 <span className="font-athletic text-2xl font-black text-[#CCFF00]">
                   {bioSpecs.adultHeightPct}%
                 </span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase">
+                <span className="text-[10px] font-bold text-slate-400 uppercase truncate">
                   Circa-PHV
                 </span>
               </div>
@@ -280,8 +280,8 @@ export default function GrowthBioBandingTab({ player }) {
                 />
               </div>
             </div>
-            <div className="mt-3 pt-2 border-t border-slate-800 text-[10px] text-lime-400 font-medium">
-              Fase optimal pembentukan akselerasi & kelincahan
+            <div className="mt-3 pt-2 border-t border-slate-800 text-[10px] text-lime-400 font-medium truncate">
+              Fase optimal pembentukan akselerasi
             </div>
           </div>
 

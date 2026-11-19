@@ -23,7 +23,6 @@ import Toast from './components/Toast';
 import InstallAppBanner from './components/InstallAppBanner';
 import OfflineIndicator from './components/OfflineIndicator';
 import OfficialDossierFooter from './components/OfficialDossierFooter';
-import { Activity, Film, TrendingUp } from 'lucide-react';
 
 export default function App() {
   // 1. Role Guard state (default to 'public', persist in localStorage)
@@ -39,14 +38,11 @@ export default function App() {
   const [selectedPlayerId, setSelectedPlayerId] = useState(playersRoster[0].player_id);
   const [isLoadingLive, setIsLoadingLive] = useState(true);
   
-  // 3 view modes: 'roster' | 'passport' | 'assessment'
+  // 4 primary view modes: 'passport' | 'match' | 'growth' | 'roster' (plus 'logger' | 'assessment' for coach)
   const [currentView, setCurrentView] = useState(() => {
     const role = localStorage.getItem('ballr_user_role') || 'public';
     return role === 'coach' ? 'roster' : 'passport';
   });
-
-  // Talent Passport Sub-Tabs: 'overview' | 'video' | 'growth'
-  const [passportTab, setPassportTab] = useState('overview');
   
   // Modal & Toast states
   const [activeClip, setActiveClip] = useState(null);
@@ -132,7 +128,7 @@ export default function App() {
 
   // Safe view switcher with role protection
   const handleSwitchView = (view) => {
-    if (userRole === 'public' && (view === 'assessment' || view === 'roster' || view === 'logger')) {
+    if (userRole === 'public' && (view === 'assessment' || view === 'logger')) {
       handleOpenPinModal(view);
       return;
     }
@@ -234,8 +230,7 @@ export default function App() {
       })
     );
     setSelectedPlayerId(matchSummary.playerId);
-    setCurrentView('passport');
-    setPassportTab('video');
+    setCurrentView('match');
   };
 
   const handlePrintDossier = () => {
@@ -303,102 +298,62 @@ export default function App() {
               />
             )}
 
-            {/* VIEW 4: DIGITAL YOUTH TALENT PASSPORT (100% interactive for Public & Coach) */}
+            {/* VIEW 4: DIGITAL YOUTH TALENT PASSPORT */}
             {currentView === 'passport' && (
-              <>
-                {/* 1. Player Identity Header Card */}
+              <div className="space-y-5 sm:space-y-6 animate-fadeIn">
                 <PlayerHeader
                   personalInfo={activePlayer.personal_info}
                   onOpenStoryCard={handleOpenShare}
                 />
-
-                {/* 2. Clean Passport Sub-Tab Navigation */}
-                <div className="flex items-center gap-1.5 p-1 bg-[#0E131F] border border-[#1E2638] rounded-2xl overflow-x-auto shadow-sm">
-                  <button
-                    type="button"
-                    onClick={() => setPassportTab('overview')}
-                    className={`flex-1 min-w-[130px] flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      passportTab === 'overview'
-                        ? 'bg-[#84CC16] text-black shadow-sm'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-                    }`}
-                  >
-                    <Activity className="w-4 h-4" />
-                    <span>Ikhtisar & Radar</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setPassportTab('video')}
-                    className={`flex-1 min-w-[140px] flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      passportTab === 'video'
-                        ? 'bg-[#84CC16] text-black shadow-sm'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-                    }`}
-                  >
-                    <Film className="w-4 h-4" />
-                    <span>Video Analitik Laga</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setPassportTab('growth')}
-                    className={`flex-1 min-w-[160px] flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      passportTab === 'growth'
-                        ? 'bg-[#84CC16] text-black shadow-sm'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-                    }`}
-                  >
-                    <TrendingUp className="w-4 h-4" />
-                    <span>Riwayat Pertumbuhan</span>
-                  </button>
-                </div>
-
-                {/* Sub-Tab 1: OVERVIEW & RADAR */}
-                {passportTab === 'overview' && (
-                  <div className="space-y-4 sm:space-y-6 animate-fadeIn">
-                    {/* 3. Performance Attributes (Radar Chart with Teammate Comparison & Stats) */}
-                    <PerformanceRadar
-                      attributes={activePlayer.radar_attributes}
-                      athleteName={activePlayer.personal_info.full_name}
-                      teammates={teammates}
-                    />
-
-                    {/* 4. Physical Fitness Test Strip */}
-                    <FitnessStrip benchmarks={activePlayer.fitness_benchmarks} />
-
-                    {/* 5. AI Coach Evaluation Card */}
-                    <AICoachCard evaluation={activePlayer.ai_coach_evaluation} />
-                  </div>
-                )}
-
-                {/* Sub-Tab 2: MATCH VIDEO REEL */}
-                {passportTab === 'video' && (
-                  <div className="animate-fadeIn">
-                    {/* 6. Interactive Video Match Reel & Performance Hub (Video-to-Stat Synced) */}
-                    <InteractiveMatchHub
-                      player={activePlayer}
-                      onShareClip={(clip) => setActiveClip(clip)}
-                      onToast={(t) => setToastInfo(t)}
-                    />
-                  </div>
-                )}
-
-                {/* Sub-Tab 3: GROWTH & BIO-BANDING TRAJECTORY */}
-                {passportTab === 'growth' && (
-                  <div className="animate-fadeIn">
-                    {/* 7. Player Growth & Bio-Banding Trajectory */}
-                    <GrowthBioBandingTab player={activePlayer} />
-                  </div>
-                )}
-
-                {/* Official Federation & Academy Endorsement Dossier Footer */}
+                <PerformanceRadar
+                  attributes={activePlayer.radar_attributes}
+                  athleteName={activePlayer.personal_info.full_name}
+                  teammates={teammates}
+                />
+                <FitnessStrip benchmarks={activePlayer.fitness_benchmarks} />
+                <AICoachCard evaluation={activePlayer.ai_coach_evaluation} />
                 <OfficialDossierFooter
                   player={activePlayer}
                   onOpenStoryCard={handleOpenShare}
                   onToast={(t) => setToastInfo(t)}
                 />
-              </>
+              </div>
+            )}
+
+            {/* VIEW 5: MATCH ANALYTICS & SCIENTIFIC INTELLIGENCE */}
+            {currentView === 'match' && (
+              <div className="space-y-5 sm:space-y-6 animate-fadeIn">
+                <PlayerHeader
+                  personalInfo={activePlayer.personal_info}
+                  onOpenStoryCard={handleOpenShare}
+                />
+                <InteractiveMatchHub
+                  player={activePlayer}
+                  onShareClip={(clip) => setActiveClip(clip)}
+                  onToast={(t) => setToastInfo(t)}
+                />
+                <OfficialDossierFooter
+                  player={activePlayer}
+                  onOpenStoryCard={handleOpenShare}
+                  onToast={(t) => setToastInfo(t)}
+                />
+              </div>
+            )}
+
+            {/* VIEW 6: PLAYER GROWTH & BIO-BANDING TRAJECTORY */}
+            {currentView === 'growth' && (
+              <div className="space-y-5 sm:space-y-6 animate-fadeIn">
+                <PlayerHeader
+                  personalInfo={activePlayer.personal_info}
+                  onOpenStoryCard={handleOpenShare}
+                />
+                <GrowthBioBandingTab player={activePlayer} />
+                <OfficialDossierFooter
+                  player={activePlayer}
+                  onOpenStoryCard={handleOpenShare}
+                  onToast={(t) => setToastInfo(t)}
+                />
+              </div>
             )}
           </>
         )}
