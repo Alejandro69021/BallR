@@ -17,12 +17,14 @@ export default function TopNav({
   currentView,
   userRole = 'public',
   onSwitchView,
-  onOpenPinModal,
-  onLockCoachSession,
+  onOpenAuthModal,
+  onLogout,
   onShare,
   verifiedText
 }) {
-  const isCoach = userRole === 'coach';
+  const isCoach = userRole === 'coach' || userRole === 'admin';
+  const isParent = userRole === 'parent';
+  const isAuthenticated = isCoach || isParent;
 
   return (
     <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#05070B]/95 border-b border-[#1E2638]">
@@ -35,56 +37,58 @@ export default function TopNav({
               className="relative group cursor-pointer"
               onClick={() => onSwitchView(isCoach ? 'roster' : 'passport')}
             >
-              <div className="w-9 h-9 rounded-xl bg-[#111827] border border-slate-700 flex items-center justify-center overflow-hidden shadow-sm group-hover:border-[#84CC16] transition-colors">
+              <div className="w-9 h-9 rounded-lg bg-[#111827] border border-slate-700 flex items-center justify-center overflow-hidden shadow-sm group-hover:border-[#84CC16] transition-colors">
                 {academy?.logo_url ? (
                   <img
                     src={academy.logo_url}
-                    alt={academy.name || "MPFA"}
+                    alt={academy.name || "Akademi"}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
                     }}
                   />
-                ) : null}
+                ) : (
+                  <span className="text-xs font-mono font-bold text-slate-400">FA</span>
+                )}
               </div>
             </div>
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-athletic text-sm font-bold text-white tracking-wide">
-                  {academy?.name || 'Mataram Putra FA'}
+                <span className="text-sm font-semibold text-white tracking-wide">
+                  {academy?.name || 'Akademi Sepakbola'}
                 </span>
-                <span className="inline-flex items-center px-1.5 py-0.2 text-[10px] font-athletic font-bold rounded bg-lime-500/15 text-[#84CC16] border border-[#84CC16]/30">
-                  U-13 ELITE
+                <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-bold rounded bg-slate-800 text-[#84CC16] border border-[#84CC16]/30">
+                  U-13
                 </span>
               </div>
               
               <div className="flex items-center gap-1 text-slate-400 text-[11px]">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#84CC16] shrink-0" />
                 <span className="truncate">
-                  {verifiedText || 'Terakreditasi Asprov PSSI DIY'}
+                  {verifiedText || academy?.city || 'Basis Data Resmi'}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Mobile Right Quick Action (Coach Switch & Share) */}
+          {/* Mobile Right Quick Action (Auth & Share) */}
           <div className="flex items-center gap-2 md:hidden">
-            {!isCoach ? (
+            {!isAuthenticated ? (
               <button
                 type="button"
-                onClick={() => onOpenPinModal('assessment')}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#111827] border border-slate-700 text-xs font-semibold text-slate-300 active:scale-95 transition-transform"
+                onClick={() => onOpenAuthModal('assessment')}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-[#111827] border border-slate-700 text-xs font-medium text-slate-300 active:scale-95 transition-transform"
               >
                 <Lock className="w-3.5 h-3.5 text-[#84CC16]" />
-                <span>Coach</span>
+                <span>Masuk</span>
               </button>
             ) : (
               <button
                 type="button"
-                onClick={onLockCoachSession}
-                className="p-1.5 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs"
-                title="Kunci Sesi Pelatih"
+                onClick={onLogout}
+                className="p-1.5 rounded bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs"
+                title="Keluar Sesi"
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
@@ -93,7 +97,7 @@ export default function TopNav({
             <button
               type="button"
               onClick={onShare}
-              className="p-1.5 rounded-lg bg-[#111827] border border-slate-800 text-slate-300 active:scale-95"
+              className="p-1.5 rounded bg-[#111827] border border-slate-800 text-slate-300 active:scale-95"
               title="Bagikan Paspor"
             >
               <Share2 className="w-4 h-4 text-[#84CC16]" />
@@ -104,14 +108,14 @@ export default function TopNav({
         {/* Center / Right: Primary Navigation Bar */}
         <div className="w-full md:w-auto flex items-center justify-between md:justify-end gap-2.5">
           
-          <nav className="flex items-center gap-1 p-1 rounded-xl bg-[#0E131F] border border-[#1E2638] w-full md:w-auto overflow-x-auto scrollbar-none">
+          <nav className="flex items-center gap-1 p-1 rounded-lg bg-[#0E131F] border border-[#1E2638] w-full md:w-auto overflow-x-auto scrollbar-none">
             {/* 1. Paspor Atlet */}
             <button
               type="button"
               onClick={() => onSwitchView('passport')}
-              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all min-h-[34px] cursor-pointer whitespace-nowrap ${
+              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors min-h-[32px] cursor-pointer whitespace-nowrap ${
                 currentView === 'passport'
-                  ? 'bg-[#84CC16] text-black shadow-sm'
+                  ? 'bg-[#84CC16] text-black shadow-sm font-semibold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -123,9 +127,9 @@ export default function TopNav({
             <button
               type="button"
               onClick={() => onSwitchView('match')}
-              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all min-h-[34px] cursor-pointer whitespace-nowrap ${
+              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors min-h-[32px] cursor-pointer whitespace-nowrap ${
                 currentView === 'match'
-                  ? 'bg-[#84CC16] text-black shadow-sm'
+                  ? 'bg-[#84CC16] text-black shadow-sm font-semibold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -133,13 +137,13 @@ export default function TopNav({
               <span>Analisis Laga</span>
             </button>
 
-            {/* 3. Pertumbuhan & Bio-Banding */}
+            {/* 3. Pertumbuhan */}
             <button
               type="button"
               onClick={() => onSwitchView('growth')}
-              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all min-h-[34px] cursor-pointer whitespace-nowrap ${
+              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors min-h-[32px] cursor-pointer whitespace-nowrap ${
                 currentView === 'growth'
-                  ? 'bg-[#84CC16] text-black shadow-sm'
+                  ? 'bg-[#84CC16] text-black shadow-sm font-semibold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -151,9 +155,9 @@ export default function TopNav({
             <button
               type="button"
               onClick={() => onSwitchView('roster')}
-              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all min-h-[34px] cursor-pointer whitespace-nowrap ${
+              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors min-h-[32px] cursor-pointer whitespace-nowrap ${
                 currentView === 'roster'
-                  ? 'bg-[#84CC16] text-black shadow-sm'
+                  ? 'bg-[#84CC16] text-black shadow-sm font-semibold'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -161,14 +165,14 @@ export default function TopNav({
               <span>Skuad</span>
             </button>
 
-            {/* Coach Only: 5. Fast Pitch Logger */}
+            {/* Coach Only: 5. Pitch Logger */}
             {isCoach && (
               <button
                 type="button"
                 onClick={() => onSwitchView('logger')}
-                className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all min-h-[34px] cursor-pointer whitespace-nowrap ${
+                className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors min-h-[32px] cursor-pointer whitespace-nowrap ${
                   currentView === 'logger'
-                    ? 'bg-rose-500 text-white shadow-sm'
+                    ? 'bg-rose-500 text-white shadow-sm font-semibold'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -177,14 +181,14 @@ export default function TopNav({
               </button>
             )}
 
-            {/* Coach Only: 6. Rapor Pelatih */}
+            {/* Coach Only: 6. Evaluasi Pelatih */}
             {isCoach && (
               <button
                 type="button"
                 onClick={() => onSwitchView('assessment')}
-                className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all min-h-[34px] cursor-pointer whitespace-nowrap ${
+                className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors min-h-[32px] cursor-pointer whitespace-nowrap ${
                   currentView === 'assessment'
-                    ? 'bg-[#84CC16] text-black shadow-sm'
+                    ? 'bg-[#84CC16] text-black shadow-sm font-semibold'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -196,27 +200,27 @@ export default function TopNav({
 
           {/* Desktop Right Role Control */}
           <div className="hidden md:flex items-center gap-2">
-            {!isCoach ? (
+            {!isAuthenticated ? (
               <button
                 type="button"
-                onClick={() => onOpenPinModal('logger')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0E131F] hover:bg-[#151C2C] border border-slate-700 text-slate-300 hover:text-white text-xs font-athletic font-bold uppercase tracking-wider transition-all min-h-[34px] cursor-pointer active:scale-95"
-                title="Buka akses pelatih dengan PIN"
+                onClick={() => onOpenAuthModal('logger')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0E131F] hover:bg-[#151C2C] border border-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-colors min-h-[32px] cursor-pointer active:scale-95"
+                title="Masuk sebagai pelatih atau orang tua"
               >
                 <Lock className="w-3.5 h-3.5 text-[#84CC16]" />
-                <span>Akses Pelatih</span>
+                <span>Masuk Akun</span>
               </button>
             ) : (
-              <div className="flex items-center gap-2 bg-[#0E131F] border border-emerald-500/30 px-3 py-1 rounded-xl">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span className="text-[11px] font-athletic font-bold text-emerald-300 uppercase tracking-wide">
-                  Pelatih Aktif
+              <div className="flex items-center gap-2 bg-[#0E131F] border border-emerald-500/30 px-3 py-1 rounded">
+                <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span className="text-[11px] font-medium text-emerald-300">
+                  {isCoach ? 'Pelatih' : isParent ? 'Wali Atlet' : 'Admin'}
                 </span>
                 <button
                   type="button"
-                  onClick={onLockCoachSession}
-                  className="p-1 rounded-md text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
-                  title="Kunci sesi pelatih"
+                  onClick={onLogout}
+                  className="p-1 rounded text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
+                  title="Keluar sesi"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
@@ -226,7 +230,7 @@ export default function TopNav({
             <button
               type="button"
               onClick={onShare}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0E131F] hover:bg-[#151C2C] border border-[#1E2638] text-slate-300 hover:text-white text-xs font-athletic font-bold uppercase tracking-wider transition-all min-h-[34px] cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0E131F] hover:bg-[#151C2C] border border-[#1E2638] text-slate-300 hover:text-white text-xs font-medium transition-colors min-h-[32px] cursor-pointer active:scale-95"
             >
               <Share2 className="w-3.5 h-3.5 text-[#84CC16]" />
               <span>Bagikan</span>

@@ -1,6 +1,12 @@
-// ProspekBola Service Worker — Offline Support & Asset Cache
-const CACHE_NAME = 'prospek-bola-cache-v1';
+// ==============================================================================
+// BallR (ProspekBola) Service Worker — Version 2
+// Security & Privacy: Never caches authenticated sessions or children's personal data.
+// ==============================================================================
 
+const CACHE_VERSION = 'ballr-v2';
+const STATIC_CACHE_NAME = `ballr-static-${CACHE_VERSION}`;
+
+// Only cache immutable application shell assets
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -10,9 +16,24 @@ const STATIC_ASSETS = [
   '/icon-512.png'
 ];
 
+// Sensitive endpoints & patterns that MUST NEVER be stored in CacheStorage
+const SENSITIVE_PATTERNS = [
+  /\/auth\//i,
+  /\/rest\/v1\//i,
+  /\/storage\/v1\//i,
+  /\/realtime\/v1\//i,
+  /\/profiles/i,
+  /\/players/i,
+  /\/consents/i,
+  /\/guardians/i,
+  /\/player_assessments/i,
+  /\/fitness_records/i,
+  /\/access_log/i
+];
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    caches.open(STATIC_CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS);
     })
   );
@@ -24,7 +45,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) {
+          if (key !== STATIC_CACHE_NAME) {
             return caches.delete(key);
           }
         })
@@ -40,34 +61,53 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
-  // Bypass chrome-extension and remote API requests
+  // 1. NEVER cache cross-origin API calls (Supabase API, OAuth, external storage)
   if (url.origin !== self.location.origin) {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      // Return cached version or fetch from network with network-first fallback
-      return (
-        cached ||
-        fetch(event.request)
-          .then((response) => {
-            if (response && response.status === 200) {
-              const clone = response.clone();
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, clone);
-              });
-            }
-            return response;
-          })
-          .catch(() => {
-            // When offline navigation fails, fallback to cached index.html
-            if (event.request.mode === 'navigate') {
-              return caches.match('/');
-            }
-          })
-      );
-    })
-  );
-});
+  // 2. NEVER cache sensitive endpoints or routes containing minor personal data
+  const isSensitive = SENSITIVE_PATTERNS.some((pattern) => pattern.test(url.pathname));
+  if (isSensitive) {
+    return; // Pass through directly to network, no cache interception
+  }
 
+  // 3. Navigation requests (HTML Pages): Network-First
+  // Ensures security policy updates and auth redirects are fresh
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => {
+          return caches.match('/index.html') || caches.match('/');
+        })
+    );
+    return;
+  }
+
+  // 4. Static Asset Caching (JS, CSS, Images, Manifest)
+  const isStaticAsset =
+    url.pathname.startsWith('/assets/') ||
+    url.pathname.endsWith('.js') ||
+    url.pathname.endsWith('.css') ||
+    url.pathname.endsWith('.png') ||
+    url.pathname.endsWith('.svg') ||
+    url.pathname.endsWith('.json');
+
+  if (isStaticAsset) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) return cachedResponse;
+
+        return fetch(event.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+            const responseClone = networkResponse.clone();
+            caches.open(STATIC_CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return networkResponse;
+        });
+      })
+    );
+  }
+});

@@ -5,26 +5,21 @@ import {
   Shield,
   Activity,
   CheckCircle2,
-  Award,
   TrendingUp,
-  Copy,
-  BookOpen,
-  Clock,
-  ArrowRight,
-  Dumbbell,
-  Flame,
-  FileText
+  Copy
 } from 'lucide-react';
+import VaepScorecard from './analytics/VaepScorecard';
+import FilanesiaGrid from './analytics/FilanesiaGrid';
+import FifaLanguageMetrics from './analytics/FifaLanguageMetrics';
+import PrescribedDrillCard from './analytics/PrescribedDrillCard';
 
-export default function TacticalAnalyticsHub({ player, onToast, onSwitchToVideo }) {
+export default function TacticalAnalyticsHub({ player, onToast }) {
   const { personal_info, latest_match_summary } = player;
 
-  // Selected tactical filter: 'all' | 'attacking' | 'trans_neg' | 'defending' | 'trans_pos'
   const [activePhase, setActivePhase] = useState('all');
   const [isCopied, setIsCopied] = useState(false);
   const [showCitations, setShowCitations] = useState(false);
 
-  // Match stats fallback or live summary
   const matchStats = latest_match_summary?.stats || {
     passesCompleted: 21,
     passesTotal: 25,
@@ -39,8 +34,6 @@ export default function TacticalAnalyticsHub({ player, onToast, onSwitchToVideo 
     matchRating: "8.6"
   };
 
-  // 1. SOCCERACTION VAEP (Valuing Actions by Estimating Probabilities) METRICS
-  // Citation: Decroos et al. (KDD 2019 / KU Leuven)
   const vaepMetrics = {
     netVaep: "+0.84",
     offensiveVaep: "+0.72",
@@ -76,8 +69,6 @@ export default function TacticalAnalyticsHub({ player, onToast, onSwitchToVideo 
     ]
   };
 
-  // 2. FILANESIA 4-PHASE TACTICAL BREAKDOWN
-  // Citation: Kurikulum Pembinaan Sepakbola Indonesia (Filanesia PSSI)
   const filanesiaPhases = {
     attacking: {
       title: "1. Menyerang (Build-Up & Progresi)",
@@ -129,8 +120,6 @@ export default function TacticalAnalyticsHub({ player, onToast, onSwitchToVideo 
     }
   };
 
-  // 3. FIFA FOOTBALL LANGUAGE TELEMETRY MATRIX
-  // Citation: FIFA Training Centre (2026)
   const fifaLanguageKpis = [
     {
       metric: "Line-Breaking Passes",
@@ -162,8 +151,6 @@ export default function TacticalAnalyticsHub({ player, onToast, onSwitchToVideo 
     }
   ];
 
-  // 4. SCIENTIFIC DRILL PRESCRIPTION
-  // Citation: Barça Innovation Hub (Juego de Posición) & FIFA Training Centre
   const prescribedDrill = {
     title: "4v4+3 Positional Play Rondo (Juego de Posición)",
     author: "Barça Innovation Hub (BIHUB) & FIFA Training Centre Guidelines",
@@ -178,7 +165,6 @@ export default function TacticalAnalyticsHub({ player, onToast, onSwitchToVideo 
     ]
   };
 
-  // 5. ACADEMIC & METHODOLOGY CITATIONS
   const academicCitations = [
     {
       author: "Decroos, T., Bransen, L., Van Roy, M., & Davis, J.",
@@ -217,7 +203,6 @@ export default function TacticalAnalyticsHub({ player, onToast, onSwitchToVideo 
     }
   ];
 
-  // Handler to copy formatted scout summary to clipboard
   const handleCopyTacticalDossier = () => {
     const summary = `=== LAPORAN TAKTIS RESMI (FILANESIA & VAEP ENGINE) ===
 Pemain: ${personal_info.full_name} (#${personal_info.jersey_number} • ${personal_info.position})
@@ -261,7 +246,6 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
 
   return (
     <div className="space-y-5 animate-fadeIn">
-      
       {/* 1. TOP HEADER & METRIC BANNER */}
       <div className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl relative overflow-hidden space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#1F2937]">
@@ -311,7 +295,7 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
           </div>
         </div>
 
-        {/* 4 Quick Telemetry Badges (Responsive, No Overflow) */}
+        {/* 4 Quick Telemetry Badges */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
           <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638] min-w-0">
             <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
@@ -363,347 +347,22 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
         </div>
       </div>
 
-      {/* 2. SECTION 1: SOCCERACTION VAEP ACTION IMPACT ENGINE */}
-      <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1F2937]">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
-                KU Leuven SoccerAction Framework
-              </span>
-              <span className="text-xs text-slate-400">Decroos et al. (2019)</span>
-            </div>
-            <h4 className="font-athletic text-base sm:text-lg font-bold text-white tracking-wide mt-1">
-              Valuing Actions by Estimating Probabilities (VAEP)
-            </h4>
-          </div>
+      <VaepScorecard vaepMetrics={vaepMetrics} />
 
-          <div className="text-xs text-slate-400">
-            Mengukur kontribusi riil tiap aksi terhadap peluang terjadinya gol
-          </div>
-        </div>
+      <FilanesiaGrid
+        filanesiaPhases={filanesiaPhases}
+        activePhase={activePhase}
+        setActivePhase={setActivePhase}
+      />
 
-        {/* VAEP Breakdown Table */}
-        <div className="space-y-2.5">
-          <div className="text-xs font-athletic font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
-            <span>Aksi Bernilai Dampak Tertinggi (Top Action Impact)</span>
-            <span className="text-[11px] text-slate-400 font-mono">Nilai VAEP (+Goal / -Concede)</span>
-          </div>
+      <FifaLanguageMetrics fifaLanguageKpis={fifaLanguageKpis} />
 
-          <div className="space-y-2">
-            {vaepMetrics.topValuedActions.map((act, idx) => (
-              <div
-                key={idx}
-                className="p-3 rounded-xl bg-[#090D16]/80 border border-[#1E2638] flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:border-slate-700 transition-colors"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className="font-athletic text-sm font-black text-[#84CC16] min-w-[28px] shrink-0">
-                    {act.minute}
-                  </span>
-                  <div className="min-w-0">
-                    <div className="font-athletic text-xs font-bold text-white truncate">
-                      {act.action}
-                    </div>
-                    <div className="text-[10px] text-slate-400 flex items-center gap-2 mt-0.5 flex-wrap">
-                      <span className="px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">
-                        {act.phase}
-                      </span>
-                      <span>Offense: {act.deltaPscores}</span>
-                      <span>Defense: {act.deltaPconcedes}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
-                  <span className="px-2.5 py-1 rounded-lg bg-lime-500/15 border border-[#84CC16]/40 text-[#84CC16] font-mono text-xs font-bold">
-                    {act.vaepValue} VAEP
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="p-3 rounded-xl bg-[#0E131F] border border-[#1E2638] text-xs text-slate-300 flex items-start gap-2.5">
-          <Award className="w-4 h-4 text-[#84CC16] shrink-0 mt-0.5" />
-          <p className="leading-relaxed text-[11px]">
-            <strong>Interpretasi Ilmiah:</strong> Skor Net VAEP <span className="text-[#84CC16] font-bold">+0.84</span> (Top 3% Nasional U-13). Umpan terobosan menit ke-24 bernilai tertinggi (+0.49 VAEP) karena melipatgandakan peluang gol terbuka striker.
-          </p>
-        </div>
-      </section>
-
-      {/* 3. SECTION 2: FILANESIA 4-PHASE TACTICAL BREAKDOWN */}
-      <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1F2937]">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-lime-500/15 text-[#84CC16] border border-[#84CC16]/30">
-                Kurikulum Filanesia PSSI
-              </span>
-              <span className="text-xs text-slate-400">4 Momen Permainan Sepakbola</span>
-            </div>
-            <h4 className="font-athletic text-base sm:text-lg font-bold text-white tracking-wide mt-1">
-              Distribusi Aksi Taktis dalam 4 Fase Permainan
-            </h4>
-          </div>
-
-          {/* Phase Filter Buttons */}
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-[#090D16] border border-[#1E2638] overflow-x-auto">
-            <button
-              type="button"
-              onClick={() => setActivePhase('all')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-athletic font-bold uppercase transition-all cursor-pointer ${
-                activePhase === 'all'
-                  ? 'bg-slate-800 text-white font-black'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Semua Fase
-            </button>
-            <button
-              type="button"
-              onClick={() => setActivePhase('attacking')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-athletic font-bold uppercase transition-all cursor-pointer ${
-                activePhase === 'attacking'
-                  ? 'bg-cyan-500 text-black font-black'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Menyerang
-            </button>
-            <button
-              type="button"
-              onClick={() => setActivePhase('trans_neg')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-athletic font-bold uppercase transition-all cursor-pointer ${
-                activePhase === 'trans_neg'
-                  ? 'bg-rose-500 text-white font-black'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Transisi (-)
-            </button>
-            <button
-              type="button"
-              onClick={() => setActivePhase('defending')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-athletic font-bold uppercase transition-all cursor-pointer ${
-                activePhase === 'defending'
-                  ? 'bg-emerald-500 text-black font-black'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Bertahan
-            </button>
-            <button
-              type="button"
-              onClick={() => setActivePhase('trans_pos')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-athletic font-bold uppercase transition-all cursor-pointer ${
-                activePhase === 'trans_pos'
-                  ? 'bg-lime-500 text-black font-black'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              Transisi (+)
-            </button>
-          </div>
-        </div>
-
-        {/* 4-Phase Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-          {Object.entries(filanesiaPhases)
-            .filter(([key]) => activePhase === 'all' || activePhase === key)
-            .map(([key, phase]) => (
-              <div
-                key={key}
-                className={`p-4 rounded-xl border ${phase.borderColor} ${phase.bgColor} space-y-2.5 transition-all`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-athletic text-xs font-extrabold uppercase px-2 py-0.5 rounded bg-black/60 border border-slate-700 text-white">
-                      {phase.code}
-                    </span>
-                    <h5 className="font-athletic text-sm font-bold text-white">
-                      {phase.title}
-                    </h5>
-                  </div>
-                  <span className={`font-mono text-xs font-black ${phase.textColor}`}>
-                    {phase.percentage}% Volume
-                  </span>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="w-full h-1.5 rounded-full bg-slate-900 overflow-hidden">
-                  <div
-                    className={`h-full bg-gradient-to-r ${phase.color} rounded-full`}
-                    style={{ width: `${phase.percentage * 2}%` }}
-                  />
-                </div>
-
-                <div className="text-xs text-slate-300 font-medium">
-                  {phase.actions}
-                </div>
-
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  {phase.eval}
-                </p>
-
-                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
-                  <span className="text-slate-400">Parameter FIFA:</span>
-                  <span className={`font-mono font-bold ${phase.textColor}`}>
-                    {phase.fifaMetric}
-                  </span>
-                </div>
-              </div>
-            ))}
-        </div>
-      </section>
-
-      {/* 4. SECTION 3: FIFA FOOTBALL LANGUAGE TELEMETRY MATRIX */}
-      <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1F2937]">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                FIFA Football Language Matrix
-              </span>
-              <span className="text-xs text-slate-400">FIFA Training Centre (2026)</span>
-            </div>
-            <h4 className="font-athletic text-base sm:text-lg font-bold text-white tracking-wide mt-1">
-              Metrik Taktis Standar Pelatih FIFA
-            </h4>
-          </div>
-
-          <div className="text-xs text-slate-400">
-            Tolok ukur pergerakan spasial tanpa bola & pemecah kebuntuan
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {fifaLanguageKpis.map((kpi, idx) => (
-            <div
-              key={idx}
-              className="p-3.5 rounded-xl bg-[#090D16]/90 border border-[#1E2638] flex flex-col justify-between space-y-2 hover:border-slate-700 transition-colors"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-athletic font-bold uppercase tracking-wider text-slate-400">
-                  {kpi.metric}
-                </span>
-                {kpi.icon}
-              </div>
-
-              <div>
-                <div className="font-athletic text-2xl font-black text-white">
-                  {kpi.value}
-                </div>
-                <div className="text-[10px] font-mono font-bold text-lime-400 mt-0.5">
-                  {kpi.benchmark}
-                </div>
-              </div>
-
-              <div className="text-[11px] text-slate-400 leading-snug pt-2 border-t border-slate-800">
-                {kpi.desc}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 5. SECTION 4: SCIENCE-BASED DRILL PRESCRIPTION (BARÇA INNOVATION HUB) */}
-      <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl space-y-4">
-        <div className="flex items-center gap-2.5 pb-3 border-b border-[#1F2937]">
-          <div className="p-2 rounded-xl bg-[#090D16] border border-[#84CC16] text-[#84CC16]">
-            <Dumbbell className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-lime-500/15 text-[#84CC16] border border-[#84CC16]/30">
-                Metodologi Latihan Terakreditasi
-              </span>
-              <span className="text-xs text-slate-400">{prescribedDrill.author}</span>
-            </div>
-            <h4 className="font-athletic text-base sm:text-lg font-bold text-white tracking-wide mt-0.5">
-              {prescribedDrill.title}
-            </h4>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-3">
-            <div className="p-3 rounded-xl bg-[#090D16]/80 border border-[#1E2638] space-y-1.5">
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Setup Lapangan & Durasi
-              </div>
-              <div className="text-xs text-slate-200 font-semibold">
-                {prescribedDrill.setup}
-              </div>
-              <div className="text-xs text-cyan-400 font-mono">
-                {prescribedDrill.duration}
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-slate-300 space-y-1">
-              <div className="font-athletic font-bold text-amber-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                <Flame className="w-3.5 h-3.5" />
-                <span>Catatan Beban Bio-Banding (PHV)</span>
-              </div>
-              <p className="text-[11px] leading-relaxed text-slate-300">
-                {prescribedDrill.bioBandingNote}
-              </p>
-            </div>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-[#090D16]/80 border border-[#1E2638] space-y-2">
-            <div className="text-[10px] font-athletic font-bold text-[#84CC16] uppercase tracking-wider">
-              Instruksi Kunci Pelatih (Coaching Points)
-            </div>
-            <ul className="space-y-2">
-              {prescribedDrill.coachingPoints.map((pt, i) => (
-                <li key={i} className="text-xs text-slate-300 flex items-start gap-2">
-                  <span className="w-4 h-4 rounded-full bg-[#111827] border border-slate-700 text-[#84CC16] font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
-                    {i + 1}
-                  </span>
-                  <span className="leading-relaxed">{pt}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. SECTION 5: ACADEMIC & METHODOLOGY CITATIONS */}
-      <section className="rounded-2xl bg-[#0E131F] border border-[#1E2638] p-4 sm:p-5 shadow-lg space-y-3">
-        <button
-          type="button"
-          onClick={() => setShowCitations(!showCitations)}
-          className="w-full flex items-center justify-between text-xs font-athletic font-bold uppercase tracking-wider text-slate-300 hover:text-white cursor-pointer"
-        >
-          <div className="flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-[#84CC16]" />
-            <span>Daftar Pustaka & Metodologi Resmi (5 Referensi Jurnal)</span>
-          </div>
-          <span className="text-[11px] font-mono text-[#84CC16]">
-            {showCitations ? 'Tutup ▲' : 'Lihat Sitasi ▼'}
-          </span>
-        </button>
-
-        {showCitations && (
-          <div className="space-y-2 pt-2 border-t border-slate-800 animate-fadeIn">
-            {academicCitations.map((cite, i) => (
-              <div
-                key={i}
-                className="p-2.5 rounded-lg bg-[#090D16]/90 border border-slate-800 text-[11px] text-slate-400 space-y-0.5"
-              >
-                <div className="text-slate-300 font-medium">
-                  {i + 1}. <strong>{cite.author}</strong> ({cite.year}). <em>"{cite.title}"</em>.
-                </div>
-                <div className="text-slate-400 text-[10px]">
-                  {cite.venue}. <span className="font-mono text-cyan-400/80">Ref: {cite.doi}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
+      <PrescribedDrillCard
+        prescribedDrill={prescribedDrill}
+        academicCitations={academicCitations}
+        showCitations={showCitations}
+        setShowCitations={setShowCitations}
+      />
     </div>
   );
 }
