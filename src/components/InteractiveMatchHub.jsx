@@ -15,8 +15,10 @@ import {
   Maximize2,
   RotateCcw,
   CheckCircle2,
-  ExternalLink
+  ExternalLink,
+  BrainCircuit
 } from 'lucide-react';
+import TacticalAnalyticsHub from './TacticalAnalyticsHub';
 
 export default function InteractiveMatchHub({
   player,
@@ -24,6 +26,9 @@ export default function InteractiveMatchHub({
   onToast
 }) {
   const videoRef = useRef(null);
+
+  // Sub-view switcher: 'video' (Video Match Reel) | 'tactical' (Scientific Filanesia & VAEP Report)
+  const [matchViewMode, setMatchViewMode] = useState('video');
 
   // Match Summary & KPIs
   const matchInfo = {
@@ -180,7 +185,44 @@ export default function InteractiveMatchHub({
   };
 
   return (
-    <section id="video-reel" className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl shadow-black/50 space-y-5">
+    <div className="space-y-4">
+      {/* Sub-View Switcher: Video Reel vs Tactical Intelligence */}
+      <div className="flex items-center gap-1.5 p-1 bg-[#0E131F] border border-[#1E2638] rounded-2xl shadow-sm">
+        <button
+          type="button"
+          onClick={() => setMatchViewMode('video')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer ${
+            matchViewMode === 'video'
+              ? 'bg-[#84CC16] text-black shadow-sm'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+          }`}
+        >
+          <Film className="w-4 h-4" />
+          <span>Video Match Reel</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setMatchViewMode('tactical')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer ${
+            matchViewMode === 'tactical'
+              ? 'bg-[#84CC16] text-black shadow-sm'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+          }`}
+        >
+          <BrainCircuit className="w-4 h-4" />
+          <span>Laporan Taktis Sains (Filanesia & VAEP)</span>
+        </button>
+      </div>
+
+      {matchViewMode === 'tactical' ? (
+        <TacticalAnalyticsHub
+          player={player}
+          onToast={onToast}
+          onSwitchToVideo={() => setMatchViewMode('video')}
+        />
+      ) : (
+        <section id="video-reel" className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl shadow-black/50 space-y-5">
       
       {/* 1. REAL MATCH SUMMARY STRIP */}
       <div className="space-y-3 pb-2 border-b border-[#1F2937]">
@@ -202,10 +244,18 @@ export default function InteractiveMatchHub({
             </p>
           </div>
 
-          <div className="self-start sm:self-center">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-black/60 border border-slate-700 text-xs font-mono text-slate-300">
+          <div className="self-start sm:self-center flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setMatchViewMode('tactical')}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#0E131F] border border-cyan-500/40 text-xs font-athletic font-bold text-cyan-300 hover:text-white hover:bg-cyan-500/15 transition-all cursor-pointer"
+            >
+              <BrainCircuit className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Analisis Taktis VAEP</span>
+            </button>
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-black/60 border border-slate-700 text-xs font-mono text-slate-300">
               <Film className="w-3.5 h-3.5 text-[#CCFF00]" />
-              <span>Video-to-Stat Synced</span>
+              <span>Video-Synced</span>
             </span>
           </div>
         </div>
@@ -465,6 +515,8 @@ export default function InteractiveMatchHub({
       </div>
 
     </section>
+      )}
+    </div>
   );
 }
 
