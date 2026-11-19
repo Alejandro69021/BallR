@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   ClipboardCheck,
-  Sparkles,
   Save,
   Send,
   Plus,
@@ -18,12 +17,9 @@ import {
   TrendingDown,
   UserCheck,
   Camera,
-  Database,
-  Edit3
+  Database
 } from 'lucide-react';
 import PitchScannerModal from './PitchScannerModal';
-import FastPitchLogger from './FastPitchLogger';
-
 export default function CoachAssessmentView({
   players,
   selectedPlayerId,
@@ -35,9 +31,6 @@ export default function CoachAssessmentView({
   onToast
 }) {
   const activePlayer = players.find((p) => p.player_id === selectedPlayerId) || players[0];
-
-  // Coach Sub-Mode Switcher: 'assessment' vs 'pitch-logger'
-  const [coachSubMode, setCoachSubMode] = useState('assessment');
 
   // Local form state initialized from activePlayer
   const [formData, setFormData] = useState({
@@ -200,45 +193,6 @@ export default function CoachAssessmentView({
   return (
     <div className="space-y-5 animate-fadeIn pb-24">
       
-      {/* 1. Coach Mode Switcher: Assessment Mode vs Live Match Pitch Logger */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[#111827] border border-[#1F2937] shadow-lg">
-        <button
-          type="button"
-          onClick={() => setCoachSubMode('assessment')}
-          className={`flex-1 py-2.5 px-4 rounded-xl font-athletic font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-            coachSubMode === 'assessment'
-              ? 'bg-[#CCFF00] text-black shadow-[0_0_12px_rgba(204,255,0,0.35)]'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-          }`}
-        >
-          <Edit3 className="w-4 h-4" />
-          <span>✍️ Assessment Mode</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setCoachSubMode('pitch-logger')}
-          className={`flex-1 py-2.5 px-4 rounded-xl font-athletic font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-            coachSubMode === 'pitch-logger'
-              ? 'bg-rose-500 text-white shadow-[0_0_15px_rgba(244,63,94,0.4)]'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-          }`}
-        >
-          <Timer className="w-4 h-4 animate-pulse" />
-          <span>⏱️ Live Match Pitch Logger</span>
-        </button>
-      </div>
-
-      {coachSubMode === 'pitch-logger' ? (
-        <FastPitchLogger
-          players={players}
-          selectedPlayerId={selectedPlayerId}
-          onSelectPlayer={onSelectPlayer}
-          onFinishMatch={onFinishMatch}
-          onToast={onToast}
-        />
-      ) : (
-        <>
           {/* 2. Player Selector (Horizontal Scroll with snap cards) */}
       <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-3.5 sm:p-4 shadow-xl shadow-black/50">
         <div className="flex items-center justify-between mb-2.5 px-1">
@@ -568,8 +522,8 @@ export default function CoachAssessmentView({
             </>
           ) : (
             <>
-              <Sparkles className="w-4 h-4 text-black fill-current" />
-              <span>✨ Generate Formal AI Narrative</span>
+              <Send className="w-4 h-4 text-black" />
+              <span>Generate Technical Narrative</span>
             </>
           )}
         </button>
@@ -680,8 +634,6 @@ export default function CoachAssessmentView({
           </div>
         </div>
       </div>
-      </>
-    )}
 
       {/* Edge-AI Live Pitch Scanner Modal */}
       {isCameraOpen && (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Film, Play, Clock, Sparkles } from 'lucide-react';
+import { Film, Play, Clock } from 'lucide-react';
 
 export default function MatchMoments({ moments, onSelectClip }) {
   const getBadgeStyle = (category) => {

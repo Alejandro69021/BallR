@@ -12,7 +12,6 @@ import {
   Flame,
   Award,
   CheckCircle2,
-  Sparkles,
   ChevronRight,
   UserCheck,
   Send,
@@ -83,7 +82,7 @@ export default function FastPitchLogger({
       id: "ev-2",
       time: "13:40",
       type: "tackle_won",
-      label: "🛡️ Tackle / Intercept Won",
+      label: "Tackle / Intercept Won",
       color: "text-emerald-400",
       playerName: activePlayer.personal_info.nickname || activePlayer.personal_info.full_name,
       statDelta: { tacklesWon: 1, tacklesTotal: 1 }
@@ -92,7 +91,7 @@ export default function FastPitchLogger({
       id: "ev-3",
       time: "14:24",
       type: "key_pass",
-      label: "🎯 Key / Through Pass",
+      label: "Key / Through Pass",
       color: "text-cyan-400",
       playerName: activePlayer.personal_info.nickname || activePlayer.personal_info.full_name,
       statDelta: { keyPasses: 1, passesCompleted: 1, passesTotal: 1 }
@@ -238,7 +237,7 @@ export default function FastPitchLogger({
 
     if (onToast) {
       onToast({
-        title: "Statistik Laga Berhasil Disinkronkan! 🏁",
+        title: "Statistik Laga Berhasil Disinkronkan",
         subtext: `Performa ${activePlayer.personal_info.nickname || activePlayer.personal_info.full_name} (${calculatedMatchRating} Rating) tersimpan ke paspor bakat.`
       });
     }
@@ -360,7 +359,7 @@ export default function FastPitchLogger({
         <div className="p-3 rounded-xl bg-[#111827] border border-[#1F2937] flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-400 text-[10px] uppercase font-bold">
             <span>Peluang Tercipta</span>
-            <Sparkles className="w-3.5 h-3.5 text-[#CCFF00]" />
+            <Target className="w-3.5 h-3.5 text-[#CCFF00]" />
           </div>
           <div className="mt-1">
             <div className="font-athletic text-2xl font-black text-[#CCFF00]">
@@ -628,7 +627,7 @@ export default function FastPitchLogger({
           className="w-full flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-lime-500 to-[#CCFF00] hover:from-lime-400 hover:to-lime-200 text-black font-athletic font-extrabold text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(204,255,0,0.4)] border border-[#CCFF00] transition-all cursor-pointer active:scale-95"
         >
           <Award className="w-5 h-5 fill-current" />
-          <span>🏁 Selesai Laga & Sinkronkan ke Paspor</span>
+          <span>Selesai Laga & Sinkronkan ke Paspor</span>
         </button>
       </div>
 
@@ -660,7 +659,7 @@ export default function FastPitchLogger({
                 onClick={() => {
                   logEvent(
                     'goal',
-                    '⚽ GOOOL! Penyelesaian Sempurna',
+                    '⚽ GOL! Penyelesaian Sempurna',
                     'text-[#CCFF00]',
                     { shotsOnTarget: 1, goals: 1 },
                     'goal'
@@ -671,7 +670,7 @@ export default function FastPitchLogger({
               >
                 <div>
                   <div className="font-athletic font-extrabold text-[#CCFF00] text-sm">
-                    ⚽ GOL TERCIPTA!
+                    GOL TERCIPTA
                   </div>
                   <div className="text-[10px] text-slate-300">
                     +1 Gol & +1 Shot On Target
@@ -685,7 +684,7 @@ export default function FastPitchLogger({
                 onClick={() => {
                   logEvent(
                     'shot_on_target',
-                    '🎯 Shot On Target (Saved / Woodwork)',
+                    'Shot On Target (Saved / Woodwork)',
                     'text-yellow-400',
                     { shotsOnTarget: 1 },
                     'positive'
@@ -696,7 +695,7 @@ export default function FastPitchLogger({
               >
                 <div>
                   <div className="font-athletic font-bold text-white text-sm">
-                    🧤 Shot On Target (Ditepis Kiper)
+                    Shot On Target (Ditepis Kiper)
                   </div>
                   <div className="text-[10px] text-slate-400">
                     +1 Shot On Target
@@ -710,7 +709,7 @@ export default function FastPitchLogger({
                 onClick={() => {
                   logEvent(
                     'shot_off_target',
-                    '💨 Shot Off Target (Melenceng)',
+                    'Shot Off Target (Melenceng)',
                     'text-slate-400',
                     {},
                     'error'
@@ -719,7 +718,7 @@ export default function FastPitchLogger({
                 }}
                 className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-left hover:bg-slate-800 text-slate-400 hover:text-white transition-all cursor-pointer text-xs"
               >
-                💨 Shot Off Target (Melebar / Terblok Bek)
+                Shot Off Target (Melebar / Terblok Bek)
               </button>
             </div>
           </div>

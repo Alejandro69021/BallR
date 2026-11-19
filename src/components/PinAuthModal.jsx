@@ -5,8 +5,7 @@ import {
   Unlock,
   ShieldAlert,
   Delete,
-  CheckCircle2,
-  Sparkles
+  CheckCircle2
 } from 'lucide-react';
 
 export default function PinAuthModal({

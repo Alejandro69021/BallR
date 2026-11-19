@@ -7,7 +7,6 @@ import {
   Copy,
   Check,
   ShieldCheck,
-  Sparkles,
   QrCode,
   Flame,
   Zap,
@@ -294,7 +293,7 @@ export default function StoryFlexCardModal({ player, onClose, onToast }) {
         <div className="flex-1 w-full space-y-5">
           <div>
             <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-lime-500/15 border border-[#CCFF00]/30 text-[#CCFF00] text-xs font-bold uppercase tracking-wider mb-1">
-              <Sparkles className="w-3.5 h-3.5" />
+              <Share2 className="w-3.5 h-3.5" />
               Social Flex Card Export
             </div>
             <h3 className="font-athletic text-2xl font-bold text-white tracking-tight">

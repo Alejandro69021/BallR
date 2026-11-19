@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, X, Smartphone, Share, PlusSquare, Sparkles } from 'lucide-react';
+import { Download, X, Smartphone, Share, PlusSquare } from 'lucide-react';
 
 export default function InstallAppBanner() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -107,7 +107,7 @@ export default function InstallAppBanner() {
         </div>
 
         <p className="text-xs text-slate-300 leading-relaxed">
-          📲 Pasang ProspekBola di Layar Utama HP untuk Akses Cepat di Lapangan (tanpa URL bar).
+          Pasang ProspekBola di Layar Utama HP untuk Akses Cepat di Lapangan (mode aplikasi layar penuh).
         </p>
 
         {/* Action Button */}

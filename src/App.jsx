@@ -74,7 +74,7 @@ export default function App() {
           }
 
           setToastInfo({
-            title: "Database Terhubung ke Supabase! 🟢",
+            title: "Database Supabase Terhubung",
             subtext: `Berhasil memuat ${livePlayers.length} pemain live dari tabel players, assessments, fitness, dan video_highlights.`
           });
         }
@@ -115,7 +115,7 @@ export default function App() {
     setIsPinModalOpen(false);
     if (targetView) setCurrentView(targetView);
     setToastInfo({
-      title: "Sesi Pelatih Terverifikasi! 🔓",
+      title: "Sesi Pelatih Terverifikasi",
       subtext: "Mode Coach Logger & Squad Hub aktif untuk sesi latihan."
     });
   };
@@ -125,14 +125,14 @@ export default function App() {
     localStorage.setItem('ballr_user_role', 'public');
     setCurrentView('passport');
     setToastInfo({
-      title: "Sesi Pelatih Dikunci 🔒",
+      title: "Sesi Pelatih Dikunci",
       subtext: "Aplikasi kembali ke Mode Publik (Talent Passport)."
     });
   };
 
   // Safe view switcher with role protection
   const handleSwitchView = (view) => {
-    if (userRole === 'public' && (view === 'assessment' || view === 'roster')) {
+    if (userRole === 'public' && (view === 'assessment' || view === 'roster' || view === 'logger')) {
       handleOpenPinModal(view);
       return;
     }
@@ -183,7 +183,7 @@ export default function App() {
       );
 
       setToastInfo({
-        title: "Tersimpan ke Supabase Live! 🚀",
+        title: "Data Berhasil Disimpan ke Supabase",
         subtext: `Tabel player_assessments dan ovr_rating (${updatedPlayerData.personal_info.overall_rating}) ${updatedPlayerData.personal_info.full_name} berhasil diperbarui.`
       });
 
@@ -194,7 +194,7 @@ export default function App() {
         prev.map((p) => (p.player_id === updatedPlayerData.player_id ? updatedPlayerData : p))
       );
       setToastInfo({
-        title: "Perubahan Disimpan Lokal ⚠️",
+        title: "Perubahan Disimpan Lokal",
         subtext: "Gagal menyimpan ke server Supabase, disimpan di memori sesi aktif."
       });
       setCurrentView('passport');
@@ -212,7 +212,7 @@ export default function App() {
       await insertFitnessRecordToSupabase(playerId, fitnessPayload);
 
       setToastInfo({
-        title: "Hasil Kamera Edge-AI Masuk Supabase! 🎯",
+        title: "Hasil Uji Fisik Tersimpan ke Supabase",
         subtext: `Rekor ${testResult.metricName}: ${testResult.scoreDisplay} berhasil di-insert ke tabel fitness_records.`
       });
     } catch (err) {

@@ -7,7 +7,6 @@ import {
   VolumeX,
   Share2,
   Clock,
-  Sparkles,
   Shield,
   Target,
   Flame,
@@ -174,7 +173,7 @@ export default function InteractiveMatchHub({
     }
     if (onToast) {
       onToast({
-        title: `Tautan Klip Disalin! 🔗`,
+        title: `Tautan Klip Disalin`,
         subtext: `Timestamp ${evt.minute} (${evt.title}) siap dibagikan ke scout.`
       });
     }

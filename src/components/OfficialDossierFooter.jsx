@@ -43,7 +43,7 @@ Verifikasi: ${window.location.href}`;
 
     if (onToast) {
       onToast({
-        title: "Rangkuman Scout Disalin! 📋",
+        title: "Rangkuman Scout Disalin",
         subtext: `Data resmi ${personal_info.full_name} siap dikirim ke direktur teknik / pemandu bakat.`
       });
     }

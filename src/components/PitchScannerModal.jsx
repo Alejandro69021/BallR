@@ -3,7 +3,6 @@ import {
   X,
   Camera,
   RotateCcw,
-  Sparkles,
   Zap,
   Timer,
   Flame,

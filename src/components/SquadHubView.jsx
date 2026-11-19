@@ -7,7 +7,6 @@ import {
   ShieldCheck,
   CheckCircle2,
   Clock,
-  Sparkles,
   Award,
   ChevronRight,
   Eye,

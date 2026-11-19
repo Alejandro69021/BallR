@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, Loader2, Sparkles } from 'lucide-react';
+import { Database, Loader2 } from 'lucide-react';
 
 export default function LoadingSkeleton() {
   return (

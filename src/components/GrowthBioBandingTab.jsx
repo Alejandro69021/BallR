@@ -14,7 +14,6 @@ import {
   Scale,
   Ruler,
   Clock,
-  Sparkles,
   ChevronRight
 } from 'lucide-react';
 
@@ -192,7 +191,7 @@ export default function GrowthBioBandingTab({ player }) {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-athletic font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1">
-                <Sparkles className="w-3 h-3" />
+                <Activity className="w-3 h-3" />
                 <span>Bio-Banding & Sports Science</span>
               </span>
               <span className="text-[11px] text-slate-400 font-mono">
