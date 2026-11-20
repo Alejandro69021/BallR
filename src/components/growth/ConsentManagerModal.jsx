@@ -10,18 +10,12 @@ export default function ConsentManagerModal({
   onClose,
   player,
   onRevoked,
-  onToast,
-  onTogglePurpose
+  onToast
 }) {
   const [consents, setConsents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [revoking, setRevoking] = useState(false);
   const [confirmRevoke, setConfirmRevoke] = useState(false);
-  const [purposes, setPurposes] = useState({
-    internal_analytics: true,
-    share_with_scouts: false,
-    public_profile: false
-  });
 
   const playerId = player?.player_id || player?.id;
   const pName = player?.personal_info?.nickname || player?.personal_info?.full_name || 'Atlet';
@@ -35,14 +29,6 @@ export default function ConsentManagerModal({
         const list = await fetchPlayerConsents(playerId);
         if (isMounted) {
           setConsents(list);
-          const active = list.find((c) => !c.revoked_at) || list[0];
-          if (active?.purposes) {
-            setPurposes({
-              internal_analytics: active.purposes.internal_analytics ?? true,
-              share_with_scouts: Boolean(active.purposes.share_with_scouts),
-              public_profile: Boolean(active.purposes.public_profile)
-            });
-          }
         }
       } catch (err) {
         console.warn('Gagal memuat persetujuan:', err);
@@ -61,11 +47,37 @@ export default function ConsentManagerModal({
   if (!isOpen) return null;
 
   const activeConsent = consents.find((c) => !c.revoked_at) || consents[0] || null;
+  const hasConsentRecord = Boolean(activeConsent);
   const isRevoked = activeConsent ? Boolean(activeConsent.revoked_at) : false;
 
-  const handlePurposeChange = (key, checked) => {
-    setPurposes((prev) => ({ ...prev, [key]: checked }));
-    onTogglePurpose?.(key, checked);
+  const getPurposeStatus = (purposeKey) => {
+    if (!hasConsentRecord) {
+      return {
+        badge: 'Belum ada persetujuan tercatat',
+        variant: 'neutral',
+        checked: false
+      };
+    }
+    if (isRevoked) {
+      return {
+        badge: 'Dicabut',
+        variant: 'warning',
+        checked: false
+      };
+    }
+    const isGranted = Boolean(activeConsent?.purposes?.[purposeKey]);
+    if (isGranted) {
+      return {
+        badge: 'Diizinkan',
+        variant: 'brand',
+        checked: true
+      };
+    }
+    return {
+      badge: 'Tidak diizinkan',
+      variant: 'neutral',
+      checked: false
+    };
   };
 
   const handleExecuteRevocation = async () => {
@@ -98,28 +110,19 @@ export default function ConsentManagerModal({
       key: 'internal_analytics',
       id: 'consent-purpose-internal-analytics',
       title: '1. Analisis latihan & taktis internal',
-      description: 'Pemrosesan performa untuk evaluasi latihan dan taktis akademi.',
-      checked: purposes.internal_analytics && !isRevoked,
-      badge: !isRevoked ? 'Aktif' : 'Terkunci',
-      badgeVariant: !isRevoked ? 'brand' : 'neutral'
+      description: 'Pemrosesan performa untuk evaluasi latihan dan taktis akademi.'
     },
     {
       key: 'share_with_scouts',
       id: 'consent-purpose-share-scouts',
       title: '2. Berbagi ke pemandu bakat (scouts)',
-      description: 'Pemberian akses data ke jejaring pemandu bakat terverifikasi.',
-      checked: purposes.share_with_scouts && !isRevoked,
-      badge: purposes.share_with_scouts && !isRevoked ? 'Diizinkan' : 'Terkunci',
-      badgeVariant: purposes.share_with_scouts && !isRevoked ? 'brand' : 'neutral'
+      description: 'Pemberian akses data ke jejaring pemandu bakat terverifikasi.'
     },
     {
       key: 'public_profile',
       id: 'consent-purpose-public-profile',
       title: '3. Publikasi profil publik & media',
-      description: 'Penayangan ringkasan paspor pada direktori publik.',
-      checked: purposes.public_profile && !isRevoked,
-      badge: purposes.public_profile && !isRevoked ? 'Diizinkan' : 'Terkunci',
-      badgeVariant: purposes.public_profile && !isRevoked ? 'brand' : 'neutral'
+      description: 'Penayangan ringkasan paspor pada direktori publik.'
     }
   ];
 
@@ -145,45 +148,53 @@ export default function ConsentManagerModal({
         </div>
         <div className="flex items-center justify-between">
           <span className="text-2">Versi persetujuan:</span>
-          <span className="font-mono text-2">{activeConsent?.version || 'v1.0-2026-10'}</span>
+          <span className="font-mono text-2">{activeConsent?.version || 'Belum ada'}</span>
         </div>
       </div>
 
-      {/* Purpose Checklist */}
+      {/* Purpose Checklist - Read Only */}
       <div className="space-y-2">
         <span className="text-xs font-semibold text-1 block">
           Cakupan izin pemrosesan:
         </span>
         <div className="space-y-2 text-xs">
-          {purposeList.map((item) => (
-            <div
-              key={item.key}
-              className="p-3 rounded-control bg-panel border border-line flex items-start justify-between gap-3"
-            >
-              <div className="flex items-start gap-2.5">
-                <input
-                  id={item.id}
-                  type="checkbox"
-                  checked={item.checked}
-                  disabled={isRevoked}
-                  onChange={(e) => handlePurposeChange(item.key, e.target.checked)}
-                  className="mt-0.5 h-4 w-4 rounded-control border border-control text-brand focus:ring-2 focus:ring-brand focus:ring-offset-1 transition-colors cursor-pointer disabled:cursor-not-allowed"
-                />
-                <label htmlFor={item.id} className="cursor-pointer select-none">
-                  <span className="font-semibold text-1 block">{item.title}</span>
-                  <span className="text-xs text-2 block mt-0.5">{item.description}</span>
-                </label>
+          {purposeList.map((item) => {
+            const status = getPurposeStatus(item.key);
+            return (
+              <div
+                key={item.key}
+                data-testid={`purpose-row-${item.key}`}
+                className="p-3 rounded-control bg-panel border border-line flex items-start justify-between gap-3"
+              >
+                <div className="flex items-start gap-2.5">
+                  <input
+                    id={item.id}
+                    type="checkbox"
+                    checked={status.checked}
+                    disabled
+                    readOnly
+                    aria-readonly="true"
+                    tabIndex={-1}
+                    className="mt-0.5 h-4 w-4 rounded-control border border-control text-brand disabled:opacity-60 cursor-default"
+                  />
+                  <div>
+                    <label htmlFor={item.id} className="cursor-default select-none block">
+                      <span className="font-semibold text-1 block">{item.title}</span>
+                      <span className="text-xs text-2 block mt-0.5">{item.description}</span>
+                    </label>
+                  </div>
+                </div>
+                <Badge variant={status.variant} size="sm" className="shrink-0">
+                  {status.badge}
+                </Badge>
               </div>
-              <Badge variant={item.badgeVariant} size="sm" className="shrink-0">
-                {item.badge}
-              </Badge>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
       {/* Revocation Warning and Action */}
-      {!isRevoked ? (
+      {hasConsentRecord && !isRevoked ? (
         <div className="pt-2 border-t border-line space-y-2">
           {!confirmRevoke ? (
             <Button
@@ -229,14 +240,14 @@ export default function ConsentManagerModal({
             </div>
           )}
         </div>
-      ) : (
+      ) : isRevoked ? (
         <div className="p-3 rounded-control bg-warning/10 border border-warning/30 text-warning text-xs flex items-start gap-2">
           <Lock className="w-4 h-4 shrink-0 mt-0.5" strokeWidth={1.5} />
           <p className="leading-snug text-1">
             Persetujuan telah ditarik. Data atlet berstatus privat dan tidak dapat dibagikan keluar tanpa persetujuan baru dari orang tua/wali.
           </p>
         </div>
-      )}
+      ) : null}
 
       {/* Footer Reference */}
       <div className="text-xs text-2 flex items-center justify-between pt-1 border-t border-line">

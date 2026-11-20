@@ -150,20 +150,8 @@ describe('B2 Migrated Components Tests', () => {
       }
     };
 
-    it('renders all 3 consent purposes with descriptions', async () => {
-      vi.spyOn(supabaseLib, 'fetchPlayerConsents').mockResolvedValue([
-        {
-          id: 'consent-1',
-          player_id: 'player-10',
-          version: 'v1.0-2026-10',
-          granted_at: '2026-10-01T00:00:00.000Z',
-          purposes: {
-            internal_analytics: true,
-            share_with_scouts: true,
-            public_profile: false
-          }
-        }
-      ]);
+    it('(a) renders all rows with "Belum ada persetujuan tercatat" when no consent record exists', async () => {
+      vi.spyOn(supabaseLib, 'fetchPlayerConsents').mockResolvedValue([]);
 
       render(
         <ConsentManagerModal
@@ -174,13 +162,12 @@ describe('B2 Migrated Components Tests', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText(/1\. Analisis latihan & taktis internal/i)).toBeInTheDocument();
-        expect(screen.getByText(/2\. Berbagi ke pemandu bakat \(scouts\)/i)).toBeInTheDocument();
-        expect(screen.getByText(/3\. Publikasi profil publik & media/i)).toBeInTheDocument();
+        expect(screen.getAllByText('Belum ada persetujuan tercatat')).toHaveLength(3);
+        expect(screen.queryByRole('button', { name: /Tarik persetujuan/i })).not.toBeInTheDocument();
       });
     });
 
-    it('calls onTogglePurpose when toggling a purpose checkbox', async () => {
+    it('(b) renders only internal_analytics as "Diizinkan" when only that purpose is stored true', async () => {
       vi.spyOn(supabaseLib, 'fetchPlayerConsents').mockResolvedValue([
         {
           id: 'consent-1',
@@ -195,24 +182,84 @@ describe('B2 Migrated Components Tests', () => {
         }
       ]);
 
-      const onTogglePurpose = vi.fn();
+      render(
+        <ConsentManagerModal
+          isOpen={true}
+          onClose={() => {}}
+          player={mockPlayer}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Diizinkan')).toBeInTheDocument();
+        expect(screen.getAllByText('Tidak diizinkan')).toHaveLength(2);
+        expect(screen.getByRole('button', { name: /Tarik persetujuan/i })).toBeInTheDocument();
+      });
+    });
+
+    it('(c) renders all rows as "Dicabut" and hides revoke button when consent is revoked', async () => {
+      vi.spyOn(supabaseLib, 'fetchPlayerConsents').mockResolvedValue([
+        {
+          id: 'consent-1',
+          player_id: 'player-10',
+          version: 'v1.0-2026-10',
+          granted_at: '2026-10-01T00:00:00.000Z',
+          revoked_at: '2026-11-20T00:00:00.000Z',
+          purposes: {
+            internal_analytics: true,
+            share_with_scouts: true,
+            public_profile: true
+          }
+        }
+      ]);
 
       render(
         <ConsentManagerModal
           isOpen={true}
           onClose={() => {}}
           player={mockPlayer}
-          onTogglePurpose={onTogglePurpose}
         />
       );
 
-      const scoutsCheckbox = await screen.findByLabelText(/2\. Berbagi ke pemandu bakat \(scouts\)/i);
-      expect(scoutsCheckbox).not.toBeChecked();
+      await waitFor(() => {
+        expect(screen.getAllByText('Dicabut')).toHaveLength(3);
+        expect(screen.queryByRole('button', { name: /Tarik persetujuan/i })).not.toBeInTheDocument();
+      });
+    });
 
-      fireEvent.click(scoutsCheckbox);
+    it('(d) clicking a row does not change any badge', async () => {
+      vi.spyOn(supabaseLib, 'fetchPlayerConsents').mockResolvedValue([
+        {
+          id: 'consent-1',
+          player_id: 'player-10',
+          version: 'v1.0-2026-10',
+          granted_at: '2026-10-01T00:00:00.000Z',
+          purposes: {
+            internal_analytics: true,
+            share_with_scouts: false,
+            public_profile: false
+          }
+        }
+      ]);
 
-      expect(onTogglePurpose).toHaveBeenCalledWith('share_with_scouts', true);
-      expect(scoutsCheckbox).toBeChecked();
+      render(
+        <ConsentManagerModal
+          isOpen={true}
+          onClose={() => {}}
+          player={mockPlayer}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Diizinkan')).toBeInTheDocument();
+        expect(screen.getAllByText('Tidak diizinkan')).toHaveLength(2);
+      });
+
+      const row2 = screen.getByTestId('purpose-row-share_with_scouts');
+      fireEvent.click(row2);
+
+      expect(screen.getAllByText('Tidak diizinkan')).toHaveLength(2);
+      expect(screen.getByText('Diizinkan')).toBeInTheDocument();
     });
 
     it('executes revocation flow when confirming revocation', async () => {
