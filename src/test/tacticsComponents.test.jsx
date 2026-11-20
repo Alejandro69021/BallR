@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -12,6 +12,8 @@ import PlaybackBar from '../components/tactics/PlaybackBar';
 import ReferencesPanel from '../components/tactics/ReferencesPanel';
 import StoryboardPrintView from '../components/tactics/StoryboardPrintView';
 import TacticsPage from '../pages/TacticsPage';
+import TacticsDetailPage from '../pages/TacticsDetailPage';
+import * as scenariosLib from '../lib/scenarios';
 import { BOARD_DISCLAIMER } from '../lib/board';
 
 import.meta.env.VITE_DEMO_MODE = 'true';
@@ -337,47 +339,121 @@ describe('Tactical Board & Scenarios Components (Phase 5c)', () => {
   });
 
   describe('6. Review Workflow Wording (5c-fix)', () => {
-    it('review button label is "Saya sudah meninjau skema ini"', async () => {
-      // TacticsDetailPage requires router and async data; test via label scan of TacticsDetailPage source
-      const fs = await import('node:fs');
-      const path = await import('node:path');
-      const src = fs.readFileSync(
-        path.resolve(process.cwd(), 'src/pages/TacticsDetailPage.jsx'),
-        'utf-8'
+    it('creator clicks "Saya sudah meninjau skema ini", mock rejects with self-review DB message, asserts toast "Minta pelatih lain meninjau skema ini"', async () => {
+      const mockScenario = {
+        id: 'scen-999',
+        title: 'Skema Uji Tinjauan',
+        phase: 'build_up',
+        format: '11v11',
+        pitch_length_m: 90,
+        pitch_width_m: 60,
+        status: 'draft',
+        created_by: 'coach-creator-id',
+        frames: [{ frame_idx: 0, t_ms: 2000, players: [], arrows: [] }],
+        references: [{ reference_id: 'trainor-ppda-2014' }]
+      };
+
+      vi.spyOn(scenariosLib, 'getScenario').mockResolvedValue(mockScenario);
+      vi.spyOn(scenariosLib, 'requestReview').mockRejectedValue(
+        new Error('Peninjau harus berbeda dari pembuat skema')
       );
-      expect(src).toContain('Saya sudah meninjau skema ini');
-      expect(src).not.toContain('Ajukan tinjauan');
+
+      const handleToast = vi.fn();
+
+      render(
+        <MemoryRouter initialEntries={['/taktik/scen-999']}>
+          <Routes>
+            <Route
+              path="/taktik/:id"
+              element={
+                <TacticsDetailPage
+                  userRole="coach"
+                  onToast={handleToast}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      // Wait for scenario to load
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /Skema Uji Tinjauan/i })).toBeInTheDocument();
+      });
+
+      // Verify button label and helper text are rendered
+      const reviewBtn = screen.getByRole('button', { name: /Saya sudah meninjau skema ini/i });
+      expect(reviewBtn).toBeInTheDocument();
+      expect(screen.getByText(/Peninjau harus pelatih lain, bukan pembuat skema/i)).toBeInTheDocument();
+
+      // Click button
+      fireEvent.click(reviewBtn);
+
+      // Assert self-review toast message
+      await waitFor(() => {
+        expect(handleToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            title: 'Gagal mencatat tinjauan',
+            subtext: 'Minta pelatih lain meninjau skema ini',
+            variant: 'error'
+          })
+        );
+      });
     });
 
-    it('helper text "Peninjau harus pelatih lain" appears below review button', async () => {
-      const fs = await import('node:fs');
-      const path = await import('node:path');
-      const src = fs.readFileSync(
-        path.resolve(process.cwd(), 'src/pages/TacticsDetailPage.jsx'),
-        'utf-8'
-      );
-      expect(src).toContain('Peninjau harus pelatih lain');
-    });
+    it('when peer review succeeds, asserts toast "Tinjauan dicatat"', async () => {
+      const mockScenario = {
+        id: 'scen-888',
+        title: 'Skema Siap Tinjau',
+        phase: 'build_up',
+        format: '11v11',
+        pitch_length_m: 90,
+        pitch_width_m: 60,
+        status: 'draft',
+        created_by: 'coach-creator-id',
+        frames: [{ frame_idx: 0, t_ms: 2000, players: [], arrows: [] }],
+        references: [{ reference_id: 'trainor-ppda-2014' }]
+      };
 
-    it('self-review error path uses "Minta pelatih lain meninjau skema ini"', async () => {
-      const fs = await import('node:fs');
-      const path = await import('node:path');
-      const src = fs.readFileSync(
-        path.resolve(process.cwd(), 'src/pages/TacticsDetailPage.jsx'),
-        'utf-8'
-      );
-      expect(src).toContain('Minta pelatih lain meninjau skema ini');
-    });
+      vi.spyOn(scenariosLib, 'getScenario').mockResolvedValue(mockScenario);
+      vi.spyOn(scenariosLib, 'requestReview').mockResolvedValue({
+        ...mockScenario,
+        status: 'reviewed',
+        reviewed_by: '(demo) Pelatih Peninjau'
+      });
 
-    it('toast success title is "Tinjauan dicatat"', async () => {
-      const fs = await import('node:fs');
-      const path = await import('node:path');
-      const src = fs.readFileSync(
-        path.resolve(process.cwd(), 'src/pages/TacticsDetailPage.jsx'),
-        'utf-8'
+      const handleToast = vi.fn();
+
+      render(
+        <MemoryRouter initialEntries={['/taktik/scen-888']}>
+          <Routes>
+            <Route
+              path="/taktik/:id"
+              element={
+                <TacticsDetailPage
+                  userRole="coach"
+                  onToast={handleToast}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
       );
-      expect(src).toContain("'Tinjauan dicatat'");
-      expect(src).toContain("'Gagal mencatat tinjauan'");
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /Skema Siap Tinjau/i })).toBeInTheDocument();
+      });
+
+      const reviewBtn = screen.getByRole('button', { name: /Saya sudah meninjau skema ini/i });
+      fireEvent.click(reviewBtn);
+
+      await waitFor(() => {
+        expect(handleToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            title: 'Tinjauan dicatat'
+          })
+        );
+      });
     });
   });
 

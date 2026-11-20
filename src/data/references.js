@@ -226,6 +226,18 @@ export const REFERENCES_REGISTRY = [
     verified_on: "",
     status: "unverified",
     notes: "Only a news report was found; the regulation text has not been read. Do not cite specific articles until reviewed by legal counsel."
+  },
+  {
+    id: "trainor-ppda-2014",
+    title: "Defensive Metrics: Measuring the Intensity of a High Press (PPDA)",
+    publisher: "Trainor C. StatsBomb",
+    year: "2014",
+    type: "standard",
+    url: "https://statsbomb.com/?p=10118",
+    section: "",
+    verified_on: "",
+    status: "located",
+    notes: "Proxy based on on-ball events only. Not verified by us."
   }
 ];
 

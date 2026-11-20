@@ -26,6 +26,7 @@ import MatchesPage from './pages/MatchesPage';
 import MatchDetailPage from './pages/MatchDetailPage';
 import TacticsPage from './pages/TacticsPage';
 import TacticsDetailPage from './pages/TacticsDetailPage';
+import MatchReportPage from './pages/MatchReportPage';
 
 function HomeRedirect({ userRole }) {
   const { players, loading, error, isDemoMode } = usePlayers();
@@ -119,6 +120,7 @@ function MainApp() {
     const p = location.pathname;
     if (p.startsWith('/verifikasi/')) return 'paper';
     if (p === '/rujukan') return 'paper';
+    if (p.includes('/laporan')) return 'paper';
     if (p.startsWith('/pemain/') && (p.includes('/laga') || p.includes('/pertumbuhan'))) {
       return 'dark';
     }
@@ -381,6 +383,16 @@ function MainApp() {
             path="/laga/:matchId"
             element={
               <MatchDetailPage
+                userRole={userRole}
+                onOpenAuthModal={handleOpenAuthModal}
+                onToast={(t) => setToastInfo(t)}
+              />
+            }
+          />
+          <Route
+            path="/laga/:matchId/laporan"
+            element={
+              <MatchReportPage
                 userRole={userRole}
                 onOpenAuthModal={handleOpenAuthModal}
                 onToast={(t) => setToastInfo(t)}

@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   CheckCircle2,
-  RotateCcw
+  RotateCcw,
+  FileText
 } from 'lucide-react';
 import { usePlayers } from '../hooks/usePlayers';
 import {
@@ -22,6 +23,7 @@ import Field from '../components/ui/Field';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import EmptyState from '../components/ui/EmptyState';
+import EventMap from '../components/match/EventMap';
 
 export default function MatchDetailPage({ userRole = 'public', onToast }) {
   const { matchId } = useParams();
@@ -428,6 +430,17 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
             <Button
               variant="secondary"
               size="sm"
+              icon={<FileText className="w-3.5 h-3.5" />}
+              onClick={() => navigate(`/laga/${match.id}/laporan`)}
+            >
+              Laporan
+            </Button>
+          )}
+
+          {isCoach && (
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={() => navigate(`/pencatatan/${match.id}`)}
             >
               {isFinal ? 'Lihat rekaman' : 'Catat kejadian'}
@@ -533,6 +546,17 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Event Map Section */}
+      <div className="space-y-3 pt-2">
+        <EventMap
+          events={events}
+          pitchLengthM={match.pitch_length_m || 90}
+          pitchWidthM={match.pitch_width_m || 60}
+          participants={participants}
+          playerMap={playerMap}
+        />
       </div>
 
       {/* Events Stream Table */}

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   listScenarios,
   getScenario,
@@ -13,6 +13,17 @@ import {
   formatScenarioError
 } from '../lib/scenarios';
 import { REFERENCES_REGISTRY } from '../data/references';
+import { supabase } from '../lib/supabase';
+
+vi.mock('../lib/supabase', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    supabase: {
+      from: vi.fn()
+    }
+  };
+});
 
 describe('scenarios.js data layer (demo mode & error translations)', () => {
   beforeEach(() => {
@@ -287,6 +298,89 @@ describe('scenarios.js data layer (demo mode & error translations)', () => {
       const id = list[0].id;
       const published = await publish(id);
       expect(published.reviewed_by).toBe('(demo) Pelatih Peninjau');
+    });
+  });
+
+  describe('saveFrames in real Supabase mode (mocked)', () => {
+    let deleteGteMock;
+    let deleteEqMock;
+    let deleteMock;
+    let upsertSelectMock;
+    let upsertMock;
+
+    beforeEach(() => {
+      import.meta.env.VITE_DEMO_MODE = 'false';
+
+      deleteGteMock = vi.fn();
+      deleteEqMock = vi.fn(() => ({ gte: deleteGteMock }));
+      deleteMock = vi.fn(() => ({ eq: deleteEqMock }));
+
+      upsertSelectMock = vi.fn();
+      upsertMock = vi.fn(() => ({ select: upsertSelectMock }));
+
+      supabase.from.mockImplementation((table) => {
+        if (table === 'scenario_frames') {
+          return {
+            upsert: upsertMock,
+            delete: deleteMock
+          };
+        }
+        return {};
+      });
+    });
+
+    afterEach(() => {
+      import.meta.env.VITE_DEMO_MODE = 'true';
+    });
+
+    it('when upsert rejects, delete is NEVER called and the error is thrown', async () => {
+      upsertSelectMock.mockResolvedValueOnce({
+        data: null,
+        error: new Error('Simulated DB upsert error')
+      });
+
+      const framesToSave = [
+        { scenario_id: 'scen-real-1', frame_idx: 0, t_ms: 1000, players: [] }
+      ];
+
+      await expect(saveFrames('scen-real-1', framesToSave)).rejects.toThrow(
+        'Simulated DB upsert error'
+      );
+
+      expect(upsertMock).toHaveBeenCalledTimes(1);
+      expect(deleteMock).not.toHaveBeenCalled();
+    });
+
+    it('when upsert succeeds and trim fails, a trimWarning is returned and frames are kept', async () => {
+      const savedRow = {
+        scenario_id: 'scen-real-1',
+        frame_idx: 0,
+        t_ms: 1000,
+        players: []
+      };
+
+      upsertSelectMock.mockResolvedValueOnce({
+        data: [savedRow],
+        error: null
+      });
+
+      deleteGteMock.mockResolvedValueOnce({
+        error: new Error('Simulated DB trim error')
+      });
+
+      const framesToSave = [
+        { scenario_id: 'scen-real-1', frame_idx: 0, t_ms: 1000, players: [] }
+      ];
+
+      const result = await saveFrames('scen-real-1', framesToSave);
+
+      expect(upsertMock).toHaveBeenCalledTimes(1);
+      expect(deleteMock).toHaveBeenCalledTimes(1);
+      expect(deleteEqMock).toHaveBeenCalledWith('scenario_id', 'scen-real-1');
+      expect(deleteGteMock).toHaveBeenCalledWith('frame_idx', 1);
+
+      expect(result).toHaveProperty('trimWarning', 'Simulated DB trim error');
+      expect(result.data).toEqual([savedRow]);
     });
   });
 

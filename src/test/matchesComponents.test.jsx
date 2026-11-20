@@ -253,11 +253,11 @@ describe('Matches Components & Integration (MatchesPage, MatchDetailPage, TopNav
       // Events table headers
       expect(screen.getByRole('columnheader', { name: /Babak/i })).toBeInTheDocument();
       expect(screen.getByRole('columnheader', { name: /Menit/i })).toBeInTheDocument();
-      expect(screen.getByRole('columnheader', { name: /Tim/i })).toBeInTheDocument();
+      expect(screen.getAllByRole('columnheader', { name: /Tim/i }).length).toBeGreaterThanOrEqual(1);
       expect(screen.getByRole('columnheader', { name: /Pemain \/ Lawan/i })).toBeInTheDocument();
       expect(screen.getByRole('columnheader', { name: /Jenis/i })).toBeInTheDocument();
-      expect(screen.getByRole('columnheader', { name: /Hasil/i })).toBeInTheDocument();
-      expect(screen.getByRole('columnheader', { name: /Koordinat/i })).toBeInTheDocument();
+      expect(screen.getAllByRole('columnheader', { name: /Hasil/i }).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByRole('columnheader', { name: /Koordinat/i }).length).toBeGreaterThanOrEqual(1);
     });
 
     it('finalise flow: opens dialog, submits scores, and updates match to final', async () => {
