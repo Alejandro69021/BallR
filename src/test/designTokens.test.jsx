@@ -196,7 +196,9 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
       path.resolve(__dirname, '../components/GrowthBioBandingTab.jsx'),
       path.resolve(__dirname, '../components/growth/BioMaturityCard.jsx'),
       path.resolve(__dirname, '../components/growth/AnthropometryLogTable.jsx'),
-      path.resolve(__dirname, '../components/growth/AthleticProgressChart.jsx')
+      path.resolve(__dirname, '../components/growth/AthleticProgressChart.jsx'),
+      path.resolve(__dirname, '../pages/MatchesPage.jsx'),
+      path.resolve(__dirname, '../pages/MatchDetailPage.jsx')
     ];
     const targetFiles = [...uiFiles, ...extraFiles];
 

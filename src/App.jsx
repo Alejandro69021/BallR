@@ -22,6 +22,8 @@ import SquadPage from './pages/SquadPage';
 import AssessmentPage from './pages/AssessmentPage';
 import LoggerPage from './pages/LoggerPage';
 import ReferencesPage from './pages/ReferencesPage';
+import MatchesPage from './pages/MatchesPage';
+import MatchDetailPage from './pages/MatchDetailPage';
 
 function HomeRedirect({ userRole }) {
   const { players, loading, error, isDemoMode } = usePlayers();
@@ -160,6 +162,7 @@ function MainApp() {
     if (p.startsWith('/pemain/') && p.includes('/pertumbuhan')) return 'growth';
     if (p.startsWith('/pemain/')) return 'passport';
     if (p.startsWith('/skuad')) return 'roster';
+    if (p.startsWith('/laga')) return 'matches';
     if (p.startsWith('/pencatatan')) return 'logger';
     if (p.startsWith('/penilaian')) return 'assessment';
     return (userRole === 'coach' || userRole === 'admin') ? 'roster' : 'passport';
@@ -230,6 +233,9 @@ function MainApp() {
         break;
       case 'roster':
         navigate('/skuad');
+        break;
+      case 'matches':
+        navigate('/laga');
         break;
       case 'logger':
         navigate('/pencatatan/match-01');
@@ -343,6 +349,26 @@ function MainApp() {
             path="/pencatatan/:matchId"
             element={
               <LoggerPage
+                userRole={userRole}
+                onOpenAuthModal={handleOpenAuthModal}
+                onToast={(t) => setToastInfo(t)}
+              />
+            }
+          />
+          <Route
+            path="/laga"
+            element={
+              <MatchesPage
+                userRole={userRole}
+                onOpenAuthModal={handleOpenAuthModal}
+                onToast={(t) => setToastInfo(t)}
+              />
+            }
+          />
+          <Route
+            path="/laga/:matchId"
+            element={
+              <MatchDetailPage
                 userRole={userRole}
                 onOpenAuthModal={handleOpenAuthModal}
                 onToast={(t) => setToastInfo(t)}
