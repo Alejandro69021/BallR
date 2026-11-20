@@ -267,7 +267,7 @@ function MainApp() {
         </div>
       )}
 
-      <main className="w-full max-w-md sm:max-w-2xl md:max-w-4xl lg:max-w-5xl px-3.5 sm:px-6 pt-4 sm:pt-6 space-y-4 sm:space-y-6">
+      <main className="w-full max-w-md sm:max-w-2xl md:max-w-4xl lg:max-w-5xl px-3.5 sm:px-6 pt-4 sm:pt-6 pb-20 md:pb-6 space-y-4 sm:space-y-6">
         <Routes>
           <Route path="/" element={<HomeRedirect userRole={userRole} />} />
           <Route

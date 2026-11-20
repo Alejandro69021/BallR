@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  ShieldCheck,
   Share2,
   Lock,
   LogOut,
@@ -11,6 +10,9 @@ import {
   Film,
   TrendingUp
 } from 'lucide-react';
+import Badge from './ui/Badge';
+import Button from './ui/Button';
+import IconButton from './ui/IconButton';
 
 export default function TopNav({
   academy,
@@ -20,244 +22,166 @@ export default function TopNav({
   onSwitchView,
   onOpenAuthModal,
   onLogout,
-  onShare,
-  verifiedText
+  onShare
 }) {
   const isCoach = userRole === 'coach' || userRole === 'admin';
   const isParent = userRole === 'parent';
   const isAuthenticated = isCoach || isParent;
 
+  const navItems = [
+    { id: 'passport', label: 'Paspor', shortLabel: 'Paspor', icon: <User className="w-4 h-4 shrink-0" /> },
+    { id: 'match', label: 'Analisis laga', shortLabel: 'Laga', icon: <Film className="w-4 h-4 shrink-0" /> },
+    { id: 'growth', label: 'Pertumbuhan', shortLabel: 'Tumbuh', icon: <TrendingUp className="w-4 h-4 shrink-0" /> },
+    { id: 'roster', label: 'Skuad', shortLabel: 'Skuad', icon: <Users className="w-4 h-4 shrink-0" /> },
+    ...(isCoach
+      ? [
+          { id: 'logger', label: 'Pitch logger', shortLabel: 'Logger', icon: <Timer className="w-4 h-4 shrink-0" /> },
+          { id: 'assessment', label: 'Evaluasi', shortLabel: 'Evaluasi', icon: <ClipboardEdit className="w-4 h-4 shrink-0" /> }
+        ]
+      : [])
+  ];
+
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#05070B]/95 border-b border-[#1E2638]">
-      <div className="max-w-5xl mx-auto px-3.5 sm:px-6 py-2.5 flex flex-col md:flex-row items-center justify-between gap-3">
-        
-        {/* Left Side: Brand Identity & Active Academy */}
-        <div className="w-full md:w-auto flex items-center justify-between md:justify-start gap-3">
-          <div className="flex items-center gap-3">
-            <div
-              className="relative group cursor-pointer"
-              onClick={() => onSwitchView(isCoach ? 'roster' : 'passport')}
-            >
-              <div className="w-9 h-9 rounded-lg bg-[#111827] border border-slate-700 flex items-center justify-center overflow-hidden shadow-sm group-hover:border-[#84CC16] transition-colors">
-                {academy?.logo_url ? (
-                  <img
-                    src={academy.logo_url}
-                    alt={academy.name || "Akademi"}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <span className="text-xs font-mono font-bold text-slate-400">FA</span>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-white tracking-wide">
-                  {academy?.name || 'Akademi Sepakbola'}
-                </span>
-                <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-bold rounded bg-slate-800 text-[#84CC16] border border-[#84CC16]/30">
-                  U-13
-                </span>
-                {isDemoMode && (
-                  <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                    Data contoh
-                  </span>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-1 text-slate-400 text-[11px]">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#84CC16] shrink-0" />
-                <span className="truncate">
-                  {verifiedText || academy?.city || 'Basis Data Resmi'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile Right Quick Action (Auth & Share) */}
-          <div className="flex items-center gap-2 md:hidden">
-            {!isAuthenticated ? (
-              <button
-                type="button"
-                onClick={() => onOpenAuthModal('assessment')}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-[#111827] border border-slate-700 text-xs font-medium text-slate-300 active:scale-95 transition-transform"
-              >
-                <Lock className="w-3.5 h-3.5 text-[#84CC16]" />
-                <span>Masuk</span>
-              </button>
-            ) : (
-              <div className="flex items-center gap-1.5 md:hidden">
-                {isDemoMode && (
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    Mode demo
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={onLogout}
-                  className="p-1.5 rounded bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs"
-                  title="Keluar Sesi"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={onShare}
-              className="p-1.5 rounded bg-[#111827] border border-slate-800 text-slate-300 active:scale-95"
-              title="Bagikan Paspor"
-            >
-              <Share2 className="w-4 h-4 text-[#84CC16]" />
-            </button>
-          </div>
-        </div>
-
-        {/* Center / Right: Primary Navigation Bar */}
-        <div className="w-full md:w-auto flex items-center justify-between md:justify-end gap-2.5">
+    <>
+      {/* Desktop & Mobile Header Bar */}
+      <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#0B0F14]/95 border-b border-[#2C3643]">
+        <div className="max-w-6xl mx-auto px-3.5 sm:px-6 h-12 flex items-center justify-between gap-3">
           
-          <nav className="flex items-center gap-1 p-1 rounded-lg bg-[#0E131F] border border-[#1E2638] w-full md:w-auto overflow-x-auto scrollbar-none">
-            {/* 1. Paspor Atlet */}
-            <button
-              type="button"
-              onClick={() => onSwitchView('passport')}
-              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors min-h-[32px] cursor-pointer whitespace-nowrap ${
-                currentView === 'passport'
-                  ? 'bg-[#84CC16] text-black shadow-sm font-semibold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
+          {/* Left: Academy Brand Identity */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div
+              className="w-7 h-7 rounded-[6px] bg-[#1A212B] border border-[#2C3643] flex items-center justify-center overflow-hidden shrink-0 cursor-pointer"
+              onClick={() => onSwitchView?.(isCoach ? 'roster' : 'passport')}
             >
-              <User className="w-3.5 h-3.5" />
-              <span>Paspor</span>
-            </button>
+              {academy?.logo_url ? (
+                <img
+                  src={academy.logo_url}
+                  alt={academy.name || 'Akademi'}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <span className="text-[10px] font-mono font-bold text-[#9AA6B5]">FA</span>
+              )}
+            </div>
 
-            {/* 2. Analisis Laga */}
-            <button
-              type="button"
-              onClick={() => onSwitchView('match')}
-              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors min-h-[32px] cursor-pointer whitespace-nowrap ${
-                currentView === 'match'
-                  ? 'bg-[#84CC16] text-black shadow-sm font-semibold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Film className="w-3.5 h-3.5" />
-              <span>Analisis Laga</span>
-            </button>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-xs font-semibold text-[#E8ECF1] truncate max-w-[140px] sm:max-w-none">
+                {academy?.name || 'Akademi Sepakbola'}
+              </span>
+              <Badge variant="neutral" size="sm">U-13</Badge>
+              {isDemoMode && (
+                <Badge variant="warning" size="sm">Data contoh</Badge>
+              )}
+            </div>
+          </div>
 
-            {/* 3. Pertumbuhan */}
-            <button
-              type="button"
-              onClick={() => onSwitchView('growth')}
-              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors min-h-[32px] cursor-pointer whitespace-nowrap ${
-                currentView === 'growth'
-                  ? 'bg-[#84CC16] text-black shadow-sm font-semibold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>Pertumbuhan</span>
-            </button>
-
-            {/* 4. Skuad */}
-            <button
-              type="button"
-              onClick={() => onSwitchView('roster')}
-              className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors min-h-[32px] cursor-pointer whitespace-nowrap ${
-                currentView === 'roster'
-                  ? 'bg-[#84CC16] text-black shadow-sm font-semibold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>Skuad</span>
-            </button>
-
-            {/* Coach Only: 5. Pitch Logger */}
-            {isCoach && (
-              <button
-                type="button"
-                onClick={() => onSwitchView('logger')}
-                className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors min-h-[32px] cursor-pointer whitespace-nowrap ${
-                  currentView === 'logger'
-                    ? 'bg-rose-500 text-white shadow-sm font-semibold'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <Timer className="w-3.5 h-3.5" />
-                <span>Pitch Logger</span>
-              </button>
-            )}
-
-            {/* Coach Only: 6. Evaluasi Pelatih */}
-            {isCoach && (
-              <button
-                type="button"
-                onClick={() => onSwitchView('assessment')}
-                className={`flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors min-h-[32px] cursor-pointer whitespace-nowrap ${
-                  currentView === 'assessment'
-                    ? 'bg-[#84CC16] text-black shadow-sm font-semibold'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <ClipboardEdit className="w-3.5 h-3.5" />
-                <span>Evaluasi</span>
-              </button>
-            )}
+          {/* Center: Desktop Navigation Bar (>= 768px) */}
+          <nav
+            aria-label="Navigasi utama desktop"
+            className="hidden md:flex items-center gap-1 h-full"
+          >
+            {navItems.map((item) => {
+              const isActive = currentView === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onSwitchView?.(item.id)}
+                  className={`relative flex items-center gap-1.5 px-3 h-full text-xs transition-colors duration-150 ease-out select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4FB286] ${
+                    isActive
+                      ? 'text-[#E8ECF1] font-semibold'
+                      : 'text-[#9AA6B5] hover:text-[#E8ECF1]'
+                  }`}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                  {isActive && (
+                    <span
+                      className="absolute bottom-0 left-2 right-2 h-0.5 bg-[#4FB286] rounded-full"
+                      aria-hidden="true"
+                    />
+                  )}
+                </button>
+              );
+            })}
           </nav>
 
-          {/* Desktop Right Role Control */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Right: Auth & Share Actions */}
+          <div className="flex items-center gap-2 shrink-0">
             {!isAuthenticated ? (
-              <button
-                type="button"
-                onClick={() => onOpenAuthModal('logger')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0E131F] hover:bg-[#151C2C] border border-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-colors min-h-[32px] cursor-pointer active:scale-95"
-                title="Masuk sebagai pelatih atau orang tua"
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={<Lock className="w-3.5 h-3.5" />}
+                onClick={() => onOpenAuthModal?.('assessment')}
               >
-                <Lock className="w-3.5 h-3.5 text-[#84CC16]" />
-                <span>Masuk Akun</span>
-              </button>
+                Masuk
+              </Button>
             ) : (
-              <div className="flex items-center gap-2 bg-[#0E131F] border border-emerald-500/30 px-3 py-1 rounded">
-                <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span className="text-[11px] font-medium text-emerald-300">
-                  {isCoach ? 'Pelatih' : isParent ? 'Wali Atlet' : 'Admin'}
-                  {isDemoMode && (
-                    <span className="ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                      Mode demo
-                    </span>
-                  )}
+              <div className="flex items-center gap-1.5">
+                {isDemoMode && (
+                  <Badge variant="warning" size="sm">Mode demo</Badge>
+                )}
+                <span className="hidden sm:inline-block text-xs font-medium text-[#4FB286]">
+                  {isCoach ? 'Pelatih' : isParent ? 'Wali' : 'Admin'}
                 </span>
-                <button
-                  type="button"
+                <IconButton
+                  icon={<LogOut className="w-3.5 h-3.5" />}
+                  label="Keluar sesi"
+                  variant="ghost"
+                  size="sm"
                   onClick={onLogout}
-                  className="p-1 rounded text-slate-400 hover:text-rose-400 transition-colors cursor-pointer"
-                  title="Keluar sesi"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                </button>
+                />
               </div>
             )}
 
-            <button
-              type="button"
+            <IconButton
+              icon={<Share2 className="w-3.5 h-3.5 text-[#4FB286]" />}
+              label="Bagikan paspor"
+              variant="secondary"
+              size="sm"
               onClick={onShare}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#0E131F] hover:bg-[#151C2C] border border-[#1E2638] text-slate-300 hover:text-white text-xs font-medium transition-colors min-h-[32px] cursor-pointer active:scale-95"
-            >
-              <Share2 className="w-3.5 h-3.5 text-[#84CC16]" />
-              <span>Bagikan</span>
-            </button>
+            />
           </div>
 
         </div>
+      </header>
 
-      </div>
-    </header>
+      {/* Mobile Bottom Tab Bar (< 768px) */}
+      <nav
+        aria-label="Navigasi bawah seluler"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 h-14 bg-[#11161D] border-t border-[#2C3643] flex items-center justify-around px-1 select-none"
+      >
+        {navItems.map((item) => {
+          const isActive = currentView === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onSwitchView?.(item.id)}
+              className={`relative flex-1 flex flex-col items-center justify-center h-full py-1 gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#4FB286] cursor-pointer ${
+                isActive
+                  ? 'text-[#4FB286] font-semibold'
+                  : 'text-[#9AA6B5] hover:text-[#E8ECF1]'
+              }`}
+            >
+              {item.icon}
+              <span className="text-[10px] leading-none tracking-tight">
+                {item.shortLabel}
+              </span>
+              {isActive && (
+                <span
+                  className="absolute top-0 left-3 right-3 h-0.5 bg-[#4FB286] rounded-full"
+                  aria-hidden="true"
+                />
+              )}
+            </button>
+          );
+        })}
+      </nav>
+    </>
   );
 }

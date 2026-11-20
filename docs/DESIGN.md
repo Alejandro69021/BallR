@@ -29,7 +29,8 @@ Semua token didefinisikan sebagai variabel CSS pada `src/index.css` melalui Tail
 | `--color-dark-bg` | `var(--color-dark-bg)` | `#0B0F14` | Latar kanvas utama workspace |
 | `--color-dark-surface` | `var(--color-dark-surface)` | `#11161D` | Panel, bar navigasi, kartu datar |
 | `--color-dark-raised` | `var(--color-dark-raised)` | `#1A212B` | Kontrol interaktif, popover, header tabel |
-| `--color-dark-line` | `var(--color-dark-line)` | `#2C3643` | Garis batas 1px (*hairline border*) |
+| `--color-dark-line` | `var(--color-dark-line)` | `#2C3643` | Garis batas 1px dekoratif (*hairline border*) |
+| `--color-dark-border-control` | `var(--color-dark-border-control)` | `#64748B` | Garis batas kontrol (input, select, button) kontras >= 3:1 |
 | `--color-dark-text-1` | `var(--color-dark-text-1)` | `#E8ECF1` | Teks utama, judul seksi, nilai angka |
 | `--color-dark-text-2` | `var(--color-dark-text-2)` | `#9AA6B5` | Teks sekunder, label kolom, unit metrik |
 | `--color-brand-dark` | `var(--color-brand-dark)` | `#4FB286` | Aksen tunggal hijau lapangan pada latar gelap |
@@ -39,7 +40,8 @@ Semua token didefinisikan sebagai variabel CSS pada `src/index.css` melalui Tail
 |---|---|---|---|
 | `--color-paper-bg` | `var(--color-paper-bg)` | `#F6F4EF` | Latar kanvas paspor cetak / dokumen |
 | `--color-paper-surface` | `var(--color-paper-surface)` | `#FFFFFF` | Lembar kertas laporan, panel dokumen |
-| `--color-paper-line` | `var(--color-paper-line)` | `#DAD6CC` | Garis pemisah 1px dokumen cetak |
+| `--color-paper-line` | `var(--color-paper-line)` | `#DAD6CC` | Garis pemisah 1px dekoratif dokumen cetak |
+| `--color-paper-border-control` | `var(--color-paper-border-control)` | `#788594` | Garis batas kontrol (input, select, button) kontras >= 3:1 |
 | `--color-paper-text-1` | `var(--color-paper-text-1)` | `#14181F` | Teks utama dokumen teknis |
 | `--color-paper-text-2` | `var(--color-paper-text-2)` | `#4A5360` | Metadata dokumen, catatan kaki, label |
 | `--color-brand-paper` | `var(--color-brand-paper)` | `#2E7D5B` | Aksen tunggal hijau lapangan pada kertas |
@@ -57,14 +59,21 @@ Warna amber dan danger adalah **SEMANTIK MURNI** (menandai status validasi, erro
 
 ### D. Data Series Okabe-Ito (Colour-Blind Safe)
 Diagram taktis dan metrik perkembangan menggunakan palet Okabe-Ito yang ramah buta warna. Setiap seri **wajib dipadukan dengan label teks atau bentuk penanda (*marker shape*)**:
-1. `#0072B2` (Sky Blue) — Bentuk penanda: Lingkaran (`●`)
-2. `#E69F00` (Orange) — Bentuk penanda: Kotak (`■`)
-3. `#009E73` (Bluish Green) — Bentuk penanda: Segitiga (`▲`)
-4. `#D55E00` (Vermilion) — Bentuk penanda: Belah Ketupat (`◆`)
-5. `#CC79A7` (Reddish Purple) — Bentuk penanda: Garis Putus-putus (`---`)
+- **Dark Surface Originals** (diuji >= 3:1 terhadap `#11161D` dan `#0B0F14`):
+  1. Seri 1 (Sky Blue): `#0072B2` (3.50:1 [PASS]) — Bentuk penanda: Lingkaran (`●`)
+  2. Seri 2 (Orange): `#E69F00` (8.06:1 [PASS]) — Bentuk penanda: Kotak (`■`)
+  3. Seri 3 (Bluish Green): `#009E73` (5.31:1 [PASS]) — Bentuk penanda: Segitiga (`▲`)
+  4. Seri 4 (Vermilion): `#D55E00` (4.69:1 [PASS]) — Bentuk penanda: Belah Ketupat (`◆`)
+  5. Seri 5 (Reddish Purple): `#CC79A7` (5.93:1 [PASS]) — Bentuk penanda: Garis Putus-putus (`---`)
+- **Paper Surface Darker Variants** (varian lebih gelap mempertahankan keluarga hue, mencapai >= 3:1 dan > 4.5:1 terhadap `#FFFFFF` dan `#F6F4EF`):
+  1. Seri 1 (Blue Paper): `#0072B2` (5.19:1 di putih, 4.72:1 di paper [PASS]) — Bentuk penanda: Lingkaran (`●`)
+  2. Seri 2 (Orange Paper): `#9E5B00` (5.32:1 di putih, 4.84:1 di paper [PASS]) — Bentuk penanda: Kotak (`■`)
+  3. Seri 3 (Green Paper): `#007A59` (5.35:1 di putih, 4.86:1 di paper [PASS]) — Bentuk penanda: Segitiga (`▲`)
+  4. Seri 4 (Vermilion Paper): `#B34700` (5.50:1 di putih, 5.00:1 di paper [PASS]) — Bentuk penanda: Belah Ketupat (`◆`)
+  5. Seri 5 (Pink/Purple Paper): `#9C4472` (6.03:1 di putih, 5.48:1 di paper [PASS]) — Bentuk penanda: Garis Putus-putus (`---`)
 
-### E. Tabel Uji Kontras Lengkap (WCAG AA >= 4.5:1)
-Semua pasangan teks dan latar dihitung berdasarkan rumus *Relative Luminance* WCAG 2.1:
+### E. Tabel Uji Kontras Lengkap (WCAG AA >= 4.5:1 untuk Teks, >= 3.0:1 untuk Kontrol/Grafik)
+Semua pasangan teks, batas kontrol, dan seri data dihitung berdasarkan rumus *Relative Luminance* WCAG 2.1:
 
 ```
 --- DARK WORKSPACE (Latar Gelap) ---
@@ -80,6 +89,15 @@ Latar #0B0F14 (bg)      & Warning #C98A1B         :  6.53:1 [PASS]
 Latar #0B0F14 (bg)      & Danger Asli #C2453D     :  3.86:1 [FAIL - Disesuaikan]
 Latar #0B0F14 (bg)      & Danger Disesuaikan #E06D66 : 5.99:1 [PASS]
 Latar #11161D (surface) & Danger Disesuaikan #E06D66 : 5.66:1 [PASS]
+Batas Kontrol #64748B   & Latar #11161D (surface) :  3.82:1 [PASS >= 3.0:1]
+Batas Kontrol #64748B   & Latar #0B0F14 (bg)      :  4.04:1 [PASS >= 3.0:1]
+Batas Kontrol #64748B   & Latar #1A212B (raised)  :  3.40:1 [PASS >= 3.0:1]
+Chart Seri Asli         & Latar #11161D (surface) :
+  - #0072B2 : 3.50:1 [PASS]
+  - #E69F00 : 8.06:1 [PASS]
+  - #009E73 : 5.31:1 [PASS]
+  - #D55E00 : 4.69:1 [PASS]
+  - #CC79A7 : 5.93:1 [PASS]
 
 --- PAPER DOSSIER (Latar Terang) ---
 Latar #F6F4EF (bg)      & Teks #14181F (text-1)   : 16.19:1 [PASS]
@@ -93,6 +111,20 @@ Latar #F6F4EF (bg)      & Warning Disesuaikan #8A5B00 : 5.34:1 [PASS]
 Latar #FFFFFF (surface) & Warning Disesuaikan #8A5B00 : 5.87:1 [PASS]
 Latar #F6F4EF (bg)      & Danger #C2453D          :  4.54:1 [PASS]
 Latar #FFFFFF (surface) & Danger #C2453D          :  4.99:1 [PASS]
+Batas Kontrol #788594   & Latar #FFFFFF (surface) :  3.76:1 [PASS >= 3.0:1]
+Batas Kontrol #788594   & Latar #F6F4EF (bg)      :  3.42:1 [PASS >= 3.0:1]
+Chart Seri Varian Paper & Latar #FFFFFF (surface) :
+  - #0072B2 : 5.19:1 [PASS >= 3.0:1]
+  - #9E5B00 : 5.32:1 [PASS >= 3.0:1]
+  - #007A59 : 5.35:1 [PASS >= 3.0:1]
+  - #B34700 : 5.50:1 [PASS >= 3.0:1]
+  - #9C4472 : 6.03:1 [PASS >= 3.0:1]
+Chart Seri Varian Paper & Latar #F6F4EF (bg)      :
+  - #0072B2 : 4.72:1 [PASS >= 3.0:1]
+  - #9E5B00 : 4.84:1 [PASS >= 3.0:1]
+  - #007A59 : 4.86:1 [PASS >= 3.0:1]
+  - #B34700 : 5.00:1 [PASS >= 3.0:1]
+  - #9C4472 : 5.48:1 [PASS >= 3.0:1]
 ```
 
 ---
@@ -303,15 +335,18 @@ Dibangun sekali di direktori `src/components/ui/` dan diimpor di seluruh aplikas
   - Informasi fisik atlet terpecah di dalam kartu-kartu bersarang bertingkat tiga (*nested card hell*).
 - **Sesudah**:
   - Menggunakan **Dossier Surface** (Latar Kertas Terang `#F6F4EF` / `#FFFFFF`).
-  - Blok identitas resmi akademi (nama atlet, foto formal atlet berseragam, nomor lisensi, usia biologis/kronologis).
+  - **Aturan Blok Identitas & Foto**:
+    - Foto atlet ditampilkan **hanya jika** data foto riil tersedia DAN pemain memiliki persetujuan foto (*photo consent* aktif). Jangan pernah menggunakan foto stok (*no stock photos*). Jika tidak ada foto atau tidak ada izin, tampilkan placeholder avatar monokrom netral berbasis inisial.
+    - Nomor lisensi / NISN ditampilkan **hanya jika** data tersedia di basis data; jika kosong, baris nomor lisensi dihilangkan sepenuhnya (*omit row*).
+    - Dilarang keras menampilkan teks contoh/dummy (*never show example text*).
   - **Ringkasan 5-baris terstruktur langsung di posisi teratas**:
     1. Posisi Utama & Posisi Sekunder.
     2. Kelompok Usia (misal: U-13 Akademi).
     3. Periode Evaluasi Terakhir (Bulan/Tahun).
-    4. Tiga Indikator Kunci (misal: Umpan Progresif, Kecepatan Puncak, Efisiensi Dribel).
+    4. Tiga Indikator Kunci: diambil langsung dari nilai evaluasi riil terbaru (misal: Umpan, Kecepatan, Kontrol). Jika belum ada data evaluasi, tampilkan teks jujur `"Belum ada data"`.
     5. Tanggal Uji Kebugaran Terakhir.
   - Detail fisik dan catatan taktis disusun sebagai seksi laporan teknis bergaris batas 1px datar (*plain titled sections*), tanpa kartu bersarang.
-  - Menghapus badge OVR dan klaim fiktif.
+  - Menghapus badge OVR, ranking fiktif, dan klaim bombastis.
 
 ### B. Laman Skuad (`SquadPage.jsx`, `SquadHubView.jsx`)
 - **Sebelum**:
@@ -524,6 +559,16 @@ Migrasi dieksekusi secara bertahap mulai dari fondasi dan layar terkecil tanpa m
    - `SquadPage.jsx`, `SquadHubView.jsx`, `SquadPlayerCard.jsx`.
 9. **Paspor Atlet & Cetak Dossier A4 (Layar Utama)**:
    - `PassportPage.jsx`, `PlayerHeader.jsx`, `FitnessStrip.jsx`, `PerformanceRadar.jsx`, `OfficialDossierFooter.jsx`.
+10. **Pembersihan Komprehensif Berkas Tersisa (Target Utang Desain = 0)**:
+   - Membersihkan dan menetralkan seluruh berkas tersisa yang memuat `'#CCFF00'`, `'font-athletic'`, `'gradient'`, atau `'shadow-2xl'`:
+     - `src/components/story/*` (`StoryCardCanvas.jsx`) & `StoryFlexCardModal.jsx`: fitur share-card diubah menjadi format netral ilmiah (tanpa badge OVR/tier, tanpa gradien warna-warni).
+     - `src/components/VideoModal.jsx`: hilangkan glow, neon, dan bayangan berat.
+     - `src/components/scanner/*` (`CameraFeed.jsx`, `PitchScannerModal.jsx`, `TestTelemetryOverlay.jsx`).
+     - `src/components/logger/*` (`EventStreamLog.jsx`, `MatchRecapModal.jsx`, `MatchTimerBar.jsx`, `QuickShotModal.jsx`, `TactileKeypad.jsx`).
+     - `src/components/match/MatchEventTimeline.jsx`.
+     - `src/components/LoadingSkeleton.jsx`.
+     - `src/components/growth/ConsentManagerModal.jsx`.
+     - `public/icon.svg` & `scripts/generate-png-icons.js`: ganti neon volt dengan warna aksen brand `#2E7D5B` / `#4FB286`.
 
 ---
 
