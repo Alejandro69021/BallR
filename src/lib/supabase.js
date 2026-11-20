@@ -350,10 +350,83 @@ export async function publishPassportSnapshot(playerId, periodMonth, snapshotHas
 // 4. Consent Governance & Access Logging (UU PDP No. 27/2022 Pasal 25)
 // ==============================================================================
 
+export const DEMO_CONSENTS_KEY = 'demo_consents';
+
+export function getInitialDemoConsents() {
+  return [
+    {
+      id: 'demo-consent-0042',
+      player_id: 'WK-2026-0042',
+      guardian_id: 'demo-guardian-0042',
+      version: 'v1.0-2026-10',
+      granted_at: '2026-10-01T08:00:00.000Z',
+      revoked_at: null,
+      purposes: {
+        public_profile: true,
+        training_analysis: true,
+        share_with_scouts: true
+      }
+    },
+    {
+      id: 'demo-consent-0043',
+      player_id: 'WK-2026-0043',
+      guardian_id: 'demo-guardian-0043',
+      version: 'v1.0-2026-10',
+      granted_at: '2026-10-05T09:00:00.000Z',
+      revoked_at: null,
+      purposes: {
+        training_analysis: true,
+        public_profile: false,
+        share_with_scouts: false
+      }
+    },
+    {
+      id: 'demo-consent-0044',
+      player_id: 'WK-2026-0044',
+      guardian_id: 'demo-guardian-0044',
+      version: 'v1.0-2026-10',
+      granted_at: '2026-10-10T10:00:00.000Z',
+      revoked_at: '2026-10-15T12:00:00.000Z',
+      purposes: {
+        public_profile: true,
+        training_analysis: true,
+        share_with_scouts: true
+      }
+    }
+  ];
+}
+
+function getDemoConsentStore() {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return getInitialDemoConsents();
+  }
+  try {
+    const raw = window.localStorage.getItem(DEMO_CONSENTS_KEY);
+    if (!raw) {
+      const initial = getInitialDemoConsents();
+      window.localStorage.setItem(DEMO_CONSENTS_KEY, JSON.stringify(initial));
+      return initial;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : getInitialDemoConsents();
+  } catch {
+    return getInitialDemoConsents();
+  }
+}
+
 /**
  * Fetches active parental consents for a player.
+ * Reads demo_consents from localStorage in demo mode, Supabase in real mode.
  */
 export async function fetchPlayerConsents(playerId) {
+  if (import.meta.env?.VITE_DEMO_MODE === 'true') {
+    if (!playerId) return [];
+    const store = getDemoConsentStore();
+    return store
+      .filter((c) => c.player_id === playerId)
+      .sort((a, b) => new Date(b.granted_at).getTime() - new Date(a.granted_at).getTime());
+  }
+
   if (!supabase || !playerId) return [];
 
   const { data, error } = await supabase
@@ -376,9 +449,22 @@ export async function fetchPlayerConsents(playerId) {
  * 3. Logs action in access_log
  */
 export async function revokeConsentAndSetPrivate(playerId, consentId) {
-  if (!supabase) throw new Error('Supabase client belum dikonfigurasi.');
-
   const nowIso = new Date().toISOString();
+
+  if (import.meta.env?.VITE_DEMO_MODE === 'true') {
+    const store = getDemoConsentStore();
+    const updated = store.map((c) =>
+      (consentId ? c.id === consentId : c.player_id === playerId)
+        ? { ...c, revoked_at: nowIso }
+        : c
+    );
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem(DEMO_CONSENTS_KEY, JSON.stringify(updated));
+    }
+    return { success: true, timestamp: nowIso };
+  }
+
+  if (!supabase) throw new Error('Supabase client belum dikonfigurasi.');
 
   // 1. Mark consent revoked
   if (consentId) {

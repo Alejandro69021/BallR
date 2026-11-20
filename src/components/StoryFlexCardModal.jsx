@@ -4,6 +4,7 @@ import { Download, Copy, AlertCircle } from 'lucide-react';
 import Dialog from './ui/Dialog';
 import Button from './ui/Button';
 import { fetchPlayerConsents } from '../lib/supabase';
+import { canShareProgressCard, buildCardDownloadFilename } from '../lib/consent';
 import StoryCardCanvas, { formatPlayerName } from './story/StoryCardCanvas';
 
 export default function StoryFlexCardModal({
@@ -38,7 +39,7 @@ export default function StoryFlexCardModal({
         if (active) {
           setConsents(list || []);
         }
-      } catch (err) {
+      } catch {
         if (active) setConsents([]);
       } finally {
         if (active) setLoadingConsents(false);
@@ -53,11 +54,10 @@ export default function StoryFlexCardModal({
     };
   }, [isOpen, playerId]);
 
-  const hasConsent =
-    consents.length > 0 && consents.some((c) => !c.revoked_at);
+  const canShare = canShareProgressCard(consents);
 
   const handleDownload = async () => {
-    if (!cardRef.current || !hasConsent) return;
+    if (!cardRef.current || !canShare) return;
     setIsExporting(true);
 
     try {
@@ -66,10 +66,12 @@ export default function StoryFlexCardModal({
         pixelRatio: 2
       });
 
-      const rawName = player?.personal_info?.full_name || 'atlet';
-      const fileSlug = rawName.trim().replace(/\s+/g, '-').toLowerCase();
+      const rawName = player?.personal_info?.full_name;
+      const displayName = formatPlayerName(rawName, isPrivate);
+      const downloadFilename = buildCardDownloadFilename(displayName);
+
       const link = document.createElement('a');
-      link.download = `kartu-perkembangan-${fileSlug}.png`;
+      link.download = downloadFilename;
       link.href = dataUrl;
       link.click();
 
@@ -85,7 +87,7 @@ export default function StoryFlexCardModal({
   };
 
   const handleCopySummary = () => {
-    if (!hasConsent) return;
+    if (!canShare) return;
 
     const rawName = player?.personal_info?.full_name;
     const name = formatPlayerName(rawName, isPrivate);
@@ -116,13 +118,20 @@ export default function StoryFlexCardModal({
       }
     >
       <div className="space-y-4">
-        {!loadingConsents && !hasConsent && (
+        {!loadingConsents && !canShare && (
           <div
             data-testid="consent-warning"
             className="p-3 rounded-control border border-warning/40 bg-warning/10 text-warning text-xs flex items-start gap-2"
           >
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <span>Butuh persetujuan wali yang tercatat untuk membagikan kartu</span>
+            <div className="space-y-0.5">
+              <div>Butuh persetujuan wali yang tercatat untuk membagikan kartu</div>
+              {consents.length > 0 && (
+                <div className="text-warning/80">
+                  Persetujuan wali yang tercatat belum mencakup berbagi profil
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -136,7 +145,7 @@ export default function StoryFlexCardModal({
           <div className="flex flex-col sm:flex-row gap-2">
             <Button
               variant="primary"
-              disabled={!hasConsent || isExporting}
+              disabled={!canShare || isExporting}
               loading={isExporting}
               onClick={handleDownload}
               icon={<Download className="w-4 h-4" />}
@@ -147,7 +156,7 @@ export default function StoryFlexCardModal({
 
             <Button
               variant="secondary"
-              disabled={!hasConsent}
+              disabled={!canShare}
               onClick={handleCopySummary}
               icon={<Copy className="w-4 h-4" />}
               className="flex-1"
