@@ -1,13 +1,43 @@
-import React from 'react';
-import { Camera, TrendingUp, TrendingDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { TrendingUp, TrendingDown, Play, Square, RotateCcw } from 'lucide-react';
 import Button from '../ui/Button';
 import Field from '../ui/Field';
 
 export default function FitnessForm({
   formData,
-  onFitnessChange,
-  onOpenScanner
+  onFitnessChange
 }) {
+  const [stopwatchRunning, setStopwatchRunning] = useState(false);
+  const [stopwatchTime, setStopwatchTime] = useState(0);
+
+  useEffect(() => {
+    let interval = null;
+    if (stopwatchRunning) {
+      const startTimestamp = performance.now() - stopwatchTime;
+      interval = setInterval(() => {
+        setStopwatchTime(performance.now() - startTimestamp);
+      }, 10);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [stopwatchRunning, stopwatchTime]);
+
+  const handleStartStopwatch = () => {
+    setStopwatchRunning(true);
+  };
+
+  const handleStopStopwatch = () => {
+    setStopwatchRunning(false);
+    const seconds = (stopwatchTime / 1000).toFixed(2);
+    onFitnessChange('sprint_20m_sec', seconds);
+  };
+
+  const handleResetStopwatch = () => {
+    setStopwatchRunning(false);
+    setStopwatchTime(0);
+  };
+
   const jumpPrev = formData.fitness.prev_jump_cm;
   const sprintPrev = formData.fitness.prev_sprint_sec;
   const shuttlePrev = formData.fitness.prev_shuttle_sec;
@@ -18,25 +48,13 @@ export default function FitnessForm({
 
   return (
     <section className="border-t border-line pt-4 space-y-4 text-1">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h3 className="text-sm font-semibold text-1">
-            Log tolok ukur fisik lapangan
-          </h3>
-          <p className="text-xs text-2">
-            Catat hasil tes fisik langsung di lapangan atau gunakan kamera pendeteksi
-          </p>
-        </div>
-
-        <Button
-          type="button"
-          variant="secondary"
-          size="sm"
-          onClick={onOpenScanner}
-          icon={<Camera className="w-4 h-4" strokeWidth={1.5} />}
-        >
-          Buka kamera uji fisik
-        </Button>
+      <div>
+        <h3 className="text-sm font-semibold text-1">
+          Log tolok ukur fisik lapangan
+        </h3>
+        <p className="text-xs text-2">
+          Pencatatan hasil tes fisik lapangan secara manual.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -67,7 +85,7 @@ export default function FitnessForm({
           </div>
         </div>
 
-        {/* 20m Sprint */}
+        {/* 20m Sprint with Honest Stopwatch */}
         <div className="p-3.5 rounded-control bg-panel border border-line space-y-2">
           <Field label="20m sprint (detik)" id="fitness-sprint">
             <input
@@ -91,6 +109,53 @@ export default function FitnessForm({
                 <span>-{(sprintPrev - currentSprint).toFixed(2)} dtk</span>
               </span>
             ) : null}
+          </div>
+
+          {/* Stopwatch Timing Helper */}
+          <div className="pt-2 border-t border-line space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-2 font-medium">Pewaktu manual (stopwatch)</span>
+              <span className="font-mono text-xs tabular-nums text-1 font-semibold">
+                {(stopwatchTime / 1000).toFixed(2)}s
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {!stopwatchRunning ? (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleStartStopwatch}
+                  icon={<Play className="w-3.5 h-3.5" strokeWidth={1.5} />}
+                >
+                  Mulai
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  onClick={handleStopStopwatch}
+                  icon={<Square className="w-3.5 h-3.5" strokeWidth={1.5} />}
+                >
+                  Berhenti & isi
+                </Button>
+              )}
+              {stopwatchTime > 0 && !stopwatchRunning && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleResetStopwatch}
+                  icon={<RotateCcw className="w-3.5 h-3.5" strokeWidth={1.5} />}
+                >
+                  Reset
+                </Button>
+              )}
+            </div>
+            <p className="text-xs text-2 italic">
+              Waktu manual; akurasi bergantung pada pewaktu. Catat metode di catatan.
+            </p>
           </div>
         </div>
 

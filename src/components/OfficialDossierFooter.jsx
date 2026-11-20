@@ -104,7 +104,7 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
             <span>Verifikasi integritas dokumen</span>
           </h2>
           <p className="text-xs text-2">
-            Jaminan kriptografis bahwa catatan profil, rekor fisik, dan evaluasi pelatih belum dimodifikasi.
+            Jaminan kriptografis bahwa catatan profil, riwayat fisik, dan evaluasi pelatih belum dimodifikasi.
           </p>
         </div>
 

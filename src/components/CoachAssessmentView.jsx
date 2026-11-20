@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Send, CheckCircle2, UserCheck } from 'lucide-react';
-import PitchScannerModal from './PitchScannerModal';
 import AttributeEditor from './assessment/AttributeEditor';
 import FitnessForm from './assessment/FitnessForm';
 import NarrativeNotesForm from './assessment/NarrativeNotesForm';
@@ -13,7 +12,6 @@ export default function CoachAssessmentView({
   activePlayer: activePlayerProp,
   onSelectPlayer,
   onSaveAssessment,
-  onSaveFitnessRecord,
   _onSwitchToPassport,
   onToast
 }) {
@@ -38,7 +36,6 @@ export default function CoachAssessmentView({
   const [isGeneratingAI] = useState(false);
   const [isSavingSupabase, setIsSavingSupabase] = useState(false);
   const [hasDraftSaved, setHasDraftSaved] = useState(false);
-  const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   useEffect(() => {
     if (!activePlayer) return;
@@ -241,7 +238,6 @@ export default function CoachAssessmentView({
       <FitnessForm
         formData={formData}
         onFitnessChange={handleFitnessChange}
-        onOpenScanner={() => setIsCameraOpen(true)}
       />
 
       {/* 4. Narrative Formulation */}
@@ -292,20 +288,6 @@ export default function CoachAssessmentView({
           </div>
         </div>
       </div>
-
-      {isCameraOpen && (
-        <PitchScannerModal
-          player={activePlayer}
-          onClose={() => setIsCameraOpen(false)}
-          onApplyResult={(res) => {
-            handleFitnessChange(res.type, res.numericValue);
-            if (onSaveFitnessRecord) {
-              onSaveFitnessRecord(activePlayer.player_id, res);
-            }
-          }}
-          onToast={onToast}
-        />
-      )}
     </div>
   );
 }

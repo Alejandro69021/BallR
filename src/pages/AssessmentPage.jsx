@@ -9,7 +9,7 @@ import { usePlayers } from '../hooks/usePlayers';
 export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinModal, onToast }) {
   const { playerId } = useParams();
   const navigate = useNavigate();
-  const { players, loading, saveAssessment, recordFitness, syncMatchStats } = usePlayers();
+  const { players, loading, saveAssessment, syncMatchStats } = usePlayers();
   const openModal = onOpenAuthModal || onOpenPinModal;
 
   const isAuthorized = userRole === 'coach' || userRole === 'admin';
@@ -56,25 +56,6 @@ export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinMod
     }
   };
 
-  const handleSaveFitnessRecord = async (pid, testResult) => {
-    try {
-      await recordFitness(pid, testResult);
-      if (onToast) {
-        onToast({
-          title: 'Hasil uji fisik tersimpan',
-          subtext: 'Data kebugaran resmi berhasil dicatat.'
-        });
-      }
-    } catch (err) {
-      if (onToast) {
-        onToast({
-          title: 'Penyimpanan uji fisik',
-          subtext: err?.message || 'Hasil uji fisik tersimpan lokal.'
-        });
-      }
-    }
-  };
-
   if (!isAuthorized) {
     return (
       <div className="p-8 text-center rounded-panel bg-panel border border-line space-y-3 max-w-md mx-auto text-1">
@@ -99,7 +80,6 @@ export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinMod
       selectedPlayerId={activePlayer.player_id}
       activePlayer={activePlayer}
       onSaveAssessment={handleSaveAssessment}
-      onSaveFitnessRecord={handleSaveFitnessRecord}
       onSyncMatchStats={syncMatchStats}
       onToast={onToast}
     />

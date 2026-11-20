@@ -7,7 +7,6 @@ import AuthModal from '../components/auth/AuthModal';
 import * as supabaseLib from '../lib/supabase';
 import { fetchPublicPlayersFromViews, fetchLiveRosterFromSupabase, fetchPassportSnapshot, fetchPlayerByToken } from '../lib/supabase';
 import VaepScorecard from '../components/analytics/VaepScorecard';
-import CameraFeed from '../components/scanner/CameraFeed';
 import FitnessStrip from '../components/FitnessStrip';
 import PlayerHeader from '../components/PlayerHeader';
 import BioMaturityCard from '../components/growth/BioMaturityCard';
@@ -166,26 +165,6 @@ describe('Security Hardening & Privacy Tests', () => {
       const emptyBadges = screen.getAllByText('Belum ada data');
       expect(emptyBadges.length).toBeGreaterThan(0);
       expect(screen.queryByText('+0.84')).not.toBeInTheDocument();
-    });
-
-    it('renders honest empty state in CameraFeed without simulator text', () => {
-      const mockPlayer = { personal_info: { full_name: 'Atlet Tes', jersey_number: 10 } };
-      render(
-        <CameraFeed
-          videoRef={{ current: null }}
-          cameraError={true}
-          player={mockPlayer}
-          testMode="jump"
-          testState="idle"
-          liveMetrics={{ currentHeightCm: 0, peakJumpCm: 0, hangtimeMs: 0 }}
-          countdownNum={3}
-        />
-      );
-
-      expect(screen.getByText('Kamera Tidak Aktif')).toBeInTheDocument();
-      expect(screen.getByText('Belum ada data')).toBeInTheDocument();
-      expect(screen.queryByText(/simulation|simulator/i)).not.toBeInTheDocument();
-      expect(screen.queryByText(/READY FOR TEST TRIGGER/i)).not.toBeInTheDocument();
     });
 
     it('renders honest empty state in FitnessStrip when benchmarks are null', () => {
