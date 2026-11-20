@@ -8,6 +8,14 @@
 
 import { canonicalizeJson, computeSha256 } from './integrity';
 import { supabase, getCurrentUserProfile } from './supabase';
+import {
+  passStats,
+  shotStats,
+  thirds,
+  ppda,
+  dataQuality,
+  countsByPlayer
+} from './analysis/events';
 
 const DEMO_SNAPSHOTS_STORAGE_KEY = 'demo_report_snapshots';
 
@@ -129,6 +137,7 @@ export async function buildReportPayload(match = {}, participants = [], events =
     match_id: String(match.id),
     match: normalizedMatch,
     participants: sortedParticipants,
+    events: sortedEvents,
     events_digest,
     published_scenarios: sortedScenarios
   };
@@ -220,7 +229,10 @@ export async function freezeReport({
     publishedScenarios
   );
 
-  const acadId = academyId || match.academy_id || '11111111-0000-4000-8000-000000000001';
+  const acadId = academyId || match.academy_id;
+  if (!acadId) {
+    throw new Error('Akademi pertandingan tidak diketahui');
+  }
 
   if (isDemoModeActive()) {
     const store = getDemoSnapshotsStore();
@@ -358,4 +370,83 @@ export function formatReportError(err) {
     return 'Laporan yang telah dibekukan bersifat tetap dan tidak dapat diubah atau dihapus.';
   }
   return msg || 'Terjadi kesalahan pada sistem laporan.';
+}
+
+/**
+ * Mengambil daftar staf peninjau laporan yang valid (pelatih akademi atau admin).
+ * Menolak pembuat laporan jika ada kandidat staf lain.
+ */
+export async function listReviewerCandidates(academyId) {
+  const DEMO_CREATOR_ID = 'demo-coach-creator';
+
+  if (isDemoModeActive()) {
+    const all = [
+      { id: 'demo-coach-peer-01', full_name: 'Pelatih Budi Santoso (Rekan Staf)', role: 'coach' },
+      { id: 'demo-admin-01', full_name: 'Hendra Gunawan (Admin Akademi)', role: 'admin' }
+    ];
+    return all.filter((c) => c.id !== DEMO_CREATOR_ID);
+  }
+
+  if (!supabase) return [];
+
+  let currentUserId = null;
+  try {
+    const profile = await getCurrentUserProfile();
+    currentUserId = profile?.id;
+  } catch {
+    // Abaikan jika profil belum dimuat
+  }
+
+  let query = supabase.from('profiles').select('id, full_name, role');
+  if (academyId) {
+    query = query.or(`and(role.eq.coach,academy_id.eq.${academyId}),role.eq.admin`);
+  } else {
+    query = query.or('role.eq.admin');
+  }
+
+  const { data, error } = await query;
+  if (error) {
+    console.warn('Gagal memuat kandidat peninjau:', error);
+    throw error;
+  }
+
+  const all = (data || []).map((row) => ({
+    id: row.id,
+    full_name: row.full_name || 'Staf Tanpa Nama',
+    role: row.role
+  }));
+
+  const others = all.filter((c) => c.id !== currentUserId);
+  return others.length > 0 ? others : all;
+}
+
+/**
+ * Merekonstruksi seluruh data dan metrik laporan dari snapshot yang dibekukan secara mandiri.
+ */
+export function reconstructReportFromSnapshot(snapshot) {
+  if (!snapshot || !snapshot.canonical_payload) {
+    throw new Error('Snapshot tidak valid untuk rekonstruksi.');
+  }
+
+  const p = snapshot.canonical_payload;
+  const events = p.events || [];
+  const participants = p.participants || [];
+  const match = p.match || {};
+  const pitchLengthM = match.pitch_length_m || 90;
+
+  return {
+    match,
+    participants,
+    events,
+    passStats_own: passStats(events, 'own'),
+    passStats_opp: passStats(events, 'opponent'),
+    shotStats_own: shotStats(events, 'own'),
+    shotStats_opp: shotStats(events, 'opponent'),
+    thirds_own: thirds(events, pitchLengthM, 'own'),
+    thirds_opp: thirds(events, pitchLengthM, 'opponent'),
+    ppda_metric: ppda(events, pitchLengthM),
+    playerStats: countsByPlayer(events, participants),
+    dataQuality: dataQuality(events, match, participants),
+    published_scenarios: p.published_scenarios || []
+  };
 }

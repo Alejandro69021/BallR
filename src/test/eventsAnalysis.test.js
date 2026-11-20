@@ -203,7 +203,7 @@ describe('Event Analysis Pure Engine (events.js)', () => {
 
     it('computes PPDA ratio when opponent passes >= 30 in zone x >= 0.4*L', () => {
       const L = 100;
-      const xThreshold = 0.4 * L; // 40m
+      // xThreshold = 0.4 * L = 40m
 
       const events = [];
       // 35 opponent passes:

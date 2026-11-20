@@ -28,6 +28,8 @@ import {
   freezeReport,
   verifyReport,
   formatReportError,
+  listReviewerCandidates,
+  reconstructReportFromSnapshot,
   isDemoModeActive
 } from '../lib/report';
 import Button from '../components/ui/Button';
@@ -117,6 +119,49 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
   const ppdaMetric = useMemo(() => ppda(events, match?.pitch_length_m || 90), [events, match]);
   const playerStats = useMemo(() => countsByPlayer(events, participants), [events, participants]);
 
+  // Reviewer candidates state
+  const [reviewerCandidates, setReviewerCandidates] = useState([]);
+
+  // Frozen view toggle
+  const [viewFrozen, setViewFrozen] = useState(false);
+
+  useEffect(() => {
+    if (!match?.id) return;
+    listReviewerCandidates(match.academy_id)
+      .then((candidates) => {
+        setReviewerCandidates(candidates || []);
+      })
+      .catch((err) => {
+        console.warn('Gagal memuat kandidat peninjau:', err);
+        setReviewerCandidates([]);
+      });
+  }, [match?.academy_id, match?.id]);
+
+  const reconstructed = useMemo(() => {
+    if (!latestSnapshot) return null;
+    try {
+      return reconstructReportFromSnapshot(latestSnapshot);
+    } catch (err) {
+      console.warn('Gagal merekonstruksi snapshot laporan:', err);
+      return null;
+    }
+  }, [latestSnapshot]);
+
+  // Derived active metrics (either from frozen snapshot or live analysis)
+  const isViewingFrozen = viewFrozen && Boolean(reconstructed);
+  const activeMatch = isViewingFrozen ? (reconstructed.match?.id ? reconstructed.match : match) : match;
+  const activeEvents = isViewingFrozen ? reconstructed.events : events;
+  const activePublishedScenarios = isViewingFrozen ? reconstructed.published_scenarios : publishedScenarios;
+  const activeDq = isViewingFrozen ? reconstructed.dataQuality : dq;
+  const activeOwnPass = isViewingFrozen ? reconstructed.passStats_own : ownPass;
+  const activeOppPass = isViewingFrozen ? reconstructed.passStats_opp : oppPass;
+  const activeOwnShots = isViewingFrozen ? reconstructed.shotStats_own : ownShots;
+  const activeOppShots = isViewingFrozen ? reconstructed.shotStats_opp : oppShots;
+  const activeOwnThirds = isViewingFrozen ? reconstructed.thirds_own : ownThirds;
+  const activeOppThirds = isViewingFrozen ? reconstructed.thirds_opp : oppThirds;
+  const activePpdaMetric = isViewingFrozen ? reconstructed.ppda_metric : ppdaMetric;
+  const activePlayerStats = isViewingFrozen ? reconstructed.playerStats : playerStats;
+
   // Canonical payload & hash
   const [currentPayload, setCurrentPayload] = useState(null);
   const [currentHash, setCurrentHash] = useState('');
@@ -132,19 +177,6 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         .catch((err) => console.warn('Gagal menghitung payload laporan:', err));
     }
   }, [match, participants, events, publishedScenarios]);
-
-  // Reviewer candidates (for demo mode / UI)
-  const staffCandidates = useMemo(() => {
-    if (isDemoModeActive()) {
-      return [
-        { id: 'demo-coach-peer-01', name: 'Pelatih Budi Santoso (Rekan Staf)', role: 'coach' },
-        { id: 'demo-admin-01', name: 'Hendra Gunawan (Admin Akademi)', role: 'admin' }
-      ];
-    }
-    return [
-      { id: 'staff-reviewer-placeholder', name: 'Pilih staf peninjau...', role: 'coach' }
-    ];
-  }, []);
 
   // Handle freeze report
   const handleFreezeReport = async () => {
@@ -279,6 +311,17 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             <Button
               variant="secondary"
               size="sm"
+              icon={<FileText className="w-4 h-4" strokeWidth={1.5} />}
+              onClick={() => setViewFrozen((prev) => !prev)}
+            >
+              {viewFrozen ? 'Tampilkan data saat ini' : 'Tampilkan versi beku'}
+            </Button>
+          )}
+
+          {latestSnapshot && (
+            <Button
+              variant="secondary"
+              size="sm"
               icon={<RotateCcw className="w-4 h-4" strokeWidth={1.5} />}
               onClick={handleVerifyReport}
               disabled={verifying}
@@ -288,14 +331,22 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           )}
 
           {match.status === 'final' && (
-            <Button
-              variant="primary"
-              size="sm"
-              icon={<ShieldCheck className="w-4 h-4" strokeWidth={1.5} />}
-              onClick={() => setIsFreezeModalOpen(true)}
-            >
-              Bekukan laporan
-            </Button>
+            <div className="flex items-center gap-2">
+              {reviewerCandidates.length === 0 && (
+                <span className="text-xs text-warning font-mono">
+                  Belum ada pelatih lain atau admin yang bisa meninjau
+                </span>
+              )}
+              <Button
+                variant="primary"
+                size="sm"
+                icon={<ShieldCheck className="w-4 h-4" strokeWidth={1.5} />}
+                onClick={() => setIsFreezeModalOpen(true)}
+                disabled={reviewerCandidates.length === 0}
+              >
+                Bekukan laporan
+              </Button>
+            </div>
           )}
 
           <Button
@@ -308,6 +359,19 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </Button>
         </div>
       </div>
+
+      {/* Frozen Version Banner */}
+      {isViewingFrozen && latestSnapshot && (
+        <div className="no-print p-3 rounded-control bg-raised border border-brand text-xs flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Lock className="w-4 h-4 text-brand shrink-0" strokeWidth={1.5} />
+            <span className="font-semibold text-1">
+              Versi beku {new Date(latestSnapshot.created_at).toLocaleDateString('id-ID')}, peninjau {latestSnapshot.reviewed_by_profile?.full_name || latestSnapshot.reviewed_by}
+            </span>
+          </div>
+          <Badge variant="neutral" size="sm">Versi Beku</Badge>
+        </div>
+      )}
 
       {/* Verification Banner if checked */}
       {verificationResult && (
@@ -343,26 +407,26 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               Bagian 1 • Dokumen Resmi Pertandingan
             </span>
             <h1 className="text-2xl font-bold tracking-tight text-1 mt-0.5">
-              Laporan Pertandingan: vs {match.opponent_name}
+              Laporan Pertandingan: vs {activeMatch.opponent_name}
             </h1>
             <p className="text-xs text-2 font-mono mt-1">
-              Tanggal: {match.match_date || '-'} • Format: {match.format || '11v11'} • Lapangan: {match.pitch_length_m}&times;{match.pitch_width_m}m
+              Tanggal: {activeMatch.match_date || '-'} • Format: {activeMatch.format || '11v11'} • Lapangan: {activeMatch.pitch_length_m}&times;{activeMatch.pitch_width_m}m
             </p>
           </div>
           <div className="text-right">
             <div className="text-2xl font-bold font-mono text-1">
-              {match.status === 'final'
-                ? `${match.own_score ?? 0} - ${match.opponent_score ?? 0}`
+              {activeMatch.status === 'final'
+                ? `${activeMatch.own_score ?? 0} - ${activeMatch.opponent_score ?? 0}`
                 : 'Belum final'}
             </div>
             <span className="text-xs text-2 font-mono">Skor Akhir</span>
           </div>
         </div>
 
-        {match.notes && (
+        {activeMatch.notes && (
           <div className="p-3 rounded-control bg-raised border border-line text-xs text-2 leading-relaxed">
             <span className="font-semibold text-1 block mb-0.5">Catatan Umum Pertandingan:</span>
-            {match.notes}
+            {activeMatch.notes}
           </div>
         )}
       </section>
@@ -373,31 +437,31 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <span className="text-xs font-mono uppercase tracking-wider text-2">
             Bagian 2 • Integritas &amp; Cakupan Pencatatan (Wajib)
           </span>
-          <h2 className="text-lg font-bold text-1">Kualitas Data</h2>
+          <h2 className="text-xl font-bold text-1">Kualitas Data</h2>
         </div>
 
         {/* Mandatory honesty statement */}
         <div className="p-3 rounded-control bg-raised border border-line text-xs text-2 italic">
-          {dq.statement}
+          {activeDq.statement}
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
           <div className="p-3 rounded-control bg-raised border border-line">
             <span className="text-2 block">Total Kejadian:</span>
-            <span className="text-base font-bold text-1">{dq.total_events.value}</span>
-            <span className="text-2 block mt-0.5">n={dq.total_events.n} kejadian</span>
+            <span className="text-base font-bold text-1">{activeDq.total_events.value}</span>
+            <span className="text-2 block mt-0.5">n={activeDq.total_events.n} kejadian</span>
           </div>
 
           <div className="p-3 rounded-control bg-raised border border-line">
             <span className="text-2 block">Kelengkapan Koordinat:</span>
-            <span className="text-base font-bold text-1">{dq.coords_pct.value}%</span>
-            <span className="text-2 block mt-0.5">({dq.with_coords_count.value}/{dq.total_events.n})</span>
+            <span className="text-base font-bold text-1">{activeDq.coords_pct.value}%</span>
+            <span className="text-2 block mt-0.5">({activeDq.with_coords_count.value}/{activeDq.total_events.n})</span>
           </div>
 
           <div className="p-3 rounded-control bg-raised border border-line">
             <span className="text-2 block">Rentang Waktu:</span>
             <span className="text-base font-bold text-1">
-              {dq.first_minute ? `${dq.first_minute.value}'` : '-'}&ndash;{dq.last_minute ? `${dq.last_minute.value}'` : '-'}
+              {activeDq.first_minute ? `${activeDq.first_minute.value}'` : '-'}&ndash;{activeDq.last_minute ? `${activeDq.last_minute.value}'` : '-'}
             </span>
             <span className="text-2 block mt-0.5">Menit pertama-akhir</span>
           </div>
@@ -405,7 +469,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <div className="p-3 rounded-control bg-raised border border-line">
             <span className="text-2 block">Pemain Aktif Terdata:</span>
             <span className="text-base font-bold text-1">
-              {dq.players_with_events_count.value} / {dq.players_with_events_count.n}
+              {activeDq.players_with_events_count.value} / {activeDq.players_with_events_count.n}
             </span>
             <span className="text-2 block mt-0.5">Pemain dengan &ge;1 aksi</span>
           </div>
@@ -414,11 +478,11 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         <div className="text-xs text-2 font-mono flex items-center justify-between">
           <span>
             Sebaran per babak:{' '}
-            {Object.entries(dq.events_per_period)
+            {Object.entries(activeDq.events_per_period)
               .map(([per, count]) => `Babak ${per}: ${count} aksi`)
               .join(' • ')}
           </span>
-          <span>Kejadian lawan tercatat: {dq.opponent_events_count.value}</span>
+          <span>Kejadian lawan tercatat: {activeDq.opponent_events_count.value}</span>
         </div>
       </section>
 
@@ -428,7 +492,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <span className="text-xs font-mono uppercase tracking-wider text-2">
             Bagian 3 • Kinerja Kolektif
           </span>
-          <h2 className="text-lg font-bold text-1">Tim Kita</h2>
+          <h2 className="text-xl font-bold text-1">Tim Kita</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
@@ -436,12 +500,12 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <div className="p-3 rounded-control bg-raised border border-line space-y-1.5">
             <span className="font-semibold text-1 block">Akurasi Umpan</span>
             <div className="text-xl font-bold font-mono text-1">
-              {ownPass.value !== null ? `${ownPass.value}%` : 'Belum ada data'}
+              {activeOwnPass.value !== null ? `${activeOwnPass.value}%` : 'Belum ada data'}
             </div>
             <div className="text-2 font-mono text-xs space-y-0.5">
-              <div>Sukses: {ownPass.successful.value} umpan</div>
-              <div>Gagal: {ownPass.failed.value} umpan</div>
-              <div>Total: {ownPass.total.value} umpan (n={ownPass.n})</div>
+              <div>Sukses: {activeOwnPass.successful.value} umpan</div>
+              <div>Gagal: {activeOwnPass.failed.value} umpan</div>
+              <div>Total: {activeOwnPass.total.value} umpan (n={activeOwnPass.n})</div>
             </div>
           </div>
 
@@ -449,12 +513,12 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <div className="p-3 rounded-control bg-raised border border-line space-y-1.5">
             <span className="font-semibold text-1 block">Tembakan &amp; Sasaran</span>
             <div className="text-xl font-bold font-mono text-1">
-              {ownShots.goals.value} Gol ({ownShots.accuracy_pct.value ?? 0}%)
+              {activeOwnShots.goals.value} Gol ({activeOwnShots.accuracy_pct.value ?? 0}%)
             </div>
             <div className="text-2 font-mono text-xs space-y-0.5">
-              <div>Tepat sasaran: {ownShots.on_target.value} tembakan</div>
-              <div>Meleset: {ownShots.off_target.value} tembakan</div>
-              <div>Total: {ownShots.total.value} tembakan (n={ownShots.n})</div>
+              <div>Tepat sasaran: {activeOwnShots.on_target.value} tembakan</div>
+              <div>Meleset: {activeOwnShots.off_target.value} tembakan</div>
+              <div>Total: {activeOwnShots.total.value} tembakan (n={activeOwnShots.n})</div>
             </div>
           </div>
 
@@ -465,15 +529,15 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               <RefChip referenceId="trainor-ppda-2014" />
             </div>
             <div className="text-xl font-bold font-mono text-1">
-              {ppdaMetric.value !== null ? ppdaMetric.value : '-'}
+              {activePpdaMetric.value !== null ? activePpdaMetric.value : '-'}
             </div>
             <div className="text-2 font-mono text-xs space-y-0.5">
-              {ppdaMetric.reason ? (
-                <div className="text-warning italic">{ppdaMetric.reason}</div>
+              {activePpdaMetric.reason ? (
+                <div className="text-warning italic">{activePpdaMetric.reason}</div>
               ) : (
-                <div>Umpan lawan {ppdaMetric.opponent_passes_in_zone} / Aksi bertahan {ppdaMetric.defensive_actions_in_zone}</div>
+                <div>Umpan lawan {activePpdaMetric.opponent_passes_in_zone} / Aksi bertahan {activePpdaMetric.defensive_actions_in_zone}</div>
               )}
-              <div>Sampel: n={ppdaMetric.n} umpan lawan</div>
+              <div>Sampel: n={activePpdaMetric.n} umpan lawan</div>
             </div>
           </div>
         </div>
@@ -484,22 +548,22 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
             <div className="p-2 rounded bg-app border border-line">
               <span className="text-2 block">Pertahanan (x &lt; 1/3)</span>
-              <span className="text-sm font-bold text-1">{ownThirds.defensive.value ?? 0}%</span>
-              <span className="text-2 block text-xs mt-0.5">({ownThirds.defensive.count} aksi)</span>
+              <span className="text-sm font-bold text-1">{activeOwnThirds.defensive.value ?? 0}%</span>
+              <span className="text-2 block text-xs mt-0.5">({activeOwnThirds.defensive.count} aksi)</span>
             </div>
             <div className="p-2 rounded bg-app border border-line">
               <span className="text-2 block">Tengah (1/3 &le; x &lt; 2/3)</span>
-              <span className="text-sm font-bold text-1">{ownThirds.middle.value ?? 0}%</span>
-              <span className="text-2 block text-xs mt-0.5">({ownThirds.middle.count} aksi)</span>
+              <span className="text-sm font-bold text-1">{activeOwnThirds.middle.value ?? 0}%</span>
+              <span className="text-2 block text-xs mt-0.5">({activeOwnThirds.middle.count} aksi)</span>
             </div>
             <div className="p-2 rounded bg-app border border-line">
               <span className="text-2 block">Akhir (x &ge; 2/3)</span>
-              <span className="text-sm font-bold text-1">{ownThirds.final.value ?? 0}%</span>
-              <span className="text-2 block text-xs mt-0.5">({ownThirds.final.count} aksi)</span>
+              <span className="text-sm font-bold text-1">{activeOwnThirds.final.value ?? 0}%</span>
+              <span className="text-2 block text-xs mt-0.5">({activeOwnThirds.final.count} aksi)</span>
             </div>
           </div>
           <div className="text-2 text-xs font-mono text-right">
-            Total aksi berkoordinat: n={ownThirds.n} • Tanpa koordinat: {ownThirds.without_coords.count}
+            Total aksi berkoordinat: n={activeOwnThirds.n} • Tanpa koordinat: {activeOwnThirds.without_coords.count}
           </div>
         </div>
       </section>
@@ -511,7 +575,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             <span className="text-xs font-mono uppercase tracking-wider text-2">
               Bagian 4 • Analisis Lawan
             </span>
-            <h2 className="text-lg font-bold text-1">Lawan ({match.opponent_name})</h2>
+            <h2 className="text-xl font-bold text-1">Lawan ({activeMatch.opponent_name})</h2>
           </div>
           <Badge variant="neutral" size="sm">
             pengamatan satu laga
@@ -525,30 +589,30 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           <div className="p-3 rounded-control bg-raised border border-line space-y-1">
             <span className="font-semibold text-1 block">Aksi Umpan Lawan</span>
-            <div className="text-lg font-bold font-mono text-1">
-              {oppPass.value !== null ? `${oppPass.value}%` : '-'}
+            <div className="text-xl font-bold font-mono text-1">
+              {activeOppPass.value !== null ? `${activeOppPass.value}%` : '-'}
             </div>
             <div className="text-2 font-mono text-xs">
-              Sukses {oppPass.successful.value} • Gagal {oppPass.failed.value} (n={oppPass.n})
+              Sukses {activeOppPass.successful.value} • Gagal {activeOppPass.failed.value} (n={activeOppPass.n})
             </div>
           </div>
 
           <div className="p-3 rounded-control bg-raised border border-line space-y-1">
             <span className="font-semibold text-1 block">Tembakan Lawan</span>
-            <div className="text-lg font-bold font-mono text-1">
-              {oppShots.goals.value} Gol ({oppShots.accuracy_pct.value ?? 0}%)
+            <div className="text-xl font-bold font-mono text-1">
+              {activeOppShots.goals.value} Gol ({activeOppShots.accuracy_pct.value ?? 0}%)
             </div>
             <div className="text-2 font-mono text-xs">
-              Tepat sasaran {oppShots.on_target.value} • Total {oppShots.total.value} (n={oppShots.n})
+              Tepat sasaran {activeOppShots.on_target.value} • Total {activeOppShots.total.value} (n={activeOppShots.n})
             </div>
           </div>
 
           <div className="p-3 rounded-control bg-raised border border-line space-y-1">
             <span className="font-semibold text-1 block">Sebaran Area Aksi Lawan</span>
             <div className="text-xs font-mono space-y-0.5 mt-1 text-2">
-              <div>Pertahanan: {oppThirds.defensive.value ?? 0}% ({oppThirds.defensive.count})</div>
-              <div>Tengah: {oppThirds.middle.value ?? 0}% ({oppThirds.middle.count})</div>
-              <div>Akhir: {oppThirds.final.value ?? 0}% ({oppThirds.final.count})</div>
+              <div>Pertahanan: {activeOppThirds.defensive.value ?? 0}% ({activeOppThirds.defensive.count})</div>
+              <div>Tengah: {activeOppThirds.middle.value ?? 0}% ({activeOppThirds.middle.count})</div>
+              <div>Akhir: {activeOppThirds.final.value ?? 0}% ({activeOppThirds.final.count})</div>
             </div>
           </div>
         </div>
@@ -560,7 +624,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <span className="text-xs font-mono uppercase tracking-wider text-2">
             Bagian 5 • Kontribusi Individu
           </span>
-          <h2 className="text-lg font-bold text-1">Catatan Pemain</h2>
+          <h2 className="text-xl font-bold text-1">Individu</h2>
         </div>
 
         <p className="text-xs text-2">
@@ -599,7 +663,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               key: 'counts_by_type',
               header: 'Rincian Aksi Tercatat',
               render: (_val, row) => {
-                const entries = Object.entries(row.counts_by_type || {}).filter(([_, c]) => c > 0);
+                const entries = Object.entries(row.counts_by_type || {}).filter(([, c]) => c > 0);
                 if (entries.length === 0) return <span className="text-xs text-2 italic">Tidak ada catatan aksi</span>;
                 return (
                   <div className="flex flex-wrap gap-1">
@@ -625,7 +689,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               )
             }
           ]}
-          data={playerStats.rows}
+          data={activePlayerStats.rows}
           emptyMessage="Belum ada data partisipasi pemain yang terdaftar."
         />
       </section>
@@ -636,7 +700,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <span className="text-xs font-mono uppercase tracking-wider text-2">
             Bagian 6 • Distribusi Spasial
           </span>
-          <h2 className="text-lg font-bold text-1">Peta Kejadian</h2>
+          <h2 className="text-xl font-bold text-1">Peta Kejadian</h2>
           <p className="text-xs text-2 font-mono mt-0.5">
             Data pencatatan manual; bukan pelacakan otomatis.
           </p>
@@ -646,14 +710,14 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           {/* Figure A: Aksi Tim Kita */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-2">
             <span className="font-semibold text-1 text-xs block">
-              Gambar A: Sebaran Titik Aksi Tim Kita (n={events.filter((e) => e.team === 'own' && e.x_m != null).length})
+              Gambar A: Sebaran Titik Aksi Tim Kita (n={activeEvents.filter((e) => e.team === 'own' && e.x_m != null).length})
             </span>
             <PitchSvg
-              pitchLengthM={match.pitch_length_m || 90}
-              pitchWidthM={match.pitch_width_m || 60}
+              pitchLengthM={activeMatch.pitch_length_m || 90}
+              pitchWidthM={activeMatch.pitch_width_m || 60}
               orientation="horizontal"
             >
-              {events
+              {activeEvents
                 .filter((e) => e.team === 'own' && e.x_m != null && e.y_m != null)
                 .map((e) => (
                   <circle
@@ -682,11 +746,11 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               Gambar B: Aliran Umpan Tim Kita Berkoordinat Akhir
             </span>
             <PitchSvg
-              pitchLengthM={match.pitch_length_m || 90}
-              pitchWidthM={match.pitch_width_m || 60}
+              pitchLengthM={activeMatch.pitch_length_m || 90}
+              pitchWidthM={activeMatch.pitch_width_m || 60}
               orientation="horizontal"
             >
-              {events
+              {activeEvents
                 .filter(
                   (e) =>
                     e.team === 'own' &&
@@ -721,16 +785,16 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <span className="text-xs font-mono uppercase tracking-wider text-2">
             Bagian 7 • Konteks Kurikulum
           </span>
-          <h2 className="text-lg font-bold text-1">Skema Taktik Terkait</h2>
+          <h2 className="text-xl font-bold text-1">Skema Taktik Terkait</h2>
         </div>
 
-        {publishedScenarios.length === 0 ? (
+        {activePublishedScenarios.length === 0 ? (
           <div className="p-4 rounded-control bg-raised border border-line text-xs text-2 text-center font-mono">
             Tidak ada skema terbit terkait
           </div>
         ) : (
           <div className="space-y-2">
-            {publishedScenarios.map((scen) => (
+            {activePublishedScenarios.map((scen) => (
               <div
                 key={scen.id}
                 className="p-3 rounded-control bg-raised border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
@@ -758,7 +822,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <span className="text-xs font-mono uppercase tracking-wider text-2">
             Bagian 8 • Transparansi Metodologi
           </span>
-          <h2 className="text-lg font-bold text-1">Lampiran Metode</h2>
+          <h2 className="text-xl font-bold text-1">Lampiran Metode</h2>
           <p className="text-xs text-2">
             Setiap rumus, batasan, dan rujukan dokumen terverifikasi yang mendasari analisis ini.
           </p>
@@ -797,7 +861,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <span className="text-xs font-mono uppercase tracking-wider text-2">
             Bagian 9 • Kriptografi &amp; Keaslian
           </span>
-          <h2 className="text-lg font-bold text-1">Integritas Dokumen</h2>
+          <h2 className="text-xl font-bold text-1">Integritas Dokumen</h2>
         </div>
 
         <div className="p-3 rounded-control bg-raised border border-line space-y-2 text-xs font-mono">
@@ -809,7 +873,9 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             <div className="sm:col-span-2">
               <span className="text-2 block">Events Digest (SHA-256):</span>
               <span className="text-1 break-all select-all font-mono">
-                {currentPayload?.events_digest || '-'}
+                {isViewingFrozen
+                  ? (latestSnapshot?.events_digest || latestSnapshot?.canonical_payload?.events_digest || '-')
+                  : (currentPayload?.events_digest || '-')}
               </span>
             </div>
           </div>
@@ -831,10 +897,32 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         </div>
       </section>
 
-      {/* FOOTER (Printed on every page) */}
-      <footer className="pt-4 border-t border-line text-xs text-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono">
+      {/* Print styles */}
+      <style>{`
+        @media print {
+          .no-print { display: none !important; }
+          .print-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            font-size: 10pt;
+          }
+          @page {
+            margin-bottom: 2cm;
+            @bottom-right {
+              content: "Halaman " counter(page) " / " counter(pages);
+            }
+          }
+          .report-content {
+            padding-bottom: 3cm;
+          }
+        }
+      `}</style>
+
+      {/* FOOTER (Printed on every page via fixed CSS) */}
+      <footer className="print-footer pt-4 border-t border-line text-xs text-2 font-mono">
         <span>Dokumen internal akademi; berisi data anak, jangan dibagikan tanpa persetujuan wali.</span>
-        <span>Halaman 1/1</span>
       </footer>
 
       {/* Freeze Report Dialog Modal */}
@@ -849,7 +937,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </p>
 
           <div className="p-3 rounded-control bg-raised border border-line font-mono space-y-1">
-            <div>Laga: vs {match.opponent_name}</div>
+            <div>Laga: vs {activeMatch.opponent_name}</div>
             <div>Hash: {currentHash.slice(0, 24)}...</div>
           </div>
 
@@ -857,22 +945,30 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             <label htmlFor="select-reviewer" className="block font-medium text-1 mb-1">
               Pilih Peninjau (Pelatih lain atau Admin):
             </label>
-            <select
-              id="select-reviewer"
-              value={selectedReviewer}
-              onChange={(e) => setSelectedReviewer(e.target.value)}
-              className="w-full min-h-[44px] px-3 py-1.5 rounded-control bg-app border border-line text-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand"
-            >
-              <option value="">-- Pilih Staf Peninjau --</option>
-              {staffCandidates.map((staff) => (
-                <option key={staff.id} value={staff.id}>
-                  {staff.name} ({staff.role})
-                </option>
-              ))}
-            </select>
-            <p className="text-2 text-xs mt-1">
-              Peninjau harus pelatih lain dari akademi yang sama atau admin, bukan pembuat laporan.
-            </p>
+            {reviewerCandidates.length === 0 ? (
+              <div className="p-3 rounded-control bg-raised border border-warning text-warning text-xs">
+                Belum ada pelatih lain atau admin yang bisa meninjau
+              </div>
+            ) : (
+              <>
+                <select
+                  id="select-reviewer"
+                  value={selectedReviewer}
+                  onChange={(e) => setSelectedReviewer(e.target.value)}
+                  className="w-full min-h-[44px] px-3 py-1.5 rounded-control bg-app border border-line text-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand"
+                >
+                  <option value="">-- Pilih Staf Peninjau --</option>
+                  {reviewerCandidates.map((staff) => (
+                    <option key={staff.id} value={staff.id}>
+                      {staff.full_name || staff.name} ({staff.role})
+                    </option>
+                  ))}
+                </select>
+                <p className="text-2 text-xs mt-1">
+                  Peninjau harus pelatih lain dari akademi yang sama atau admin, bukan pembuat laporan.
+                </p>
+              </>
+            )}
           </div>
 
           <div className="flex items-center justify-end gap-2 pt-2">
@@ -888,7 +984,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               size="sm"
               icon={<ShieldCheck className="w-4 h-4" strokeWidth={1.5} />}
               onClick={handleFreezeReport}
-              disabled={freezing || !selectedReviewer}
+              disabled={freezing || !selectedReviewer || reviewerCandidates.length === 0}
             >
               {freezing ? 'Membekukan...' : 'Konfirmasi & Bekukan'}
             </Button>

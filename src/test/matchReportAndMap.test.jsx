@@ -9,13 +9,27 @@ import {
   buildReportPayload,
   computeSnapshotHash,
   freezeReport,
-  verifyReport
+  verifyReport,
+  listReviewerCandidates,
+  reconstructReportFromSnapshot
 } from '../lib/report';
 import EventMap from '../components/match/EventMap';
 import MatchReportPage from '../pages/MatchReportPage';
 import * as matchesLib from '../lib/matches';
 import * as scenariosLib from '../lib/scenarios';
 import * as reportLib from '../lib/report';
+import { supabase, getCurrentUserProfile } from '../lib/supabase';
+
+vi.mock('../lib/supabase', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    supabase: {
+      from: vi.fn()
+    },
+    getCurrentUserProfile: vi.fn()
+  };
+});
 
 import.meta.env.VITE_DEMO_MODE = 'true';
 
@@ -176,6 +190,61 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
         })
       ).rejects.toThrow('Laporan dengan isi persis sama sudah pernah dibekukan');
     });
+
+    it('freezeReport without academyId throws "Akademi pertandingan tidak diketahui"', async () => {
+      const matchNoAcademy = { ...dummyMatch, academy_id: null };
+      await expect(
+        freezeReport({
+          match: matchNoAcademy,
+          participants: dummyParticipants,
+          events: dummyEvents,
+          publishedScenarios: [],
+          reviewedBy: 'coach-peer-01'
+        })
+      ).rejects.toThrow('Akademi pertandingan tidak diketahui');
+    });
+
+    it('listReviewerCandidates in demo mode returns candidates and excludes demo creator', async () => {
+      import.meta.env.VITE_DEMO_MODE = 'true';
+      const candidates = await listReviewerCandidates('11111111-0000-4000-8000-000000000001');
+      expect(candidates.length).toBeGreaterThan(0);
+      expect(candidates.some((c) => c.id === 'demo-coach-creator')).toBe(false);
+      expect(candidates.some((c) => c.id === 'demo-coach-peer-01')).toBe(true);
+    });
+
+    it('listReviewerCandidates in real mode filters by coach+academy or admin and excludes current user', async () => {
+      import.meta.env.VITE_DEMO_MODE = 'false';
+
+      const mockProfiles = [
+        { id: 'coach-01', full_name: 'Coach Budi', role: 'coach' },
+        { id: 'admin-01', full_name: 'Admin Hendra', role: 'admin' },
+        { id: 'coach-creator-id', full_name: 'Coach Creator', role: 'coach' }
+      ];
+
+      const mockOr = vi.fn().mockResolvedValue({ data: mockProfiles, error: null });
+      const mockSelect = vi.fn().mockReturnValue({ or: mockOr });
+      supabase.from.mockReturnValue({ select: mockSelect });
+      getCurrentUserProfile.mockResolvedValue({ id: 'coach-creator-id' });
+
+      const candidates = await listReviewerCandidates('acad-999');
+
+      expect(supabase.from).toHaveBeenCalledWith('profiles');
+      expect(mockSelect).toHaveBeenCalledWith('id, full_name, role');
+      expect(mockOr).toHaveBeenCalledWith('and(role.eq.coach,academy_id.eq.acad-999),role.eq.admin');
+
+      // coach-creator-id must be excluded because there are other candidates
+      expect(candidates.map((c) => c.id)).toEqual(['coach-01', 'admin-01']);
+
+      // Solo staff exception: if only current user exists, do not exclude
+      mockOr.mockResolvedValueOnce({
+        data: [{ id: 'coach-creator-id', full_name: 'Coach Creator', role: 'coach' }],
+        error: null
+      });
+      const solo = await listReviewerCandidates('acad-999');
+      expect(solo.map((c) => c.id)).toEqual(['coach-creator-id']);
+
+      import.meta.env.VITE_DEMO_MODE = 'true';
+    });
   });
 
   describe('3. EventMap Component Visualization & Filters', () => {
@@ -298,6 +367,143 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
         screen.getByText('Dokumen internal akademi; berisi data anak, jangan dibagikan tanpa persetujuan wali.')
       ).toBeInTheDocument();
     });
+
+    it('displays sections 1 through 9 in exact sequence with honest headings including "Individu"', async () => {
+      vi.spyOn(matchesLib, 'getMatch').mockResolvedValue(dummyMatch);
+      vi.spyOn(matchesLib, 'listEvents').mockResolvedValue(dummyEvents);
+      vi.spyOn(matchesLib, 'listParticipants').mockResolvedValue(dummyParticipants);
+      vi.spyOn(scenariosLib, 'listScenarios').mockResolvedValue([]);
+      vi.spyOn(reportLib, 'getLatestSnapshot').mockResolvedValue(null);
+
+      const { container } = render(
+        <MemoryRouter initialEntries={['/laga/m-100/laporan']}>
+          <Routes>
+            <Route path="/laga/:matchId/laporan" element={<MatchReportPage userRole="coach" />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/Laporan Pertandingan: vs Bintang Muda FC/i)).toBeInTheDocument();
+      });
+
+      const sectionTexts = Array.from(container.querySelectorAll('section span.font-mono.uppercase'))
+        .map((el) => el.textContent.trim());
+
+      expect(sectionTexts.length).toBe(9);
+      expect(sectionTexts[0]).toContain('Bagian 1 • Dokumen Resmi Pertandingan');
+      expect(sectionTexts[1]).toContain('Bagian 2 • Integritas & Cakupan Pencatatan (Wajib)');
+      expect(sectionTexts[2]).toContain('Bagian 3 • Kinerja Kolektif');
+      expect(sectionTexts[3]).toContain('Bagian 4 • Analisis Lawan');
+      expect(sectionTexts[4]).toContain('Bagian 5 • Kontribusi Individu');
+      expect(sectionTexts[5]).toContain('Bagian 6 • Distribusi Spasial');
+      expect(sectionTexts[6]).toContain('Bagian 7 • Konteks Kurikulum');
+      expect(sectionTexts[7]).toContain('Bagian 8 • Transparansi Metodologi');
+      expect(sectionTexts[8]).toContain('Bagian 9 • Kriptografi & Keaslian');
+
+      // Verify section 5 heading is "Individu"
+      expect(screen.getByRole('heading', { level: 2, name: 'Individu' })).toBeInTheDocument();
+    });
+
+    it('disables freeze button and displays helper text if reviewer candidate list is empty', async () => {
+      vi.spyOn(matchesLib, 'getMatch').mockResolvedValue(dummyMatch);
+      vi.spyOn(matchesLib, 'listEvents').mockResolvedValue(dummyEvents);
+      vi.spyOn(matchesLib, 'listParticipants').mockResolvedValue(dummyParticipants);
+      vi.spyOn(scenariosLib, 'listScenarios').mockResolvedValue([]);
+      vi.spyOn(reportLib, 'getLatestSnapshot').mockResolvedValue(null);
+      vi.spyOn(reportLib, 'listReviewerCandidates').mockResolvedValue([]);
+
+      render(
+        <MemoryRouter initialEntries={['/laga/m-100/laporan']}>
+          <Routes>
+            <Route path="/laga/:matchId/laporan" element={<MatchReportPage userRole="coach" />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/Belum ada pelatih lain atau admin yang bisa meninjau/i)).toBeInTheDocument();
+      });
+
+      const freezeBtn = screen.getByRole('button', { name: /Bekukan laporan/i });
+      expect(freezeBtn).toBeDisabled();
+    });
+
+    it('toggles between live and frozen views when snapshot exists', async () => {
+      const frozenSnapshot = {
+        id: 'snap-test-01',
+        match_id: 'm-100',
+        academy_id: '11111111-0000-4000-8000-000000000001',
+        payload_version: 'report-v1',
+        snapshot_hash: 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
+        events_digest: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+        canonical_payload: {
+          payload_version: 'report-v1',
+          match_id: 'm-100',
+          match: dummyMatch,
+          participants: dummyParticipants,
+          events: dummyEvents,
+          events_digest: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+          published_scenarios: []
+        },
+        reviewed_by: 'Pelatih Budi Santoso',
+        created_at: '2026-11-16T10:00:00.000Z'
+      };
+
+      vi.spyOn(matchesLib, 'getMatch').mockResolvedValue(dummyMatch);
+      vi.spyOn(matchesLib, 'listEvents').mockResolvedValue(dummyEvents);
+      vi.spyOn(matchesLib, 'listParticipants').mockResolvedValue(dummyParticipants);
+      vi.spyOn(scenariosLib, 'listScenarios').mockResolvedValue([]);
+      vi.spyOn(reportLib, 'getLatestSnapshot').mockResolvedValue(frozenSnapshot);
+
+      render(
+        <MemoryRouter initialEntries={['/laga/m-100/laporan']}>
+          <Routes>
+            <Route path="/laga/:matchId/laporan" element={<MatchReportPage userRole="coach" />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Tampilkan versi beku/i })).toBeInTheDocument();
+      });
+
+      // Click to toggle frozen view
+      fireEvent.click(screen.getByRole('button', { name: /Tampilkan versi beku/i }));
+
+      expect(screen.getByText(/Versi beku.*peninjau/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Tampilkan data saat ini/i })).toBeInTheDocument();
+
+      // Click again to toggle back to live view
+      fireEvent.click(screen.getByRole('button', { name: /Tampilkan data saat ini/i }));
+      expect(screen.queryByText(/Versi beku.*peninjau/i)).not.toBeInTheDocument();
+    });
+
+    it('self-contained snapshot: canonical_payload contains events array and reconstructs exact metrics', async () => {
+      const payload = await buildReportPayload(dummyMatch, dummyParticipants, dummyEvents, []);
+      expect(payload.events).toBeDefined();
+      expect(Array.isArray(payload.events)).toBe(true);
+      expect(payload.events.length).toBe(dummyEvents.length);
+
+      const snapshot = await freezeReport({
+        match: dummyMatch,
+        participants: dummyParticipants,
+        events: dummyEvents,
+        publishedScenarios: [],
+        reviewedBy: 'coach-peer-01'
+      });
+
+      expect(snapshot.canonical_payload.events).toBeDefined();
+      expect(snapshot.canonical_payload.events.length).toBe(3);
+
+      const reconstructed = reconstructReportFromSnapshot(snapshot);
+      expect(reconstructed.match.id).toBe(dummyMatch.id);
+      expect(reconstructed.events.length).toBe(3);
+      expect(reconstructed.passStats_own.value).toBe(100);
+      expect(reconstructed.shotStats_own.goals.value).toBe(1);
+      expect(reconstructed.playerStats.rows.length).toBe(2);
+      expect(reconstructed.dataQuality.total_events.value).toBe(3);
+    });
   });
 
   describe('5. Zero Forbidden Words & Design Rules Scanner', () => {
@@ -346,6 +552,42 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
         const matches = content.match(arbitraryTextRegex);
         expect(matches, `Arbitrary text size found in ${relPath}: ${matches}`).toBeNull();
       }
+    });
+
+    it('contains ZERO forbidden text sizes (text-lg, text-3xl, text-4xl) in match analysis and report UI', () => {
+      const uiFiles = [
+        'src/components/match/EventMap.jsx',
+        'src/pages/MatchReportPage.jsx'
+      ];
+
+      const forbiddenTextTokenRegex = /\btext-(lg|3xl|4xl)\b/g;
+
+      for (const relPath of uiFiles) {
+        const fullPath = path.resolve(process.cwd(), relPath);
+        if (!fs.existsSync(fullPath)) continue;
+
+        const content = fs.readFileSync(fullPath, 'utf-8');
+        const matches = content.match(forbiddenTextTokenRegex);
+        expect(matches, `Forbidden text size class found in ${relPath}: ${matches}`).toBeNull();
+      }
+    });
+
+    it('contains ZERO occurrences of "Halaman 1/1" across production source files', () => {
+      const forbiddenPhrase = ['Halaman', '1/1'].join(' ');
+      function scanDir(dir) {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            if (entry.name === 'test') continue; // Skip test directory so test file doesn't self-match
+            scanDir(fullPath);
+          } else if (/\.(jsx?|tsx?|css|html)$/.test(entry.name)) {
+            const content = fs.readFileSync(fullPath, 'utf-8');
+            expect(content, `Hardcoded "${forbiddenPhrase}" found in ${fullPath}`).not.toContain(forbiddenPhrase);
+          }
+        }
+      }
+      scanDir(path.resolve(process.cwd(), 'src'));
     });
 
     it('contains ZERO dark: prefixes or hardcoded hex colors in match analysis and report UI', () => {
