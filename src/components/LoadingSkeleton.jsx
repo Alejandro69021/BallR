@@ -8,7 +8,7 @@ export default function LoadingSkeleton() {
       aria-label="Memuat data rekam jejak"
       className="w-full max-w-5xl mx-auto px-4 py-6 space-y-6"
     >
-      {/* Top Banner Skeleton */}
+      {/* Header Banner Skeleton */}
       <div className="flex items-center justify-between p-4 rounded-panel bg-panel border border-line">
         <div className="flex items-center gap-3">
           <Skeleton variant="rect" width={40} height={40} />

@@ -6,12 +6,10 @@ import App from '../App';
 import AuthModal from '../components/auth/AuthModal';
 import * as supabaseLib from '../lib/supabase';
 import { fetchPublicPlayersFromViews, fetchLiveRosterFromSupabase, fetchPassportSnapshot, fetchPlayerByToken } from '../lib/supabase';
-import VaepScorecard from '../components/analytics/VaepScorecard';
 import FitnessStrip from '../components/FitnessStrip';
 import PlayerHeader from '../components/PlayerHeader';
 import BioMaturityCard from '../components/growth/BioMaturityCard';
 import MatchMoments from '../components/MatchMoments';
-import TacticalAnalyticsHub from '../components/TacticalAnalyticsHub';
 import TopNav from '../components/TopNav';
 
 describe('Security Hardening & Privacy Tests', () => {
@@ -146,26 +144,6 @@ describe('Security Hardening & Privacy Tests', () => {
   });
 
   describe('(iii) Empty states render with honest "Belum ada data"', () => {
-    it('renders honest empty state in VaepScorecard when vaepMetrics is missing', () => {
-      render(<VaepScorecard vaepMetrics={null} />);
-
-      expect(screen.getByText('Belum ada data')).toBeInTheDocument();
-      expect(screen.getByText(/Metrik aksi VAEP belum dihitung/i)).toBeInTheDocument();
-      expect(screen.queryByText('+0.84')).not.toBeInTheDocument();
-    });
-
-    it('renders honest empty state in TacticalAnalyticsHub telemetry cards when stats are null', () => {
-      const emptyPlayer = {
-        personal_info: { full_name: 'Atlet Tes', position: 'Midfielder' }
-      };
-
-      render(<TacticalAnalyticsHub player={emptyPlayer} onToast={() => {}} />);
-
-      const emptyBadges = screen.getAllByText('Belum ada data');
-      expect(emptyBadges.length).toBeGreaterThan(0);
-      expect(screen.queryByText('+0.84')).not.toBeInTheDocument();
-    });
-
     it('renders honest empty state in FitnessStrip when benchmarks are null', () => {
       render(<FitnessStrip benchmarks={{}} />);
 

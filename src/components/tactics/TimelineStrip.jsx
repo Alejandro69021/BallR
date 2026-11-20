@@ -24,7 +24,7 @@ export default function TimelineStrip({
 
   return (
     <div className={`space-y-3 p-3 rounded-panel bg-panel border border-line ${className}`}>
-      {/* Top row: Frames horizontal thumbnail strip */}
+      {/* Thumbnail row: Frames horizontal strip */}
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs font-semibold text-1">
           Rangkaian bingkai ({totalFrames})
@@ -72,18 +72,16 @@ export default function TimelineStrip({
               key={`frame-pill-${idx}`}
               type="button"
               onClick={() => onSelectFrame?.(idx)}
-              className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-control border text-xs min-h-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
-                isActive
+              className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-control border text-xs min-h-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${isActive
                   ? 'bg-raised border-brand text-1 font-semibold'
                   : 'bg-app border-line text-2 hover:text-1'
-              }`}
+                }`}
               aria-label={`Bingkai ${idx + 1}: ${notePreview}`}
               aria-current={isActive ? 'step' : undefined}
             >
               <span
-                className={`w-5 h-5 rounded-full flex items-center justify-center font-mono text-xs font-bold ${
-                  isActive ? 'bg-brand text-app' : 'bg-raised text-2'
-                }`}
+                className={`w-5 h-5 rounded-full flex items-center justify-center font-mono text-xs font-bold ${isActive ? 'bg-brand text-app' : 'bg-raised text-2'
+                  }`}
               >
                 {idx + 1}
               </span>

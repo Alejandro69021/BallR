@@ -106,7 +106,9 @@
 }
 
 @layer base {
-  html, body {
+
+  html,
+  body {
     touch-action: manipulation;
     overscroll-behavior-y: none;
     -webkit-overflow-scrolling: touch;
@@ -122,15 +124,11 @@
     color: var(--text-1);
     -webkit-tap-highlight-color: transparent;
   }
-  
-  h1, h2, h3, h4 {
-    font-family: var(--font-sans, 'IBM Plex Sans', -apple-system, sans-serif);
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
 
-  /* Transition support for unmigrated components */
-  .font-athletic {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-sans, 'IBM Plex Sans', -apple-system, sans-serif);
     font-weight: 600;
     letter-spacing: -0.01em;
@@ -155,13 +153,16 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--app-bg);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--line);
   border-radius: 9999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--control-border);
 }
@@ -178,13 +179,25 @@
 
 /* Backward compatibility keyframes during transition */
 @keyframes shakeKeyframe {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-8px); }
-  40%, 80% { transform: translateX(8px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20%,
+  60% {
+    transform: translateX(-8px);
+  }
+
+  40%,
+  80% {
+    transform: translateX(8px);
+  }
 }
 
 .animate-shake {
-  animation: shakeKeyframe 0.5s cubic-bezier(.36,.07,.19,.97) both;
+  animation: shakeKeyframe 0.5s cubic-bezier(.36, .07, .19, .97) both;
 }
 
 /* Print optimizations for A4 Dossier export - everything renders as paper */
@@ -194,7 +207,9 @@
     margin: 12mm;
   }
 
-  [data-surface="dark"], [data-surface="paper"], :root {
+  [data-surface="dark"],
+  [data-surface="paper"],
+  :root {
     --app-bg: #FFFFFF;
     --panel: #FFFFFF;
     --raised: #FFFFFF;
@@ -220,7 +235,14 @@
     print-color-adjust: exact !important;
   }
 
-  header, nav, .no-print, button, input, select, .pwa-banner, #offline-pill {
+  header,
+  nav,
+  .no-print,
+  button,
+  input,
+  select,
+  .pwa-banner,
+  #offline-pill {
     display: none !important;
   }
 
@@ -230,14 +252,19 @@
     margin: 0 !important;
   }
 
-  section, footer, .print-avoid-break {
+  section,
+  footer,
+  .print-avoid-break {
     break-inside: avoid !important;
   }
 }
 
 /* Accessible reduced-motion support */
 @media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
+
+  *,
+  ::before,
+  ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

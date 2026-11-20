@@ -178,7 +178,7 @@ function createInitialDemoScenarios() {
     {
       scenario_id: scenarioId,
       reference_id: 'fifa-tcp-spiralling-up',
-      note: 'Prinsip progresi spiral bertahap (FIFA TCP Framework)'
+      note: 'Prinsip progresi spiral bertahap (TCP Framework)'
     }
   ];
 

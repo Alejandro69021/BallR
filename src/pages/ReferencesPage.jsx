@@ -18,19 +18,19 @@ export default function ReferencesPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto text-white pb-12">
       {/* Header */}
-      <div className="border-b border-slate-800 pb-4 space-y-1">
+      <div className="border-b border-line pb-4 space-y-1">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded bg-slate-800 text-[#4FB286]">
+          <div className="p-1.5 rounded bg-raised text-brand">
             <BookOpen className="w-5 h-5" />
           </div>
-          <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
+          <span className="text-xs font-mono uppercase tracking-wider text-2">
             Katalog Kepustakaan Ilmiah
           </span>
         </div>
-        <h1 className="text-xl font-semibold text-white">
+        <h1 className="text-xl font-semibold text-1">
           Daftar Rujukan Resmi & Dokumen Verifikasi
         </h1>
-        <p className="text-xs text-slate-400 leading-relaxed max-w-2xl">
+        <p className="text-xs text-2 leading-relaxed max-w-2xl">
           Setiap indikator taktis, metode kematangan biologis, dan tolok ukur kebugaran di BallR wajib merujuk secara tertulis pada pustaka yang terdaftar di sini sesuai asas kejujuran data (*data honesty*).
         </p>
       </div>
@@ -38,13 +38,13 @@ export default function ReferencesPage() {
       {/* Filter & Search Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5 pointer-events-none" />
+          <Search className="w-4 h-4 text-2 absolute left-3 top-2.5 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari rujukan, penulis, atau kurikulum..."
-            className="w-full pl-9 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#4FB286]"
+            className="w-full pl-9 pr-3 py-1.5 bg-app border border-line rounded text-xs text-1 placeholder-slate-500 focus:outline-none focus:border-brand"
           />
         </div>
 
@@ -63,8 +63,8 @@ export default function ReferencesPage() {
               onClick={() => setFilterType(cat.id)}
               className={`px-2.5 py-1 rounded text-xs transition-colors whitespace-nowrap cursor-pointer ${
                 filterType === cat.id
-                  ? 'bg-slate-800 text-white font-medium border border-slate-700'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-raised text-1 font-medium border border-line'
+                  : 'text-2 hover:text-1'
               }`}
             >
               {cat.label}
@@ -75,18 +75,18 @@ export default function ReferencesPage() {
 
       {/* References Table / List */}
       {filteredRefs.length === 0 ? (
-        <div className="p-8 text-center rounded-lg bg-[#0C111D] border border-slate-800 space-y-2 max-w-md mx-auto">
-          <AlertCircle className="w-6 h-6 mx-auto text-slate-500" />
-          <h3 className="text-sm font-semibold text-white">Belum Ada Rujukan Terdaftar</h3>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Sesuai aturan data honesty, entri rujukan hanya dimasukkan dari berkas resmi <code className="text-[#4FB286]">docs/REFERENCES_SEED.md</code> dan tidak ditulis dari ingatan.
+        <div className="p-8 text-center rounded-lg bg-panel border border-line space-y-2 max-w-md mx-auto">
+          <AlertCircle className="w-6 h-6 mx-auto text-2" />
+          <h3 className="text-sm font-semibold text-1">Belum Ada Rujukan Terdaftar</h3>
+          <p className="text-xs text-2 leading-relaxed">
+            Sesuai aturan data honesty, entri rujukan hanya dimasukkan dari berkas resmi <code className="text-brand">docs/REFERENCES_SEED.md</code> dan tidak ditulis dari ingatan.
           </p>
         </div>
       ) : (
-        <div className="rounded-lg bg-[#0C111D] border border-slate-800 overflow-hidden shadow-sm">
+        <div className="rounded-lg bg-panel border border-line overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950 text-slate-400 uppercase font-mono text-xs border-b border-slate-800">
+              <thead className="bg-raised text-2 uppercase font-mono text-xs border-b border-line">
                 <tr>
                   <th className="py-2.5 px-3">Judul Rujukan</th>
                   <th className="py-2.5 px-3">Penerbit / Penulis</th>
@@ -96,22 +96,22 @@ export default function ReferencesPage() {
                   <th className="py-2.5 px-3">Tautan</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 font-sans">
+              <tbody className="divide-y divide-line/60 font-sans">
                 {filteredRefs.map((ref) => (
-                  <tr key={ref.id} className="hover:bg-slate-900/50 transition-colors">
+                  <tr key={ref.id} className="hover:bg-raised/50 transition-colors">
                     <td className="py-3 px-3">
-                      <div className="font-semibold text-white">{ref.title}</div>
-                      <div className="text-xs font-mono text-slate-400">{ref.id}</div>
+                      <div className="font-semibold text-1">{ref.title}</div>
+                      <div className="text-xs font-mono text-2">{ref.id}</div>
                     </td>
-                    <td className="py-3 px-3 text-slate-300">
+                    <td className="py-3 px-3 text-2">
                       {ref.publisher || 'Belum terkonfirmasi'} {ref.year ? `(${ref.year})` : ''}
                     </td>
-                    <td className="py-3 px-3 font-mono text-slate-200">
+                    <td className="py-3 px-3 font-mono text-1">
                       {ref.section || '-'}
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="px-2 py-0.5 rounded text-xs font-mono bg-slate-800 text-slate-300">
+                        <span className="px-2 py-0.5 rounded text-xs font-mono bg-raised text-2">
                           {ref.type}
                         </span>
                         <span className={`px-1.5 py-0.2 rounded text-xs font-mono uppercase border ${
@@ -123,10 +123,10 @@ export default function ReferencesPage() {
                         </span>
                       </div>
                     </td>
-                    <td className="py-3 px-3 font-mono text-xs text-slate-400">
+                    <td className="py-3 px-3 font-mono text-xs text-2">
                       <div>{ref.verified_on || 'Belum diverifikasi'}</div>
                       {ref.next_review_due && (
-                        <div className="text-xs text-amber-400">Jadwal: {ref.next_review_due}</div>
+                        <div className="text-xs text-warning">Jadwal: {ref.next_review_due}</div>
                       )}
                     </td>
                     <td className="py-3 px-3">
@@ -135,13 +135,13 @@ export default function ReferencesPage() {
                           href={ref.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#4FB286] hover:underline inline-flex items-center gap-1 font-mono text-xs"
+                          className="text-brand hover:underline inline-flex items-center gap-1 font-mono text-xs"
                         >
                           <span>Buka</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       ) : (
-                        <span className="text-slate-500 font-mono text-xs">-</span>
+                        <span className="text-2 font-mono text-xs">-</span>
                       )}
                     </td>
                   </tr>

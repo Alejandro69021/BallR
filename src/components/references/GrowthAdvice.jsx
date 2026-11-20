@@ -13,7 +13,7 @@ export default function GrowthAdvice({ advisoryText, stage, referenceIds = [] })
         <div className="flex items-center gap-2">
           <span className="font-semibold text-white">Anjuran Pertumbuhan Biologis</span>
           {stage && (
-            <span className="text-xs font-mono px-1.5 py-0.2 rounded bg-slate-800 text-[#4FB286]">
+            <span className="text-xs font-mono px-1.5 py-0.2 rounded bg-slate-800 text-brand">
               {stage}
             </span>
           )}

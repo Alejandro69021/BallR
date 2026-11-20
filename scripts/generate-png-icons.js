@@ -1,7 +1,7 @@
 import fs from 'fs';
 import zlib from 'zlib';
 
-function createPng(width, height, r, g, b) {
+function createPng(width, height) {
   // PNG signature
   const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
@@ -36,23 +36,23 @@ function createPng(width, height, r, g, b) {
       const dy = y - cy;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      // Border ring (Volt Lime #84CC16)
+      // Border ring (Brand #4FB286)
       if (Math.abs(dist - radius) < width * 0.04) {
-        rawData[pixelOffset] = 132;   // R
-        rawData[pixelOffset + 1] = 204; // G
-        rawData[pixelOffset + 2] = 22;  // B
+        rawData[pixelOffset] = 79;    // R
+        rawData[pixelOffset + 1] = 178; // G
+        rawData[pixelOffset + 2] = 134; // B
       }
-      // Inner lightning / shield symbol area
+      // Inner symbol area (Brand #4FB286)
       else if (dist < radius * 0.7 && ((dx > -dy && dx < dy + 20) || (Math.abs(dx) < 15 && dy > -radius * 0.5 && dy < radius * 0.5))) {
-        rawData[pixelOffset] = 204;   // R (#CCFF00)
-        rawData[pixelOffset + 1] = 255; // G
-        rawData[pixelOffset + 2] = 0;   // B
+        rawData[pixelOffset] = 79;    // R
+        rawData[pixelOffset + 1] = 178; // G
+        rawData[pixelOffset + 2] = 134; // B
       }
-      // Dark background (#05070B)
+      // Dark background (#0B0F14)
       else {
-        rawData[pixelOffset] = 5;     // R
-        rawData[pixelOffset + 1] = 7; // G
-        rawData[pixelOffset + 2] = 11; // B
+        rawData[pixelOffset] = 11;    // R
+        rawData[pixelOffset + 1] = 15; // G
+        rawData[pixelOffset + 2] = 20; // B
       }
     }
   }
@@ -100,4 +100,3 @@ function crc32(buf) {
 fs.writeFileSync('public/icon-192.png', createPng(192, 192));
 fs.writeFileSync('public/icon-512.png', createPng(512, 512));
 console.log('Successfully generated public/icon-192.png and public/icon-512.png');
-

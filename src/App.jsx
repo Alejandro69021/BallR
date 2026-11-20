@@ -5,7 +5,6 @@ import { usePlayers } from './hooks/usePlayers';
 import { signOutUser, getCurrentUserProfile, supabase } from './lib/supabase';
 
 import TopNav from './components/TopNav';
-import VideoModal from './components/VideoModal';
 import StoryFlexCardModal from './components/StoryFlexCardModal';
 import AuthModal from './components/auth/AuthModal';
 import Toast from './components/ui/Toast';
@@ -16,7 +15,6 @@ import VerificationView from './components/VerificationView';
 import Surface from './components/ui/Surface';
 
 import PassportPage from './pages/PassportPage';
-import MatchAnalysisPage from './pages/MatchAnalysisPage';
 import GrowthPage from './pages/GrowthPage';
 import SquadPage from './pages/SquadPage';
 import AssessmentPage from './pages/AssessmentPage';
@@ -47,7 +45,7 @@ function HomeRedirect({ userRole }) {
 
   if (!players || players.length === 0) {
     return (
-      <div className="p-8 text-center rounded-lg bg-[#0C111D] border border-slate-800 text-slate-400 max-w-md mx-auto mt-8">
+      <div className="p-8 text-center rounded-lg bg-panel border border-line text-2 max-w-md mx-auto mt-8">
         <p className="text-sm">Tidak ada data pemain yang ditemukan.</p>
       </div>
     );
@@ -111,7 +109,6 @@ function MainApp() {
   const [pendingTargetView, setPendingTargetView] = useState('assessment');
 
   // Modal & Toast states
-  const [activeClip, setActiveClip] = useState(null);
   const [isStoryCardOpen, setIsStoryCardOpen] = useState(false);
   const [toastInfo, setToastInfo] = useState(null);
 
@@ -237,7 +234,7 @@ function MainApp() {
         navigate(`/pemain/${currentId}`);
         break;
       case 'match':
-        navigate(`/pemain/${currentId}/laga`);
+        navigate('/laga');
         break;
       case 'growth':
         navigate(`/pemain/${currentId}/pertumbuhan`);
@@ -311,26 +308,8 @@ function MainApp() {
               />
             }
           />
-          <Route
-            path="/pemain/:publicId/laga"
-            element={
-              <MatchAnalysisPage
-                onOpenShare={() => setIsStoryCardOpen(true)}
-                onShareClip={(clip) => setActiveClip(clip)}
-                onToast={(t) => setToastInfo(t)}
-              />
-            }
-          />
-          <Route
-            path="/pemain/:publicId/laga/:matchId"
-            element={
-              <MatchAnalysisPage
-                onOpenShare={() => setIsStoryCardOpen(true)}
-                onShareClip={(clip) => setActiveClip(clip)}
-                onToast={(t) => setToastInfo(t)}
-              />
-            }
-          />
+          <Route path="/pemain/:publicId/laga" element={<Navigate to="/laga" replace />} />
+          <Route path="/pemain/:publicId/laga/:matchId" element={<Navigate to="/laga" replace />} />
           <Route
             path="/pemain/:publicId/pertumbuhan"
             element={
@@ -427,17 +406,6 @@ function MainApp() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
-
-      {/* 9:16 Vertical Video Player Modal */}
-      {activeClip && (
-        <VideoModal
-          clip={activeClip}
-          moments={activePlayer.verified_moments || []}
-          playerInfo={activePlayer.personal_info}
-          onClose={() => setActiveClip(null)}
-          onSelectClip={(c) => setActiveClip(c)}
-        />
-      )}
 
       {/* 9:16 Story Flex Card Generator Modal */}
       {isStoryCardOpen && (

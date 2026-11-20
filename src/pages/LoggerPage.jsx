@@ -141,7 +141,7 @@ export default function LoggerPage({ userRole = 'public', onOpenAuthModal, onToa
 
   return (
     <div className="space-y-4 max-w-5xl mx-auto">
-      {/* Top back navigation bar */}
+      {/* Back navigation bar */}
       <div className="flex items-center justify-between gap-3">
         <Button
           variant="secondary"

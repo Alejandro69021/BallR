@@ -7,7 +7,6 @@ import {
   User,
   Timer,
   ClipboardEdit,
-  Film,
   TrendingUp,
   Trophy,
   Compass
@@ -32,16 +31,15 @@ export default function TopNav({
 
   const navItems = [
     { id: 'passport', label: 'Paspor', shortLabel: 'Paspor', icon: <User className="w-4 h-4 shrink-0" /> },
-    { id: 'match', label: 'Analisis laga', shortLabel: 'Laga', icon: <Film className="w-4 h-4 shrink-0" /> },
     { id: 'growth', label: 'Pertumbuhan', shortLabel: 'Tumbuh', icon: <TrendingUp className="w-4 h-4 shrink-0" /> },
     { id: 'roster', label: 'Skuad', shortLabel: 'Skuad', icon: <Users className="w-4 h-4 shrink-0" /> },
     ...(isCoach
       ? [
-          { id: 'matches', label: 'Laga', shortLabel: 'Laga', icon: <Trophy className="w-4 h-4 shrink-0" /> },
-          { id: 'tactics', label: 'Taktik', shortLabel: 'Taktik', icon: <Compass className="w-4 h-4 shrink-0" /> },
-          { id: 'logger', label: 'Pitch logger', shortLabel: 'Logger', icon: <Timer className="w-4 h-4 shrink-0" /> },
-          { id: 'assessment', label: 'Evaluasi', shortLabel: 'Evaluasi', icon: <ClipboardEdit className="w-4 h-4 shrink-0" /> }
-        ]
+        { id: 'matches', label: 'Laga', shortLabel: 'Laga', icon: <Trophy className="w-4 h-4 shrink-0" /> },
+        { id: 'tactics', label: 'Taktik', shortLabel: 'Taktik', icon: <Compass className="w-4 h-4 shrink-0" /> },
+        { id: 'logger', label: 'Pitch logger', shortLabel: 'Logger', icon: <Timer className="w-4 h-4 shrink-0" /> },
+        { id: 'assessment', label: 'Evaluasi', shortLabel: 'Evaluasi', icon: <ClipboardEdit className="w-4 h-4 shrink-0" /> }
+      ]
       : [])
   ];
 
@@ -50,7 +48,7 @@ export default function TopNav({
       {/* Desktop & Mobile Header Bar */}
       <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-app/95 border-b border-line">
         <div className="max-w-6xl mx-auto px-3.5 sm:px-6 h-12 flex items-center justify-between gap-3">
-          
+
           {/* Left: Academy Brand Identity */}
           <div className="flex items-center gap-2.5 min-w-0">
             <div
@@ -94,11 +92,10 @@ export default function TopNav({
                   key={item.id}
                   type="button"
                   onClick={() => onSwitchView?.(item.id)}
-                  className={`relative flex items-center gap-1.5 px-3 h-full text-xs transition-colors duration-150 ease-out select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
-                    isActive
-                      ? 'text-1 font-semibold'
-                      : 'text-2 hover:text-1'
-                  }`}
+                  className={`relative flex items-center gap-1.5 px-3 h-full text-xs transition-colors duration-150 ease-out select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isActive
+                    ? 'text-1 font-semibold'
+                    : 'text-2 hover:text-1'
+                    }`}
                 >
                   {item.icon}
                   <span>{item.label}</span>
@@ -166,11 +163,10 @@ export default function TopNav({
               key={item.id}
               type="button"
               onClick={() => onSwitchView?.(item.id)}
-              className={`relative flex-1 flex flex-col items-center justify-center h-full py-1 gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand cursor-pointer ${
-                isActive
-                  ? 'text-brand font-semibold'
-                  : 'text-2 hover:text-1'
-              }`}
+              className={`relative flex-1 flex flex-col items-center justify-center h-full py-1 gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand cursor-pointer ${isActive
+                ? 'text-brand font-semibold'
+                : 'text-2 hover:text-1'
+                }`}
             >
               {item.icon}
               <span className="text-xs leading-none tracking-tight">

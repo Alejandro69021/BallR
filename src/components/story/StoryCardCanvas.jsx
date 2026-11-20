@@ -1,130 +1,153 @@
 import React from 'react';
-import { ShieldCheck, QrCode } from 'lucide-react';
+
+export function formatPlayerName(fullName, isPrivate) {
+  if (!fullName) return 'Belum ada data';
+  if (!isPrivate) return fullName;
+  return fullName
+    .trim()
+    .split(/\s+/)
+    .map((part) => `${part.charAt(0).toUpperCase()}.`)
+    .join(' ');
+}
 
 export default function StoryCardCanvas({
   cardRef,
-  currentTheme,
-  personal_info,
-  topPillars,
-  endorsementQuote,
-  player_id
+  player,
+  isPrivate = false
 }) {
+  const personalInfo = player?.personal_info || {};
+  const fitness = player?.fitness_benchmarks || {};
+  const evaluation = player?.ai_coach_evaluation || {};
+  const academy = personalInfo.academy || {};
+
+  const nameDisplay = formatPlayerName(personalInfo.full_name, isPrivate);
+  const positionDisplay = personalInfo.position || 'Belum ada data';
+  const ageGroupDisplay =
+    personalInfo.age_group ||
+    (personalInfo.age ? `U-${personalInfo.age}` : null) ||
+    'Belum ada data';
+  const academyDisplay = academy.name || 'Belum ada data';
+  const playerId = player?.player_id || player?.public_id || player?.id || 'Belum ada data';
+
+  const heightDisplay = personalInfo.height_cm ? `${personalInfo.height_cm} cm` : 'Belum ada data';
+  const weightDisplay = personalInfo.weight_kg ? `${personalInfo.weight_kg} kg` : 'Belum ada data';
+
+  const jumpDisplay =
+    fitness.vertical_jump_cm != null ? `${fitness.vertical_jump_cm} cm` : 'Belum ada data';
+  const sprintDisplay =
+    fitness.sprint_20m_sec != null ? `${fitness.sprint_20m_sec} s` : 'Belum ada data';
+  const shuttleDisplay =
+    fitness.shuttle_run_sec != null ? `${fitness.shuttle_run_sec} s` : 'Belum ada data';
+  const fitnessDate = fitness.test_date || 'Belum ada data';
+
+  const narrativeDisplay = evaluation.narrative || 'Belum ada data';
+  const coachDisplay = evaluation.period
+    ? `${evaluation.period} • ${evaluation.coach_name || 'Pelatih'}`
+    : 'Belum ada data';
+
   return (
-    <div className="relative flex justify-center items-center">
+    <div className="flex justify-center items-center w-full">
       <div
         ref={cardRef}
-        className={`w-[290px] h-[515px] sm:w-[320px] sm:h-[568px] rounded-[32px] p-4 bg-gradient-to-b ${currentTheme.cardBg} border-2 ${currentTheme.cardBorder} flex flex-col justify-between relative overflow-hidden select-none`}
+        data-testid="progress-card-canvas"
+        className="w-full max-w-[340px] bg-panel border border-line rounded-panel p-5 text-1 font-sans space-y-4 select-none"
       >
-        {/* Subtle Pitch Grid Pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
-
-        {/* 1. TOP BRAND & ACADEMY BAR */}
-        <div className="relative z-10 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-black/60 border border-white/20 p-1 flex items-center justify-center">
-              <img
-                src={personal_info.academy.logo_url}
-                alt={personal_info.academy.name}
-                className="w-full h-full object-contain"
-                crossOrigin="anonymous"
-              />
+        {/* Header */}
+        <div className="pb-3 border-b border-line flex items-center justify-between gap-2">
+          <div>
+            <div className="text-xs uppercase tracking-wider text-2 font-medium">
+              Kartu Perkembangan
             </div>
-            <div>
-              <div className="font-athletic text-xs font-bold text-white uppercase tracking-wider leading-none">
-                {personal_info.academy.name}
-              </div>
-              <div className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
-                <ShieldCheck className="w-2.5 h-2.5 text-[#CCFF00]" />
-                <span>Jogja Verified</span>
-              </div>
+            <div className="text-sm font-semibold text-1 truncate">
+              {academyDisplay}
             </div>
           </div>
-
-          <span className={`px-2 py-0.5 rounded-full text-xs tracking-wider uppercase shadow-sm ${currentTheme.headerPill}`}>
-            PROSPECT 2026
-          </span>
-        </div>
-
-        {/* 2. PLAYER CUTOUT & HERO AURA */}
-        <div className="relative z-10 flex flex-col items-center justify-center my-auto py-2">
-          <div
-            className={`absolute w-40 h-40 rounded-full bg-gradient-to-tr ${currentTheme.aura} blur-2xl pointer-events-none`}
-          />
-
-          <div className="relative w-28 h-32 rounded-2xl overflow-hidden bg-[#090D16] border-2 border-white/20 shadow-2xl mb-2">
-            <img
-              src={personal_info.photo_url}
-              alt={personal_info.full_name}
-              className="w-full h-full object-cover object-top filter contrast-110 brightness-95"
-              crossOrigin="anonymous"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-            <span className="absolute bottom-1 right-1 px-1.5 py-0.2 rounded bg-black/80 text-xs font-athletic font-bold text-[#CCFF00]">
-              #{personal_info.jersey_number}
+          <div className="text-right">
+            <span className="inline-block px-2 py-0.5 rounded text-xs border border-line bg-raised text-2">
+              ID: {playerId}
             </span>
           </div>
+        </div>
 
-          <h2 className="font-athletic text-lg font-black text-white tracking-wide uppercase text-center leading-tight drop-shadow-md">
-            {personal_info.full_name}
-          </h2>
-          <div className="flex items-center gap-1.5 mt-0.5 text-xs text-slate-300">
-            <span className="font-bold text-[#CCFF00]">{personal_info.position}</span>
+        {/* Identitas Atlet */}
+        <div className="space-y-1">
+          <div className="text-lg font-bold text-1 tracking-tight">
+            {nameDisplay}
+          </div>
+          <div className="text-xs text-2 flex flex-wrap items-center gap-1.5">
+            <span className="text-brand font-medium">{positionDisplay}</span>
             <span>•</span>
-            <span>U-13 Elite</span>
-            <span>•</span>
-            <span>{personal_info.preferred_foot}</span>
+            <span>{ageGroupDisplay}</span>
+            {personalInfo.preferred_foot && (
+              <>
+                <span>•</span>
+                <span>{personalInfo.preferred_foot}</span>
+              </>
+            )}
           </div>
         </div>
 
-        {/* 3. STAT PILLARS */}
-        <div className="relative z-10 space-y-2">
-          <div className="p-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10">
-            <div className="grid grid-cols-3 gap-1.5">
-              {topPillars.map((p) => (
-                <div
-                  key={p.code}
-                  className="p-1.5 rounded-lg bg-white/5 border border-white/5 text-center flex flex-col justify-center"
-                >
-                  <span className="text-xs font-bold text-slate-400 uppercase leading-none">
-                    {p.code}
-                  </span>
-                  <span className="font-athletic text-sm font-black text-white mt-0.5">
-                    {p.value}
-                  </span>
-                </div>
-              ))}
+        {/* Antropometri */}
+        <div className="p-3 rounded-control bg-raised border border-line space-y-2">
+          <div className="text-xs font-semibold text-2 uppercase tracking-wider">
+            Antropometri
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <span className="text-2 block">Tinggi Badan</span>
+              <span className="font-semibold text-1">{heightDisplay}</span>
+            </div>
+            <div>
+              <span className="text-2 block">Berat Badan</span>
+              <span className="font-semibold text-1">{weightDisplay}</span>
             </div>
           </div>
-
-          <div className="px-2.5 py-1.5 rounded-xl bg-black/50 backdrop-blur-md border border-white/5 text-xs text-slate-300 italic leading-snug text-center">
-            "{endorsementQuote}"
+          <div className="text-xs text-2 pt-1 border-t border-line">
+            Sumber: Pengukuran Staf Akademi
           </div>
+        </div>
 
-          {/* 4. BOTTOM VERIFICATION FOOTER */}
-          <div className="pt-1.5 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-            <div className="flex items-center gap-1">
-              <div className="p-1 rounded bg-white text-black">
-                <QrCode className="w-3 h-3" />
-              </div>
-              <div>
-                <div className="font-bold text-white uppercase leading-none">
-                  SCAN FOR STATS
-                </div>
-                <div className="text-xs text-slate-400">
-                  ID: {player_id}
-                </div>
-              </div>
+        {/* Parameter Kebugaran Fisik */}
+        <div className="p-3 rounded-control bg-raised border border-line space-y-2">
+          <div className="text-xs font-semibold text-2 uppercase tracking-wider">
+            Kebugaran Fisik
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            <div>
+              <span className="text-2 block">Lompatan</span>
+              <span className="font-semibold text-1">{jumpDisplay}</span>
             </div>
-
-            <div className="text-right">
-              <div className="font-athletic font-bold text-[#CCFF00] tracking-wider uppercase">
-                MPFA PASSPORT
-              </div>
-              <div className="text-xs text-slate-500">
-                Official Scouting Dossier
-              </div>
+            <div>
+              <span className="text-2 block">Sprint 20m</span>
+              <span className="font-semibold text-1">{sprintDisplay}</span>
+            </div>
+            <div>
+              <span className="text-2 block">Kelincahan</span>
+              <span className="font-semibold text-1">{shuttleDisplay}</span>
             </div>
           </div>
+          <div className="text-xs text-2 pt-1 border-t border-line">
+            Tanggal: {fitnessDate} • Sumber: Tes Fisik Berkala
+          </div>
+        </div>
+
+        {/* Catatan Evaluasi Pelatih */}
+        <div className="p-3 rounded-control bg-raised border border-line space-y-2">
+          <div className="text-xs font-semibold text-2 uppercase tracking-wider">
+            Evaluasi Pelatih
+          </div>
+          <p className="text-xs text-1 italic line-clamp-3 leading-relaxed">
+            "{narrativeDisplay}"
+          </p>
+          <div className="text-xs text-2 pt-1 border-t border-line">
+            Periode: {coachDisplay} • Sumber: Catatan Resmi Pelatih
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="pt-2 border-t border-line flex items-center justify-between text-xs text-2">
+          <span>Paspor Atlet BallR</span>
+          <span>Data Terverifikasi</span>
         </div>
       </div>
     </div>

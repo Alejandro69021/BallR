@@ -34,9 +34,9 @@ describe('Navigation (TopNav Desktop & Mobile Tab Bar)', () => {
     expect(skuadButton).toBeInTheDocument();
 
     // Click navigation item
-    const lagaButton = within(desktopNav).getByRole('button', { name: /Analisis laga/i });
-    fireEvent.click(lagaButton);
-    expect(handleSwitch).toHaveBeenCalledWith('match');
+    const growthButton = within(desktopNav).getByRole('button', { name: /Pertumbuhan/i });
+    fireEvent.click(growthButton);
+    expect(handleSwitch).toHaveBeenCalledWith('growth');
   });
 
   it('renders mobile bottom tab bar with concise labels (nothing truncated)', () => {
@@ -57,9 +57,8 @@ describe('Navigation (TopNav Desktop & Mobile Tab Bar)', () => {
     const mobileNav = screen.getByRole('navigation', { name: 'Navigasi bawah seluler' });
     expect(mobileNav).toBeInTheDocument();
 
-    // Verify all 4 public mobile tabs are rendered fully within mobile nav
+    // Verify public mobile tabs are rendered fully within mobile nav
     expect(within(mobileNav).getByRole('button', { name: /Paspor/i })).toBeInTheDocument();
-    expect(within(mobileNav).getByRole('button', { name: /Laga/i })).toBeInTheDocument();
     expect(within(mobileNav).getByRole('button', { name: /Tumbuh/i })).toBeInTheDocument();
     expect(within(mobileNav).getByRole('button', { name: /Skuad/i })).toBeInTheDocument();
   });

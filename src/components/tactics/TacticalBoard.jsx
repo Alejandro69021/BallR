@@ -181,7 +181,7 @@ export default function TacticalBoard({
 
   return (
     <div className={`space-y-2 select-none ${className}`}>
-      {/* Top status bar: Coordinates readout + disclaimer */}
+      {/* Status bar: Coordinates readout + disclaimer */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
         <div className="flex items-center gap-2">
           {selectedItemCoords ? (
@@ -216,9 +216,8 @@ export default function TacticalBoard({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onClick={handlePitchClick}
-        className={`relative w-full overflow-hidden rounded-panel border border-pitch-line bg-pitch text-pitch-line ${
-          drawingArrowKind ? 'cursor-crosshair' : isEditing ? 'cursor-default' : ''
-        }`}
+        className={`relative w-full overflow-hidden rounded-panel border border-pitch-line bg-pitch text-pitch-line ${drawingArrowKind ? 'cursor-crosshair' : isEditing ? 'cursor-default' : ''
+          }`}
         style={{ aspectRatio: `${pitchLength} / ${pitchWidth}` }}
       >
         <svg

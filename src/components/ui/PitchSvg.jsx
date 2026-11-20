@@ -69,7 +69,7 @@ export default function PitchSvg({
             {/* Center circle & spot */}
             <circle cx={midY} cy={midX} r={circleR} />
             <circle cx={midY} cy={midX} r="0.6" fill="currentColor" />
-            {/* Top Penalty Area */}
+            {/* North Penalty Area */}
             <rect x={(wid - penBoxH) / 2} y="0" width={penBoxH} height={penBoxW} />
             <rect x={(wid - goalBoxH) / 2} y="0" width={goalBoxH} height={goalBoxW} />
             <circle cx={midY} cy={penBoxW * 0.65} r="0.6" fill="currentColor" />
