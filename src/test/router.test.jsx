@@ -26,7 +26,6 @@ describe('Route Navigation', () => {
     const mockPlayer = {
       player_id: 'player-test-01',
       public_id: 'WK-2026-TEST',
-      ovr_rating: 80,
       personal_info: {
         nickname: 'Dimas',
         academy: { name: 'Mataram Putra FA', city: 'Yogyakarta' }

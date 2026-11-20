@@ -224,7 +224,6 @@ export async function fetchLiveRosterFromSupabase() {
       weight_kg,
       preferred_foot,
       photo_url,
-      ovr_rating,
       visibility_tier,
       player_assessments (
         id,
@@ -435,21 +434,11 @@ export async function logAccessEvent(playerId, action, metadata = {}) {
 // ==============================================================================
 
 /**
- * Live Write Mutation: Upsert assessment & update player's ovr_rating
+ * Live Write Mutation: Upsert assessment
  */
-export async function saveAssessmentToSupabase(playerId, assessmentData, ovrRating, existingAssessmentId) {
+export async function saveAssessmentToSupabase(playerId, assessmentData, existingAssessmentId) {
   if (!supabase) {
     throw new Error('Supabase client is not initialized.');
-  }
-
-  // 1. Update player's ovr_rating in players table
-  const { error: playerUpdateError } = await supabase
-    .from('players')
-    .update({ ovr_rating: ovrRating })
-    .eq('id', playerId);
-
-  if (playerUpdateError) {
-    console.error('Failed to update player ovr_rating:', playerUpdateError);
   }
 
   // Extract radar attribute values

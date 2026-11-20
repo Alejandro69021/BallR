@@ -18,7 +18,6 @@ export const playersRoster = [
         "logo_url": ""
       },
       "photo_url": "",
-      "overall_rating": 81,
       "evaluation_status": "ready"
     },
     "radar_attributes": [
@@ -100,7 +99,6 @@ export const playersRoster = [
         "logo_url": ""
       },
       "photo_url": "",
-      "overall_rating": 79,
       "evaluation_status": "ready"
     },
     "radar_attributes": [
@@ -172,7 +170,6 @@ export const playersRoster = [
         "logo_url": ""
       },
       "photo_url": "",
-      "overall_rating": 80,
       "evaluation_status": "pending"
     },
     "radar_attributes": [
@@ -244,7 +241,6 @@ export const playersRoster = [
         "logo_url": ""
       },
       "photo_url": "",
-      "overall_rating": 75,
       "evaluation_status": "ready"
     },
     "radar_attributes": [
@@ -316,7 +312,6 @@ export const playersRoster = [
         "logo_url": ""
       },
       "photo_url": "",
-      "overall_rating": 78,
       "evaluation_status": "pending"
     },
     "radar_attributes": [
@@ -388,7 +383,6 @@ export const playersRoster = [
         "logo_url": ""
       },
       "photo_url": "",
-      "overall_rating": 74,
       "evaluation_status": "pending"
     },
     "radar_attributes": [
@@ -460,7 +454,6 @@ export const playersRoster = [
         "logo_url": ""
       },
       "photo_url": "",
-      "overall_rating": 73,
       "evaluation_status": "ready"
     },
     "radar_attributes": [

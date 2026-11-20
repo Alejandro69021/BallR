@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Activity, Award } from 'lucide-react';
+import { Clock, Activity } from 'lucide-react';
 
 export default function AthleticProgressChart({
   activeMetric,
@@ -80,22 +80,6 @@ export default function AthleticProgressChart({
           >
             <Activity className="w-3.5 h-3.5" />
             <span>Vertical Jump (Daya Ledak)</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setActiveMetric('ovr');
-              setSelectedPointIndex(3);
-            }}
-            className={`px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-              activeMetric === 'ovr'
-                ? 'bg-amber-400 text-black shadow-sm'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <Award className="w-3.5 h-3.5" />
-            <span>Rating OVR (Performa)</span>
           </button>
         </div>
       </div>
@@ -211,7 +195,7 @@ export default function AthleticProgressChart({
                   fontFamily="monospace"
                   fontWeight="bold"
                 >
-                  {c.pt.value} {currentDataset.unit === 'OVR' ? '' : currentDataset.unit}
+                  {c.pt.value} {currentDataset.unit || ''}
                 </text>
 
                 <text

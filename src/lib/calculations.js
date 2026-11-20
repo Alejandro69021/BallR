@@ -13,17 +13,6 @@ export const DEFAULT_GROUP_AVGS = {
 };
 
 /**
- * Calculates overall player rating (OVR) from radar attribute values.
- * @param {Array<{ value: number|string }>} attributes
- * @returns {number} Rounded average rating
- */
-export function calculateOvr(attributes = []) {
-  if (!attributes || attributes.length === 0) return 75;
-  const sum = attributes.reduce((acc, curr) => acc + (Number(curr?.value) || 0), 0);
-  return Math.round(sum / attributes.length);
-}
-
-/**
  * Calculates match rating based on action telemetry counters.
  * Clamped between 6.0 and 9.8.
  * @param {Object} stats
@@ -139,9 +128,6 @@ export function transformDbPlayer(dbPlayer = {}, defaultAcademy = null, isDemoMo
     { attribute: "Physical (Daya Tahan)", value: physVal, group_avg: DEFAULT_GROUP_AVGS.physical }
   ];
 
-  const calculatedRating = calculateOvr(radar_attributes);
-  const ovr = dbPlayer.ovr_rating || calculatedRating;
-
   // Personal Info
   const fullName = dbPlayer.full_name || 'Atlet Muda';
   const nickname = dbPlayer.nickname || fullName.split(' ')[0] || 'Atlet';
@@ -207,7 +193,6 @@ export function transformDbPlayer(dbPlayer = {}, defaultAcademy = null, isDemoMo
       weight_kg: dbPlayer.weight_kg || null,
       academy: defaultAcademyObj,
       photo_url: photoUrl,
-      overall_rating: ovr,
       evaluation_status: latestAssessment?.is_published ? 'ready' : (assessments.length > 0 ? 'ready' : 'pending')
     },
     radar_attributes,

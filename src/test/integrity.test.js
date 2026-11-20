@@ -57,16 +57,33 @@ describe('Integrity & Canonicalization Engine', () => {
     expect(textHash).toHaveLength(64);
   });
 
-  it('generates identical hash for identical payload across runs', async () => {
+  it('generates v2 payload by default without ovr_rating and without fallback defaults', () => {
+    const payload = buildPassportSnapshotPayload(
+      { public_id: 'WK-2026-0042' },
+      { period_month: 'Oktober 2026', coach_name: 'Coach Hendro', pace: 80 },
+      { vertical_jump_cm: 44.5 }
+    );
+
+    expect(payload.payload_version).toBe('v2');
+    expect('ovr_rating' in payload).toBe(false);
+    expect(payload.ovr_rating).toBeUndefined();
+    expect(payload.attributes.pace).toBe(80);
+    // Missing attributes must be null, not invented numbers
+    expect(payload.attributes.shooting).toBeNull();
+    expect(payload.attributes.defending).toBeNull();
+    expect(payload.fitness.sprint_20m_sec).toBeNull();
+  });
+
+  it('generates identical hash for identical v2 payload across runs', async () => {
     const payload1 = buildPassportSnapshotPayload(
-      { public_id: 'WK-2026-0042', ovr_rating: 81 },
+      { public_id: 'WK-2026-0042' },
       { period_month: 'Oktober 2026', coach_name: 'Coach Hendro', pace: 80, shooting: 78 },
       { vertical_jump_cm: 44.5, sprint_20m_sec: 3.42 },
       { name: 'Mataram Putra FA', city: 'Yogyakarta' }
     );
 
     const payload2 = buildPassportSnapshotPayload(
-      { public_id: 'WK-2026-0042', ovr_rating: 81 },
+      { public_id: 'WK-2026-0042' },
       { period_month: 'Oktober 2026', coach_name: 'Coach Hendro', pace: 80, shooting: 78 },
       { vertical_jump_cm: 44.5, sprint_20m_sec: 3.42 },
       { name: 'Mataram Putra FA', city: 'Yogyakarta' }
@@ -79,9 +96,9 @@ describe('Integrity & Canonicalization Engine', () => {
     expect(res1.canonicalString).toBe(res2.canonicalString);
   });
 
-  it('generates a completely different hash when a single metric is altered', async () => {
+  it('generates a completely different hash when a single metric is altered in v2', async () => {
     const basePayload = buildPassportSnapshotPayload(
-      { public_id: 'WK-2026-0042', ovr_rating: 81 },
+      { public_id: 'WK-2026-0042' },
       { period_month: 'Oktober 2026', coach_name: 'Coach Hendro', pace: 80, shooting: 78 },
       { vertical_jump_cm: 44.5, sprint_20m_sec: 3.42 },
       { name: 'Mataram Putra FA', city: 'Yogyakarta' }
@@ -101,10 +118,10 @@ describe('Integrity & Canonicalization Engine', () => {
     expect(resOriginal.hash).not.toBe(resTampered.hash);
   });
 
-  it('verifies untampered payload and detects tampered payload correctly', async () => {
+  it('verifies untampered v2 payload and detects tampered payload correctly', async () => {
     const payload = buildPassportSnapshotPayload(
-      { public_id: 'WK-2026-0042', ovr_rating: 81 },
-      { period_month: 'Oktober 2026', coach_name: 'Coach Hendro' },
+      { public_id: 'WK-2026-0042' },
+      { period_month: 'Oktober 2026', coach_name: 'Coach Hendro', pace: 80 },
       { vertical_jump_cm: 45.0 },
       { name: 'Mataram Putra FA' }
     );
@@ -114,10 +131,61 @@ describe('Integrity & Canonicalization Engine', () => {
     const isValid = await verifyPassportHash(payload, hash);
     expect(isValid).toBe(true);
 
-    const isTampered = await verifyPassportHash({ ...payload, ovr_rating: 99 }, hash);
+    const isTampered = await verifyPassportHash({ ...payload, coach_name: 'Coach Budi' }, hash);
     expect(isTampered).toBe(false);
 
     const isInvalidHash = await verifyPassportHash(payload, 'deadbeef1234');
     expect(isInvalidHash).toBe(false);
+  });
+
+  it('verifies legacy v1 snapshot fixture cleanly', async () => {
+    const legacyV1Fixture = {
+      payload_version: 'v1.0',
+      public_id: 'WK-2026-0042',
+      academy: {
+        name: 'Mataram Putra FA',
+        city: 'Yogyakarta'
+      },
+      period_month: 'Oktober 2026',
+      coach_name: 'Coach Hendro',
+      ovr_rating: 81,
+      attributes: {
+        defending: 65,
+        dribbling: 74,
+        passing: 72,
+        pace: 80,
+        physical: 71,
+        shooting: 78
+      },
+      fitness: {
+        shuttle_run_sec: 0,
+        sprint_20m_sec: 3.42,
+        vertical_jump_cm: 44.5,
+        yoyo_score: '-'
+      }
+    };
+
+    const { hash } = await generatePassportHash(legacyV1Fixture);
+    const isValid = await verifyPassportHash(legacyV1Fixture, hash);
+    expect(isValid).toBe(true);
+  });
+
+  it('rejects unknown payload version with a clear error', async () => {
+    const unknownPayload = {
+      payload_version: 'v99.0',
+      public_id: 'WK-2026-0042'
+    };
+
+    await expect(verifyPassportHash(unknownPayload, 'some-hash')).rejects.toThrow(
+      /Versi payload snapshot tidak dikenali: v99\.0/
+    );
+
+    const missingVersionPayload = {
+      public_id: 'WK-2026-0042'
+    };
+
+    await expect(verifyPassportHash(missingVersionPayload, 'some-hash')).rejects.toThrow(
+      /Versi payload snapshot tidak dikenali/
+    );
   });
 });

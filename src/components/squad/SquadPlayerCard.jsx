@@ -9,31 +9,6 @@ export default function SquadPlayerCard({
 }) {
   const { personal_info, radar_attributes, player_id } = player;
 
-  const getBadgeTierStyle = (ovr) => {
-    if (ovr >= 80) {
-      return {
-        border: 'border-[#CCFF00]/80 shadow-[0_0_15px_rgba(204,255,0,0.25)]',
-        bg: 'bg-gradient-to-b from-[#2E3516] via-[#1A2218] to-[#0D131F]',
-        text: 'text-transparent bg-clip-text bg-gradient-to-b from-white via-lime-200 to-[#CCFF00]',
-        tierLabel: 'GOLD TIER'
-      };
-    }
-    if (ovr >= 75) {
-      return {
-        border: 'border-slate-400/80 shadow-[0_0_15px_rgba(203,213,225,0.2)]',
-        bg: 'bg-gradient-to-b from-[#222834] via-[#1A202C] to-[#0D131F]',
-        text: 'text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-400',
-        tierLabel: 'SILVER TIER'
-      };
-    }
-    return {
-      border: 'border-amber-600/80 shadow-[0_0_15px_rgba(217,119,6,0.2)]',
-      bg: 'bg-gradient-to-b from-[#331C13] via-[#221612] to-[#0D131F]',
-      text: 'text-transparent bg-clip-text bg-gradient-to-b from-white via-amber-200 to-amber-500',
-      tierLabel: 'BRONZE TIER'
-    };
-  };
-
   const getMiniMetrics = (attrs = []) => {
     const paceAttr = attrs.find((a) => a.attribute.includes('Pace'));
     const passAttr = attrs.find((a) => a.attribute.includes('Passing'));
@@ -47,13 +22,12 @@ export default function SquadPlayerCard({
     return { pace, technique, physical };
   };
 
-  const badgeStyle = getBadgeTierStyle(personal_info.overall_rating);
   const { pace, technique, physical } = getMiniMetrics(radar_attributes);
   const isReady = personal_info.evaluation_status === 'ready';
 
   return (
     <div className="rounded-2xl bg-[#111827] border border-[#1F2937] hover:border-[#CCFF00]/50 transition-all duration-300 p-4 shadow-xl shadow-black/50 flex flex-col justify-between group hover:shadow-[0_0_20px_rgba(204,255,0,0.1)]">
-      {/* Card Top: Avatar, OVR Badge, Name */}
+      {/* Card Top: Avatar, Position Badge, Name */}
       <div>
         <div className="flex items-start justify-between gap-3 mb-3">
           {/* Athlete Portrait with Jersey Badge */}
@@ -78,16 +52,10 @@ export default function SquadPlayerCard({
             </div>
           </div>
 
-          {/* EA FC Style OVR Badge */}
-          <div className={`p-2 rounded-xl border-2 ${badgeStyle.border} ${badgeStyle.bg} flex flex-col items-center justify-center min-w-[62px] text-center shadow-lg group-hover:scale-105 transition-transform`}>
-            <span className="text-[7px] font-athletic font-bold uppercase tracking-wider text-slate-300">
-              {badgeStyle.tierLabel.split(' ')[0]}
-            </span>
-            <span className={`font-athletic text-2xl font-black leading-none my-0.5 ${badgeStyle.text}`}>
-              {personal_info.overall_rating}
-            </span>
-            <span className="font-athletic text-[9px] font-bold text-white uppercase tracking-wider">
-              {personal_info.position.split(' ')[0]}
+          {/* Position Badge */}
+          <div className="flex flex-col items-end">
+            <span className="px-2.5 py-1 rounded-lg bg-[#090D16] border border-slate-700 text-slate-200 text-xs font-semibold">
+              {personal_info.position?.split(' ')[0] || personal_info.position}
             </span>
           </div>
         </div>

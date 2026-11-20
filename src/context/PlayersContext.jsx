@@ -59,7 +59,6 @@ export function PlayersProvider({ children }) {
       const savedRecord = await saveAssessmentToSupabase(
         updatedPlayerData.player_id,
         updatedPlayerData,
-        updatedPlayerData.personal_info.overall_rating,
         updatedPlayerData.db_assessment_id
       );
 

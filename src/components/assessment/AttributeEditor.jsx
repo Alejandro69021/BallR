@@ -15,7 +15,6 @@ const ATTRIBUTE_DESCRIPTIONS = {
 
 export default function AttributeEditor({
   formData,
-  calculatedOvr,
   activePlayer,
   onAttributeChange,
   onAttributeSlider,
@@ -31,13 +30,8 @@ export default function AttributeEditor({
       {/* Player Header Strip */}
       <div className="rounded-panel bg-panel border border-line p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-control bg-raised border border-line flex flex-col items-center justify-center">
-            <span className="text-[10px] font-mono uppercase text-2">
-              OVR
-            </span>
-            <span className="font-mono text-xl font-semibold text-1 leading-none">
-              {calculatedOvr || 'Belum ada data'}
-            </span>
+          <div className="w-12 h-12 rounded-control bg-raised border border-line flex items-center justify-center font-mono text-base font-semibold text-1">
+            #{activePlayer.personal_info.jersey_number}
           </div>
 
           <div>

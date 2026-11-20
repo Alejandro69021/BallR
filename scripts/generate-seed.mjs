@@ -19,8 +19,8 @@ out.push(`INSERT INTO public.academies (id, name, city) VALUES ('aaaaaaaa-0000-4
 
 for (const p of playersRoster) {
   const i = p.personal_info;
-  out.push(`INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, ovr_rating, visibility_tier)
-VALUES (${q(p.player_id)}, 'aaaaaaaa-0000-4000-8000-000000000001', ${q(i.full_name)}, ${q(i.nickname)}, ${num(i.jersey_number)}, ${q(i.position)}, 'U-13', ${q(i.birth_date)}, ${num(i.height_cm)}, ${num(i.weight_kg)}, ${q(i.preferred_foot)}, ${num(i.overall_rating)}, 'private')
+  out.push(`INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, visibility_tier)
+VALUES (${q(p.player_id)}, 'aaaaaaaa-0000-4000-8000-000000000001', ${q(i.full_name)}, ${q(i.nickname)}, ${num(i.jersey_number)}, ${q(i.position)}, 'U-13', ${q(i.birth_date)}, ${num(i.height_cm)}, ${num(i.weight_kg)}, ${q(i.preferred_foot)}, 'private')
 ON CONFLICT (public_id) DO NOTHING;`);
 
   const e = p.ai_coach_evaluation || {};

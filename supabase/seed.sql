@@ -2,8 +2,8 @@
 -- Semua pemain dibuat PRIVATE. Tidak ada foto/video stok, NISN, atau nilai tes sebelumnya.
 BEGIN;
 INSERT INTO public.academies (id, name, city) VALUES ('aaaaaaaa-0000-4000-8000-000000000001', 'Mataram Putra Football Academy (DATA CONTOH)', 'Yogyakarta') ON CONFLICT (id) DO NOTHING;
-INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, ovr_rating, visibility_tier)
-VALUES ('WK-2026-0042', 'aaaaaaaa-0000-4000-8000-000000000001', 'Dimas Arya Pratama', 'Arya', 10, 'Attacking Midfielder (CAM)', 'U-13', '2013-05-14', 158, 46, 'Both (Ambidextrous)', 81, 'private')
+INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, visibility_tier)
+VALUES ('WK-2026-0042', 'aaaaaaaa-0000-4000-8000-000000000001', 'Dimas Arya Pratama', 'Arya', 10, 'Attacking Midfielder (CAM)', 'U-13', '2013-05-14', 158, 46, 'Both (Ambidextrous)', 'private')
 ON CONFLICT (public_id) DO NOTHING;
 INSERT INTO public.player_assessments (player_id, period_month, coach_name, pace, shooting, passing, dribbling, defending, physical, ai_narrative, strengths, growth_areas, recommended_drill, is_published)
 SELECT id, 'Oktober 2026', 'Coach Hendro (Lisensi B AFC)', 84, 78, 86, 83, 68, 76, 'Dimas menunjukkan peningkatan signifikan dalam hal scanning ruang sebelum menerima bola. Distribusi umpan terobosannya sangat efektif saat transisi positif. Fokus perkembangan bulan depan adalah mempercepat keputusan melepas bola saat ditekan dua pemain lawan di area tengah.', '["Visi umpan terobosan akurat","Kontrol bola di ruang sempit","Keseimbangan saat dribel"]'::jsonb, '["Kekuatan fisik saat duel perebutan bola atas","Kecepatan pemulihan posisi saat transisi bertahan"]'::jsonb, '{"title":"Wall-Pass & Quick Scanning Drill","duration":"15 Menit / Hari","category":"Ball Mastery"}'::jsonb, true
@@ -13,8 +13,8 @@ INSERT INTO public.fitness_records (player_id, test_date, vertical_jump_cm, spri
 SELECT id, '2026-10-24', 44.5, 3.42, 11.2, 'Level 15.4'
 FROM public.players WHERE public_id = 'WK-2026-0042'
 AND NOT EXISTS (SELECT 1 FROM public.fitness_records r JOIN public.players pl ON pl.id = r.player_id WHERE pl.public_id = 'WK-2026-0042' AND r.test_date = '2026-10-24');
-INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, ovr_rating, visibility_tier)
-VALUES ('WK-2026-0043', 'aaaaaaaa-0000-4000-8000-000000000001', 'Kevin Maulana', 'Kevin', 7, 'Right Winger (RW)', 'U-13', '2013-08-20', 155, 44, 'Right', 79, 'private')
+INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, visibility_tier)
+VALUES ('WK-2026-0043', 'aaaaaaaa-0000-4000-8000-000000000001', 'Kevin Maulana', 'Kevin', 7, 'Right Winger (RW)', 'U-13', '2013-08-20', 155, 44, 'Right', 'private')
 ON CONFLICT (public_id) DO NOTHING;
 INSERT INTO public.player_assessments (player_id, period_month, coach_name, pace, shooting, passing, dribbling, defending, physical, ai_narrative, strengths, growth_areas, recommended_drill, is_published)
 SELECT id, 'Oktober 2026', 'Coach Hendro (Lisensi B AFC)', 89, 75, 74, 85, 62, 72, 'Kevin memiliki akselerasi sprint explosif di koridor sayap kanan. Kualitas umpan cutback silang mendatar semakin akurat saat menusuk pertahanan lawan.', '["Akselerasi sprint koridor sayap","Agresivitas 1v1","Kecepatan manuver bola"]'::jsonb, '["Kualitas cutback cross","Kesabaran menunggu rekan"]'::jsonb, '{"title":"Byline Cutback & Cross Target Drill","duration":"15 Menit / Hari","category":"Crossing & Delivery"}'::jsonb, true
@@ -24,8 +24,8 @@ INSERT INTO public.fitness_records (player_id, test_date, vertical_jump_cm, spri
 SELECT id, '2026-10-24', 41, 3.31, 11.1, 'Level 14.8'
 FROM public.players WHERE public_id = 'WK-2026-0043'
 AND NOT EXISTS (SELECT 1 FROM public.fitness_records r JOIN public.players pl ON pl.id = r.player_id WHERE pl.public_id = 'WK-2026-0043' AND r.test_date = '2026-10-24');
-INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, ovr_rating, visibility_tier)
-VALUES ('WK-2026-0044', 'aaaaaaaa-0000-4000-8000-000000000001', 'Rizky Alamsyah', 'Rizky', 11, 'Center Forward (ST)', 'U-13', '2013-02-10', 162, 50, 'Left', 80, 'private')
+INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, visibility_tier)
+VALUES ('WK-2026-0044', 'aaaaaaaa-0000-4000-8000-000000000001', 'Rizky Alamsyah', 'Rizky', 11, 'Center Forward (ST)', 'U-13', '2013-02-10', 162, 50, 'Left', 'private')
 ON CONFLICT (public_id) DO NOTHING;
 INSERT INTO public.player_assessments (player_id, period_month, coach_name, pace, shooting, passing, dribbling, defending, physical, ai_narrative, strengths, growth_areas, recommended_drill, is_published)
 SELECT id, 'Oktober 2026', 'Coach Hendro (Lisensi B AFC)', 81, 85, 72, 77, 60, 80, 'Naluri gol dan kekuatan tendangan kaki kiri sangat tajam dari luar kotak penalti. Perlu meningkatkan link-up play saat membelakangi gawang lawan.', '["Power tendangan kaki kiri","Naluri positioning kotak penalti","Ketahanan duel bahu"]'::jsonb, '["First touch saat membelakangi bek","Kombinasi 1-2 sentuhan"]'::jsonb, '{"title":"Hold-up Play & Turn-Finish Drill","duration":"15 Menit / Hari","category":"Striker Finishing"}'::jsonb, true
@@ -35,8 +35,8 @@ INSERT INTO public.fitness_records (player_id, test_date, vertical_jump_cm, spri
 SELECT id, '2026-10-24', 46.2, 3.48, 11.4, 'Level 15.0'
 FROM public.players WHERE public_id = 'WK-2026-0044'
 AND NOT EXISTS (SELECT 1 FROM public.fitness_records r JOIN public.players pl ON pl.id = r.player_id WHERE pl.public_id = 'WK-2026-0044' AND r.test_date = '2026-10-24');
-INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, ovr_rating, visibility_tier)
-VALUES ('WK-2026-0045', 'aaaaaaaa-0000-4000-8000-000000000001', 'Bagas Ramadhan', 'Bagas', 4, 'Center Back (CB)', 'U-13', '2013-04-18', 166, 54, 'Right', 75, 'private')
+INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, visibility_tier)
+VALUES ('WK-2026-0045', 'aaaaaaaa-0000-4000-8000-000000000001', 'Bagas Ramadhan', 'Bagas', 4, 'Center Back (CB)', 'U-13', '2013-04-18', 166, 54, 'Right', 'private')
 ON CONFLICT (public_id) DO NOTHING;
 INSERT INTO public.player_assessments (player_id, period_month, coach_name, pace, shooting, passing, dribbling, defending, physical, ai_narrative, strengths, growth_areas, recommended_drill, is_published)
 SELECT id, 'Oktober 2026', 'Coach Hendro (Lisensi B AFC)', 73, 56, 72, 68, 82, 80, 'Bagas merupakan komandan lini belakang yang tenang. Pengambilan keputusan tekel bersih dan intersep udara sangat dominan di level U-13.', '["Duel udara lini belakang","Timing tekel bersih","Ketenangan build-up dari bawah"]'::jsonb, '["Kecepatan berbalik badan saat umpan lambung","Komunikasi vokal garis pertahanan"]'::jsonb, '{"title":"Drop-Step & Aerial Clearance Drill","duration":"15 Menit / Hari","category":"Defending & Heading"}'::jsonb, true
@@ -46,8 +46,8 @@ INSERT INTO public.fitness_records (player_id, test_date, vertical_jump_cm, spri
 SELECT id, '2026-10-24', 48, 3.55, 11.6, 'Level 14.5'
 FROM public.players WHERE public_id = 'WK-2026-0045'
 AND NOT EXISTS (SELECT 1 FROM public.fitness_records r JOIN public.players pl ON pl.id = r.player_id WHERE pl.public_id = 'WK-2026-0045' AND r.test_date = '2026-10-24');
-INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, ovr_rating, visibility_tier)
-VALUES ('WK-2026-0046', 'aaaaaaaa-0000-4000-8000-000000000001', 'Muhammad Rafli', 'Rafli', 1, 'Goalkeeper (GK)', 'U-13', '2013-01-25', 170, 58, 'Right', 78, 'private')
+INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, visibility_tier)
+VALUES ('WK-2026-0046', 'aaaaaaaa-0000-4000-8000-000000000001', 'Muhammad Rafli', 'Rafli', 1, 'Goalkeeper (GK)', 'U-13', '2013-01-25', 170, 58, 'Right', 'private')
 ON CONFLICT (public_id) DO NOTHING;
 INSERT INTO public.player_assessments (player_id, period_month, coach_name, pace, shooting, passing, dribbling, defending, physical, ai_narrative, strengths, growth_areas, recommended_drill, is_published)
 SELECT id, 'Oktober 2026', 'Coach Hendro (Lisensi B AFC)', 82, 75, 79, 81, 76, 78, 'Refleks 1v1 dan keberanian menyongsong bola silang udara sangat matang. Distribusi lemparan tangan ke sayap sering memicu serangan balik cepat.', '["Refleks penyelamatan jarak dekat","Tangkapan bola udara sudut","Akurasi distribusi lemparan cepat"]'::jsonb, '["Akurasi operan pendek kaki kiri saat ditekan lawan","Komunikasi kotak 6-yard"]'::jsonb, '{"title":"Low-Dive Reaction & Quick Counter Release","duration":"15 Menit / Hari","category":"Goalkeeping Reflexes"}'::jsonb, true
@@ -57,8 +57,8 @@ INSERT INTO public.fitness_records (player_id, test_date, vertical_jump_cm, spri
 SELECT id, '2026-10-24', 52, 3.6, 11.5, 'Level 14.0'
 FROM public.players WHERE public_id = 'WK-2026-0046'
 AND NOT EXISTS (SELECT 1 FROM public.fitness_records r JOIN public.players pl ON pl.id = r.player_id WHERE pl.public_id = 'WK-2026-0046' AND r.test_date = '2026-10-24');
-INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, ovr_rating, visibility_tier)
-VALUES ('WK-2026-0047', 'aaaaaaaa-0000-4000-8000-000000000001', 'Fajar Pratama', 'Fajar', 6, 'Defensive Midfielder (CDM)', 'U-13', '2013-09-03', 160, 49, 'Right', 74, 'private')
+INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, visibility_tier)
+VALUES ('WK-2026-0047', 'aaaaaaaa-0000-4000-8000-000000000001', 'Fajar Pratama', 'Fajar', 6, 'Defensive Midfielder (CDM)', 'U-13', '2013-09-03', 160, 49, 'Right', 'private')
 ON CONFLICT (public_id) DO NOTHING;
 INSERT INTO public.player_assessments (player_id, period_month, coach_name, pace, shooting, passing, dribbling, defending, physical, ai_narrative, strengths, growth_areas, recommended_drill, is_published)
 SELECT id, 'Oktober 2026', 'Coach Hendro (Lisensi B AFC)', 72, 64, 76, 73, 81, 79, 'Fajar adalah gelandang jangkar dengan daya jelajah tinggi. Ia efektif memutus aliran serangan lawan di depan kuadran pertahanan tengah.', '["Intersep lini tengah","Daya tahan aerobik Yo-Yo","Disiplin posisi bertahan"]'::jsonb, '["Akurasi operan diagonal panjang","Ketenangan saat dipres ketat"]'::jsonb, '{"title":"Turnover Shield & Quick Switch Drill","duration":"15 Menit / Hari","category":"Midfield Anchoring"}'::jsonb, true
@@ -68,8 +68,8 @@ INSERT INTO public.fitness_records (player_id, test_date, vertical_jump_cm, spri
 SELECT id, '2026-10-24', 43.5, 3.49, 11.35, 'Level 15.8'
 FROM public.players WHERE public_id = 'WK-2026-0047'
 AND NOT EXISTS (SELECT 1 FROM public.fitness_records r JOIN public.players pl ON pl.id = r.player_id WHERE pl.public_id = 'WK-2026-0047' AND r.test_date = '2026-10-24');
-INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, ovr_rating, visibility_tier)
-VALUES ('WK-2026-0048', 'aaaaaaaa-0000-4000-8000-000000000001', 'Ilham Satria', 'Ilham', 2, 'Right Back (RB)', 'U-13', '2013-07-11', 157, 47, 'Right', 73, 'private')
+INSERT INTO public.players (public_id, academy_id, full_name, nickname, jersey_number, position, age_group, birth_date, height_cm, weight_kg, preferred_foot, visibility_tier)
+VALUES ('WK-2026-0048', 'aaaaaaaa-0000-4000-8000-000000000001', 'Ilham Satria', 'Ilham', 2, 'Right Back (RB)', 'U-13', '2013-07-11', 157, 47, 'Right', 'private')
 ON CONFLICT (public_id) DO NOTHING;
 INSERT INTO public.player_assessments (player_id, period_month, coach_name, pace, shooting, passing, dribbling, defending, physical, ai_narrative, strengths, growth_areas, recommended_drill, is_published)
 SELECT id, 'Oktober 2026', 'Coach Hendro (Lisensi B AFC)', 80, 58, 73, 72, 77, 78, 'Ilham sangat disiplin dalam menjaga kedalaman koridor kanan. Sering membantu overlap penyerangan dengan stamina prima.', '["Stamina overlap flank kanan","Tekel luncur terukur","Kedisiplinan zona pertahanan"]'::jsonb, '["Akurasi crossing lambung tiang jauh","Body feint saat melewati lawan"]'::jsonb, '{"title":"Overlap Sprint & Cross Drill","duration":"15 Menit / Hari","category":"Fullback Support"}'::jsonb, true

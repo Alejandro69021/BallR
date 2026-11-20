@@ -44,8 +44,6 @@ export default function StoryFlexCardModal({ player, onClose, onToast }) {
       aura: 'from-[#CCFF00]/30 via-emerald-500/10 to-transparent',
       accentColor: '#CCFF00',
       accentBadge: 'bg-lime-500/20 text-[#CCFF00] border-[#CCFF00]/40',
-      ovrGradient: 'from-white via-lime-200 to-[#CCFF00]',
-      ovrBadgeBorder: 'border-[#CCFF00]',
       pillBg: 'bg-black/60 border-slate-700/80',
       headerPill: 'bg-[#CCFF00] text-black font-extrabold',
       activeTab: 'bg-[#CCFF00] text-black shadow-[0_0_12px_rgba(204,255,0,0.4)]'
@@ -56,8 +54,6 @@ export default function StoryFlexCardModal({ player, onClose, onToast }) {
       aura: 'from-amber-400/35 via-yellow-600/10 to-transparent',
       accentColor: '#F59E0B',
       accentBadge: 'bg-amber-500/20 text-amber-300 border-amber-400/40',
-      ovrGradient: 'from-white via-yellow-100 to-amber-400',
-      ovrBadgeBorder: 'border-amber-400',
       pillBg: 'bg-black/60 border-amber-900/60',
       headerPill: 'bg-amber-400 text-black font-extrabold',
       activeTab: 'bg-amber-400 text-black shadow-[0_0_12px_rgba(245,158,11,0.4)]'
@@ -68,8 +64,6 @@ export default function StoryFlexCardModal({ player, onClose, onToast }) {
       aura: 'from-cyan-500/30 via-blue-600/10 to-transparent',
       accentColor: '#06B6D4',
       accentBadge: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40',
-      ovrGradient: 'from-white via-cyan-100 to-cyan-400',
-      ovrBadgeBorder: 'border-cyan-400',
       pillBg: 'bg-black/60 border-cyan-900/60',
       headerPill: 'bg-cyan-400 text-black font-extrabold',
       activeTab: 'bg-cyan-400 text-black shadow-[0_0_12px_rgba(6,182,212,0.4)]'
@@ -107,7 +101,7 @@ export default function StoryFlexCardModal({ player, onClose, onToast }) {
   };
 
   const handleCopyLink = () => {
-    const text = `🔥 Cek Paspor Bakat Sepakbola Resmi: ${personal_info.full_name} (#${personal_info.jersey_number} ${personal_info.position}) - OVR ${personal_info.overall_rating} di Mataram Putra FA!\n\nLihat dossier lengkap: ${window.location.href}`;
+    const text = `🔥 Cek Paspor Bakat Sepakbola Resmi: ${personal_info.full_name} (#${personal_info.jersey_number} ${personal_info.position}) di Mataram Putra FA!\n\nLihat dossier lengkap: ${window.location.href}`;
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).catch(() => {});

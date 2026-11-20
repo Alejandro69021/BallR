@@ -6,7 +6,6 @@ import FitnessForm from './assessment/FitnessForm';
 import NarrativeNotesForm from './assessment/NarrativeNotesForm';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
-import { calculateOvr } from '../lib/calculations';
 
 export default function CoachAssessmentView({
   players = [],
@@ -92,8 +91,6 @@ export default function CoachAssessmentView({
     }));
   };
 
-  const calculatedOvr = calculateOvr(formData.attributes);
-
   const handleGenerateAI = () => {
     const name = activePlayer.personal_info.nickname || activePlayer.personal_info.full_name || 'Atlet';
     const rawText = formData.rawNotes.trim();
@@ -145,8 +142,7 @@ export default function CoachAssessmentView({
       const updatedPlayerData = {
         ...activePlayer,
         personal_info: {
-          ...activePlayer.personal_info,
-          overall_rating: calculatedOvr
+          ...activePlayer.personal_info
         },
         radar_attributes: formData.attributes,
         fitness_benchmarks: {
@@ -217,7 +213,7 @@ export default function CoachAssessmentView({
                       {p.personal_info.nickname || p.personal_info.full_name}
                     </div>
                     <div className="text-[11px] text-2 font-mono">
-                      OVR: {p.personal_info.overall_rating} · {p.personal_info.position}
+                      {p.personal_info.position}
                     </div>
                   </div>
                 </button>
@@ -230,7 +226,6 @@ export default function CoachAssessmentView({
       {/* 2. Core Attribute Scorer */}
       <AttributeEditor
         formData={formData}
-        calculatedOvr={calculatedOvr}
         activePlayer={activePlayer}
         onAttributeChange={handleAttributeChange}
         onAttributeSlider={handleAttributeSlider}

@@ -6,8 +6,7 @@ import {
   ArrowUpDown,
   ShieldCheck,
   CheckCircle2,
-  Clock,
-  Award
+  Clock
 } from 'lucide-react';
 import SquadPlayerCard from './squad/SquadPlayerCard';
 
@@ -20,7 +19,7 @@ export default function SquadHubView({
   const [activeAgeGroup] = useState('U-13');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPosition, setSelectedPosition] = useState('ALL');
-  const [sortBy, setSortBy] = useState('rating_desc');
+  const [sortBy, setSortBy] = useState('name_asc');
 
   const ageCategories = [
     { id: 'U-11', label: 'U-11 Grassroots', count: 18 },
@@ -37,10 +36,6 @@ export default function SquadHubView({
   ];
 
   const totalCount = players.length;
-  const avgRating = totalCount > 0 ? (
-    players.reduce((sum, p) => sum + p.personal_info.overall_rating, 0) / totalCount
-  ).toFixed(1) : '0';
-
   const publishedCount = players.filter(
     (p) => p.personal_info.evaluation_status === 'ready'
   ).length;
@@ -66,16 +61,24 @@ export default function SquadHubView({
         return matchesName && matchesPos;
       })
       .sort((a, b) => {
-        if (sortBy === 'rating_desc') {
-          return b.personal_info.overall_rating - a.personal_info.overall_rating;
+        if (sortBy === 'name_asc') {
+          return (a.personal_info.full_name || '').localeCompare(b.personal_info.full_name || '');
+        }
+        if (sortBy === 'jersey_asc') {
+          return (a.personal_info.jersey_number || 0) - (b.personal_info.jersey_number || 0);
+        }
+        if (sortBy === 'position_asc') {
+          return (a.personal_info.position || '').localeCompare(b.personal_info.position || '');
+        }
+        if (sortBy === 'assessment_date_desc') {
+          const dateA = a.fitness_benchmarks?.test_date || a.ai_coach_evaluation?.period || '';
+          const dateB = b.fitness_benchmarks?.test_date || b.ai_coach_evaluation?.period || '';
+          return dateB.localeCompare(dateA);
         }
         if (sortBy === 'need_eval') {
           const aPending = a.personal_info.evaluation_status === 'pending' ? 1 : 0;
           const bPending = b.personal_info.evaluation_status === 'pending' ? 1 : 0;
           return bPending - aPending;
-        }
-        if (sortBy === 'jersey_asc') {
-          return a.personal_info.jersey_number - b.personal_info.jersey_number;
         }
         return 0;
       });
@@ -120,8 +123,8 @@ export default function SquadHubView({
           </div>
         </div>
 
-        {/* 3 Summary Stats Strip */}
-        <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4">
+        {/* Summary Stats Strip */}
+        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
           <div className="p-3 rounded-xl bg-[#090D16]/80 border border-[#1F2937]">
             <div className="flex items-center justify-between text-slate-400 text-xs">
               <span>Total Roster {activeAgeGroup}</span>
@@ -133,16 +136,6 @@ export default function SquadHubView({
           </div>
 
           <div className="p-3 rounded-xl bg-[#090D16]/80 border border-[#1F2937]">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
-              <span>Rata-rata OVR Skuad</span>
-              <Award className="w-4 h-4 text-amber-400" />
-            </div>
-            <div className="font-athletic text-2xl font-black text-amber-400 mt-1">
-              {avgRating} <span className="text-xs font-normal text-slate-400">OVR</span>
-            </div>
-          </div>
-
-          <div className="p-3 rounded-xl bg-[#090D16]/80 border border-[#1F2937] col-span-2 sm:col-span-1">
             <div className="flex items-center justify-between text-slate-400 text-xs">
               <span>Status Rapor Bulanan</span>
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
@@ -182,9 +175,11 @@ export default function SquadHubView({
                 onChange={(e) => setSortBy(e.target.value)}
                 className="pl-8 pr-8 py-2 rounded-xl bg-[#090D16] border border-slate-700 text-slate-200 text-xs font-semibold appearance-none cursor-pointer focus:border-[#CCFF00] outline-none"
               >
-                <option value="rating_desc">Rating Tertinggi (OVR)</option>
-                <option value="need_eval">Perlu Evaluasi (Pending)</option>
+                <option value="name_asc">Nama Pemain (A-Z)</option>
                 <option value="jersey_asc">Nomor Punggung (Kecil-Besar)</option>
+                <option value="position_asc">Posisi (A-Z)</option>
+                <option value="assessment_date_desc">Tanggal Penilaian Terakhir</option>
+                <option value="need_eval">Perlu Evaluasi (Pending)</option>
               </select>
             </div>
           </div>

@@ -1,41 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import {
-  calculateOvr,
   calculateMatchRating,
   calculateAccuracy,
   formatSecondsToTime,
   derivePositionGroup,
   transformDbPlayer
 } from '../lib/calculations';
-
-describe('calculateOvr', () => {
-  it('returns default rating 75 when attributes array is empty or undefined', () => {
-    expect(calculateOvr([])).toBe(75);
-    expect(calculateOvr(undefined)).toBe(75);
-    expect(calculateOvr(null)).toBe(75);
-  });
-
-  it('calculates rounded average of valid attributes', () => {
-    const attrs = [
-      { attribute: 'Pace', value: 80 },
-      { attribute: 'Shooting', value: 75 },
-      { attribute: 'Passing', value: 85 },
-      { attribute: 'Dribbling', value: 90 },
-      { attribute: 'Defending', value: 60 },
-      { attribute: 'Physical', value: 70 }
-    ];
-    // sum: 80+75+85+90+60+70 = 460. 460 / 6 = 76.666... -> 77
-    expect(calculateOvr(attrs)).toBe(77);
-  });
-
-  it('handles string numeric values', () => {
-    const attrs = [
-      { attribute: 'Pace', value: '80' },
-      { attribute: 'Shooting', value: '82' }
-    ];
-    expect(calculateOvr(attrs)).toBe(81);
-  });
-});
 
 describe('calculateMatchRating', () => {
   it('clamps minimum rating to 6.0 even with zero or negative performance', () => {
@@ -115,7 +85,6 @@ describe('transformDbPlayer', () => {
     const result = transformDbPlayer({}, null, false);
     expect(result).toBeDefined();
     expect(result.personal_info.full_name).toBe('Atlet Muda');
-    expect(result.personal_info.overall_rating).toBe(69);
     expect(result.verified_moments).toEqual([]);
     expect(result.radar_attributes).toHaveLength(6);
   });
@@ -133,7 +102,6 @@ describe('transformDbPlayer', () => {
       preferred_foot: 'Both',
       height_cm: 158,
       weight_kg: 46,
-      ovr_rating: 81,
       photo_url: 'https://example.com/dimas.jpg',
       player_assessments: [
         {
@@ -181,7 +149,6 @@ describe('transformDbPlayer', () => {
     expect(transformed.player_id).toBe('uuid-1234');
     expect(transformed.public_id).toBe('WK-2026-0042');
     expect(transformed.personal_info.full_name).toBe('Dimas Arya Pratama');
-    expect(transformed.personal_info.overall_rating).toBe(81);
     expect(transformed.personal_info.position_group).toBe('MID');
     expect(transformed.fitness_benchmarks.vertical_jump_cm).toBe(44.5);
     expect(transformed.fitness_benchmarks.sprint_20m_sec).toBe(3.42);

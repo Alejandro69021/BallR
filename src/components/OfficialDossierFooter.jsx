@@ -71,7 +71,7 @@ export default function OfficialDossierFooter({ player, onOpenStoryCard, onToast
 ID Paspor: ${pId}
 Nama Panggilan: ${personal_info?.nickname || 'Atlet'}
 No. Punggung: #${personal_info?.jersey_number || '-'} | Posisi: ${personal_info?.position || '-'}
-Rating OVR: ${personal_info?.overall_rating || 75} | Kaki Utama: ${personal_info?.preferred_foot || '-'}
+Kaki Utama: ${personal_info?.preferred_foot || '-'}
 Akademi: ${academy?.name || 'Akademi Sepakbola'} (${academy?.city || 'Indonesia'})
 Hash Integritas: ${computedHash ? computedHash.slice(0, 16) + '...' : 'Menghitung...'}
 Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;

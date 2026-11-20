@@ -18,8 +18,7 @@ describe('B3 Coach Workspace Components Behaviour Tests', () => {
       full_name: 'Fajar Pratama',
       jersey_number: 10,
       position: 'Gelandang Serang (AMF)',
-      age: 13,
-      overall_rating: 78
+      age: 13
     },
     radar_attributes: [
       { attribute: 'Pace & Acceleration', value: 80 },
@@ -78,7 +77,7 @@ describe('B3 Coach Workspace Components Behaviour Tests', () => {
       // Verify payload shape integrity
       expect(payload).toHaveProperty('player_id', mockPlayer.player_id);
       expect(payload).toHaveProperty('personal_info');
-      expect(payload.personal_info).toHaveProperty('overall_rating');
+      expect(payload.personal_info).not.toHaveProperty('overall_rating');
       expect(payload).toHaveProperty('radar_attributes');
       expect(Array.isArray(payload.radar_attributes)).toBe(true);
       expect(payload.radar_attributes.length).toBe(mockPlayer.radar_attributes.length);

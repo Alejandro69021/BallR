@@ -12,8 +12,7 @@ export default function PlayerHeader({ personalInfo, onOpenStoryCard }) {
     height_cm,
     weight_kg,
     academy,
-    photo_url,
-    overall_rating
+    photo_url
   } = personalInfo;
 
   return (
@@ -148,46 +147,20 @@ export default function PlayerHeader({ personalInfo, onOpenStoryCard }) {
           </div>
         </div>
 
-        {/* Right Side: Professional Scout OVR Badge (Restrained Athletic Styling) */}
-        <div className="shrink-0 self-center sm:self-start">
-          <div
-            onClick={onOpenStoryCard}
-            className="w-24 sm:w-28 p-3 rounded-2xl bg-[#0E131F] border-2 border-[#84CC16]/60 shadow-lg flex flex-col items-center text-center cursor-pointer hover:border-[#84CC16] transition-colors"
-            title="Klik untuk membuka Story Card 9:16"
-          >
-            <div className="w-full flex items-center justify-between px-0.5">
-              <span className="text-[9px] font-athletic font-bold uppercase tracking-wider text-[#84CC16]">
-                OVR
-              </span>
-              <span className="text-[10px]" title="Indonesia">
-                🇮🇩
-              </span>
-            </div>
-
-            {/* Big OVR Rating */}
-            <div className="my-0.5">
-              <span className="font-athletic text-4xl sm:text-5xl font-black text-white tracking-tighter">
-                {overall_rating}
-              </span>
-            </div>
-
-            {/* Position Code & Shield Details */}
-            <div className="w-full flex items-center justify-center gap-1.5 pt-1.5 border-t border-slate-800">
-              <span className="font-athletic font-bold text-xs text-white uppercase tracking-wider">
-                {position.split(' ')[0]}
-              </span>
-              <span className="text-slate-600 text-[10px]">•</span>
-              <span className="font-bold text-[10px] text-[#84CC16]">
-                #{jersey_number}
-              </span>
-            </div>
-
-            {/* MPFA stamp */}
-            <div className="mt-1 text-[8px] font-mono text-slate-400 uppercase tracking-wider truncate max-w-[90px]">
-              {academy?.city || 'YOGYAKARTA'}
-            </div>
+        {/* Right Side: Story Card Share Action */}
+        {onOpenStoryCard && (
+          <div className="hidden sm:flex shrink-0 self-start">
+            <button
+              type="button"
+              onClick={onOpenStoryCard}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-panel border border-control text-1 text-xs font-medium hover:bg-raised transition-colors cursor-pointer"
+              title="Buka Story Card 9:16"
+            >
+              <Share2 className="w-4 h-4 text-text-2" />
+              <span>Bagikan Kartu</span>
+            </button>
           </div>
-        </div>
+        )}
 
       </div>
     </section>

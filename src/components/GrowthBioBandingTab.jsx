@@ -63,25 +63,6 @@ export default function GrowthBioBandingTab({ player, onToast }) {
       minVal: 35.0,
       maxVal: 46.0,
       invertY: false
-    },
-    ovr: {
-      name: "Overall OVR Progression",
-      icon: "🏆",
-      unit: "OVR",
-      color: "#F59E0B",
-      badgeBg: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-      delta: "+7 Poin",
-      deltaPercent: "+9.5% Lonjakan Performa",
-      verdict: "Rapid Tactical & Technical Maturation",
-      points: [
-        { month: "Mei 2026", value: 74, groupAvg: 72, note: "Pemain promosi dari kategori U-11/12" },
-        { month: "Juli 2026", value: 76, groupAvg: 73, note: "Konsistensi distribusi passing terbukti" },
-        { month: "Agustus 2026", value: 78, groupAvg: 74, note: "Peran playmaker taktis utama tim" },
-        { month: "Oktober 2026", value: 81, groupAvg: 75, note: "Penetapan rating resmi EA FC 81 OVR" }
-      ],
-      minVal: 70,
-      maxVal: 84,
-      invertY: false
     }
   };
 

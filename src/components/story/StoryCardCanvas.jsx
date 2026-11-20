@@ -76,28 +76,19 @@ export default function StoryCardCanvas({
           </div>
         </div>
 
-        {/* 3. OVR RATING & STAT PILLARS */}
+        {/* 3. STAT PILLARS */}
         <div className="relative z-10 space-y-2">
-          <div className="flex items-center gap-2 p-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10">
-            <div className={`p-1.5 px-2 rounded-xl bg-gradient-to-b from-black/90 to-slate-900 border ${currentTheme.ovrBadgeBorder} flex flex-col items-center justify-center shrink-0`}>
-              <span className="text-[7px] font-athletic font-bold text-slate-400 uppercase">
-                OVR
-              </span>
-              <span className={`font-athletic text-2xl font-black leading-none ${currentTheme.ovrGradient}`}>
-                {personal_info.overall_rating}
-              </span>
-            </div>
-
-            <div className="flex-1 grid grid-cols-3 gap-1">
+          <div className="p-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10">
+            <div className="grid grid-cols-3 gap-1.5">
               {topPillars.map((p) => (
                 <div
                   key={p.code}
-                  className="p-1 rounded-lg bg-white/5 border border-white/5 text-center flex flex-col justify-center"
+                  className="p-1.5 rounded-lg bg-white/5 border border-white/5 text-center flex flex-col justify-center"
                 >
                   <span className="text-[8px] font-bold text-slate-400 uppercase leading-none">
                     {p.code}
                   </span>
-                  <span className="font-athletic text-xs font-black text-white mt-0.5">
+                  <span className="font-athletic text-sm font-black text-white mt-0.5">
                     {p.value}
                   </span>
                 </div>
