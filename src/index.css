@@ -35,6 +35,9 @@
   --color-series-4: var(--series-4);
   --color-series-5: var(--series-5);
 
+  --color-pitch: var(--pitch-bg);
+  --color-pitch-line: var(--pitch-line);
+
   --radius-control: 6px;
   --radius-panel: 8px;
 }
@@ -56,6 +59,8 @@
   --series-3: #009E73;
   --series-4: #D55E00;
   --series-5: #CC79A7;
+  --pitch-bg: #0D1712;
+  --pitch-line: #26382D;
 }
 
 [data-surface="paper"] {
@@ -75,6 +80,8 @@
   --series-3: #007A59;
   --series-4: #B34700;
   --series-5: #9C4472;
+  --pitch-bg: #EDF4EE;
+  --pitch-line: #C2D6C6;
 }
 
 :root {
@@ -94,6 +101,8 @@
   --series-3: #009E73;
   --series-4: #D55E00;
   --series-5: #CC79A7;
+  --pitch-bg: #0D1712;
+  --pitch-line: #26382D;
 }
 
 @layer base {

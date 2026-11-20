@@ -9,7 +9,8 @@ import {
   ClipboardEdit,
   Film,
   TrendingUp,
-  Trophy
+  Trophy,
+  Compass
 } from 'lucide-react';
 import Badge from './ui/Badge';
 import Button from './ui/Button';
@@ -37,6 +38,7 @@ export default function TopNav({
     ...(isCoach
       ? [
           { id: 'matches', label: 'Laga', shortLabel: 'Laga', icon: <Trophy className="w-4 h-4 shrink-0" /> },
+          { id: 'tactics', label: 'Taktik', shortLabel: 'Taktik', icon: <Compass className="w-4 h-4 shrink-0" /> },
           { id: 'logger', label: 'Pitch logger', shortLabel: 'Logger', icon: <Timer className="w-4 h-4 shrink-0" /> },
           { id: 'assessment', label: 'Evaluasi', shortLabel: 'Evaluasi', icon: <ClipboardEdit className="w-4 h-4 shrink-0" /> }
         ]

@@ -24,6 +24,8 @@ import LoggerPage from './pages/LoggerPage';
 import ReferencesPage from './pages/ReferencesPage';
 import MatchesPage from './pages/MatchesPage';
 import MatchDetailPage from './pages/MatchDetailPage';
+import TacticsPage from './pages/TacticsPage';
+import TacticsDetailPage from './pages/TacticsDetailPage';
 
 function HomeRedirect({ userRole }) {
   const { players, loading, error, isDemoMode } = usePlayers();
@@ -163,6 +165,7 @@ function MainApp() {
     if (p.startsWith('/pemain/')) return 'passport';
     if (p.startsWith('/skuad')) return 'roster';
     if (p.startsWith('/laga')) return 'matches';
+    if (p.startsWith('/taktik')) return 'tactics';
     if (p.startsWith('/pencatatan')) return 'logger';
     if (p.startsWith('/penilaian')) return 'assessment';
     return (userRole === 'coach' || userRole === 'admin') ? 'roster' : 'passport';
@@ -199,6 +202,8 @@ function MainApp() {
       navigate(`/penilaian/${pid}`);
     } else if (targetStr === 'logger') {
       navigate('/laga');
+    } else if (targetStr === 'tactics') {
+      navigate('/taktik');
     } else if (targetStr === 'roster') {
       navigate('/skuad');
     }
@@ -220,7 +225,7 @@ function MainApp() {
   const handleSwitchView = (view) => {
     const currentId = activePlayer.public_id || activePlayer.player_id || 'PLAYER-01';
 
-    if (userRole !== 'coach' && userRole !== 'admin' && (view === 'assessment' || view === 'logger')) {
+    if (userRole !== 'coach' && userRole !== 'admin' && (view === 'assessment' || view === 'logger' || view === 'tactics')) {
       handleOpenAuthModal(view);
       return;
     }
@@ -240,6 +245,9 @@ function MainApp() {
         break;
       case 'matches':
         navigate('/laga');
+        break;
+      case 'tactics':
+        navigate('/taktik');
         break;
       case 'logger':
         navigate('/laga');
@@ -373,6 +381,26 @@ function MainApp() {
             path="/laga/:matchId"
             element={
               <MatchDetailPage
+                userRole={userRole}
+                onOpenAuthModal={handleOpenAuthModal}
+                onToast={(t) => setToastInfo(t)}
+              />
+            }
+          />
+          <Route
+            path="/taktik"
+            element={
+              <TacticsPage
+                userRole={userRole}
+                onOpenAuthModal={handleOpenAuthModal}
+                onToast={(t) => setToastInfo(t)}
+              />
+            }
+          />
+          <Route
+            path="/taktik/:id"
+            element={
+              <TacticsDetailPage
                 userRole={userRole}
                 onOpenAuthModal={handleOpenAuthModal}
                 onToast={(t) => setToastInfo(t)}

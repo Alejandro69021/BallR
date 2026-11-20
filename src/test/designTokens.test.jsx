@@ -73,7 +73,9 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
     '--series-2',
     '--series-3',
     '--series-4',
-    '--series-5'
+    '--series-5',
+    '--pitch-bg',
+    '--pitch-line'
   ];
 
   const darkTokens = parseCssSelectorBlock(cssContent, '[data-surface="dark"]');
@@ -152,6 +154,14 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
             expect(ratio).toBeGreaterThanOrEqual(3.0);
           });
         }
+
+        // Pitch contrast: players/arrows (brand, series-1, series-2, danger, warning) against pitch-bg >= 3.0:1
+        ['--brand', '--series-1', '--series-2', '--danger', '--warning'].forEach((role) => {
+          it(`pitch element ${role} reaches >= 3.0:1 against pitch-bg`, () => {
+            const ratio = getContrastRatio(tokens[role], tokens['--pitch-bg']);
+            expect(ratio).toBeGreaterThanOrEqual(3.0);
+          });
+        });
       });
     });
   });
