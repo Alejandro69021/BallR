@@ -1,8 +1,10 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
+import AuthModal from '../components/auth/AuthModal';
+import * as supabaseLib from '../lib/supabase';
 import { fetchPublicPlayersFromViews, fetchLiveRosterFromSupabase, fetchPassportSnapshot, fetchPlayerByToken } from '../lib/supabase';
 import VaepScorecard from '../components/analytics/VaepScorecard';
 import CameraFeed from '../components/scanner/CameraFeed';
@@ -238,6 +240,70 @@ describe('Security Hardening & Privacy Tests', () => {
       render(<MatchMoments moments={[]} onSelectClip={() => {}} />);
 
       expect(screen.getByText(/Belum ada data cuplikan pertandingan/i)).toBeInTheDocument();
+    });
+  });
+
+  describe('(iv) Role authorization & profile verification in AuthModal', () => {
+    it('sets role to public and shows error message when profile row does not exist', async () => {
+      vi.spyOn(supabaseLib, 'signInWithEmail').mockResolvedValue({ user: { id: 'u1' } });
+      vi.spyOn(supabaseLib, 'getCurrentUserProfile').mockResolvedValue(null);
+
+      const onSuccess = vi.fn();
+      const onClose = vi.fn();
+
+      render(
+        <AuthModal
+          isOpen={true}
+          onSuccess={onSuccess}
+          onClose={onClose}
+          targetView="assessment"
+        />
+      );
+
+      fireEvent.change(screen.getByLabelText(/Alamat email/i), {
+        target: { value: 'unregistered@test.id' }
+      });
+      fireEvent.change(screen.getByLabelText(/Kata sandi/i), {
+        target: { value: 'secret123' }
+      });
+      fireEvent.click(screen.getByRole('button', { name: /^Masuk$/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText('Akun belum terdaftar di akademi. Hubungi admin.')).toBeInTheDocument();
+      });
+
+      expect(onSuccess).not.toHaveBeenCalled();
+    });
+
+    it('grants coach role and view when valid profile row with coach role exists', async () => {
+      vi.spyOn(supabaseLib, 'signInWithEmail').mockResolvedValue({ user: { id: 'u1' } });
+      vi.spyOn(supabaseLib, 'getCurrentUserProfile').mockResolvedValue({ role: 'coach', full_name: 'Coach Budi' });
+
+      const onSuccess = vi.fn();
+      const onClose = vi.fn();
+
+      render(
+        <AuthModal
+          isOpen={true}
+          onSuccess={onSuccess}
+          onClose={onClose}
+          targetView="assessment"
+        />
+      );
+
+      fireEvent.change(screen.getByLabelText(/Alamat email/i), {
+        target: { value: 'coach@test.id' }
+      });
+      fireEvent.change(screen.getByLabelText(/Kata sandi/i), {
+        target: { value: 'secret123' }
+      });
+      fireEvent.click(screen.getByRole('button', { name: /^Masuk$/i }));
+
+      await waitFor(() => {
+        expect(onSuccess).toHaveBeenCalledWith('coach', 'assessment');
+      });
+
+      expect(screen.queryByText('Akun belum terdaftar di akademi. Hubungi admin.')).not.toBeInTheDocument();
     });
   });
 });

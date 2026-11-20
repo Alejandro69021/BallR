@@ -159,7 +159,7 @@ function MainApp() {
   };
 
   const handleAuthSuccess = (role, target) => {
-    const assignedRole = role || 'coach';
+    const assignedRole = role || 'public';
     setUserRole(assignedRole);
     setIsAuthModalOpen(false);
 

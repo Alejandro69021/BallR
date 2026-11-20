@@ -27,7 +27,11 @@ export default function AuthModal({
       if (authMode === 'password') {
         await signInWithEmail(email, password);
         const profile = await getCurrentUserProfile();
-        const role = profile?.role || 'coach';
+        const role = profile?.role || 'public';
+        if (role === 'public') {
+          setErrorMsg('Akun belum terdaftar di akademi. Hubungi admin.');
+          return;
+        }
         onSuccess(role, targetView);
       } else {
         await signInWithMagicLink(email);
