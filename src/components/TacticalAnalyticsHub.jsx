@@ -14,14 +14,14 @@ import FifaLanguageMetrics from './analytics/FifaLanguageMetrics';
 import PrescribedDrillCard from './analytics/PrescribedDrillCard';
 
 export default function TacticalAnalyticsHub({ player, onToast }) {
-  const { personal_info, latest_match_summary } = player;
+  const { personal_info } = player;
 
   const [activePhase, setActivePhase] = useState('all');
   const [isCopied, setIsCopied] = useState(false);
   const [showCitations, setShowCitations] = useState(false);
 
-  const matchStats = latest_match_summary?.stats || null;
-  const vaepMetrics = latest_match_summary?.vaepMetrics || null;
+  const matchStats = null;
+  const vaepMetrics = null;
 
   const filanesiaPhases = {
     attacking: {
@@ -161,7 +161,6 @@ export default function TacticalAnalyticsHub({ player, onToast }) {
     const summary = `=== LAPORAN TAKTIS RESMI (FILANESIA & VAEP ENGINE) ===
 Pemain: ${personal_info.full_name || personal_info.nickname || 'Atlet'} (#${personal_info.jersey_number ?? '-'} • ${personal_info.position || '-'})
 Akademi: ${personal_info.academy?.name || 'Akademi Sepakbola'}
-Rating Laga: ${matchStats?.matchRating || 'Belum ada data'} / 10
 
 [1. METRIK AKSI VAEP (Decroos et al. 2019)]
 - Net VAEP: ${vaepMetrics?.netVaep || 'Belum ada data'} (Offensive: ${vaepMetrics?.offensiveVaep || '-'} | Defensive: ${vaepMetrics?.defensiveVaep || '-'})
@@ -274,17 +273,10 @@ Dokumentasi Terverifikasi BallR.`;
 
           <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638] min-w-0">
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider truncate">
-              Rating Laga
+              Status Evaluasi
             </div>
-            <div className="font-athletic text-2xl font-black text-amber-400 mt-0.5">
-              {matchStats?.matchRating != null ? (
-                <>{matchStats.matchRating} <span className="text-xs font-normal text-slate-400">/ 10</span></>
-              ) : (
-                <span className="text-sm font-sans font-normal text-slate-400">Belum ada data</span>
-              )}
-            </div>
-            <div className="text-xs text-amber-300 font-medium truncate">
-              {matchStats ? 'Rating Terkalkulasi' : 'Belum ada data'}
+            <div className="text-sm font-sans font-normal text-slate-400 mt-1">
+              Belum ada data
             </div>
           </div>
         </div>

@@ -188,13 +188,17 @@ function MainApp() {
       const pid = targetStr.split(':')[1];
       navigate(`/penilaian/${pid}`);
     } else if (targetStr.startsWith('logger:')) {
-      const mid = targetStr.split(':')[1] || 'match-01';
-      navigate(`/pencatatan/${mid}`);
+      const mid = targetStr.split(':')[1];
+      if (mid) {
+        navigate(`/pencatatan/${mid}`);
+      } else {
+        navigate('/laga');
+      }
     } else if (targetStr === 'assessment') {
       const pid = activePlayer.player_id || activePlayer.public_id || 'PLAYER-01';
       navigate(`/penilaian/${pid}`);
     } else if (targetStr === 'logger') {
-      navigate('/pencatatan/match-01');
+      navigate('/laga');
     } else if (targetStr === 'roster') {
       navigate('/skuad');
     }
@@ -226,7 +230,7 @@ function MainApp() {
         navigate(`/pemain/${currentId}`);
         break;
       case 'match':
-        navigate(`/pemain/${currentId}/laga/match-01`);
+        navigate(`/pemain/${currentId}/laga`);
         break;
       case 'growth':
         navigate(`/pemain/${currentId}/pertumbuhan`);
@@ -238,7 +242,7 @@ function MainApp() {
         navigate('/laga');
         break;
       case 'logger':
-        navigate('/pencatatan/match-01');
+        navigate('/laga');
         break;
       case 'assessment':
         navigate(`/penilaian/${activePlayer.player_id || currentId}`);

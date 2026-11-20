@@ -96,22 +96,6 @@ export function PlayersProvider({ children }) {
     return null;
   }, []);
 
-  // Mutation: sync match stats from pitch logger
-  const syncMatchStats = useCallback((matchSummary) => {
-    setPlayers((prev) =>
-      prev.map((p) => {
-        if (p.player_id === matchSummary.playerId) {
-          return {
-            ...p,
-            latest_match_summary: matchSummary
-          };
-        }
-        return p;
-      })
-    );
-    setSelectedPlayerId(matchSummary.playerId);
-  }, []);
-
   const value = {
     players,
     loading,
@@ -121,8 +105,7 @@ export function PlayersProvider({ children }) {
     setSelectedPlayerId,
     refreshPlayers: loadPlayers,
     saveAssessment,
-    recordFitness,
-    syncMatchStats
+    recordFitness
   };
 
   return <PlayersContext.Provider value={value}>{children}</PlayersContext.Provider>;

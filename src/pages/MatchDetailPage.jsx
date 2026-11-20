@@ -430,7 +430,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               size="sm"
               onClick={() => navigate(`/pencatatan/${match.id}`)}
             >
-              Buka logger
+              {isFinal ? 'Lihat rekaman' : 'Catat kejadian'}
             </Button>
           )}
         </div>

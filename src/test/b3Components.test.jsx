@@ -7,6 +7,7 @@ import MatchRecapModal from '../components/logger/MatchRecapModal';
 
 describe('B3 Coach Workspace Components Behaviour Tests', () => {
   beforeEach(() => {
+    localStorage.clear();
     vi.restoreAllMocks();
   });
 
@@ -115,97 +116,121 @@ describe('B3 Coach Workspace Components Behaviour Tests', () => {
   });
 
   describe('FastPitchLogger & Event Stream', () => {
-    it('tapping an event button appends exactly one event with minute and type', () => {
+    const dummyMatch = {
+      id: 'b3-match-1',
+      opponent_name: 'Bina Putra FC',
+      match_format: '11v11',
+      pitch_length_m: 90,
+      pitch_width_m: 60,
+      status: 'draft'
+    };
+    const dummyParticipants = [
+      {
+        player_id: mockPlayer.player_id,
+        name: mockPlayer.personal_info.full_name,
+        number: 10,
+        position: 'MF',
+        started: true
+      }
+    ];
+
+    it('tapping an event button appends exactly one event with minute and type', async () => {
       render(
         <FastPitchLogger
-          players={[mockPlayer]}
-          selectedPlayerId={mockPlayer.player_id}
+          match={dummyMatch}
+          participants={dummyParticipants}
           onFinishMatch={vi.fn()}
           onToast={vi.fn()}
         />
       );
 
-      // Check initial event stream items
-      const initialPassEvents = screen.getAllByText('Pass akurat');
-      const initialCount = initialPassEvents.length;
-
-      // Tap Pass akurat button
-      const passButton = screen.getByRole('button', { name: /Pass akurat/i });
+      // Tap Umpan akurat button
+      const passButton = screen.getByRole('button', { name: /Umpan akurat/i });
       fireEvent.click(passButton);
 
-      // Verify exactly one new event was appended to history
-      const updatedPassEvents = screen.getAllByText('Pass akurat');
-      expect(updatedPassEvents.length).toBe(initialCount + 1);
-
-      // Verify the badge displays the event type 'pass_success'
-      expect(screen.getAllByText('pass_success').length).toBeGreaterThan(1);
+      // Verify event is registered in outbox and stream
+      await waitFor(() => {
+        expect(screen.getByText(/Menunggu sinkron: 1/i)).toBeInTheDocument();
+        expect(screen.getByText('pass (sukses)')).toBeInTheDocument();
+      });
     });
 
-    it('undo button removes the last logged event from history', () => {
+    it('undo button removes the last logged event from outbox', async () => {
       const onToast = vi.fn();
       render(
         <FastPitchLogger
-          players={[mockPlayer]}
-          selectedPlayerId={mockPlayer.player_id}
+          match={dummyMatch}
+          participants={dummyParticipants}
           onFinishMatch={vi.fn()}
           onToast={onToast}
         />
       );
 
-      // Tap Tekel berhasil button to add a known event
-      const tackleBtn = screen.getByRole('button', { name: /Tekel & intersep/i });
+      // Tap Tekel berhasil button
+      const tackleBtn = screen.getByRole('button', { name: /Tekel berhasil/i });
       fireEvent.click(tackleBtn);
 
-      const undoButton = screen.getByRole('button', { name: /Batalkan aksi/i });
+      await waitFor(() => {
+        expect(screen.getByText(/Menunggu sinkron: 1/i)).toBeInTheDocument();
+      });
+
+      const undoButton = screen.getByRole('button', { name: /Batalkan aksi terakhir/i });
       expect(undoButton).toBeEnabled();
 
       fireEvent.click(undoButton);
 
-      expect(onToast).toHaveBeenCalledWith(
-        expect.objectContaining({ title: 'Aksi terakhir dibatalkan' })
-      );
+      await waitFor(() => {
+        expect(onToast).toHaveBeenCalledWith(
+          expect.objectContaining({ title: 'Aksi Terakhir Dibatalkan' })
+        );
+      });
     });
 
-    it('recap modal displays counts of logged events and confirms sync', () => {
-      const onConfirmSync = vi.fn();
-      const mockStats = {
-        passesCompleted: 25,
-        passesTotal: 30,
-        keyPasses: 4,
-        tacklesWon: 5,
-        tacklesTotal: 6,
-        shotsOnTarget: 3,
-        goals: 2
-      };
+    it('recap modal displays honest event distribution and controls finalise', () => {
+      const onFinalise = vi.fn();
+      const mockEvents = [
+        {
+          id: 'e1',
+          match_id: dummyMatch.id,
+          event_type: 'pass',
+          outcome: 'success',
+          player_id: mockPlayer.player_id,
+          period: 1,
+          minute: 10.0
+        },
+        {
+          id: 'e2',
+          match_id: dummyMatch.id,
+          event_type: 'shot',
+          outcome: 'goal',
+          player_id: mockPlayer.player_id,
+          period: 1,
+          minute: 15.0
+        }
+      ];
 
       render(
         <MatchRecapModal
-          activePlayer={mockPlayer}
-          timerSeconds={900}
-          stats={mockStats}
-          passAccuracy={83}
-          tackleAccuracy={83}
-          calculatedMatchRating={8.4}
+          match={dummyMatch}
+          events={mockEvents}
+          outbox={[]}
+          participants={dummyParticipants}
+          isOpen={true}
           onClose={vi.fn()}
-          onConfirmSync={onConfirmSync}
+          onFinalise={onFinalise}
         />
       );
 
-      // Check modal heading and player info
-      expect(screen.getByText(/Ringkasan performa laga/i)).toBeInTheDocument();
-      expect(screen.getByText(/Fajar Pratama/i)).toBeInTheDocument();
+      // Check modal heading and opponent
+      expect(screen.getByText(/Ringkasan kejadian pertandingan/i)).toBeInTheDocument();
+      expect(screen.getByText(/Bina Putra FC/i)).toBeInTheDocument();
 
-      // Check stat counts
-      expect(screen.getByText('25 / 30 (83%)')).toBeInTheDocument();
-      expect(screen.getByText('4 peluang')).toBeInTheDocument();
-      expect(screen.getByText('5 / 6 (83%)')).toBeInTheDocument();
-      expect(screen.getByText('3 on target (2 gol)')).toBeInTheDocument();
-      expect(screen.getByText('8.4')).toBeInTheDocument();
+      // Check honest distribution text
+      expect(screen.getByText('Semua 2 kejadian tersimpan di server')).toBeInTheDocument();
 
-      // Confirm sync
-      const confirmButton = screen.getByRole('button', { name: /Konfirmasi dan sinkron/i });
-      fireEvent.click(confirmButton);
-      expect(onConfirmSync).toHaveBeenCalledTimes(1);
+      // Finalise button should be enabled when outbox is empty
+      const finaliseBtn = screen.getByRole('button', { name: /Selesaikan laga/i });
+      expect(finaliseBtn).toBeEnabled();
     });
   });
 });

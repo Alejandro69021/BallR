@@ -13,30 +13,6 @@ export const DEFAULT_GROUP_AVGS = {
 };
 
 /**
- * Calculates match rating based on action telemetry counters.
- * Clamped between 6.0 and 9.8.
- * @param {Object} stats
- * @returns {string} Formatted to 1 decimal place (e.g. "8.2")
- */
-export function calculateMatchRating(stats = {}) {
-  const passesCompleted = Number(stats.passesCompleted) || 0;
-  const keyPasses = Number(stats.keyPasses) || 0;
-  const tacklesWon = Number(stats.tacklesWon) || 0;
-  const goals = Number(stats.goals) || 0;
-  const turnovers = Number(stats.turnovers) || 0;
-
-  const rawScore =
-    6.5 +
-    passesCompleted * 0.05 +
-    keyPasses * 0.4 +
-    tacklesWon * 0.2 +
-    goals * 0.9 -
-    turnovers * 0.25;
-
-  return Math.min(9.8, Math.max(6.0, rawScore)).toFixed(1);
-}
-
-/**
  * Calculates percentage accuracy (e.g. pass or tackle completion).
  * @param {number} numerator
  * @param {number} denominator

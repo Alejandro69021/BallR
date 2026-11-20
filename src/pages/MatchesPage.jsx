@@ -263,13 +263,24 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
       header: 'Aksi',
       align: 'right',
       render: (_val, row) => (
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => navigate(`/laga/${row.id}`)}
-        >
-          Detail
-        </Button>
+        <div className="flex items-center justify-end gap-1.5">
+          {row.status === 'draft' && (
+            <Button
+              variant="brand"
+              size="sm"
+              onClick={() => navigate(`/pencatatan/${row.id}`)}
+            >
+              Catat kejadian
+            </Button>
+          )}
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => navigate(`/laga/${row.id}`)}
+          >
+            Detail
+          </Button>
+        </div>
       )
     }
   ];
@@ -433,6 +444,10 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
               />
             </Field>
           </div>
+
+          <p className="text-xs text-2">
+            Ukuran awal hanya contoh; isi sesuai lapangan sebenarnya (meter).
+          </p>
 
           {/* Participants picker from roster */}
           <div className="space-y-2 pt-2 border-t border-line">

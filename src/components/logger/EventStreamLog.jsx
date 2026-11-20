@@ -1,64 +1,84 @@
 import React from 'react';
-import { Target, Shield, Flame, Activity, Undo2 } from 'lucide-react';
+import { Target, Shield, Flame, Activity, Undo2, RefreshCw } from 'lucide-react';
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
+import { EVENT_TYPE_LABELS } from '../../lib/matches';
 
 export default function EventStreamLog({
-  stats,
-  passAccuracy,
-  tackleAccuracy,
-  calculatedMatchRating,
-  eventHistory,
-  onUndo
+  events = [],
+  outbox = [],
+  playerMap = {},
+  onUndo,
+  onFlush,
+  isFlushing = false,
+  isReadOnly = false
 }) {
+  // Combine all active events (server events + outbox pending)
+  const allEvents = [...events, ...outbox];
+
+  // Compute honest counts
+  const passesTotal = allEvents.filter((e) => e.event_type === 'pass').length;
+  const passesSuccess = allEvents.filter(
+    (e) => e.event_type === 'pass' && e.outcome === 'success'
+  ).length;
+
+  const tacklesTotal = allEvents.filter((e) => e.event_type === 'tackle').length;
+  const tacklesSuccess = allEvents.filter(
+    (e) => e.event_type === 'tackle' && e.outcome === 'success'
+  ).length;
+
+  const shotsTotal = allEvents.filter((e) =>
+    ['shot', 'shot_on_target', 'goal'].includes(e.event_type)
+  ).length;
+  const shotsOnTarget = allEvents.filter((e) =>
+    ['shot_on_target', 'goal'].includes(e.event_type)
+  ).length;
+  const goalsTotal = allEvents.filter((e) => e.event_type === 'goal').length;
+
+  const interceptionsTotal = allEvents.filter((e) => e.event_type === 'interception').length;
+  const clearancesTotal = allEvents.filter((e) => e.event_type === 'clearance').length;
+
+  // Chronological stream (latest first)
+  const sortedStream = [...allEvents].sort((a, b) => {
+    if (a.period !== b.period) return b.period - a.period;
+    return Number(b.minute) - Number(a.minute);
+  });
+
+  const serverCount = events.length;
+  const outboxCount = outbox.length;
+
   return (
-    <>
-      {/* 2. REAL-TIME TELEMETRY COUNTERS */}
-      <section className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-1">
+    <div className="space-y-4 text-1">
+      {/* 1. Real-Time Telemetry Counters (Pure Counts with n shown) */}
+      <section className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         {/* Pass Stats */}
         <div className="p-3 rounded-control bg-panel border border-line flex flex-col justify-between">
           <div className="flex items-center justify-between text-2 text-xs font-medium">
-            <span>Umpan (akurasi)</span>
+            <span>Umpan</span>
             <Target className="w-4 h-4 text-2" strokeWidth={1.5} />
           </div>
           <div className="mt-2">
             <div className="font-mono text-xl tabular-nums font-semibold text-1">
-              {stats.passesCompleted} <span className="text-xs text-2 font-normal">/ {stats.passesTotal}</span>
-            </div>
-            <div className="text-xs font-mono text-brand mt-0.5">
-              {passAccuracy}% akurat
-            </div>
-          </div>
-        </div>
-
-        {/* Key Passes / Chances */}
-        <div className="p-3 rounded-control bg-panel border border-line flex flex-col justify-between">
-          <div className="flex items-center justify-between text-2 text-xs font-medium">
-            <span>Peluang tercipta</span>
-            <Target className="w-4 h-4 text-brand" strokeWidth={1.5} />
-          </div>
-          <div className="mt-2">
-            <div className="font-mono text-xl tabular-nums font-semibold text-1">
-              {stats.keyPasses}
+              {passesSuccess} <span className="text-xs text-2 font-normal">/ {passesTotal}</span>
             </div>
             <div className="text-xs text-2 mt-0.5">
-              Umpan kunci
+              Umpan berhasil (n = {passesTotal})
             </div>
           </div>
         </div>
 
-        {/* Tackles & Intercepts */}
+        {/* Tackles */}
         <div className="p-3 rounded-control bg-panel border border-line flex flex-col justify-between">
           <div className="flex items-center justify-between text-2 text-xs font-medium">
-            <span>Tekel & intersep</span>
+            <span>Tekel</span>
             <Shield className="w-4 h-4 text-2" strokeWidth={1.5} />
           </div>
           <div className="mt-2">
             <div className="font-mono text-xl tabular-nums font-semibold text-1">
-              {stats.tacklesWon} <span className="text-xs text-2 font-normal">/ {stats.tacklesTotal}</span>
+              {tacklesSuccess} <span className="text-xs text-2 font-normal">/ {tacklesTotal}</span>
             </div>
-            <div className="text-xs font-mono text-brand mt-0.5">
-              {tackleAccuracy}% sukses
+            <div className="text-xs text-2 mt-0.5">
+              Tekel berhasil (n = {tacklesTotal})
             </div>
           </div>
         </div>
@@ -71,66 +91,154 @@ export default function EventStreamLog({
           </div>
           <div className="mt-2">
             <div className="font-mono text-xl tabular-nums font-semibold text-1">
-              {stats.shotsOnTarget} <span className="text-xs font-normal text-2">({stats.goals} gol)</span>
+              {shotsOnTarget} <span className="text-xs text-2 font-normal">/ {shotsTotal}</span>
             </div>
-            <div className="text-xs text-2 mt-0.5 font-mono">
-              Rating: <strong className="text-brand font-semibold">{calculatedMatchRating}</strong>
+            <div className="text-xs text-2 mt-0.5">
+              Tepat sasaran ({goalsTotal} gol)
+            </div>
+          </div>
+        </div>
+
+        {/* Interceptions & Clearances */}
+        <div className="p-3 rounded-control bg-panel border border-line flex flex-col justify-between">
+          <div className="flex items-center justify-between text-2 text-xs font-medium">
+            <span>Intersepsi & sapuan</span>
+            <Shield className="w-4 h-4 text-brand" strokeWidth={1.5} />
+          </div>
+          <div className="mt-2">
+            <div className="font-mono text-xl tabular-nums font-semibold text-1">
+              {interceptionsTotal} <span className="text-xs text-2 font-normal">/ {clearancesTotal}</span>
+            </div>
+            <div className="text-xs text-2 mt-0.5">
+              {interceptionsTotal} int · {clearancesTotal} sapuan
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4. CHRONOLOGICAL EVENT STREAM & UNDO */}
-      <section className="rounded-panel bg-panel border border-line p-4 space-y-3 text-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Activity className="w-4 h-4 text-brand" strokeWidth={1.5} />
-            <h4 className="text-xs font-semibold text-1">
-              Log aksi langsung (rekaman terkini)
-            </h4>
-          </div>
-
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={onUndo}
-            disabled={eventHistory.length === 0}
-            icon={<Undo2 className="w-4 h-4" strokeWidth={1.5} />}
-          >
-            Batalkan aksi
-          </Button>
+      {/* 2. Outbox & Sync Status Line */}
+      <section className="p-3.5 rounded-panel bg-panel border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="font-medium text-1">Status Sinkronisasi:</span>
+          <span className="font-mono tabular-nums text-2">
+            Tersimpan di server: {serverCount} · Menunggu sinkron: {outboxCount}
+          </span>
+          {outboxCount > 0 && (
+            <Badge variant="warning" size="sm">
+              {outboxCount} di outbox lokal
+            </Badge>
+          )}
         </div>
 
-        {/* List of last events */}
-        <div className="space-y-1.5">
-          {eventHistory.length === 0 ? (
-            <div className="p-3 text-center text-xs text-2 font-mono">
-              Belum ada data aksi laga tercatat.
-            </div>
-          ) : (
-            eventHistory.slice(0, 6).map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between p-2.5 rounded-control bg-app border border-line text-xs font-mono"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="font-mono tabular-nums text-2 font-semibold">[{item.time}]</span>
-                  <span className="font-sans font-medium text-1">
-                    {item.playerName}:
-                  </span>
-                  <span className="font-sans text-1 font-semibold">
-                    {item.label}
-                  </span>
-                </div>
-                <Badge variant="neutral" size="sm">
-                  {item.type}
-                </Badge>
-              </div>
-            ))
+        <div className="flex items-center gap-2">
+          {outboxCount > 0 && !isReadOnly && (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              loading={isFlushing}
+              onClick={onFlush}
+              icon={<RefreshCw className="w-3.5 h-3.5" strokeWidth={1.5} />}
+            >
+              Sinkronkan sekarang
+            </Button>
+          )}
+
+          {!isReadOnly && (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={allEvents.length === 0}
+              onClick={onUndo}
+              icon={<Undo2 className="w-3.5 h-3.5" strokeWidth={1.5} />}
+            >
+              Batalkan aksi terakhir
+            </Button>
           )}
         </div>
       </section>
-    </>
+
+      {/* 3. Chronological Event Stream History */}
+      <section className="rounded-panel bg-panel border border-line p-4 space-y-3">
+        <div className="flex items-center justify-between pb-2 border-b border-line">
+          <div className="flex items-center gap-2">
+            <Activity className="w-4 h-4 text-brand" strokeWidth={1.5} />
+            <h3 className="text-xs font-semibold text-1">
+              Log kejadian terkini
+            </h3>
+          </div>
+          <span className="text-xs font-mono tabular-nums text-2">
+            Total {allEvents.length} kejadian
+          </span>
+        </div>
+
+        {sortedStream.length === 0 ? (
+          <p className="text-xs text-2 py-3 text-center">
+            Belum ada kejadian tercatat. Gunakan tombol aksi cepat di atas untuk mencatat.
+          </p>
+        ) : (
+          <div className="divide-y divide-line max-h-72 overflow-y-auto">
+            {sortedStream.slice(0, 15).map((evt) => {
+              const isPending = outbox.some(
+                (o) => o.client_event_id === evt.client_event_id
+              );
+              const playerInfo = evt.player_id ? playerMap[evt.player_id] : null;
+
+              return (
+                <div
+                  key={evt.client_event_id || evt.id}
+                  className="py-2 flex items-center justify-between gap-3 text-xs"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-mono text-2 tabular-nums shrink-0">
+                      B{evt.period} {evt.minute}'
+                    </span>
+
+                    <Badge
+                      variant={evt.team === 'own' ? 'brand' : 'neutral'}
+                      size="sm"
+                    >
+                      {evt.team === 'own' ? 'Tim kita' : `Lawan #${evt.opponent_number || '-'}`}
+                    </Badge>
+
+                    {evt.team === 'own' && playerInfo && (
+                      <span className="font-medium text-1 truncate">
+                        #{playerInfo.number} {playerInfo.name}
+                      </span>
+                    )}
+
+                    <span className="text-1 font-medium truncate">
+                      {EVENT_TYPE_LABELS[evt.event_type] || evt.event_type}
+                    </span>
+
+                    {evt.outcome && (
+                      <Badge
+                        variant={evt.outcome === 'success' ? 'brand' : 'danger'}
+                        size="sm"
+                      >
+                        {evt.outcome === 'success' ? 'Sukses' : 'Gagal'}
+                      </Badge>
+                    )}
+
+                    {evt.x_m !== null && evt.y_m !== null && (
+                      <span className="font-mono text-2 text-xs hidden sm:inline">
+                        ({evt.x_m}, {evt.y_m} m)
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="shrink-0">
+                    <Badge variant={isPending ? 'warning' : 'neutral'} size="sm">
+                      {isPending ? 'Menunggu sinkron' : 'Tersimpan'}
+                    </Badge>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </div>
   );
 }

@@ -9,7 +9,7 @@ import { usePlayers } from '../hooks/usePlayers';
 export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinModal, onToast }) {
   const { playerId } = useParams();
   const navigate = useNavigate();
-  const { players, loading, saveAssessment, syncMatchStats } = usePlayers();
+  const { players, loading, saveAssessment } = usePlayers();
   const openModal = onOpenAuthModal || onOpenPinModal;
 
   const isAuthorized = userRole === 'coach' || userRole === 'admin';
@@ -80,7 +80,6 @@ export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinMod
       selectedPlayerId={activePlayer.player_id}
       activePlayer={activePlayer}
       onSaveAssessment={handleSaveAssessment}
-      onSyncMatchStats={syncMatchStats}
       onToast={onToast}
     />
   );

@@ -14,8 +14,7 @@ export function usePlayers() {
     setSelectedPlayerId: context.setSelectedPlayerId,
     refreshPlayers: context.refreshPlayers,
     saveAssessment: context.saveAssessment,
-    recordFitness: context.recordFitness,
-    syncMatchStats: context.syncMatchStats
+    recordFitness: context.recordFitness
   };
 }
 
@@ -42,7 +41,6 @@ export function usePlayer(publicIdOrId) {
     error,
     isDemoMode: context.isDemoMode,
     saveAssessment: context.saveAssessment,
-    recordFitness: context.recordFitness,
-    syncMatchStats: context.syncMatchStats
+    recordFitness: context.recordFitness
   };
 }

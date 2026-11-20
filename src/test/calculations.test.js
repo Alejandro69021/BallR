@@ -1,48 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import {
-  calculateMatchRating,
   calculateAccuracy,
   formatSecondsToTime,
   derivePositionGroup,
   transformDbPlayer
 } from '../lib/calculations';
-
-describe('calculateMatchRating', () => {
-  it('clamps minimum rating to 6.0 even with zero or negative performance', () => {
-    const rating = calculateMatchRating({
-      passesCompleted: 0,
-      keyPasses: 0,
-      tacklesWon: 0,
-      goals: 0,
-      turnovers: 10
-    });
-    expect(rating).toBe('6.0');
-  });
-
-  it('clamps maximum rating to 9.8 with god-tier stats', () => {
-    const rating = calculateMatchRating({
-      passesCompleted: 80,
-      keyPasses: 10,
-      tacklesWon: 12,
-      goals: 5,
-      turnovers: 0
-    });
-    expect(rating).toBe('9.8');
-  });
-
-  it('calculates accurate rating for typical match stats', () => {
-    // 6.5 + (20 * 0.05) + (2 * 0.4) + (3 * 0.2) + (1 * 0.9) - (2 * 0.25)
-    // 6.5 + 1.0 + 0.8 + 0.6 + 0.9 - 0.5 = 9.3
-    const rating = calculateMatchRating({
-      passesCompleted: 20,
-      keyPasses: 2,
-      tacklesWon: 3,
-      goals: 1,
-      turnovers: 2
-    });
-    expect(rating).toBe('9.3');
-  });
-});
 
 describe('calculateAccuracy', () => {
   it('returns 0 when denominator is 0 or negative', () => {

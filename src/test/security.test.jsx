@@ -156,8 +156,7 @@ describe('Security Hardening & Privacy Tests', () => {
 
     it('renders honest empty state in TacticalAnalyticsHub telemetry cards when stats are null', () => {
       const emptyPlayer = {
-        personal_info: { full_name: 'Atlet Tes', position: 'Midfielder' },
-        latest_match_summary: null
+        personal_info: { full_name: 'Atlet Tes', position: 'Midfielder' }
       };
 
       render(<TacticalAnalyticsHub player={emptyPlayer} onToast={() => {}} />);
