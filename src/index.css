@@ -173,8 +173,8 @@
 }
 
 .text-display {
-  font-size: 28px;
-  line-height: 36px;
+  font-size: var(--text-display);
+  line-height: var(--text-display--line-height);
 }
 
 /* Backward compatibility keyframes during transition */
