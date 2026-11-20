@@ -33,7 +33,7 @@ export default function MatchTimerBar({
 
             {/* Digital Stopwatch Display */}
             <div className="flex items-baseline gap-2 mt-1">
-              <div className="font-mono text-2xl sm:text-[28px] tabular-nums font-semibold text-1">
+              <div className="font-mono text-2xl tabular-nums font-semibold text-1">
                 {formatSecondsToTime(timerSeconds)}
               </div>
               <button

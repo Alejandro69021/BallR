@@ -27,7 +27,7 @@ export default function RefChip({ referenceId, customLabel }) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-control text-[10px] font-mono bg-raised hover:bg-panel text-2 hover:text-1 border border-control transition-colors cursor-pointer align-baseline select-none"
+        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-control text-xs font-mono bg-raised hover:bg-panel text-2 hover:text-1 border border-control transition-colors cursor-pointer align-baseline select-none"
         title={`Lihat rujukan: ${ref.title}`}
         aria-haspopup="dialog"
       >
@@ -53,10 +53,10 @@ export default function RefChip({ referenceId, customLabel }) {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-2">
+                    <span className="text-xs font-mono uppercase tracking-wider text-2">
                       Rujukan Dokumen
                     </span>
-                    <span className="text-[9px] font-mono uppercase px-1.5 py-0.2 rounded border bg-raised border-line text-2">
+                    <span className="text-xs font-mono uppercase px-1.5 py-0.2 rounded border bg-raised border-line text-2">
                       {ref.status || 'unverified'}
                     </span>
                   </div>
@@ -77,7 +77,7 @@ export default function RefChip({ referenceId, customLabel }) {
 
             {/* Details */}
             <div className="space-y-2 text-xs">
-              <div className="grid grid-cols-2 gap-2 p-2.5 rounded bg-raised border border-line font-mono text-[11px]">
+              <div className="grid grid-cols-2 gap-2 p-2.5 rounded bg-raised border border-line font-mono text-xs">
                 <div>
                   <span className="text-2 block">Penerbit / Penulis:</span>
                   <span className="text-1">{ref.publisher || 'Belum terkonfirmasi'}</span>
@@ -97,13 +97,13 @@ export default function RefChip({ referenceId, customLabel }) {
               </div>
 
               {ref.notes && (
-                <div className="p-2.5 rounded bg-raised border border-line text-2 text-[11px] leading-relaxed">
+                <div className="p-2.5 rounded bg-raised border border-line text-2 text-xs leading-relaxed">
                   <span className="font-semibold text-1 block mb-0.5">Catatan Metodologi:</span>
                   {ref.notes}
                 </div>
               )}
 
-              <div className="flex items-center justify-between text-[10px] text-2 pt-1 font-mono">
+              <div className="flex items-center justify-between text-xs text-2 pt-1 font-mono">
                 <span className="flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
                   Diverifikasi: {ref.verified_on || 'Belum diverifikasi mandiri'}
@@ -127,7 +127,7 @@ export default function RefChip({ referenceId, customLabel }) {
                   <ExternalLink className="w-3 h-3" />
                 </a>
               ) : (
-                <span className="text-[11px] text-2 italic">Tautan dokumen tidak tersedia</span>
+                <span className="text-xs text-2 italic">Tautan dokumen tidak tersedia</span>
               )}
 
               <button

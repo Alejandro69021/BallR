@@ -33,7 +33,7 @@ function HomeRedirect({ userRole }) {
       <div className="p-8 text-center rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 space-y-2 max-w-lg mx-auto mt-8">
         <p className="text-sm font-semibold text-white">Koneksi Database Supabase Tidak Tersedia</p>
         <p className="text-xs text-slate-300 leading-relaxed">{error}</p>
-        <p className="text-[11px] text-slate-400 pt-2 border-t border-rose-500/20">
+        <p className="text-xs text-slate-400 pt-2 border-t border-rose-500/20">
           Atur <code className="text-rose-200">VITE_SUPABASE_URL</code> dan <code className="text-rose-200">VITE_SUPABASE_ANON_KEY</code> di berkas <code className="text-rose-200">.env</code>, atau jalankan dengan <code className="text-rose-200">VITE_DEMO_MODE=true</code>.
         </p>
       </div>

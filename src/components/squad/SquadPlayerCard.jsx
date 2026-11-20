@@ -47,7 +47,7 @@ export default function SquadPlayerCard({
               )}
             </div>
             {personal_info?.jersey_number != null && (
-              <span className="absolute -bottom-1 -left-1 px-1 py-0.2 rounded bg-panel border border-line text-[10px] font-mono font-semibold text-1">
+              <span className="absolute -bottom-1 -left-1 px-1 py-0.2 rounded bg-panel border border-line text-xs font-mono font-semibold text-1">
                 #{personal_info.jersey_number}
               </span>
             )}

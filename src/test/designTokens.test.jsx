@@ -191,7 +191,12 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
       path.resolve(__dirname, '../components/PerformanceRadar.jsx'),
       path.resolve(__dirname, '../components/AICoachCard.jsx'),
       path.resolve(__dirname, '../components/MatchMoments.jsx'),
-      path.resolve(__dirname, '../components/OfficialDossierFooter.jsx')
+      path.resolve(__dirname, '../components/OfficialDossierFooter.jsx'),
+      path.resolve(__dirname, '../pages/GrowthPage.jsx'),
+      path.resolve(__dirname, '../components/GrowthBioBandingTab.jsx'),
+      path.resolve(__dirname, '../components/growth/BioMaturityCard.jsx'),
+      path.resolve(__dirname, '../components/growth/AnthropometryLogTable.jsx'),
+      path.resolve(__dirname, '../components/growth/AthleticProgressChart.jsx')
     ];
     const targetFiles = [...uiFiles, ...extraFiles];
 
@@ -275,6 +280,42 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
       expect(darkAppBg).not.toBe(paperAppBg);
 
       document.head.removeChild(styleEl);
+    });
+  });
+
+  describe('5. Scan Test: Zero text-[...] arbitrary font sizes in src/components and src/pages', () => {
+    function walkDir(dir) {
+      let results = [];
+      const list = fs.readdirSync(dir);
+      list.forEach((file) => {
+        const fullPath = path.join(dir, file);
+        const stat = fs.statSync(fullPath);
+        if (stat && stat.isDirectory()) {
+          results = results.concat(walkDir(fullPath));
+        } else if (file.endsWith('.jsx') || file.endsWith('.js')) {
+          results.push(fullPath);
+        }
+      });
+      return results;
+    }
+
+    const scanDirs = [
+      path.resolve(__dirname, '../components'),
+      path.resolve(__dirname, '../pages')
+    ];
+
+    const allFiles = scanDirs.flatMap((d) => walkDir(d));
+
+    it('verifies no component or page uses text-[...] arbitrary font sizes', () => {
+      const violations = [];
+      allFiles.forEach((file) => {
+        const content = fs.readFileSync(file, 'utf-8');
+        const matches = content.match(/text-\[\d+(?:\.\d+)?(?:px|rem|em|%)\]/g);
+        if (matches) {
+          violations.push(`${path.relative(path.resolve(__dirname, '..'), file)}: ${matches.join(', ')}`);
+        }
+      });
+      expect(violations, `Found arbitrary text-[...] sizes in:\n${violations.join('\n')}`).toEqual([]);
     });
   });
 });

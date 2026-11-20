@@ -10,7 +10,7 @@ export default function FilanesiaGrid({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1F2937]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-lime-500/15 text-[#84CC16] border border-[#84CC16]/30">
+            <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-lime-500/15 text-[#84CC16] border border-[#84CC16]/30">
               Kurikulum Filanesia PSSI
             </span>
             <span className="text-xs text-slate-400">4 Momen Permainan Sepakbola</span>
@@ -25,7 +25,7 @@ export default function FilanesiaGrid({
           <button
             type="button"
             onClick={() => setActivePhase('all')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-athletic font-bold uppercase transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-athletic font-bold uppercase transition-all cursor-pointer ${
               activePhase === 'all'
                 ? 'bg-slate-800 text-white font-black'
                 : 'text-slate-400 hover:text-white'
@@ -36,7 +36,7 @@ export default function FilanesiaGrid({
           <button
             type="button"
             onClick={() => setActivePhase('attacking')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-athletic font-bold uppercase transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-athletic font-bold uppercase transition-all cursor-pointer ${
               activePhase === 'attacking'
                 ? 'bg-cyan-500 text-black font-black'
                 : 'text-slate-400 hover:text-white'
@@ -47,7 +47,7 @@ export default function FilanesiaGrid({
           <button
             type="button"
             onClick={() => setActivePhase('trans_neg')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-athletic font-bold uppercase transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-athletic font-bold uppercase transition-all cursor-pointer ${
               activePhase === 'trans_neg'
                 ? 'bg-rose-500 text-white font-black'
                 : 'text-slate-400 hover:text-white'
@@ -58,7 +58,7 @@ export default function FilanesiaGrid({
           <button
             type="button"
             onClick={() => setActivePhase('defending')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-athletic font-bold uppercase transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-athletic font-bold uppercase transition-all cursor-pointer ${
               activePhase === 'defending'
                 ? 'bg-emerald-500 text-black font-black'
                 : 'text-slate-400 hover:text-white'
@@ -69,7 +69,7 @@ export default function FilanesiaGrid({
           <button
             type="button"
             onClick={() => setActivePhase('trans_pos')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-athletic font-bold uppercase transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-athletic font-bold uppercase transition-all cursor-pointer ${
               activePhase === 'trans_pos'
                 ? 'bg-lime-500 text-black font-black'
                 : 'text-slate-400 hover:text-white'
@@ -115,11 +115,11 @@ export default function FilanesiaGrid({
                 {phase.actions}
               </div>
 
-              <p className="text-[11px] text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-400 leading-relaxed">
                 {phase.eval}
               </p>
 
-              <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+              <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
                 <span className="text-slate-400">Parameter FIFA:</span>
                 <span className={`font-mono font-bold ${phase.textColor}`}>
                   {phase.fifaMetric}

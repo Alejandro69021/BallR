@@ -37,7 +37,7 @@ export default function Toast({
           {message}
         </p>
         {subtext && (
-          <p className="text-[11px] text-2 mt-0.5 leading-snug">
+          <p className="text-xs text-2 mt-0.5 leading-snug">
             {subtext}
           </p>
         )}

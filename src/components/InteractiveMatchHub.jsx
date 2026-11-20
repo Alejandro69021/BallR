@@ -136,7 +136,7 @@ export default function InteractiveMatchHub({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#1F2937]">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="px-2 py-0.5 rounded text-[10px] font-athletic font-bold uppercase tracking-wider bg-lime-500/15 text-[#CCFF00] border border-[#CCFF00]/30">
+              <span className="px-2 py-0.5 rounded text-xs font-athletic font-bold uppercase tracking-wider bg-lime-500/15 text-[#CCFF00] border border-[#CCFF00]/30">
                 Laga Terverifikasi
               </span>
               <span className="text-xs text-slate-400">{matchInfo.tournament}</span>
@@ -191,7 +191,7 @@ export default function InteractiveMatchHub({
               <div className="font-athletic text-2xl font-black text-white mt-1">
                 {kpi.value}
               </div>
-              <div className="text-[10px] text-slate-400 mt-0.5 truncate">
+              <div className="text-xs text-slate-400 mt-0.5 truncate">
                 {kpi.subtext}
               </div>
             </div>
@@ -282,13 +282,13 @@ export default function InteractiveMatchHub({
                       {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                     </button>
 
-                    <span className="text-[11px] font-mono text-slate-300 ml-1">
+                    <span className="text-xs font-mono text-slate-300 ml-1">
                       0:{(Math.floor(currentTime)).toString().padStart(2, '0')} / 0:{activeEvent.durationSeconds}s
                     </span>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <label className="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
+                    <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer select-none">
                       <input
                         type="checkbox"
                         checked={autoPlayNext}

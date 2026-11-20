@@ -72,14 +72,14 @@ export default function MatchMoments({ moments = [], onSelectClip }) {
               </div>
 
               <div>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-raised border border-line text-2">
+                <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-raised border border-line text-2">
                   {clip.category || 'Aksi Taktis'}
                 </span>
                 <h3 className="text-xs font-semibold text-1 mt-1 truncate" title={clip.title}>
                   {clip.title}
                 </h3>
                 {matchContext && (
-                  <p className="text-[11px] text-2 font-mono mt-0.5 truncate">
+                  <p className="text-xs text-2 font-mono mt-0.5 truncate">
                     {matchContext}
                   </p>
                 )}

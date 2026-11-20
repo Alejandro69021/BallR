@@ -35,7 +35,7 @@ export default function CameraFeed({
               <p className="text-xs text-slate-400">
                 Belum ada data rekaman kamera aktif.
               </p>
-              <span className="inline-block px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono border border-slate-700">
+              <span className="inline-block px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 text-xs font-mono border border-slate-700">
                 Belum ada data
               </span>
             </div>
@@ -74,7 +74,7 @@ export default function CameraFeed({
           {/* PITCH ALIGNMENT GRID */}
           <div className="absolute bottom-4 inset-x-8 h-8 flex flex-col items-center justify-end">
             <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-[#CCFF00] to-transparent shadow-[0_0_12px_#CCFF00]" />
-            <div className="flex justify-between w-full text-[9px] font-mono text-[#CCFF00] pt-1 px-4">
+            <div className="flex justify-between w-full text-xs font-mono text-[#CCFF00] pt-1 px-4">
               <span>◀ PITCH BASELINE</span>
               <span className="font-bold">GROUND LOCK VERIFIED</span>
               <span>CALIBRATED ▶</span>
@@ -101,7 +101,7 @@ export default function CameraFeed({
                   <span className="w-2 h-2 rounded-full bg-[#CCFF00]"></span>
                 </div>
 
-                <div className="text-[10px] font-mono font-bold text-center px-2 py-0.5 rounded bg-black/80 border border-slate-700 text-white">
+                <div className="text-xs font-mono font-bold text-center px-2 py-0.5 rounded bg-black/80 border border-slate-700 text-white">
                   {testState === 'recording'
                     ? `LIFT: ${liveMetrics.currentHeightCm} cm`
                     : 'OPTIMAL STANCE'}
@@ -120,10 +120,10 @@ export default function CameraFeed({
                   opacity: testState === 'recording' || testState === 'completed' ? 1 : 0.3
                 }}
               >
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#CCFF00] text-black">
+                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[#CCFF00] text-black">
                   PEAK: {liveMetrics.peakJumpCm || 46.4} cm
                 </span>
-                <span className="text-[10px] font-mono text-[#CCFF00]">
+                <span className="text-xs font-mono text-[#CCFF00]">
                   HANGTIME: {liveMetrics.hangtimeMs} ms
                 </span>
               </div>
@@ -135,16 +135,16 @@ export default function CameraFeed({
             <div className="relative w-full h-full flex items-center justify-center">
               <div className="absolute inset-y-2 left-1/2 -translate-x-1/2 w-0.5 bg-gradient-to-b from-cyan-400 via-[#CCFF00] to-cyan-400 shadow-[0_0_20px_#CCFF00]" />
               
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded bg-black/85 border border-[#CCFF00] text-[10px] font-mono text-[#CCFF00] font-bold">
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded bg-black/85 border border-[#CCFF00] text-xs font-mono text-[#CCFF00] font-bold">
                 ⚡ SPEED GATE 01: ARMED
               </div>
 
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 px-3 py-1 rounded bg-black/85 border border-cyan-400 text-[10px] font-mono text-cyan-300 font-bold">
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 px-3 py-1 rounded bg-black/85 border border-cyan-400 text-xs font-mono text-cyan-300 font-bold">
                 20M TIMING BEAM
               </div>
 
               <div className="text-center bg-black/80 p-4 rounded-2xl border border-slate-700 backdrop-blur-md">
-                <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
+                <div className="text-xs font-mono text-slate-400 uppercase tracking-widest">
                   SPLIT TIMER
                 </div>
                 <div className="font-athletic text-4xl sm:text-6xl font-black text-white tracking-tight mt-1">

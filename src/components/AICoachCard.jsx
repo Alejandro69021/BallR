@@ -92,7 +92,7 @@ export default function AICoachCard({ evaluation }) {
                   {recommended_drill.title || recommended_drill}
                 </p>
                 {recommended_drill.category && (
-                  <p className="text-2 text-[11px] mt-0.5">
+                  <p className="text-2 text-xs mt-0.5">
                     Kategori: {recommended_drill.category}
                   </p>
                 )}

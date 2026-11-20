@@ -8,7 +8,7 @@ export default function VaepScorecard({ vaepMetrics }) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1F2937]">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+              <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
                 KU Leuven SoccerAction Framework
               </span>
               <span className="text-xs text-slate-400">Decroos et al. (2019)</span>
@@ -36,7 +36,7 @@ export default function VaepScorecard({ vaepMetrics }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1F2937]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+            <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
               KU Leuven SoccerAction Framework
             </span>
             <span className="text-xs text-slate-400">Decroos et al. (2019)</span>
@@ -55,7 +55,7 @@ export default function VaepScorecard({ vaepMetrics }) {
       <div className="space-y-2.5">
         <div className="text-xs font-athletic font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between">
           <span>Aksi Bernilai Dampak Tertinggi (Top Action Impact)</span>
-          <span className="text-[11px] text-slate-400 font-mono">Nilai VAEP (+Goal / -Concede)</span>
+          <span className="text-xs text-slate-400 font-mono">Nilai VAEP (+Goal / -Concede)</span>
         </div>
 
         <div className="space-y-2">
@@ -72,7 +72,7 @@ export default function VaepScorecard({ vaepMetrics }) {
                   <div className="font-athletic text-xs font-bold text-white truncate">
                     {act.action}
                   </div>
-                  <div className="text-[10px] text-slate-400 flex items-center gap-2 mt-0.5 flex-wrap">
+                  <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5 flex-wrap">
                     <span className="px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">
                       {act.phase}
                     </span>
@@ -95,7 +95,7 @@ export default function VaepScorecard({ vaepMetrics }) {
       {vaepMetrics.interpretation && (
         <div className="p-3 rounded-xl bg-[#0E131F] border border-[#1E2638] text-xs text-slate-300 flex items-start gap-2.5">
           <Award className="w-4 h-4 text-[#84CC16] shrink-0 mt-0.5" />
-          <p className="leading-relaxed text-[11px]">
+          <p className="leading-relaxed text-xs">
             <strong>Interpretasi Ilmiah:</strong> {vaepMetrics.interpretation}
           </p>
         </div>

@@ -190,17 +190,17 @@ Dokumentasi Terverifikasi BallR.`;
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#1F2937]">
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="px-2 py-0.5 rounded text-[10px] font-athletic font-extrabold uppercase tracking-wider bg-lime-500/15 text-[#84CC16] border border-[#84CC16]/30 flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded text-xs font-athletic font-extrabold uppercase tracking-wider bg-lime-500/15 text-[#84CC16] border border-[#84CC16]/30 flex items-center gap-1">
                 <BrainCircuit className="w-3 h-3" />
                 <span>Tactical Engine</span>
               </span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono text-cyan-300 bg-cyan-500/10 border border-cyan-500/25">
+              <span className="px-2 py-0.5 rounded text-xs font-mono text-cyan-300 bg-cyan-500/10 border border-cyan-500/25">
                 SoccerAction (VAEP)
               </span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono text-amber-300 bg-amber-500/10 border border-amber-500/25">
+              <span className="px-2 py-0.5 rounded text-xs font-mono text-amber-300 bg-amber-500/10 border border-amber-500/25">
                 Filanesia PSSI
               </span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono text-slate-300 bg-slate-800 border border-slate-700">
+              <span className="px-2 py-0.5 rounded text-xs font-mono text-slate-300 bg-slate-800 border border-slate-700">
                 Kloppy & mplsoccer
               </span>
             </div>
@@ -237,43 +237,43 @@ Dokumentasi Terverifikasi BallR.`;
         {/* 4 Quick Telemetry Badges */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
           <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638] min-w-0">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider truncate">
               Net VAEP Value
             </div>
             <div className="font-athletic text-2xl font-black text-[#84CC16] mt-0.5">
               {vaepMetrics?.netVaep ?? <span className="text-sm font-sans font-normal text-slate-400">Belum ada data</span>}
             </div>
-            <div className="text-[10px] text-lime-400 font-medium truncate">
+            <div className="text-xs text-lime-400 font-medium truncate">
               {vaepMetrics ? `Offense: ${vaepMetrics.offensiveVaep}` : 'Belum ada data'}
             </div>
           </div>
 
           <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638] min-w-0">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider truncate">
               Passing Accuracy
             </div>
             <div className="font-athletic text-2xl font-black text-cyan-400 mt-0.5">
               {matchStats?.passAccuracy != null ? `${matchStats.passAccuracy}%` : <span className="text-sm font-sans font-normal text-slate-400">Belum ada data</span>}
             </div>
-            <div className="text-[10px] text-slate-400 truncate">
+            <div className="text-xs text-slate-400 truncate">
               {matchStats ? `${matchStats.passesCompleted}/${matchStats.passesTotal} Operan` : 'Belum ada data'}
             </div>
           </div>
 
           <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638] min-w-0">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider truncate">
               Tekel & Intersep
             </div>
             <div className="font-athletic text-2xl font-black text-emerald-400 mt-0.5">
               {matchStats?.tackleAccuracy != null ? `${matchStats.tackleAccuracy}%` : <span className="text-sm font-sans font-normal text-slate-400">Belum ada data</span>}
             </div>
-            <div className="text-[10px] text-emerald-400/80 font-medium truncate">
+            <div className="text-xs text-emerald-400/80 font-medium truncate">
               {matchStats ? `${matchStats.tacklesWon}/${matchStats.tacklesTotal} Menang Duel` : 'Belum ada data'}
             </div>
           </div>
 
           <div className="p-3 rounded-xl bg-[#090D16]/90 border border-[#1E2638] min-w-0">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider truncate">
               Rating Laga
             </div>
             <div className="font-athletic text-2xl font-black text-amber-400 mt-0.5">
@@ -283,7 +283,7 @@ Dokumentasi Terverifikasi BallR.`;
                 <span className="text-sm font-sans font-normal text-slate-400">Belum ada data</span>
               )}
             </div>
-            <div className="text-[10px] text-amber-300 font-medium truncate">
+            <div className="text-xs text-amber-300 font-medium truncate">
               {matchStats ? 'Rating Terkalkulasi' : 'Belum ada data'}
             </div>
           </div>

@@ -1,80 +1,169 @@
 import React from 'react';
 import { Scale } from 'lucide-react';
+import Table from '../ui/Table';
+import EmptyState from '../ui/EmptyState';
+import Badge from '../ui/Badge';
 
-export default function AnthropometryLogTable({ anthropometryLogs }) {
+/**
+ * Computes age in "X th Y bln" from birth date and measurement date.
+ */
+function computeAgeAtMeasurement(birthDateStr, measurementDateStr) {
+  if (!birthDateStr || !measurementDateStr) return null;
+  const birth = new Date(birthDateStr);
+  const meas = new Date(measurementDateStr);
+  if (isNaN(birth.getTime()) || isNaN(meas.getTime())) return null;
+
+  let years = meas.getFullYear() - birth.getFullYear();
+  let months = meas.getMonth() - birth.getMonth();
+  let days = meas.getDate() - birth.getDate();
+
+  if (days < 0) {
+    months -= 1;
+  }
+  if (months < 0) {
+    years -= 1;
+    months += 12;
+  }
+  if (years < 0) return null;
+  return `${years} th ${months} bln`;
+}
+
+export default function AnthropometryLogTable({ anthropometryLogs = [], birthDate }) {
+  if (!anthropometryLogs || anthropometryLogs.length === 0) {
+    return (
+      <section className="rounded-panel bg-panel border border-line p-5 space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-line">
+          <div>
+            <h3 className="text-base font-semibold text-1 flex items-center gap-2">
+              <Scale className="w-4 h-4 text-brand" strokeWidth={1.5} />
+              <span>Log pengukuran antropometri berkala</span>
+            </h3>
+            <p className="text-xs text-2 mt-0.5">
+              Pencatatan resmi tinggi badan dan massa tubuh berkala akademi.
+            </p>
+          </div>
+        </div>
+        <EmptyState
+          title="Belum ada data"
+          description="Belum ada catatan pengukuran antropometri berkala yang tercatat."
+        />
+      </section>
+    );
+  }
+
+  const hasSittingHeight = anthropometryLogs.some(
+    (log) => log.sitting_height != null || log.sitting_height_cm != null
+  );
+
+  const formattedRows = anthropometryLogs.map((log, idx) => {
+    const measDate = log.date || log.period;
+    const computedAge =
+      computeAgeAtMeasurement(birthDate, measDate) ||
+      (log.age ? `${log.age} th` : 'Belum ada data');
+
+    const heightVal =
+      log.height != null
+        ? (typeof log.height === 'number'
+            ? log.height.toFixed(1)
+            : parseFloat(log.height).toFixed(1))
+        : 'Belum ada data';
+
+    const weightVal =
+      log.weight != null
+        ? (typeof log.weight === 'number'
+            ? log.weight.toFixed(1)
+            : parseFloat(log.weight).toFixed(1))
+        : 'Belum ada data';
+
+    const sittingVal =
+      log.sitting_height != null
+        ? (typeof log.sitting_height === 'number'
+            ? log.sitting_height.toFixed(1)
+            : parseFloat(log.sitting_height).toFixed(1))
+        : (log.sitting_height_cm != null
+            ? (typeof log.sitting_height_cm === 'number'
+                ? log.sitting_height_cm.toFixed(1)
+                : parseFloat(log.sitting_height_cm).toFixed(1))
+            : '-');
+
+    return {
+      id: log.id || idx,
+      period: log.period || log.date || 'Belum ada data',
+      age: computedAge,
+      height: heightVal,
+      weight: weightVal,
+      sittingHeight: sittingVal,
+      isLatest: Boolean(log.isLatest)
+    };
+  });
+
+  const columns = [
+    {
+      key: 'period',
+      header: 'Tanggal',
+      align: 'left',
+      tabular: true
+    },
+    {
+      key: 'age',
+      header: 'Usia saat tes',
+      align: 'left',
+      tabular: true
+    },
+    {
+      key: 'height',
+      header: 'Tinggi badan (cm)',
+      align: 'left',
+      tabular: true
+    },
+    {
+      key: 'weight',
+      header: 'Berat badan (kg)',
+      align: 'left',
+      tabular: true
+    },
+    ...(hasSittingHeight
+      ? [
+          {
+            key: 'sittingHeight',
+            header: 'Tinggi duduk (cm)',
+            align: 'left',
+            tabular: true
+          }
+        ]
+      : []),
+    {
+      key: 'status',
+      header: 'Catatan status',
+      align: 'right',
+      render: (_, row) =>
+        row.isLatest ? (
+          <Badge variant="brand">Terbaru</Badge>
+        ) : (
+          <span className="text-xs text-2 font-mono">-</span>
+        )
+    }
+  ];
+
   return (
-    <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl space-y-4">
-      <div className="flex items-center justify-between">
+    <section className="rounded-panel bg-panel border border-line p-5 space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-line">
         <div>
-          <h4 className="font-athletic text-base sm:text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            <Scale className="w-5 h-5 text-cyan-400" />
-            <span>Bi-Monthly Anthropometry Measurement Log</span>
-          </h4>
-          <p className="text-xs text-slate-400">
-            Pencatatan resmi berkala tinggi badan, massa tubuh, dan rasio BMI akademi
+          <h3 className="text-base font-semibold text-1 flex items-center gap-2">
+            <Scale className="w-4 h-4 text-brand" strokeWidth={1.5} />
+            <span>Log pengukuran antropometri berkala</span>
+          </h3>
+          <p className="text-xs text-2 mt-0.5">
+            Pencatatan resmi tinggi badan dan massa tubuh berkala akademi.
           </p>
         </div>
 
-        <span className="text-[11px] font-mono text-slate-400 hidden sm:inline">
-          {anthropometryLogs.length} Siklus Terdata
+        <span className="text-xs font-mono text-2">
+          {anthropometryLogs.length} sesi terdata
         </span>
       </div>
 
-      {/* Tabular List */}
-      <div className="overflow-x-auto rounded-xl border border-[#1F2937]">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-[#090D16] text-[10px] font-athletic uppercase tracking-wider text-slate-400 border-b border-[#1F2937]">
-            <tr>
-              <th className="py-3 px-3.5">Periode Pengukuran</th>
-              <th className="py-3 px-3">Tinggi Badan</th>
-              <th className="py-3 px-3">Berat Badan</th>
-              <th className="py-3 px-3">BMI Index</th>
-              <th className="py-3 px-3">Pertumbuhan</th>
-              <th className="py-3 px-3.5 text-right">Status Kesehatan</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#1F2937]/70 font-mono">
-            {anthropometryLogs.map((log, idx) => (
-              <tr
-                key={idx}
-                className={`hover:bg-[#1F2937]/50 transition-colors ${
-                  log.isLatest ? 'bg-lime-500/5' : ''
-                }`}
-              >
-                <td className="py-3 px-3.5 font-sans font-semibold text-white flex items-center gap-2">
-                  {log.isLatest && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#CCFF00]" />
-                  )}
-                  <span>{log.period}</span>
-                </td>
-                <td className="py-3 px-3 text-cyan-300 font-bold">
-                  {log.height}
-                </td>
-                <td className="py-3 px-3 text-slate-200">
-                  {log.weight}
-                </td>
-                <td className="py-3 px-3 text-slate-300">
-                  {log.bmi}
-                </td>
-                <td className="py-3 px-3 text-emerald-400 font-sans font-semibold">
-                  {log.growthDelta}
-                </td>
-                <td className="py-3 px-3.5 text-right font-sans">
-                  <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold ${
-                      log.isLatest
-                        ? 'bg-lime-500/20 text-[#CCFF00] border border-[#CCFF00]/40'
-                        : 'bg-slate-800 text-slate-300'
-                    }`}
-                  >
-                    {log.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table columns={columns} data={formattedRows} />
     </section>
   );
 }

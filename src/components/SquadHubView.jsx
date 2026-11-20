@@ -132,7 +132,7 @@ export default function SquadHubView({
       <span className="font-mono tabular-nums text-xs text-1 space-x-1.5 whitespace-nowrap">
         {parts.map((p, idx) => (
           <span key={p.code}>
-            <span className="text-2 text-[10px] font-sans mr-0.5">{p.code}</span>
+            <span className="text-2 text-xs font-sans mr-0.5">{p.code}</span>
             <span className="font-semibold">{p.val ?? '-'}</span>
             {idx < parts.length - 1 && <span className="text-line ml-1.5">·</span>}
           </span>
@@ -169,7 +169,7 @@ export default function SquadHubView({
             {row.personal_info?.full_name || 'Atlet'}
           </div>
           {row.personal_info?.nickname && (
-            <div className="text-[11px] text-2 font-mono">
+            <div className="text-xs text-2 font-mono">
               "{row.personal_info.nickname}"
             </div>
           )}

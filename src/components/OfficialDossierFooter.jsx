@@ -60,15 +60,20 @@ export default function OfficialDossierFooter({ player, onOpenStoryCard, onToast
     return () => { isMounted = false; };
   }, [academy?.id]);
 
-  const pId = public_id || player_id || 'PLAYER';
+  const pId = public_id || player_id || '-';
+  const regNumber = accreditation?.registration_number?.trim();
+  const accBody = accreditation?.accreditation_body?.trim();
+  const regText = regNumber
+    ? (accBody ? `${accBody} · ${regNumber}` : regNumber)
+    : (accBody || null);
 
   const handleCopyScoutSummary = () => {
     const summary = `=== DOSSIER PEMAIN MUDA BALLR ===
 ID Paspor: ${pId}
-Nama: ${personal_info?.full_name || 'Atlet'} (${personal_info?.nickname || '-'})
+Nama: ${personal_info?.full_name || personal_info?.nickname || '-'} (${personal_info?.nickname || '-'})
 No. Punggung: #${personal_info?.jersey_number || '-'} | Posisi: ${personal_info?.position || '-'}
 Kaki Utama: ${personal_info?.preferred_foot || '-'}
-Akademi: ${academy?.name || 'Akademi Sepakbola'} (${academy?.city || 'Indonesia'})
+Akademi: ${academy?.name || '-'} (${academy?.city || '-'})
 Versi Payload: v2
 Hash Integritas SHA-256: ${computedHash || 'Menghitung...'}
 Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
@@ -80,7 +85,7 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
     if (onToast) {
       onToast({
         title: 'Rangkuman paspor disalin',
-        subtext: `Data paspor ${personal_info?.nickname || 'atlet'} siap diverifikasi.`
+        subtext: `Data paspor ${personal_info?.nickname || pId} siap diverifikasi.`
       });
     }
   };
@@ -96,7 +101,7 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
         <div>
           <h2 className="text-base font-semibold text-1 flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-brand" strokeWidth={1.5} />
-            <span>Verifikasi Integritas Dokumen</span>
+            <span>Verifikasi integritas dokumen</span>
           </h2>
           <p className="text-xs text-2">
             Jaminan kriptografis bahwa catatan profil, rekor fisik, dan evaluasi pelatih belum dimodifikasi.
@@ -105,9 +110,9 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
 
         <div className="flex items-center gap-2">
           <Badge variant="neutral">Payload v2</Badge>
-          {accreditation?.registration_number && (
+          {regNumber && (
             <Badge variant="brand">
-              Reg: {accreditation.registration_number}
+              Reg: {regNumber}
             </Badge>
           )}
         </div>
@@ -117,27 +122,25 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
       <div className="rounded-panel border border-line bg-panel p-4 space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           <div>
-            <span className="text-[11px] font-mono text-2 block">ID Publik Atlet</span>
+            <span className="text-xs font-mono text-2 block">ID publik atlet</span>
             <span className="font-mono font-semibold text-1">{pId}</span>
           </div>
 
           <div>
-            <span className="text-[11px] font-mono text-2 block">Akademi Penerbit</span>
-            <span className="text-1 font-medium">{academy?.name || 'Akademi Sepakbola'}</span>
+            <span className="text-xs font-mono text-2 block">Akademi penerbit</span>
+            <span className="text-1 font-medium">{academy?.name || 'Belum ada data'}</span>
           </div>
 
-          <div>
-            <span className="text-[11px] font-mono text-2 block">Status Registrasi</span>
-            <span className="text-1 font-mono">
-              {accreditation?.registration_number
-                ? `${accreditation.accreditation_body || 'PSSI'} · ${accreditation.registration_number}`
-                : 'Terdaftar di Basis Data'}
-            </span>
-          </div>
+          {regText && (
+            <div>
+              <span className="text-xs font-mono text-2 block">Status registrasi</span>
+              <span className="text-1 font-mono">{regText}</span>
+            </div>
+          )}
         </div>
 
         <div className="pt-2 border-t border-line space-y-1">
-          <span className="text-[11px] font-mono text-2 flex items-center gap-1">
+          <span className="text-xs font-mono text-2 flex items-center gap-1">
             <Hash className="w-3.5 h-3.5" strokeWidth={1.5} />
             <span>SHA-256 Canonical Snapshot Hash:</span>
           </span>
@@ -197,8 +200,8 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
       </div>
 
       {/* Paged Media Footer (Visible during print) */}
-      <div className="hidden print:flex items-center justify-between text-[10px] font-mono text-2 pt-3 border-t border-line">
-        <span>BallR Passport · {personal_info?.full_name || 'Atlet'} ({pId})</span>
+      <div className="hidden print:flex items-center justify-between text-xs font-mono text-2 pt-3 border-t border-line">
+        <span>BallR Passport · {personal_info?.full_name || personal_info?.nickname || pId} ({pId})</span>
         <span>Dokumen Resmi Pembinaan Sepakbola Usia Muda</span>
       </div>
     </footer>

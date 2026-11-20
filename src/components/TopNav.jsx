@@ -63,7 +63,7 @@ export default function TopNav({
                   }}
                 />
               ) : (
-                <span className="text-[10px] font-mono font-bold text-2">FA</span>
+                <span className="text-xs font-mono font-bold text-2">FA</span>
               )}
             </div>
 
@@ -169,7 +169,7 @@ export default function TopNav({
               }`}
             >
               {item.icon}
-              <span className="text-[10px] leading-none tracking-tight">
+              <span className="text-xs leading-none tracking-tight">
                 {item.shortLabel}
               </span>
               {isActive && (

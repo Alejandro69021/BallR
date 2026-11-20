@@ -23,7 +23,7 @@ export default function ReferencesPage() {
           <div className="p-1.5 rounded bg-slate-800 text-[#4FB286]">
             <BookOpen className="w-5 h-5" />
           </div>
-          <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">
+          <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
             Katalog Kepustakaan Ilmiah
           </span>
         </div>
@@ -61,7 +61,7 @@ export default function ReferencesPage() {
               key={cat.id}
               type="button"
               onClick={() => setFilterType(cat.id)}
-              className={`px-2.5 py-1 rounded text-[11px] transition-colors whitespace-nowrap cursor-pointer ${
+              className={`px-2.5 py-1 rounded text-xs transition-colors whitespace-nowrap cursor-pointer ${
                 filterType === cat.id
                   ? 'bg-slate-800 text-white font-medium border border-slate-700'
                   : 'text-slate-400 hover:text-white'
@@ -86,7 +86,7 @@ export default function ReferencesPage() {
         <div className="rounded-lg bg-[#0C111D] border border-slate-800 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
+              <thead className="bg-slate-950 text-slate-400 uppercase font-mono text-xs border-b border-slate-800">
                 <tr>
                   <th className="py-2.5 px-3">Judul Rujukan</th>
                   <th className="py-2.5 px-3">Penerbit / Penulis</th>
@@ -101,7 +101,7 @@ export default function ReferencesPage() {
                   <tr key={ref.id} className="hover:bg-slate-900/50 transition-colors">
                     <td className="py-3 px-3">
                       <div className="font-semibold text-white">{ref.title}</div>
-                      <div className="text-[10px] font-mono text-slate-400">{ref.id}</div>
+                      <div className="text-xs font-mono text-slate-400">{ref.id}</div>
                     </td>
                     <td className="py-3 px-3 text-slate-300">
                       {ref.publisher || 'Belum terkonfirmasi'} {ref.year ? `(${ref.year})` : ''}
@@ -111,10 +111,10 @@ export default function ReferencesPage() {
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-300">
+                        <span className="px-2 py-0.5 rounded text-xs font-mono bg-slate-800 text-slate-300">
                           {ref.type}
                         </span>
-                        <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono uppercase border ${
+                        <span className={`px-1.5 py-0.2 rounded text-xs font-mono uppercase border ${
                           ref.status === 'located'
                             ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
                             : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
@@ -123,10 +123,10 @@ export default function ReferencesPage() {
                         </span>
                       </div>
                     </td>
-                    <td className="py-3 px-3 font-mono text-[11px] text-slate-400">
+                    <td className="py-3 px-3 font-mono text-xs text-slate-400">
                       <div>{ref.verified_on || 'Belum diverifikasi'}</div>
                       {ref.next_review_due && (
-                        <div className="text-[10px] text-amber-400">Jadwal: {ref.next_review_due}</div>
+                        <div className="text-xs text-amber-400">Jadwal: {ref.next_review_due}</div>
                       )}
                     </td>
                     <td className="py-3 px-3">
@@ -135,13 +135,13 @@ export default function ReferencesPage() {
                           href={ref.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#4FB286] hover:underline inline-flex items-center gap-1 font-mono text-[11px]"
+                          className="text-[#4FB286] hover:underline inline-flex items-center gap-1 font-mono text-xs"
                         >
                           <span>Buka</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       ) : (
-                        <span className="text-slate-500 font-mono text-[11px]">-</span>
+                        <span className="text-slate-500 font-mono text-xs">-</span>
                       )}
                     </td>
                   </tr>

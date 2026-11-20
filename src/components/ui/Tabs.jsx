@@ -60,7 +60,7 @@ export default function Tabs({
             <span className="flex items-center gap-1.5">
               <span>{tab.label}</span>
               {typeof tab.count === 'number' && (
-                <span className="text-[11px] font-mono tabular-nums px-1.5 py-0.2 rounded-full bg-raised text-2">
+                <span className="text-xs font-mono tabular-nums px-1.5 py-0.2 rounded-full bg-raised text-2">
                   {tab.count}
                 </span>
               )}

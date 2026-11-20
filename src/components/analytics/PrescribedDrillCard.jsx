@@ -17,7 +17,7 @@ export default function PrescribedDrillCard({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-lime-500/15 text-[#84CC16] border border-[#84CC16]/30">
+              <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-lime-500/15 text-[#84CC16] border border-[#84CC16]/30">
                 Metodologi Latihan Terakreditasi
               </span>
               <span className="text-xs text-slate-400">{prescribedDrill.author}</span>
@@ -31,7 +31,7 @@ export default function PrescribedDrillCard({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-3">
             <div className="p-3 rounded-xl bg-[#090D16]/80 border border-[#1E2638] space-y-1.5">
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Setup Lapangan & Durasi
               </div>
               <div className="text-xs text-slate-200 font-semibold">
@@ -43,24 +43,24 @@ export default function PrescribedDrillCard({
             </div>
 
             <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-slate-300 space-y-1">
-              <div className="font-athletic font-bold text-amber-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <div className="font-athletic font-bold text-amber-300 uppercase tracking-wider text-xs flex items-center gap-1.5">
                 <Flame className="w-3.5 h-3.5" />
                 <span>Catatan Beban Bio-Banding (PHV)</span>
               </div>
-              <p className="text-[11px] leading-relaxed text-slate-300">
+              <p className="text-xs leading-relaxed text-slate-300">
                 {prescribedDrill.bioBandingNote}
               </p>
             </div>
           </div>
 
           <div className="p-3.5 rounded-xl bg-[#090D16]/80 border border-[#1E2638] space-y-2">
-            <div className="text-[10px] font-athletic font-bold text-[#84CC16] uppercase tracking-wider">
+            <div className="text-xs font-athletic font-bold text-[#84CC16] uppercase tracking-wider">
               Instruksi Kunci Pelatih (Coaching Points)
             </div>
             <ul className="space-y-2">
               {prescribedDrill.coachingPoints.map((pt, i) => (
                 <li key={i} className="text-xs text-slate-300 flex items-start gap-2">
-                  <span className="w-4 h-4 rounded-full bg-[#111827] border border-slate-700 text-[#84CC16] font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="w-4 h-4 rounded-full bg-[#111827] border border-slate-700 text-[#84CC16] font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {i + 1}
                   </span>
                   <span className="leading-relaxed">{pt}</span>
@@ -82,7 +82,7 @@ export default function PrescribedDrillCard({
             <BookOpen className="w-4 h-4 text-[#84CC16]" />
             <span>Daftar Pustaka & Metodologi Resmi (5 Referensi Jurnal)</span>
           </div>
-          <span className="text-[11px] font-mono text-[#84CC16]">
+          <span className="text-xs font-mono text-[#84CC16]">
             {showCitations ? 'Tutup ▲' : 'Lihat Sitasi ▼'}
           </span>
         </button>
@@ -92,12 +92,12 @@ export default function PrescribedDrillCard({
             {academicCitations.map((cite, i) => (
               <div
                 key={i}
-                className="p-2.5 rounded-lg bg-[#090D16]/90 border border-slate-800 text-[11px] text-slate-400 space-y-0.5"
+                className="p-2.5 rounded-lg bg-[#090D16]/90 border border-slate-800 text-xs text-slate-400 space-y-0.5"
               >
                 <div className="text-slate-300 font-medium">
                   {i + 1}. <strong>{cite.author}</strong> ({cite.year}). <em>"{cite.title}"</em>.
                 </div>
-                <div className="text-slate-400 text-[10px]">
+                <div className="text-slate-400 text-xs">
                   {cite.venue}. <span className="font-mono text-cyan-400/80">Ref: {cite.doi}</span>
                 </div>
               </div>

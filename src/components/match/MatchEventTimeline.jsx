@@ -101,12 +101,12 @@ export default function MatchEventTimeline({
                     <span className="font-athletic text-sm font-extrabold text-[#CCFF00]">
                       {evt.minute}
                     </span>
-                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-black/60 border border-slate-700 text-slate-300">
+                    <span className="text-xs font-bold px-1.5 py-0.2 rounded bg-black/60 border border-slate-700 text-slate-300">
                       {evt.categoryIcon} {evt.type}
                     </span>
                   </div>
 
-                  <span className="text-[10px] text-slate-400 font-mono">
+                  <span className="text-xs text-slate-400 font-mono">
                     {evt.durationSeconds}s
                   </span>
                 </div>
@@ -116,13 +116,13 @@ export default function MatchEventTimeline({
                   {evt.title}
                 </h5>
 
-                <p className="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
                   {evt.desc}
                 </p>
               </div>
 
               {/* Event Metric Pill & Share Button */}
-              <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+              <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-xs">
                 <span className="font-mono text-cyan-300 truncate max-w-[140px]">
                   {evt.metric}
                 </span>

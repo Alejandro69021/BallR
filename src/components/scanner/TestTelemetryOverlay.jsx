@@ -50,19 +50,19 @@ export default function TestTelemetryOverlay({
                   <h4 className="font-athletic text-base sm:text-lg font-bold text-white">
                     Tes Selesai & Terverifikasi
                   </h4>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-xs text-slate-400">
                     Kalibrasi Optik Edge-AI Sempurna
                   </p>
                 </div>
               </div>
 
-              <span className="text-[10px] font-mono font-bold text-[#CCFF00] px-2 py-0.5 rounded bg-black border border-[#CCFF00]/40">
+              <span className="text-xs font-mono font-bold text-[#CCFF00] px-2 py-0.5 rounded bg-black border border-[#CCFF00]/40">
                 VERIFIED
               </span>
             </div>
 
             <div className="p-4 rounded-2xl bg-[#090D16] border border-slate-800 text-center space-y-1">
-              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
                 {testResult.metricName}
               </span>
               <div className="font-athletic text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-lime-200 to-[#CCFF00] tracking-tight">

@@ -212,7 +212,7 @@ export default function CoachAssessmentView({
                     <div className="text-xs font-semibold text-1">
                       {p.personal_info.nickname || p.personal_info.full_name}
                     </div>
-                    <div className="text-[11px] text-2 font-mono">
+                    <div className="text-xs text-2 font-mono">
                       {p.personal_info.position}
                     </div>
                   </div>

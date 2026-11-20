@@ -6,7 +6,7 @@ export default function FifaLanguageMetrics({ fifaLanguageKpis }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1F2937]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+            <span className="px-2 py-0.5 rounded text-xs font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
               FIFA Football Language Matrix
             </span>
             <span className="text-xs text-slate-400">FIFA Training Centre (2026)</span>
@@ -28,7 +28,7 @@ export default function FifaLanguageMetrics({ fifaLanguageKpis }) {
             className="p-3.5 rounded-xl bg-[#090D16]/90 border border-[#1E2638] flex flex-col justify-between space-y-2 hover:border-slate-700 transition-colors"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-athletic font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-xs font-athletic font-bold uppercase tracking-wider text-slate-400">
                 {kpi.metric}
               </span>
               {kpi.icon}
@@ -38,12 +38,12 @@ export default function FifaLanguageMetrics({ fifaLanguageKpis }) {
               <div className="font-athletic text-2xl font-black text-white">
                 {kpi.value}
               </div>
-              <div className="text-[10px] font-mono font-bold text-lime-400 mt-0.5">
+              <div className="text-xs font-mono font-bold text-lime-400 mt-0.5">
                 {kpi.benchmark}
               </div>
             </div>
 
-            <div className="text-[11px] text-slate-400 leading-snug pt-2 border-t border-slate-800">
+            <div className="text-xs text-slate-400 leading-snug pt-2 border-t border-slate-800">
               {kpi.desc}
             </div>
           </div>

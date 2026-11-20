@@ -30,17 +30,17 @@ export default function StoryCardCanvas({
               />
             </div>
             <div>
-              <div className="font-athletic text-[11px] font-bold text-white uppercase tracking-wider leading-none">
+              <div className="font-athletic text-xs font-bold text-white uppercase tracking-wider leading-none">
                 {personal_info.academy.name}
               </div>
-              <div className="text-[8px] text-slate-400 flex items-center gap-1 mt-0.5">
+              <div className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
                 <ShieldCheck className="w-2.5 h-2.5 text-[#CCFF00]" />
                 <span>Jogja Verified</span>
               </div>
             </div>
           </div>
 
-          <span className={`px-2 py-0.5 rounded-full text-[8px] tracking-wider uppercase shadow-sm ${currentTheme.headerPill}`}>
+          <span className={`px-2 py-0.5 rounded-full text-xs tracking-wider uppercase shadow-sm ${currentTheme.headerPill}`}>
             PROSPECT 2026
           </span>
         </div>
@@ -59,7 +59,7 @@ export default function StoryCardCanvas({
               crossOrigin="anonymous"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-            <span className="absolute bottom-1 right-1 px-1.5 py-0.2 rounded bg-black/80 text-[8px] font-athletic font-bold text-[#CCFF00]">
+            <span className="absolute bottom-1 right-1 px-1.5 py-0.2 rounded bg-black/80 text-xs font-athletic font-bold text-[#CCFF00]">
               #{personal_info.jersey_number}
             </span>
           </div>
@@ -67,7 +67,7 @@ export default function StoryCardCanvas({
           <h2 className="font-athletic text-lg font-black text-white tracking-wide uppercase text-center leading-tight drop-shadow-md">
             {personal_info.full_name}
           </h2>
-          <div className="flex items-center gap-1.5 mt-0.5 text-[9px] text-slate-300">
+          <div className="flex items-center gap-1.5 mt-0.5 text-xs text-slate-300">
             <span className="font-bold text-[#CCFF00]">{personal_info.position}</span>
             <span>•</span>
             <span>U-13 Elite</span>
@@ -85,7 +85,7 @@ export default function StoryCardCanvas({
                   key={p.code}
                   className="p-1.5 rounded-lg bg-white/5 border border-white/5 text-center flex flex-col justify-center"
                 >
-                  <span className="text-[8px] font-bold text-slate-400 uppercase leading-none">
+                  <span className="text-xs font-bold text-slate-400 uppercase leading-none">
                     {p.code}
                   </span>
                   <span className="font-athletic text-sm font-black text-white mt-0.5">
@@ -96,12 +96,12 @@ export default function StoryCardCanvas({
             </div>
           </div>
 
-          <div className="px-2.5 py-1.5 rounded-xl bg-black/50 backdrop-blur-md border border-white/5 text-[9px] text-slate-300 italic leading-snug text-center">
+          <div className="px-2.5 py-1.5 rounded-xl bg-black/50 backdrop-blur-md border border-white/5 text-xs text-slate-300 italic leading-snug text-center">
             "{endorsementQuote}"
           </div>
 
           {/* 4. BOTTOM VERIFICATION FOOTER */}
-          <div className="pt-1.5 border-t border-white/10 flex items-center justify-between text-[8px] text-slate-400">
+          <div className="pt-1.5 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
             <div className="flex items-center gap-1">
               <div className="p-1 rounded bg-white text-black">
                 <QrCode className="w-3 h-3" />
@@ -110,7 +110,7 @@ export default function StoryCardCanvas({
                 <div className="font-bold text-white uppercase leading-none">
                   SCAN FOR STATS
                 </div>
-                <div className="text-[7px] text-slate-400">
+                <div className="text-xs text-slate-400">
                   ID: {player_id}
                 </div>
               </div>
@@ -120,7 +120,7 @@ export default function StoryCardCanvas({
               <div className="font-athletic font-bold text-[#CCFF00] tracking-wider uppercase">
                 MPFA PASSPORT
               </div>
-              <div className="text-[7px] text-slate-500">
+              <div className="text-xs text-slate-500">
                 Official Scouting Dossier
               </div>
             </div>

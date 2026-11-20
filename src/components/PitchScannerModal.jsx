@@ -217,7 +217,7 @@ export default function PitchScannerModal({
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/80 border border-[#CCFF00]/40 backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-[#CCFF00] animate-pulse"></span>
-            <span className="text-[10px] font-mono font-bold text-[#CCFF00] tracking-wider uppercase">
+            <span className="text-xs font-mono font-bold text-[#CCFF00] tracking-wider uppercase">
               AI SCANNER: ACTIVE
             </span>
           </div>

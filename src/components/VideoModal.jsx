@@ -136,7 +136,7 @@ export default function VideoModal({
           <div className="space-y-0.5">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#CCFF00] animate-pulse"></span>
-              <span className="text-[10px] font-bold text-[#CCFF00] tracking-wider uppercase">
+              <span className="text-xs font-bold text-[#CCFF00] tracking-wider uppercase">
                 MPFA Scouting Reel ({currentIndex + 1}/{moments.length})
               </span>
             </div>
@@ -186,19 +186,19 @@ export default function VideoModal({
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-athletic font-bold px-1.5 py-0.5 rounded bg-[#CCFF00] text-black">
+                <span className="text-xs font-athletic font-bold px-1.5 py-0.5 rounded bg-[#CCFF00] text-black">
                   #{playerInfo.jersey_number}
                 </span>
                 <span className="font-athletic text-sm font-bold text-white tracking-wide">
                   {playerInfo.full_name}
                 </span>
               </div>
-              <p className="text-[11px] text-[#CCFF00] font-semibold mt-0.5">
+              <p className="text-xs text-[#CCFF00] font-semibold mt-0.5">
                 {clip.title}
               </p>
             </div>
 
-            <span className="text-[10px] font-bold text-slate-300 bg-black/60 px-2 py-0.5 rounded border border-slate-700">
+            <span className="text-xs font-bold text-slate-300 bg-black/60 px-2 py-0.5 rounded border border-slate-700">
               {clip.category}
             </span>
           </div>
@@ -214,7 +214,7 @@ export default function VideoModal({
               onChange={handleSeek}
               className="w-full h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#CCFF00]"
             />
-            <div className="flex items-center justify-between text-[9px] font-mono text-slate-400">
+            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
               <span>{formatSecs(currentTime)}</span>
               <span>{formatSecs(duration)}</span>
             </div>
@@ -245,20 +245,20 @@ export default function VideoModal({
               <button
                 onClick={goToPrev}
                 disabled={!hasPrev}
-                className="px-2 py-1 text-[10px] rounded bg-white/10 disabled:opacity-30 text-white"
+                className="px-2 py-1 text-xs rounded bg-white/10 disabled:opacity-30 text-white"
               >
                 Prev
               </button>
               <button
                 onClick={goToNext}
                 disabled={!hasNext}
-                className="px-2 py-1 text-[10px] rounded bg-[#CCFF00]/20 disabled:opacity-30 text-[#CCFF00]"
+                className="px-2 py-1 text-xs rounded bg-[#CCFF00]/20 disabled:opacity-30 text-[#CCFF00]"
               >
                 Next
               </button>
             </div>
 
-            <div className="hidden sm:flex items-center gap-1.5 text-[10px] text-slate-400 font-medium">
+            <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 font-medium">
               <ShieldCheck className="w-3.5 h-3.5 text-[#CCFF00]" />
               <span>MPFA Verified Clip</span>
             </div>

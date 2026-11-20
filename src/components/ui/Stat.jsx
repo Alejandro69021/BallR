@@ -39,12 +39,12 @@ export default function Stat({
       </div>
 
       {(date || typeof n === 'number' || trend) && (
-        <div className="pt-1 border-t border-line flex items-center justify-between text-[11px] font-mono text-2">
+        <div className="pt-1 border-t border-line flex items-center justify-between text-xs font-mono text-2">
           <div className="flex items-center gap-2 truncate">
             {date && <span>{date}</span>}
             {typeof n === 'number' && <span>n={n}</span>}
           </div>
-          {trend && <span className="font-sans text-[11px]">{trend}</span>}
+          {trend && <span className="font-sans text-xs">{trend}</span>}
         </div>
       )}
     </div>

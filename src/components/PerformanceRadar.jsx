@@ -204,7 +204,7 @@ export default function PerformanceRadar({
                 {canonicalAttributes.map((attr) => (
                   <tr key={attr.key} className="hover:bg-raised/40 transition-colors">
                     <td className="py-2 px-3 font-medium">
-                      {attr.label} <span className="text-2 font-mono text-[11px]">({attr.code})</span>
+                      {attr.label} <span className="text-2 font-mono text-xs">({attr.code})</span>
                     </td>
                     <td className="py-2 px-3 text-right font-mono tabular-nums font-semibold">
                       {attr.value !== null ? attr.value : <span className="text-2 font-normal italic">Belum ada data</span>}
