@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "test": "vitest",
     "test:run": "vitest run",
+    "seed:sql": "node scripts/generate-seed.mjs > supabase/seed.sql",
     "preview": "vite preview"
   },
   "dependencies": {

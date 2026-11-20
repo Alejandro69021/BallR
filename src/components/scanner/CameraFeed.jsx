@@ -26,17 +26,17 @@ export default function CameraFeed({
           <div className="relative w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-[#090D16] via-[#111827] to-[#05070B] overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
             <div className="relative z-10 text-center space-y-2 p-6 max-w-sm">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-[#CCFF00]">
-                <Camera className="w-8 h-8 animate-pulse" />
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-400">
+                <Camera className="w-8 h-8" />
               </div>
               <h4 className="font-athletic text-base font-bold text-white">
-                Pitch Camera Telemetry Simulation
+                Kamera Tidak Aktif
               </h4>
               <p className="text-xs text-slate-400">
-                Kamera live dialihkan ke simulator Computer Vision otomatis untuk pengujian lapangan.
+                Belum ada data rekaman kamera aktif.
               </p>
-              <span className="inline-block px-2.5 py-0.5 rounded-full bg-lime-500/10 text-[#CCFF00] text-[10px] font-mono border border-[#CCFF00]/20">
-                READY FOR TEST TRIGGER
+              <span className="inline-block px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-mono border border-slate-700">
+                Belum ada data
               </span>
             </div>
           </div>

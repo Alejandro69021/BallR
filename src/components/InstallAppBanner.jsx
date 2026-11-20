@@ -11,8 +11,8 @@ export default function InstallAppBanner() {
   useEffect(() => {
     // Check if already in standalone PWA mode
     const inStandalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
-      window.navigator.standalone === true;
+      (typeof window.matchMedia === 'function' && window.matchMedia('(display-mode: standalone)').matches) ||
+      window.navigator?.standalone === true;
 
     if (inStandalone) {
       setIsStandalone(true);

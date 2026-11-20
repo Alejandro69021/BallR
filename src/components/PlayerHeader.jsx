@@ -23,17 +23,24 @@ export default function PlayerHeader({ personalInfo, onOpenStoryCard }) {
         {/* Left Side: Athlete Portrait */}
         <div className="flex items-center gap-4 w-full sm:w-auto">
           <div className="relative shrink-0">
-            <div className="w-24 h-28 sm:w-28 sm:h-32 rounded-2xl overflow-hidden bg-[#111827] border-2 border-slate-700 shadow-md">
-              <img
-                src={photo_url}
-                alt={full_name}
-                className="w-full h-full object-cover object-top scale-105 filter contrast-105"
-                loading="eager"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-50" />
+            <div className="w-24 h-28 sm:w-28 sm:h-32 rounded-2xl overflow-hidden bg-[#111827] border-2 border-slate-700 shadow-md flex items-center justify-center">
+              {photo_url ? (
+                <img
+                  src={photo_url}
+                  alt={full_name || nickname || 'Atlet'}
+                  className="w-full h-full object-cover object-top scale-105 filter contrast-105"
+                  loading="eager"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+              ) : (
+                <span className="font-athletic text-2xl font-black text-slate-600">
+                  #{jersey_number || '-'}
+                </span>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-50 pointer-events-none" />
               <div className="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-md bg-black/80 border border-slate-700 flex items-center gap-1">
                 <span className="text-[10px] font-mono font-bold text-[#84CC16]">
-                  #{jersey_number}
+                  #{jersey_number ?? '-'}
                 </span>
               </div>
             </div>
@@ -108,7 +115,7 @@ export default function PlayerHeader({ personalInfo, onOpenStoryCard }) {
                 <Calendar className="w-3 h-3 text-slate-500 shrink-0" /> Usia
               </span>
               <span className="font-athletic text-sm sm:text-base font-bold text-white truncate">
-                {age} <span className="text-[10px] font-normal text-slate-400">thn</span>
+                {age ? <>{age} <span className="text-[10px] font-normal text-slate-400">thn</span></> : <span className="text-xs font-normal text-slate-400 font-sans">Belum ada data</span>}
               </span>
             </div>
 
@@ -117,7 +124,7 @@ export default function PlayerHeader({ personalInfo, onOpenStoryCard }) {
                 <Ruler className="w-3 h-3 text-slate-500 shrink-0" /> Tinggi
               </span>
               <span className="font-athletic text-sm sm:text-base font-bold text-white truncate">
-                {height_cm} <span className="text-[10px] font-normal text-slate-400">cm</span>
+                {height_cm ? <>{height_cm} <span className="text-[10px] font-normal text-slate-400">cm</span></> : <span className="text-xs font-normal text-slate-400 font-sans">Belum ada data</span>}
               </span>
             </div>
 
@@ -126,7 +133,7 @@ export default function PlayerHeader({ personalInfo, onOpenStoryCard }) {
                 <Scale className="w-3 h-3 text-slate-500 shrink-0" /> Berat
               </span>
               <span className="font-athletic text-sm sm:text-base font-bold text-white truncate">
-                {weight_kg} <span className="text-[10px] font-normal text-slate-400">kg</span>
+                {weight_kg ? <>{weight_kg} <span className="text-[10px] font-normal text-slate-400">kg</span></> : <span className="text-xs font-normal text-slate-400 font-sans">Belum ada data</span>}
               </span>
             </div>
 
@@ -134,8 +141,8 @@ export default function PlayerHeader({ personalInfo, onOpenStoryCard }) {
               <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1 truncate">
                 <Footprints className="w-3 h-3 text-slate-500 shrink-0" /> Kaki Utama
               </span>
-              <span className="font-athletic text-xs sm:text-sm font-bold text-[#84CC16] truncate" title={preferred_foot}>
-                {preferred_foot}
+              <span className="font-athletic text-xs sm:text-sm font-bold text-[#84CC16] truncate" title={preferred_foot || ''}>
+                {preferred_foot || <span className="text-xs font-normal text-slate-400 font-sans">Belum ada data</span>}
               </span>
             </div>
           </div>

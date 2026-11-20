@@ -58,16 +58,23 @@ export default function SquadPlayerCard({
         <div className="flex items-start justify-between gap-3 mb-3">
           {/* Athlete Portrait with Jersey Badge */}
           <div className="relative shrink-0">
-            <div className="w-16 h-20 rounded-xl overflow-hidden bg-[#090D16] border border-slate-700 group-hover:border-[#CCFF00]/60 transition-colors shadow-md">
-              <img
-                src={personal_info.photo_url}
-                alt={personal_info.full_name}
-                className="w-full h-full object-cover object-top filter contrast-105"
-                loading="lazy"
-              />
+            <div className="w-16 h-20 rounded-xl overflow-hidden bg-[#090D16] border border-slate-700 group-hover:border-[#CCFF00]/60 transition-colors shadow-md flex items-center justify-center">
+              {personal_info.photo_url ? (
+                <img
+                  src={personal_info.photo_url}
+                  alt={personal_info.full_name || personal_info.nickname}
+                  className="w-full h-full object-cover object-top filter contrast-105"
+                  loading="lazy"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+              ) : (
+                <span className="font-athletic text-lg font-black text-slate-600">
+                  #{personal_info.jersey_number ?? '-'}
+                </span>
+              )}
             </div>
             <div className="absolute -bottom-1 -left-1 px-1.5 py-0.2 rounded bg-black/90 border border-[#CCFF00]/40 text-[9px] font-athletic font-bold text-[#CCFF00]">
-              #{personal_info.jersey_number}
+              #{personal_info.jersey_number ?? '-'}
             </div>
           </div>
 
@@ -96,12 +103,12 @@ export default function SquadPlayerCard({
           <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
             <span className="truncate">{personal_info.position}</span>
             <span>•</span>
-            <span className="text-slate-300">{personal_info.age} thn</span>
+            <span className="text-slate-300">{personal_info.age ? `${personal_info.age} thn` : 'Belum ada data'}</span>
           </div>
 
           <div className="text-[11px] text-slate-400 flex items-center justify-between pt-0.5">
-            <span>Kaki: <strong className="text-white">{personal_info.preferred_foot}</strong></span>
-            <span>{personal_info.height_cm} cm</span>
+            <span>Kaki: <strong className="text-white">{personal_info.preferred_foot || 'Belum ada data'}</strong></span>
+            <span>{personal_info.height_cm ? `${personal_info.height_cm} cm` : 'Belum ada data'}</span>
           </div>
         </div>
 

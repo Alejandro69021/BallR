@@ -15,14 +15,14 @@ export default function GrowthBioBandingTab({ player, onToast }) {
   const bioSpecs = {
     maturityStatus: "On-Time Maturing",
     maturityOffset: "+0.4 yrs",
-    currentHeight: personal_info.height_cm || 158,
-    currentWeight: personal_info.weight_kg || 46,
+    currentHeight: personal_info.height_cm || null,
+    currentWeight: personal_info.weight_kg || null,
     predictedAdultHeight: 174.5,
     adultHeightPct: 68.2,
     phvPhase: "Circa-PHV (Peak Height Velocity Phase)",
     biologicalAge: 13.4,
-    chronologicalAge: personal_info.age || 13,
-    advisoryText: "Growth Spurt Advisory: Dimas saat ini berada dalam fase laju pertumbuhan tinggi puncak (Peak Height Velocity). Pertahankan mobilitas sendi engkel & lutut, prioritaskan pemulihan tidur 8-9 jam, dan hindari beban plyometrik berlebih."
+    chronologicalAge: personal_info.age || null,
+    advisoryText: `Growth Spurt Advisory: ${personal_info.nickname || personal_info.full_name || 'Atlet'} saat ini berada dalam fase laju pertumbuhan tinggi puncak (Peak Height Velocity). Pertahankan mobilitas sendi engkel & lutut, prioritaskan pemulihan tidur 8-9 jam, dan hindari beban plyometrik berlebih.`
   };
 
   const metricsData = {

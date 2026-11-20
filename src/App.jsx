@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { PlayersProvider } from './context/PlayersContext';
 import { usePlayers } from './hooks/usePlayers';
-import { signOutUser } from './lib/supabase';
+import { signOutUser, getCurrentUserProfile, supabase } from './lib/supabase';
 
 import TopNav from './components/TopNav';
 import VideoModal from './components/VideoModal';
@@ -64,10 +64,42 @@ function MainApp() {
   const location = useLocation();
   const { players, isDemoMode, error } = usePlayers();
 
-  // Role Guard state: 'public' | 'coach' | 'parent' | 'admin'
-  const [userRole, setUserRole] = useState(() => {
-    return localStorage.getItem('ballr_user_role') || 'public';
-  });
+  // Role state: 'public' | 'coach' | 'parent' | 'admin'
+  // In demo mode: fixed demo role 'coach' is allowed (clearly labelled "Mode demo").
+  // In real mode: starts at 'public', and is loaded from authenticated user profile in public.profiles.
+  const [userRole, setUserRole] = useState(() => (isDemoMode ? 'coach' : 'public'));
+
+  useEffect(() => {
+    if (isDemoMode) {
+      setUserRole('coach');
+      return;
+    }
+
+    let isMounted = true;
+    getCurrentUserProfile()
+      .then((profile) => {
+        if (isMounted) {
+          setUserRole(profile?.role || 'public');
+        }
+      })
+      .catch(() => {
+        if (isMounted) setUserRole('public');
+      });
+
+    const { data: authListener } = supabase?.auth?.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const p = await getCurrentUserProfile();
+        if (isMounted) setUserRole(p?.role || 'public');
+      } else {
+        if (isMounted) setUserRole('public');
+      }
+    }) || { data: { subscription: null } };
+
+    return () => {
+      isMounted = false;
+      authListener?.subscription?.unsubscribe?.();
+    };
+  }, [isDemoMode]);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [pendingTargetView, setPendingTargetView] = useState('assessment');
@@ -129,12 +161,11 @@ function MainApp() {
   const handleAuthSuccess = (role, target) => {
     const assignedRole = role || 'coach';
     setUserRole(assignedRole);
-    localStorage.setItem('ballr_user_role', assignedRole);
     setIsAuthModalOpen(false);
 
     setToastInfo({
       title: assignedRole === 'coach' ? "Sesi Pelatih Terverifikasi" : assignedRole === 'parent' ? "Sesi Wali Terverifikasi" : "Sesi Terverifikasi",
-      subtext: `Masuk sebagai peran: ${assignedRole}.`
+      subtext: isDemoMode ? `Masuk sebagai peran: ${assignedRole} (Mode demo).` : `Masuk sebagai peran: ${assignedRole}.`
     });
 
     const targetStr = typeof target === 'string' ? target : pendingTargetView;
@@ -155,9 +186,10 @@ function MainApp() {
   };
 
   const handleLogout = async () => {
-    await signOutUser();
+    if (!isDemoMode) {
+      await signOutUser();
+    }
     setUserRole('public');
-    localStorage.setItem('ballr_user_role', 'public');
     const targetId = activePlayer.public_id || activePlayer.player_id || 'PLAYER-01';
     navigate(`/pemain/${targetId}`);
     setToastInfo({
@@ -206,12 +238,23 @@ function MainApp() {
         academy={activePlayer.personal_info?.academy}
         currentView={currentView}
         userRole={userRole}
+        isDemoMode={isDemoMode}
         onSwitchView={handleSwitchView}
         onOpenAuthModal={handleOpenAuthModal}
         onLogout={handleLogout}
         onShare={() => setIsStoryCardOpen(true)}
         verifiedText={activePlayer.personal_info?.academy?.name}
       />
+
+      {/* 3d. Visible "Data contoh" badge whenever demo mode is on */}
+      {isDemoMode && (
+        <div className="w-full bg-amber-500/10 border-b border-amber-500/20 py-1.5 px-4 text-center">
+          <span className="text-xs font-semibold text-amber-300 inline-flex items-center gap-1.5">
+            <span className="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
+            Data contoh — Mode demo aktif
+          </span>
+        </div>
+      )}
 
       {/* Global Error Banner when not in demo mode and Supabase fails */}
       {error && !isDemoMode && (

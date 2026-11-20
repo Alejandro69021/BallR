@@ -39,16 +39,24 @@ export default function BioMaturityCard({ bioSpecs }) {
           </div>
           <div>
             <div className="font-athletic text-2xl font-black text-white">
-              {bioSpecs.currentHeight} <span className="text-xs font-mono text-slate-400">cm</span>
+              {bioSpecs.currentHeight ? (
+                <>{bioSpecs.currentHeight} <span className="text-xs font-mono text-slate-400">cm</span></>
+              ) : (
+                <span className="text-sm font-sans font-normal text-slate-400">Belum ada data</span>
+              )}
             </div>
             <div className="text-xs text-slate-300 font-medium mt-0.5 flex items-center gap-2 truncate">
-              <span>Berat: <strong>{bioSpecs.currentWeight} kg</strong></span>
-              <span className="text-slate-600">•</span>
-              <span>BMI: <strong>18.4</strong></span>
+              <span>Berat: <strong>{bioSpecs.currentWeight ? `${bioSpecs.currentWeight} kg` : 'Belum ada data'}</strong></span>
+              {bioSpecs.currentHeight && bioSpecs.currentWeight && (
+                <>
+                  <span className="text-slate-600">•</span>
+                  <span>BMI: <strong>{(bioSpecs.currentWeight / ((bioSpecs.currentHeight / 100) ** 2)).toFixed(1)}</strong></span>
+                </>
+              )}
             </div>
           </div>
           <div className="mt-3 pt-2 border-t border-slate-800 text-[10px] text-slate-400 font-mono truncate">
-            Usia Biologis: {bioSpecs.biologicalAge} th (Kronologis: {bioSpecs.chronologicalAge} th)
+            Usia Biologis: {bioSpecs.biologicalAge} th (Kronologis: {bioSpecs.chronologicalAge ? `${bioSpecs.chronologicalAge} th` : 'Belum ada data'})
           </div>
         </div>
 

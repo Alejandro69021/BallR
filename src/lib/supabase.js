@@ -87,7 +87,94 @@ export async function getCurrentUserProfile() {
 // ==============================================================================
 
 /**
- * Fetches live roster with explicit columns according to role & RLS.
+ * Fetches public player roster strictly from authorized public views.
+ * Stops selecting full_name, birth_date, nisn, and coach_raw_notes for unauthenticated visitors.
+ */
+export async function fetchPublicPlayersFromViews() {
+  if (!supabase) {
+    throw new Error(
+      'Koneksi Supabase belum dikonfigurasi. Harap tentukan VITE_SUPABASE_URL & VITE_SUPABASE_ANON_KEY di berkas .env.'
+    );
+  }
+
+  const [
+    { data: profilesData, error: profilesError },
+    { data: assessmentsData, error: assessmentsError },
+    { data: fitnessData, error: fitnessError },
+    { data: highlightsData, error: highlightsError }
+  ] = await Promise.all([
+    supabase.from('public_player_profiles').select('public_id, nickname, position, age_group, academy_name, academy_city'),
+    supabase.from('public_player_assessments').select('public_id, period_month, coach_name, pace, shooting, passing, dribbling, defending, physical, strengths, growth_areas'),
+    supabase.from('public_player_fitness').select('public_id, test_date, vertical_jump_cm, sprint_20m_sec, shuttle_run_sec, yoyo_score'),
+    supabase.from('public_player_highlights').select('public_id, title, match_opponent, match_minute, event_type, video_url, thumbnail_url')
+  ]);
+
+  if (profilesError) throw profilesError;
+  if (assessmentsError) throw assessmentsError;
+  if (fitnessError) throw fitnessError;
+  if (highlightsError) throw highlightsError;
+
+  if (!profilesData || profilesData.length === 0) return [];
+
+  const assessmentsByPlayer = (assessmentsData || []).reduce((acc, curr) => {
+    if (!acc[curr.public_id]) acc[curr.public_id] = [];
+    acc[curr.public_id].push(curr);
+    return acc;
+  }, {});
+
+  const fitnessByPlayer = (fitnessData || []).reduce((acc, curr) => {
+    if (!acc[curr.public_id]) acc[curr.public_id] = [];
+    acc[curr.public_id].push(curr);
+    return acc;
+  }, {});
+
+  const highlightsByPlayer = (highlightsData || []).reduce((acc, curr) => {
+    if (!acc[curr.public_id]) acc[curr.public_id] = [];
+    acc[curr.public_id].push(curr);
+    return acc;
+  }, {});
+
+  return profilesData.map((p) => {
+    const academy = {
+      name: p.academy_name || 'Akademi Sepakbola',
+      city: p.academy_city || 'Indonesia',
+      logo_url: ''
+    };
+    const dbPlayer = {
+      id: p.public_id,
+      public_id: p.public_id,
+      nickname: p.nickname,
+      position: p.position,
+      age_group: p.age_group,
+      academy_name: p.academy_name,
+      academy_city: p.academy_city,
+      // Deliberately no full_name, birth_date, nisn, coach_raw_notes
+      player_assessments: assessmentsByPlayer[p.public_id] || [],
+      fitness_records: fitnessByPlayer[p.public_id] || [],
+      video_highlights: highlightsByPlayer[p.public_id] || []
+    };
+    return transformDbPlayer(dbPlayer, academy, isDemoMode);
+  });
+}
+
+/**
+ * Fetches player via share token from secure RPC function.
+ */
+export async function fetchPlayerByToken(token) {
+  if (!supabase || !token) return null;
+  const { data, error } = await supabase.rpc('get_player_by_token', { p_token: token });
+  if (error) {
+    console.warn('Gagal memverifikasi token pemain:', error.message);
+    return null;
+  }
+  if (Array.isArray(data)) {
+    return data[0] || null;
+  }
+  return data || null;
+}
+
+/**
+ * Fetches live roster. If unauthenticated, uses public views exclusively.
  */
 export async function fetchLiveRosterFromSupabase() {
   if (!supabase) {
@@ -96,7 +183,15 @@ export async function fetchLiveRosterFromSupabase() {
     );
   }
 
-  // 1. Fetch academy info with explicit columns
+  // Check if visitor is signed in
+  const { data: { user } } = await supabase.auth.getUser().catch(() => ({ data: { user: null } }));
+
+  // Unauthenticated visitors must only read from public views
+  if (!user) {
+    return fetchPublicPlayersFromViews();
+  }
+
+  // Authenticated users (coach / admin / parent)
   let academy = null;
   const { data: academyData, error: academyError } = await supabase
     .from('academies')
@@ -112,7 +207,6 @@ export async function fetchLiveRosterFromSupabase() {
     };
   }
 
-  // 2. Fetch players with explicit columns for data minimization
   const { data: playersData, error: playersError } = await supabase
     .from('players')
     .select(`
@@ -209,22 +303,22 @@ export async function fetchAcademyAccreditation(academyId) {
 // ==============================================================================
 
 /**
- * Fetches a snapshot by its exact SHA-256 hash.
+ * Verifies a snapshot by its exact SHA-256 hash using verify_passport_snapshot RPC function.
  */
 export async function fetchPassportSnapshot(snapshotHash) {
   if (!supabase || !snapshotHash) return null;
 
   const { data, error } = await supabase
-    .from('passport_snapshots')
-    .select('id, player_id, period_month, snapshot_hash, canonical_payload, payload_version, created_at')
-    .eq('snapshot_hash', snapshotHash)
-    .maybeSingle();
+    .rpc('verify_passport_snapshot', { p_hash: snapshotHash });
 
   if (error) {
-    console.warn('Snapshot lookup error:', error.message);
+    console.warn('Snapshot verification error:', error.message);
     return null;
   }
-  return data;
+  if (Array.isArray(data)) {
+    return data[0] || null;
+  }
+  return data || null;
 }
 
 /**

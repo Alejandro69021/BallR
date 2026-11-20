@@ -1,8 +1,8 @@
 import React from 'react';
 import { Film, Play, Clock } from 'lucide-react';
 
-export default function MatchMoments({ moments, onSelectClip }) {
-  const getBadgeStyle = (category) => {
+export default function MatchMoments({ moments = [], onSelectClip }) {
+  const getBadgeStyle = (category = '') => {
     if (category.includes('Pass') || category.includes('Vision')) {
       return 'bg-lime-500/20 text-[#CCFF00] border-lime-500/30';
     }
@@ -11,6 +11,29 @@ export default function MatchMoments({ moments, onSelectClip }) {
     }
     return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
   };
+
+  if (!moments || moments.length === 0) {
+    return (
+      <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl shadow-black/50 space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 rounded-lg bg-lime-500/10 border border-[#CCFF00]/30 text-[#CCFF00]">
+            <Film className="w-4 h-4" />
+          </div>
+          <div>
+            <h3 className="font-athletic text-base sm:text-xl font-bold text-white tracking-tight">
+              Verified Match Moments (Vertical 9:16)
+            </h3>
+            <p className="text-xs text-slate-400">
+              Klip cuplikan pertandingan terverifikasi staf kepelatihan
+            </p>
+          </div>
+        </div>
+        <div className="p-6 text-center rounded-xl bg-[#090D16] border border-[#1F2937] text-slate-400 text-xs">
+          Belum ada data cuplikan pertandingan
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl shadow-black/50 space-y-4">

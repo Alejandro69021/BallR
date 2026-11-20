@@ -2,6 +2,35 @@ import React from 'react';
 import { Award } from 'lucide-react';
 
 export default function VaepScorecard({ vaepMetrics }) {
+  if (!vaepMetrics || !vaepMetrics.topValuedActions || vaepMetrics.topValuedActions.length === 0) {
+    return (
+      <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1F2937]">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                KU Leuven SoccerAction Framework
+              </span>
+              <span className="text-xs text-slate-400">Decroos et al. (2019)</span>
+            </div>
+            <h4 className="font-athletic text-base sm:text-lg font-bold text-white tracking-wide mt-1">
+              Valuing Actions by Estimating Probabilities (VAEP)
+            </h4>
+          </div>
+
+          <div className="text-xs text-slate-400">
+            Mengukur kontribusi riil tiap aksi terhadap peluang terjadinya gol
+          </div>
+        </div>
+
+        <div className="p-6 text-center rounded-xl bg-[#090D16]/80 border border-[#1E2638] text-slate-400 text-xs space-y-1">
+          <p className="font-semibold text-slate-300">Belum ada data</p>
+          <p className="text-slate-500">Metrik aksi VAEP belum dihitung untuk laga ini.</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1F2937]">
@@ -63,12 +92,14 @@ export default function VaepScorecard({ vaepMetrics }) {
         </div>
       </div>
 
-      <div className="p-3 rounded-xl bg-[#0E131F] border border-[#1E2638] text-xs text-slate-300 flex items-start gap-2.5">
-        <Award className="w-4 h-4 text-[#84CC16] shrink-0 mt-0.5" />
-        <p className="leading-relaxed text-[11px]">
-          <strong>Interpretasi Ilmiah:</strong> Skor Net VAEP <span className="text-[#84CC16] font-bold">+0.84</span> (Top 3% Nasional U-13). Umpan terobosan menit ke-24 bernilai tertinggi (+0.49 VAEP) karena melipatgandakan peluang gol terbuka striker.
-        </p>
-      </div>
+      {vaepMetrics.interpretation && (
+        <div className="p-3 rounded-xl bg-[#0E131F] border border-[#1E2638] text-xs text-slate-300 flex items-start gap-2.5">
+          <Award className="w-4 h-4 text-[#84CC16] shrink-0 mt-0.5" />
+          <p className="leading-relaxed text-[11px]">
+            <strong>Interpretasi Ilmiah:</strong> {vaepMetrics.interpretation}
+          </p>
+        </div>
+      )}
     </section>
   );
 }

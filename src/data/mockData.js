@@ -15,9 +15,9 @@ export const playersRoster = [
       "academy": {
         "name": "Mataram Putra Football Academy",
         "city": "Yogyakarta",
-        "logo_url": "https://placehold.co/80x80/1e293b/ffffff?text=MPFA"
+        "logo_url": ""
       },
-      "photo_url": "https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?q=80&w=600&auto=format&crop=entropy",
+      "photo_url": "",
       "overall_rating": 81,
       "evaluation_status": "ready"
     },
@@ -66,8 +66,8 @@ export const playersRoster = [
         "minute": "24'",
         "category": "Vision / Key Pass",
         "video_aspect": "9:16",
-        "video_url": "https://assets.mixkit.co/videos/preview/mixkit-soccer-player-kicking-the-ball-41586-large.mp4",
-        "thumbnail": "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=400&auto=format&fit=crop"
+        "video_url": "",
+        "thumbnail": ""
       },
       {
         "id": "clip-02",
@@ -76,8 +76,8 @@ export const playersRoster = [
         "minute": "52'",
         "category": "Goal / Finishing",
         "video_aspect": "9:16",
-        "video_url": "https://assets.mixkit.co/videos/preview/mixkit-player-scoring-a-goal-in-soccer-41584-large.mp4",
-        "thumbnail": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=400&auto=format&fit=crop"
+        "video_url": "",
+        "thumbnail": ""
       }
     ]
   },
@@ -97,9 +97,9 @@ export const playersRoster = [
       "academy": {
         "name": "Mataram Putra Football Academy",
         "city": "Yogyakarta",
-        "logo_url": "https://placehold.co/80x80/1e293b/ffffff?text=MPFA"
+        "logo_url": ""
       },
-      "photo_url": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=600&auto=format&crop=entropy",
+      "photo_url": "",
       "overall_rating": 79,
       "evaluation_status": "ready"
     },
@@ -148,8 +148,8 @@ export const playersRoster = [
         "minute": "18'",
         "category": "Pace / Crossing",
         "video_aspect": "9:16",
-        "video_url": "https://assets.mixkit.co/videos/preview/mixkit-young-soccer-player-controlling-the-ball-41584-large.mp4",
-        "thumbnail": "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=400&auto=format&fit=crop"
+        "video_url": "",
+        "thumbnail": ""
       }
     ]
   },
@@ -169,9 +169,9 @@ export const playersRoster = [
       "academy": {
         "name": "Mataram Putra Football Academy",
         "city": "Yogyakarta",
-        "logo_url": "https://placehold.co/80x80/1e293b/ffffff?text=MPFA"
+        "logo_url": ""
       },
-      "photo_url": "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=600&auto=format&crop=entropy",
+      "photo_url": "",
       "overall_rating": 80,
       "evaluation_status": "pending"
     },
@@ -220,8 +220,8 @@ export const playersRoster = [
         "minute": "33'",
         "category": "Goal / Power Shot",
         "video_aspect": "9:16",
-        "video_url": "https://assets.mixkit.co/videos/preview/mixkit-slow-motion-of-a-soccer-ball-entering-a-net-41588-large.mp4",
-        "thumbnail": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=400&auto=format&fit=crop"
+        "video_url": "",
+        "thumbnail": ""
       }
     ]
   },
@@ -241,9 +241,9 @@ export const playersRoster = [
       "academy": {
         "name": "Mataram Putra Football Academy",
         "city": "Yogyakarta",
-        "logo_url": "https://placehold.co/80x80/1e293b/ffffff?text=MPFA"
+        "logo_url": ""
       },
-      "photo_url": "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=600&auto=format&crop=entropy",
+      "photo_url": "",
       "overall_rating": 75,
       "evaluation_status": "ready"
     },
@@ -292,8 +292,8 @@ export const playersRoster = [
         "minute": "41'",
         "category": "Defending / Tackle",
         "video_aspect": "9:16",
-        "video_url": "https://assets.mixkit.co/videos/preview/mixkit-young-soccer-player-controlling-the-ball-41584-large.mp4",
-        "thumbnail": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=400&auto=format&fit=crop"
+        "video_url": "",
+        "thumbnail": ""
       }
     ]
   },
@@ -313,9 +313,9 @@ export const playersRoster = [
       "academy": {
         "name": "Mataram Putra Football Academy",
         "city": "Yogyakarta",
-        "logo_url": "https://placehold.co/80x80/1e293b/ffffff?text=MPFA"
+        "logo_url": ""
       },
-      "photo_url": "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=600&auto=format&crop=entropy",
+      "photo_url": "",
       "overall_rating": 78,
       "evaluation_status": "pending"
     },
@@ -364,8 +364,8 @@ export const playersRoster = [
         "minute": "58'",
         "category": "GK / Save",
         "video_aspect": "9:16",
-        "video_url": "https://assets.mixkit.co/videos/preview/mixkit-player-scoring-a-goal-in-soccer-41584-large.mp4",
-        "thumbnail": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=400&auto=format&fit=crop"
+        "video_url": "",
+        "thumbnail": ""
       }
     ]
   },
@@ -385,9 +385,9 @@ export const playersRoster = [
       "academy": {
         "name": "Mataram Putra Football Academy",
         "city": "Yogyakarta",
-        "logo_url": "https://placehold.co/80x80/1e293b/ffffff?text=MPFA"
+        "logo_url": ""
       },
-      "photo_url": "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&crop=entropy",
+      "photo_url": "",
       "overall_rating": 74,
       "evaluation_status": "pending"
     },
@@ -436,8 +436,8 @@ export const playersRoster = [
         "minute": "19'",
         "category": "Interception / Transition",
         "video_aspect": "9:16",
-        "video_url": "https://assets.mixkit.co/videos/preview/mixkit-young-soccer-player-controlling-the-ball-41584-large.mp4",
-        "thumbnail": "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=400&auto=format&fit=crop"
+        "video_url": "",
+        "thumbnail": ""
       }
     ]
   },
@@ -457,9 +457,9 @@ export const playersRoster = [
       "academy": {
         "name": "Mataram Putra Football Academy",
         "city": "Yogyakarta",
-        "logo_url": "https://placehold.co/80x80/1e293b/ffffff?text=MPFA"
+        "logo_url": ""
       },
-      "photo_url": "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=600&auto=format&crop=entropy",
+      "photo_url": "",
       "overall_rating": 73,
       "evaluation_status": "ready"
     },
@@ -508,8 +508,8 @@ export const playersRoster = [
         "minute": "48'",
         "category": "Defense / Overlap",
         "video_aspect": "9:16",
-        "video_url": "https://assets.mixkit.co/videos/preview/mixkit-soccer-player-kicking-the-ball-41586-large.mp4",
-        "thumbnail": "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=400&auto=format&fit=crop"
+        "video_url": "",
+        "thumbnail": ""
       }
     ]
   }

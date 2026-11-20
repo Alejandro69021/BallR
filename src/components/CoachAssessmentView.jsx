@@ -85,43 +85,38 @@ export default function CoachAssessmentView({
   const calculatedOvr = calculateOvr(formData.attributes);
 
   const handleGenerateAI = () => {
-    setIsGeneratingAI(true);
-    setTimeout(() => {
-      const name = activePlayer.personal_info.nickname || activePlayer.personal_info.full_name;
-      const rawText = formData.rawNotes.trim();
-      const sortedAttrs = [...formData.attributes].sort((a, b) => b.value - a.value);
-      const topAttrNames = sortedAttrs.slice(0, 2).map((a) => a.attribute.split(' ')[0]);
-      const lowestAttrName = sortedAttrs[sortedAttrs.length - 1].attribute.split(' ')[0];
+    const name = activePlayer.personal_info.nickname || activePlayer.personal_info.full_name || 'Atlet';
+    const rawText = formData.rawNotes.trim();
 
-      let generatedNarrative = '';
-      if (rawText.length > 5) {
-        generatedNarrative = `${name} menunjukkan respons latihan yang impresif pada sesi Oktober 2026. Analisis catatan lapangan: "${rawText}". Kemampuan ${topAttrNames.join(' & ')} berada di atas standar rata-rata U-13 akademi. Fokus taktis prioritas adalah meningkatkan konsistensi ${lowestAttrName.toLowerCase()} terutama saat fase transisi cepat lawan.`;
-      } else {
-        generatedNarrative = `${name} memperlihatkan perkembangan teknik dominan pada aspek ${topAttrNames.join(' dan ')} dengan kecepatan eksekusi tinggi. Evaluasi video menunjukkan scanning ruang sebelum menerima bola semakin matang. Poin akselerasi pertumbuhan terpusat pada penguatan ${lowestAttrName.toLowerCase()} serta ketahanan pressing intensif.`;
-      }
-
-      setFormData((prev) => ({
-        ...prev,
-        narrative: generatedNarrative,
-        strengths: [
-          `Dominasi ${topAttrNames[0] || 'Visi Bermain'}`,
-          'Sentuhan pertama terarah di ruang sempit',
-          'Pengambilan keputusan transisi positif'
-        ],
-        growthAreas: [
-          `Penguatan fisik duel ${lowestAttrName.toLowerCase()}`,
-          'Kecepatan pemulihan posisi bertahan'
-        ]
-      }));
-      setIsGeneratingAI(false);
-
+    if (!rawText) {
       if (onToast) {
         onToast({
-          title: "Narasi Evaluasi AI Dihasilkan",
-          subtext: `Analisis taktis resmi AFC/UEFA untuk ${name} siap ditinjau.`
+          title: "Catatan Pelatih Kosong",
+          subtext: "Belum ada data catatan pelatih untuk dirumuskan narasi."
         });
       }
-    }, 900);
+      return;
+    }
+
+    const sortedAttrs = [...formData.attributes].sort((a, b) => b.value - a.value);
+    const topAttrNames = sortedAttrs.slice(0, 2).map((a) => a.attribute.split(' ')[0]);
+    const lowestAttrName = sortedAttrs[sortedAttrs.length - 1].attribute.split(' ')[0];
+
+    const generatedNarrative = `Catatan evaluasi lapangan untuk ${name}: "${rawText}". Atribut menonjol: ${topAttrNames.join(' & ')}. Area fokus pengembangan: ${lowestAttrName.toLowerCase()}.`;
+
+    setFormData((prev) => ({
+      ...prev,
+      narrative: generatedNarrative,
+      strengths: topAttrNames.map((a) => `Dominasi ${a}`),
+      growthAreas: [`Penguatan aspek ${lowestAttrName.toLowerCase()}`]
+    }));
+
+    if (onToast) {
+      onToast({
+        title: "Narasi Evaluasi Dihasilkan",
+        subtext: `Analisis catatan lapangan untuk ${name} siap ditinjau.`
+      });
+    }
   };
 
   const handleSaveDraft = () => {

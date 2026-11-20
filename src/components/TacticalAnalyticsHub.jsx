@@ -20,54 +20,8 @@ export default function TacticalAnalyticsHub({ player, onToast }) {
   const [isCopied, setIsCopied] = useState(false);
   const [showCitations, setShowCitations] = useState(false);
 
-  const matchStats = latest_match_summary?.stats || {
-    passesCompleted: 21,
-    passesTotal: 25,
-    passAccuracy: 84,
-    keyPasses: 3,
-    tacklesWon: 4,
-    tacklesTotal: 5,
-    tackleAccuracy: 80,
-    shotsOnTarget: 2,
-    goals: 1,
-    turnovers: 2,
-    matchRating: "8.6"
-  };
-
-  const vaepMetrics = {
-    netVaep: "+0.84",
-    offensiveVaep: "+0.72",
-    defensiveVaep: "+0.12",
-    touchCount: 38,
-    vaepPerTouch: "0.022",
-    percentileTier: "Top 3% Nasional U-13 (Elite Playmaker)",
-    topValuedActions: [
-      {
-        minute: "24'",
-        action: "Through-Ball Assist ke Half-Space",
-        deltaPscores: "+0.48",
-        deltaPconcedes: "-0.01",
-        vaepValue: "+0.49",
-        phase: "Transisi Positif"
-      },
-      {
-        minute: "52'",
-        action: "Top-Corner Finishing (Kaki Kiri)",
-        deltaPscores: "+0.28",
-        deltaPconcedes: "0.00",
-        vaepValue: "+0.28",
-        phase: "Menyerang"
-      },
-      {
-        minute: "14'",
-        action: "Interception & Transisi Langsung",
-        deltaPscores: "+0.07",
-        deltaPconcedes: "-0.06",
-        vaepValue: "+0.13",
-        phase: "Transisi Negatif"
-      }
-    ]
-  };
+  const matchStats = latest_match_summary?.stats || null;
+  const vaepMetrics = latest_match_summary?.vaepMetrics || null;
 
   const filanesiaPhases = {
     attacking: {
@@ -205,30 +159,15 @@ export default function TacticalAnalyticsHub({ player, onToast }) {
 
   const handleCopyTacticalDossier = () => {
     const summary = `=== LAPORAN TAKTIS RESMI (FILANESIA & VAEP ENGINE) ===
-Pemain: ${personal_info.full_name} (#${personal_info.jersey_number} • ${personal_info.position})
-Akademi: ${personal_info.academy?.name || 'MPFA Jogja'} | Laga: MPFA Jogja vs Sleman United U-13
-Rating Laga: ${matchStats.matchRating} / 10 | Menit: 50'
+Pemain: ${personal_info.full_name || personal_info.nickname || 'Atlet'} (#${personal_info.jersey_number ?? '-'} • ${personal_info.position || '-'})
+Akademi: ${personal_info.academy?.name || 'Akademi Sepakbola'}
+Rating Laga: ${matchStats?.matchRating || 'Belum ada data'} / 10
 
 [1. METRIK AKSI VAEP (Decroos et al. 2019)]
-- Net VAEP: ${vaepMetrics.netVaep} (Offensive: ${vaepMetrics.offensiveVaep} | Defensive: ${vaepMetrics.defensiveVaep})
-- Efisiensi per Sentuhan: ${vaepMetrics.vaepPerTouch} VAEP/Touch (${vaepMetrics.percentileTier})
+- Net VAEP: ${vaepMetrics?.netVaep || 'Belum ada data'} (Offensive: ${vaepMetrics?.offensiveVaep || '-'} | Defensive: ${vaepMetrics?.defensiveVaep || '-'})
+- Efisiensi per Sentuhan: ${vaepMetrics?.vaepPerTouch ? `${vaepMetrics.vaepPerTouch} VAEP/Touch` : 'Belum ada data'}
 
-[2. 4 MOMEN PERMAINAN FILANESIA (PSSI)]
-- Menyerang (42%): 18 Operan Terhubung, 2 Key Passes, 1 Gol
-- Transisi Negatif (18%): 3 Rebutan Kilat (<5s), 1 Pelanggaran Taktis
-- Bertahan (22%): 4/5 Tekel Berhasil (80%), Blok Tengah Solid
-- Transisi Positif (18%): 1 Assist Terobosan, 2 Progresi Cepat
-
-[3. FIFA FOOTBALL LANGUAGE]
-- Line Breaks: 8/10 Berhasil (80%)
-- Penerimaan Antar-Lini: 11 Kali (91% Retensi)
-- Pemulihan Tekanan Cepat: 4 Kali
-
-[4. REKOMENDASI LATIHAN BIHUB / FIFA]
-- Drill: 4v4+3 Positional Play Rondo (Juego de Posición)
-- Fokus: Pembiasaan Open Body Shape & Sirkulasi 2-Touch di Sepertiga Tengah.
-
-Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
+Dokumentasi Terverifikasi BallR.`;
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(summary).catch(() => {});
@@ -302,10 +241,10 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
               Net VAEP Value
             </div>
             <div className="font-athletic text-2xl font-black text-[#84CC16] mt-0.5">
-              {vaepMetrics.netVaep}
+              {vaepMetrics?.netVaep ?? <span className="text-sm font-sans font-normal text-slate-400">Belum ada data</span>}
             </div>
             <div className="text-[10px] text-lime-400 font-medium truncate">
-              Offense: {vaepMetrics.offensiveVaep}
+              {vaepMetrics ? `Offense: ${vaepMetrics.offensiveVaep}` : 'Belum ada data'}
             </div>
           </div>
 
@@ -314,10 +253,10 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
               Passing Accuracy
             </div>
             <div className="font-athletic text-2xl font-black text-cyan-400 mt-0.5">
-              {matchStats.passAccuracy}%
+              {matchStats?.passAccuracy != null ? `${matchStats.passAccuracy}%` : <span className="text-sm font-sans font-normal text-slate-400">Belum ada data</span>}
             </div>
             <div className="text-[10px] text-slate-400 truncate">
-              {matchStats.passesCompleted}/{matchStats.passesTotal} Operan
+              {matchStats ? `${matchStats.passesCompleted}/${matchStats.passesTotal} Operan` : 'Belum ada data'}
             </div>
           </div>
 
@@ -326,10 +265,10 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
               Tekel & Intersep
             </div>
             <div className="font-athletic text-2xl font-black text-emerald-400 mt-0.5">
-              {matchStats.tackleAccuracy}%
+              {matchStats?.tackleAccuracy != null ? `${matchStats.tackleAccuracy}%` : <span className="text-sm font-sans font-normal text-slate-400">Belum ada data</span>}
             </div>
             <div className="text-[10px] text-emerald-400/80 font-medium truncate">
-              {matchStats.tacklesWon}/{matchStats.tacklesTotal} Menang Duel
+              {matchStats ? `${matchStats.tacklesWon}/${matchStats.tacklesTotal} Menang Duel` : 'Belum ada data'}
             </div>
           </div>
 
@@ -338,10 +277,14 @@ Dokumentasi Terverifikasi ProspekBola PSSI DIY.`;
               Rating Laga
             </div>
             <div className="font-athletic text-2xl font-black text-amber-400 mt-0.5">
-              {matchStats.matchRating} <span className="text-xs font-normal text-slate-400">/ 10</span>
+              {matchStats?.matchRating != null ? (
+                <>{matchStats.matchRating} <span className="text-xs font-normal text-slate-400">/ 10</span></>
+              ) : (
+                <span className="text-sm font-sans font-normal text-slate-400">Belum ada data</span>
+              )}
             </div>
             <div className="text-[10px] text-amber-300 font-medium truncate">
-              Playmaker Kunci
+              {matchStats ? 'Rating Terkalkulasi' : 'Belum ada data'}
             </div>
           </div>
         </div>

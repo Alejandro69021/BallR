@@ -16,6 +16,7 @@ export default function TopNav({
   academy,
   currentView,
   userRole = 'public',
+  isDemoMode = false,
   onSwitchView,
   onOpenAuthModal,
   onLogout,
@@ -61,6 +62,11 @@ export default function TopNav({
                 <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-bold rounded bg-slate-800 text-[#84CC16] border border-[#84CC16]/30">
                   U-13
                 </span>
+                {isDemoMode && (
+                  <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                    Data contoh
+                  </span>
+                )}
               </div>
               
               <div className="flex items-center gap-1 text-slate-400 text-[11px]">
@@ -84,14 +90,21 @@ export default function TopNav({
                 <span>Masuk</span>
               </button>
             ) : (
-              <button
-                type="button"
-                onClick={onLogout}
-                className="p-1.5 rounded bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs"
-                title="Keluar Sesi"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex items-center gap-1.5 md:hidden">
+                {isDemoMode && (
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    Mode demo
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  className="p-1.5 rounded bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs"
+                  title="Keluar Sesi"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
             )}
 
             <button
@@ -215,6 +228,11 @@ export default function TopNav({
                 <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
                 <span className="text-[11px] font-medium text-emerald-300">
                   {isCoach ? 'Pelatih' : isParent ? 'Wali Atlet' : 'Admin'}
+                  {isDemoMode && (
+                    <span className="ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      Mode demo
+                    </span>
+                  )}
                 </span>
                 <button
                   type="button"

@@ -37,62 +37,23 @@ export default function InteractiveMatchHub({
     ]
   };
 
-  const allEvents = [
-    {
-      id: "evt-1",
-      minute: "14'",
-      type: "Tackle",
-      categoryIcon: "🛡️",
-      title: "Interception & Counter-attack start",
-      desc: "Memutus jalur umpan lawan di sepertiga tengah dan langsung melepas bola transisi cepat.",
-      startTimeSeconds: 8,
-      durationSeconds: 12,
-      metric: "Ball Recovery (Middle 3rd)",
-      videoUrl: player.verified_moments?.[0]?.video_url || "https://assets.mixkit.co/videos/preview/mixkit-young-soccer-player-controlling-the-ball-41584-large.mp4",
-      poster: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop"
-    },
-    {
-      id: "evt-2",
-      minute: "24'",
-      type: "Key Pass",
-      categoryIcon: "🎯",
-      title: "Curving Through-Ball Assist",
-      desc: "Umpan terobosan lengkung melintasi 2 bek tengah, langsung membuka ruang tembak striker.",
-      startTimeSeconds: 24,
-      durationSeconds: 14,
-      metric: "Expected Assist (xA): 0.88",
-      videoUrl: player.verified_moments?.[0]?.video_url || "https://assets.mixkit.co/videos/preview/mixkit-soccer-player-kicking-the-ball-41586-large.mp4",
-      poster: player.verified_moments?.[0]?.thumbnail || "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=600&auto=format&fit=crop"
-    },
-    {
-      id: "evt-3",
-      minute: "38'",
-      type: "Tackle",
-      categoryIcon: "🛡️",
-      title: "Sliding Tackle in Defensive Third",
-      desc: "Tekel luncur bersih di sisi flank kanan mematikan serangan balik cepat tim lawan.",
-      startTimeSeconds: 38,
-      durationSeconds: 11,
-      metric: "Tackle Success Rate: 100%",
-      videoUrl: player.verified_moments?.[1]?.video_url || "https://assets.mixkit.co/videos/preview/mixkit-player-scoring-a-goal-in-soccer-41584-large.mp4",
-      poster: "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=600&auto=format&fit=crop"
-    },
-    {
-      id: "evt-4",
-      minute: "52'",
-      type: "Goal",
-      categoryIcon: "⚽",
-      title: "Left-Footed Top Corner Goal",
-      desc: "Penyelesaian keras kaki kiri melengkung tajam ke sudut atas gawang tanpa mampu dijangkau kiper.",
-      startTimeSeconds: 52,
-      durationSeconds: 15,
-      metric: "Exit Speed: 79.2 km/h",
-      videoUrl: player.verified_moments?.[1]?.video_url || "https://assets.mixkit.co/videos/preview/mixkit-player-scoring-a-goal-in-soccer-41584-large.mp4",
-      poster: player.verified_moments?.[1]?.thumbnail || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop"
-    }
-  ];
+  const allEvents = (player.verified_moments && player.verified_moments.length > 0)
+    ? player.verified_moments.map((m, idx) => ({
+        id: m.id || `evt-${idx + 1}`,
+        minute: m.minute || "00'",
+        type: m.category || "Highlight",
+        categoryIcon: "⚽",
+        title: m.title || "Momen Laga",
+        desc: m.match || "Aksi pertandingan resmi",
+        startTimeSeconds: 0,
+        durationSeconds: 15,
+        metric: m.category || "Key Moment",
+        videoUrl: m.video_url || "",
+        poster: m.thumbnail || ""
+      }))
+    : [];
 
-  const [activeEvent, setActiveEvent] = useState(allEvents[1]);
+  const [activeEvent, setActiveEvent] = useState(allEvents[0] || null);
   const [selectedFilter, setSelectedFilter] = useState('ALL');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -107,7 +68,7 @@ export default function InteractiveMatchHub({
 
   const handleSelectEvent = (evt) => {
     setActiveEvent(evt);
-    if (videoRef.current) {
+    if (videoRef.current && evt.videoUrl) {
       if (videoRef.current.src !== evt.videoUrl) {
         videoRef.current.src = evt.videoUrl;
       }
@@ -119,7 +80,7 @@ export default function InteractiveMatchHub({
   };
 
   const togglePlay = () => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || !activeEvent?.videoUrl) return;
     if (isPlaying) {
       videoRef.current.pause();
       setIsPlaying(false);
@@ -137,7 +98,7 @@ export default function InteractiveMatchHub({
   };
 
   const handleTimeUpdate = () => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || !activeEvent) return;
     const curr = videoRef.current.currentTime;
     setCurrentTime(curr);
     const duration = activeEvent.durationSeconds || videoRef.current.duration || 10;
@@ -150,8 +111,8 @@ export default function InteractiveMatchHub({
   };
 
   const handleClipEnded = () => {
-    if (autoPlayNext) {
-      const currentIndex = allEvents.findIndex((e) => e.id === activeEvent.id);
+    if (autoPlayNext && allEvents.length > 0) {
+      const currentIndex = allEvents.findIndex((e) => e.id === activeEvent?.id);
       const nextIndex = (currentIndex + 1) % allEvents.length;
       handleSelectEvent(allEvents[nextIndex]);
     } else {
@@ -162,11 +123,11 @@ export default function InteractiveMatchHub({
   };
 
   useEffect(() => {
-    if (videoRef.current) {
+    if (videoRef.current && activeEvent?.videoUrl) {
       videoRef.current.src = activeEvent.videoUrl;
       videoRef.current.load();
     }
-  }, [activeEvent.id, activeEvent.videoUrl]);
+  }, [activeEvent?.id, activeEvent?.videoUrl]);
 
   return (
     <div className="space-y-6 animate-fadeIn pb-12 text-white">
@@ -247,95 +208,110 @@ export default function InteractiveMatchHub({
       ) : (
         <>
           {/* 2. MAIN 16:9 VIDEO PLAYER */}
-          <div className="relative aspect-video w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-black border-2 border-[#1F2937] shadow-2xl group">
-            <video
-              ref={videoRef}
-              className="w-full h-full object-cover cursor-pointer"
-              playsInline
-              muted={isMuted}
-              onClick={togglePlay}
-              onTimeUpdate={handleTimeUpdate}
-            />
+          <div className="relative aspect-video w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-black border-2 border-[#1F2937] shadow-2xl group flex items-center justify-center">
+            {activeEvent?.videoUrl ? (
+              <>
+                <video
+                  ref={videoRef}
+                  className="w-full h-full object-cover cursor-pointer"
+                  playsInline
+                  muted={isMuted}
+                  onClick={togglePlay}
+                  onTimeUpdate={handleTimeUpdate}
+                />
 
-            {/* Top Overlay Pill */}
-            <div className="absolute top-3 inset-x-3 z-20 flex items-center justify-between pointer-events-none">
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-[#CCFF00]/40 text-[#CCFF00] font-athletic font-extrabold text-xs">
-                  {activeEvent.minute} {activeEvent.type}
-                </span>
-                <span className="px-2.5 py-1 rounded-lg bg-black/75 backdrop-blur-md text-white font-medium text-xs hidden sm:inline">
-                  {activeEvent.title}
-                </span>
-              </div>
+                {/* Top Overlay Pill */}
+                <div className="absolute top-3 inset-x-3 z-20 flex items-center justify-between pointer-events-none">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-[#CCFF00]/40 text-[#CCFF00] font-athletic font-extrabold text-xs">
+                      {activeEvent.minute} {activeEvent.type}
+                    </span>
+                    <span className="px-2.5 py-1 rounded-lg bg-black/75 backdrop-blur-md text-white font-medium text-xs hidden sm:inline">
+                      {activeEvent.title}
+                    </span>
+                  </div>
 
-              <div className="pointer-events-auto flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => onShareClip && onShareClip(activeEvent)}
-                  className="p-2 rounded-xl bg-black/75 hover:bg-black text-slate-300 hover:text-white border border-slate-700 backdrop-blur-md transition-colors cursor-pointer"
-                  title="Bagikan Klip Momen"
-                >
-                  <Share2 className="w-3.5 h-3.5 text-[#CCFF00]" />
-                </button>
-              </div>
-            </div>
-
-            {/* Play/Pause Center Indicator */}
-            {!isPlaying && (
-              <div
-                onClick={togglePlay}
-                className="absolute inset-0 z-10 flex items-center justify-center bg-black/35 cursor-pointer"
-              >
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#CCFF00] hover:scale-105 active:scale-95 text-black flex items-center justify-center shadow-[0_0_30px_rgba(204,255,0,0.5)] transition-all">
-                  <Play className="w-7 h-7 fill-current ml-1" />
+                  <div className="pointer-events-auto flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => onShareClip && onShareClip(activeEvent)}
+                      className="p-2 rounded-xl bg-black/75 hover:bg-black text-slate-300 hover:text-white border border-slate-700 backdrop-blur-md transition-colors cursor-pointer"
+                      title="Bagikan Klip Momen"
+                    >
+                      <Share2 className="w-3.5 h-3.5 text-[#CCFF00]" />
+                    </button>
+                  </div>
                 </div>
+
+                {/* Play/Pause Center Indicator */}
+                {!isPlaying && (
+                  <div
+                    onClick={togglePlay}
+                    className="absolute inset-0 z-10 flex items-center justify-center bg-black/35 cursor-pointer"
+                  >
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#CCFF00] hover:scale-105 active:scale-95 text-black flex items-center justify-center shadow-[0_0_30px_rgba(204,255,0,0.5)] transition-all">
+                      <Play className="w-7 h-7 fill-current ml-1" />
+                    </div>
+                  </div>
+                )}
+
+                {/* Timeline Progress Bar */}
+                <div className="absolute bottom-11 inset-x-0 z-20 h-1.5 bg-slate-800/80 cursor-pointer">
+                  <div
+                    className="h-full bg-[#CCFF00] shadow-[0_0_8px_#CCFF00] transition-all duration-100"
+                    style={{ width: `${clipProgress}%` }}
+                  />
+                </div>
+
+                {/* Bottom Playback Control Bar */}
+                <div className="absolute bottom-0 inset-x-0 z-20 p-2.5 px-3.5 bg-gradient-to-t from-black/95 via-black/80 to-transparent flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={togglePlay}
+                      className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                    >
+                      {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={toggleMute}
+                      className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                    >
+                      {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                    </button>
+
+                    <span className="text-[11px] font-mono text-slate-300 ml-1">
+                      0:{(Math.floor(currentTime)).toString().padStart(2, '0')} / 0:{activeEvent.durationSeconds}s
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={autoPlayNext}
+                        onChange={(e) => setAutoPlayNext(e.target.checked)}
+                        className="w-3.5 h-3.5 accent-[#CCFF00] rounded cursor-pointer"
+                      />
+                      <span>Auto-Play Next Event</span>
+                    </label>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="p-8 text-center text-slate-400 space-y-2">
+                <Film className="w-10 h-10 mx-auto text-slate-600 mb-2" />
+                <p className="text-base font-bold text-white">Belum ada data rekaman video</p>
+                <p className="text-xs text-slate-400">
+                  Belum ada rekaman klip video pertandingan resmi untuk momen ini.
+                </p>
+                <span className="inline-block px-3 py-1 rounded-full bg-slate-800 text-slate-300 text-xs font-mono border border-slate-700">
+                  Belum ada data
+                </span>
               </div>
             )}
-
-            {/* Timeline Progress Bar */}
-            <div className="absolute bottom-11 inset-x-0 z-20 h-1.5 bg-slate-800/80 cursor-pointer">
-              <div
-                className="h-full bg-[#CCFF00] shadow-[0_0_8px_#CCFF00] transition-all duration-100"
-                style={{ width: `${clipProgress}%` }}
-              />
-            </div>
-
-            {/* Bottom Playback Control Bar */}
-            <div className="absolute bottom-0 inset-x-0 z-20 p-2.5 px-3.5 bg-gradient-to-t from-black/95 via-black/80 to-transparent flex items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={togglePlay}
-                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                >
-                  {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={toggleMute}
-                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                >
-                  {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                </button>
-
-                <span className="text-[11px] font-mono text-slate-300 ml-1">
-                  0:{(Math.floor(currentTime)).toString().padStart(2, '0')} / 0:{activeEvent.durationSeconds}s
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <label className="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={autoPlayNext}
-                    onChange={(e) => setAutoPlayNext(e.target.checked)}
-                    className="w-3.5 h-3.5 accent-[#CCFF00] rounded cursor-pointer"
-                  />
-                  <span>Auto-Play Next Event</span>
-                </label>
-              </div>
-            </div>
           </div>
 
           <MatchEventTimeline

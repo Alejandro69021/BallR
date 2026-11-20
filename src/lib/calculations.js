@@ -150,78 +150,45 @@ export function transformDbPlayer(dbPlayer = {}, defaultAcademy = null, isDemoMo
   const defaultAcademyObj = defaultAcademy || (isDemoMode ? {
     name: "Mataram Putra Football Academy",
     city: "Yogyakarta",
-    logo_url: "https://placehold.co/80x80/1e293b/ffffff?text=MPFA"
+    logo_url: ""
   } : {
-    name: "Akademi Sepakbola",
-    city: "Indonesia",
+    name: dbPlayer.academy_name || "Akademi Sepakbola",
+    city: dbPlayer.academy_city || "Indonesia",
     logo_url: ""
   });
 
-  const photoUrl = dbPlayer.photo_url || (isDemoMode
-    ? "https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?q=80&w=600&auto=format&fit=crop"
-    : "");
+  const photoUrl = dbPlayer.photo_url || "";
 
   // Fitness
   const fitnessBenchmarks = {
-    test_date: latestFitness?.test_date || (isDemoMode ? '2026-10-24' : '-'),
-    vertical_jump_cm: latestFitness?.vertical_jump_cm ?? (isDemoMode ? 44.5 : 0),
-    sprint_20m_sec: latestFitness?.sprint_20m_sec ?? (isDemoMode ? 3.42 : 0),
-    shuttle_run_sec: latestFitness?.shuttle_run_sec ?? (isDemoMode ? 11.20 : 0),
-    yoyo_level: latestFitness?.yoyo_score ?? (isDemoMode ? 'Level 15.4' : '-'),
-    prev_jump_cm: previousFitness?.vertical_jump_cm ?? (isDemoMode ? 42.0 : 0),
-    prev_sprint_sec: previousFitness?.sprint_20m_sec ?? (isDemoMode ? 3.50 : 0),
-    prev_shuttle_sec: previousFitness?.shuttle_run_sec ?? (isDemoMode ? 11.45 : 0)
+    test_date: latestFitness?.test_date || null,
+    vertical_jump_cm: latestFitness?.vertical_jump_cm ?? null,
+    sprint_20m_sec: latestFitness?.sprint_20m_sec ?? null,
+    shuttle_run_sec: latestFitness?.shuttle_run_sec ?? null,
+    yoyo_level: latestFitness?.yoyo_score ?? null,
+    prev_jump_cm: previousFitness?.vertical_jump_cm ?? null,
+    prev_sprint_sec: previousFitness?.sprint_20m_sec ?? null,
+    prev_shuttle_sec: previousFitness?.shuttle_run_sec ?? null
   };
 
   // Evaluation
   const aiCoachEvaluation = {
-    period: latestAssessment?.period_month || (isDemoMode ? "Oktober 2026" : "Belum dievaluasi"),
-    coach_name: latestAssessment?.coach_name || (isDemoMode ? "Coach Hendro (Lisensi B AFC)" : "Tim Pelatih"),
-    narrative: latestAssessment?.ai_narrative || latestAssessment?.coach_raw_notes || (isDemoMode
-      ? "Pemain menunjukkan potensi akselerasi dan penguasaan teknik dasar yang sangat menjanjikan untuk level U-13."
-      : "Belum ada catatan evaluasi pelatih yang tercatat."),
+    period: latestAssessment?.period_month || null,
+    coach_name: latestAssessment?.coach_name || null,
+    narrative: latestAssessment?.ai_narrative || latestAssessment?.coach_raw_notes || null,
     strengths: Array.isArray(latestAssessment?.strengths) && latestAssessment.strengths.length > 0
       ? latestAssessment.strengths
-      : (isDemoMode ? ["Disiplin posisi lapangan", "Sentuhan pertama aktif", "Etos kerja tinggi"] : []),
+      : [],
     growth_areas: Array.isArray(latestAssessment?.growth_areas) && latestAssessment.growth_areas.length > 0
       ? latestAssessment.growth_areas
-      : (isDemoMode ? ["Kekuatan fisik duel perebutan bola", "Komunikasi transisi bertahan"] : []),
+      : [],
     recommended_drill: latestAssessment?.recommended_drill && typeof latestAssessment.recommended_drill === 'object'
       ? latestAssessment.recommended_drill
-      : (isDemoMode ? {
-          title: "Wall-Pass & Quick Scanning Drill",
-          duration: "15 Menit / Hari",
-          category: "Ball Mastery"
-        } : {
-          title: "Latihan Penguasaan Bola Dasar",
-          duration: "15 Menit / Hari",
-          category: "Dasar"
-        })
+      : null
   };
 
-  // Verified moments
-  const verifiedMoments = matchHighlights.length > 0 ? matchHighlights : (isDemoMode ? [
-    {
-      id: "clip-01",
-      title: "Assist Terobosan Melengkung",
-      match: "vs Sleman United U-13",
-      minute: "24'",
-      category: "Vision / Key Pass",
-      video_aspect: "9:16",
-      video_url: "https://assets.mixkit.co/videos/preview/mixkit-soccer-player-kicking-the-ball-41586-large.mp4",
-      thumbnail: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=400&auto=format&fit=crop"
-    },
-    {
-      id: "clip-02",
-      title: "Penyelesaian Akhir Kaki Kiri",
-      match: "vs HW Jogja U-13",
-      minute: "52'",
-      category: "Goal / Finishing",
-      video_aspect: "9:16",
-      video_url: "https://assets.mixkit.co/videos/preview/mixkit-player-scoring-a-goal-in-soccer-41584-large.mp4",
-      thumbnail: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=400&auto=format&fit=crop"
-    }
-  ] : []);
+  // Verified moments (only real highlights, no stock media)
+  const verifiedMoments = matchHighlights;
 
   return {
     player_id: dbPlayer.id || publicId,
@@ -233,11 +200,11 @@ export function transformDbPlayer(dbPlayer = {}, defaultAcademy = null, isDemoMo
       jersey_number: dbPlayer.jersey_number ?? 0,
       position: dbPlayer.position || 'Pemain',
       position_group,
-      birth_date: dbPlayer.birth_date || '2013-01-01',
-      age: dbPlayer.age || 13,
-      preferred_foot: dbPlayer.preferred_foot || 'Right',
-      height_cm: dbPlayer.height_cm || 160,
-      weight_kg: dbPlayer.weight_kg || 50,
+      birth_date: dbPlayer.birth_date || null,
+      age: dbPlayer.age || null,
+      preferred_foot: dbPlayer.preferred_foot || null,
+      height_cm: dbPlayer.height_cm || null,
+      weight_kg: dbPlayer.weight_kg || null,
       academy: defaultAcademyObj,
       photo_url: photoUrl,
       overall_rating: ovr,

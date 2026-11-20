@@ -5,30 +5,30 @@ export default function FitnessStrip({ benchmarks }) {
   const tests = [
     {
       label: "Vertical Jump",
-      value: `${benchmarks.vertical_jump_cm} cm`,
+      value: benchmarks?.vertical_jump_cm != null ? `${benchmarks.vertical_jump_cm} cm` : "Belum ada data",
       spec: "Explosive Power",
-      badge: "Top 5% U-13",
+      badge: benchmarks?.vertical_jump_cm != null ? "Top 5% U-13" : "-",
       icon: <Flame className="w-3.5 h-3.5 text-amber-400" />
     },
     {
       label: "20m Sprint",
-      value: `${benchmarks.sprint_20m_sec}s`,
+      value: benchmarks?.sprint_20m_sec != null ? `${benchmarks.sprint_20m_sec}s` : "Belum ada data",
       spec: "Acceleration",
-      badge: "Top 7% U-13",
+      badge: benchmarks?.sprint_20m_sec != null ? "Top 7% U-13" : "-",
       icon: <Zap className="w-3.5 h-3.5 text-[#CCFF00]" />
     },
     {
       label: "Shuttle Run",
-      value: `${benchmarks.shuttle_run_sec}s`,
+      value: benchmarks?.shuttle_run_sec != null ? `${benchmarks.shuttle_run_sec}s` : "Belum ada data",
       spec: "Agility & COD",
-      badge: "Top 5% U-13",
+      badge: benchmarks?.shuttle_run_sec != null ? "Top 5% U-13" : "-",
       icon: <Timer className="w-3.5 h-3.5 text-cyan-400" />
     },
     {
       label: "Yo-Yo Intermittent",
-      value: benchmarks.yoyo_level,
+      value: benchmarks?.yoyo_level || "Belum ada data",
       spec: "Aerobic Capacity",
-      badge: "Elite Grade",
+      badge: benchmarks?.yoyo_level ? "Elite Grade" : "-",
       icon: <Activity className="w-3.5 h-3.5 text-emerald-400" />
     }
   ];
@@ -46,7 +46,7 @@ export default function FitnessStrip({ benchmarks }) {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 text-[11px] text-slate-400">
             <Calendar className="w-3 h-3 text-slate-500" />
-            <span>Test Date: {benchmarks.test_date}</span>
+            <span>Test Date: {benchmarks?.test_date || "Belum ada data"}</span>
           </div>
           <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
             <CheckCircle2 className="w-3 h-3" />
