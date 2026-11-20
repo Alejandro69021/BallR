@@ -112,6 +112,8 @@ export default function FastPitchLogger({
   });
 
   const [isFlushing, setIsFlushing] = useState(false);
+  const flushingRef = useRef(false);
+  const followUpScheduledRef = useRef(false);
   const [selectedPlayerId, setSelectedPlayerId] = useState(
     participants[0]?.player_id || null
   );
@@ -155,6 +157,11 @@ export default function FastPitchLogger({
   const flushOutbox = useCallback(async () => {
     if (isReadOnly || !matchId) return;
 
+    if (flushingRef.current) {
+      followUpScheduledRef.current = true;
+      return;
+    }
+
     // Read current pending outbox from localStorage for freshest state
     let pending = [];
     try {
@@ -169,21 +176,34 @@ export default function FastPitchLogger({
       return;
     }
 
+    flushingRef.current = true;
     setIsFlushing(true);
+
+    const sentIdSet = new Set(pending.map((e) => e.client_event_id));
+
     try {
-      const savedEvents = await addEvents(matchId, pending);
+      await addEvents(matchId, pending);
 
-      // Successfully saved: clear outbox
-      saveOutbox([]);
+      // Successfully saved: remove ONLY the events whose client_event_id was in the batch that was sent
+      let currentOutbox = [];
+      try {
+        const raw = localStorage.getItem(outboxKey);
+        currentOutbox = raw ? JSON.parse(raw) : [];
+      } catch {
+        currentOutbox = [];
+      }
+      const remainingOutbox = currentOutbox.filter(
+        (e) => !sentIdSet.has(e.client_event_id)
+      );
+      saveOutbox(remainingOutbox);
 
-      // Update server events list
-      setServerEvents((prev) => {
-        const existingClientIds = new Set(prev.map((e) => e.client_event_id));
-        const newAdditions = (savedEvents || pending).filter(
-          (e) => !existingClientIds.has(e.client_event_id)
-        );
-        return [...prev, ...newAdditions];
-      });
+      // Refresh serverEvents with listEvents(matchId) so displayed count is true
+      try {
+        const refreshed = await listEvents(matchId);
+        setServerEvents(refreshed || []);
+      } catch (listErr) {
+        console.warn('Gagal memuat ulang kejadian server:', listErr);
+      }
 
       backoffRef.current = 1000;
     } catch (err) {
@@ -197,14 +217,22 @@ export default function FastPitchLogger({
         flushOutboxRef.current?.();
       }, nextDelay);
     } finally {
+      flushingRef.current = false;
       setIsFlushing(false);
+
+      if (followUpScheduledRef.current) {
+        followUpScheduledRef.current = false;
+        setTimeout(() => {
+          flushOutboxRef.current?.();
+        }, 0);
+      }
     }
   }, [isReadOnly, matchId, outboxKey, outbox, saveOutbox]);
 
-  const flushOutboxRef = useRef(flushOutbox);
+  const flushOutboxRef = useRef(null);
   useEffect(() => {
     flushOutboxRef.current = flushOutbox;
-  }, [flushOutbox]);
+  });
 
   // Automatically attempt flush on mount if outbox is not empty
   useEffect(() => {
@@ -252,22 +280,41 @@ export default function FastPitchLogger({
     }
 
     // Append to outbox first (offline-first local persistence)
-    const nextOutbox = [...outbox, fullEvent];
+    let currentOutbox = [];
+    try {
+      const raw = localStorage.getItem(outboxKey);
+      currentOutbox = raw ? JSON.parse(raw) : outbox;
+    } catch {
+      currentOutbox = outbox;
+    }
+    const nextOutbox = [...currentOutbox, fullEvent];
     saveOutbox(nextOutbox);
 
-    // Trigger flush immediately in background
-    setTimeout(() => {
-      flushOutbox();
-    }, 0);
+    // If flush is running, schedule follow-up; otherwise trigger flush
+    if (flushingRef.current) {
+      followUpScheduledRef.current = true;
+    } else {
+      setTimeout(() => {
+        flushOutboxRef.current?.();
+      }, 0);
+    }
   };
 
   // 4. Undo Handler (From outbox first; if empty, delete from server)
   const handleUndo = async () => {
     if (isReadOnly) return;
 
+    let currentOutbox = [];
+    try {
+      const raw = localStorage.getItem(outboxKey);
+      currentOutbox = raw ? JSON.parse(raw) : outbox;
+    } catch {
+      currentOutbox = outbox;
+    }
+
     // If outbox has items, pop last from outbox
-    if (outbox.length > 0) {
-      const nextOutbox = [...outbox];
+    if (currentOutbox.length > 0) {
+      const nextOutbox = [...currentOutbox];
       const removed = nextOutbox.pop();
       saveOutbox(nextOutbox);
       onToast?.({

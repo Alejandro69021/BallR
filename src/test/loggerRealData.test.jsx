@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import fs from 'fs';
 import path from 'path';
@@ -188,13 +188,93 @@ describe('Phase 5b: Real Match Logger & Data Integrity', () => {
     });
   });
 
-  // 4. Outbox & Retry without Duplicates
-  describe('4. Outbox Persistence and Idempotent Retry', () => {
-    it('keeps unsynced events in outbox when network fails, retrying with identical client_event_id', async () => {
-      // First attempt fails
+  // 4. Outbox Race Prevention & Overlapping Flushes (Phase 5b-fix)
+  describe('4. Outbox Race Prevention & Overlapping Flushes', () => {
+    it('4a. In-flight race: adding event B while event A flush is in-flight preserves B and sends B in follow-up flush', async () => {
+      let resolveFirstFlush;
+      const firstDeferred = new Promise((resolve) => {
+        resolveFirstFlush = resolve;
+      });
+
+      const batchesSent = [];
+      const addEventsSpy = vi.spyOn(matchesLib, 'addEvents').mockImplementation(async (_id, events) => {
+        batchesSent.push([...events]);
+        if (batchesSent.length === 1) {
+          return firstDeferred;
+        }
+        return events.map((e, idx) => ({ ...e, id: `server-id-${batchesSent.length}-${idx}` }));
+      });
+
+      let serverStore = [];
+      vi.spyOn(matchesLib, 'listEvents').mockImplementation(async () => serverStore);
+
+      render(
+        <FastPitchLogger
+          match={dummyMatch}
+          participants={dummyParticipants}
+          isReadOnly={false}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/Tersimpan di server: 0 · Menunggu sinkron: 0/i)).toBeDefined();
+      });
+
+      // 1. Add event A (pass) -> triggers first flush
+      const passBtn = screen.getByRole('button', { name: /Umpan akurat/i });
+      fireEvent.click(passBtn);
+
+      // Wait until addEvents was called for event A
+      await waitFor(() => {
+        expect(addEventsSpy).toHaveBeenCalledTimes(1);
+        expect(batchesSent[0].length).toBe(1);
+        expect(batchesSent[0][0].event_type).toBe('pass');
+      });
+
+      const eventAId = batchesSent[0][0].client_event_id;
+
+      // 2. Add event B (tackle) while flush for event A is still awaiting firstDeferred
+      const tackleBtn = screen.getByRole('button', { name: /Tekel berhasil/i });
+      fireEvent.click(tackleBtn);
+
+      // Outbox in localStorage should now contain both A and B
+      const midOutbox = JSON.parse(localStorage.getItem(`match_outbox_${dummyMatch.id}`) || '[]');
+      expect(midOutbox.length).toBe(2);
+      const eventBId = midOutbox.find((e) => e.client_event_id !== eventAId)?.client_event_id;
+      expect(eventBId).toBeDefined();
+
+      // 3. Resolve the first flush for event A
+      const serverResponseA = [{ ...batchesSent[0][0], id: 'server-A-01' }];
+      serverStore = [...serverResponseA];
+
+      await act(async () => {
+        resolveFirstFlush(serverResponseA);
+      });
+
+      // 4. Verify that after event A is successfully saved:
+      // - Event A was removed from outbox
+      // - Event B is STILL in outbox (never wiped by saveOutbox([]))
+      // - Follow-up flush triggers and sends event B!
+      await waitFor(() => {
+        expect(addEventsSpy).toHaveBeenCalledTimes(2);
+        expect(batchesSent[1].length).toBe(1);
+        expect(batchesSent[1][0].client_event_id).toBe(eventBId);
+        expect(batchesSent[1][0].event_type).toBe('tackle');
+      });
+
+      // 5. When follow-up flush completes, outbox is finally empty
+      await waitFor(() => {
+        const finalOutbox = JSON.parse(localStorage.getItem(`match_outbox_${dummyMatch.id}`) || '[]');
+        expect(finalOutbox.length).toBe(0);
+      });
+    });
+
+    it('4b. addEvents fails -> outbox keeps all events; retry sends the same client_event_ids', async () => {
       let callCount = 0;
+      const batchesSent = [];
       const addEventsSpy = vi.spyOn(matchesLib, 'addEvents').mockImplementation(async (_id, events) => {
         callCount++;
+        batchesSent.push([...events]);
         if (callCount === 1) {
           throw new Error('Network error simulate offline');
         }
@@ -220,6 +300,7 @@ describe('Phase 5b: Real Match Logger & Data Integrity', () => {
 
       // Outbox should now hold 1 event in localStorage
       await waitFor(() => {
+        expect(addEventsSpy).toHaveBeenCalledTimes(1);
         const outboxData = JSON.parse(localStorage.getItem(`match_outbox_${dummyMatch.id}`) || '[]');
         expect(outboxData.length).toBe(1);
         expect(outboxData[0].event_type).toBe('pass');
@@ -237,12 +318,129 @@ describe('Phase 5b: Real Match Logger & Data Integrity', () => {
       await waitFor(() => {
         expect(addEventsSpy).toHaveBeenCalledTimes(2);
         // Verify same client_event_id passed both times
-        expect(addEventsSpy.mock.calls[0][1][0].client_event_id).toBe(originalClientId);
-        expect(addEventsSpy.mock.calls[1][1][0].client_event_id).toBe(originalClientId);
+        expect(batchesSent[0][0].client_event_id).toBe(originalClientId);
+        expect(batchesSent[1][0].client_event_id).toBe(originalClientId);
 
         // Outbox cleared in localStorage
         const clearedOutbox = JSON.parse(localStorage.getItem(`match_outbox_${dummyMatch.id}`) || '[]');
         expect(clearedOutbox.length).toBe(0);
+      });
+    });
+
+    it('4c. Response lost (addEvents rejects but server already stored row): retry succeeds, listEvents refresh shows each event once', async () => {
+      const mockServerDb = [];
+      let attempt = 0;
+
+      const addEventsSpy = vi.spyOn(matchesLib, 'addEvents').mockImplementation(async (_id, events) => {
+        attempt++;
+        for (const ev of events) {
+          const exists = mockServerDb.some((row) => row.client_event_id === ev.client_event_id);
+          if (!exists) {
+            mockServerDb.push({ ...ev, id: `srv-${mockServerDb.length + 1}` });
+          }
+        }
+        if (attempt === 1) {
+          // Response dropped / network disconnect
+          throw new Error('Client response dropped by network');
+        }
+        return events.map((e) => mockServerDb.find((row) => row.client_event_id === e.client_event_id));
+      });
+
+      vi.spyOn(matchesLib, 'listEvents').mockImplementation(async () => [...mockServerDb]);
+
+      render(
+        <FastPitchLogger
+          match={dummyMatch}
+          participants={dummyParticipants}
+          isReadOnly={false}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/Tersimpan di server: 0 · Menunggu sinkron: 0/i)).toBeDefined();
+      });
+
+      // Log event
+      const passBtn = screen.getByRole('button', { name: /Umpan akurat/i });
+      fireEvent.click(passBtn);
+
+      // First attempt fails from client perspective, but row is now in mockServerDb
+      await waitFor(() => {
+        expect(addEventsSpy).toHaveBeenCalledTimes(1);
+        expect(mockServerDb.length).toBe(1);
+      });
+
+      // Retry sync
+      const syncBtn = screen.getByRole('button', { name: /Sinkronkan/i });
+      fireEvent.click(syncBtn);
+
+      // On retry, server ignores duplicate, listEvents is called, serverEvents refreshed
+      await waitFor(() => {
+        expect(addEventsSpy).toHaveBeenCalledTimes(2);
+        // Server DB still has exactly 1 deduplicated row
+        expect(mockServerDb.length).toBe(1);
+        // Outbox cleared
+        const outboxData = JSON.parse(localStorage.getItem(`match_outbox_${dummyMatch.id}`) || '[]');
+        expect(outboxData.length).toBe(0);
+        // Displayed "Tersimpan di server" is true (1)
+        expect(screen.getByText(/Tersimpan di server: 1 · Menunggu sinkron: 0/i)).toBeDefined();
+      });
+    });
+
+    it('4d. Two rapid taps create two distinct client_event_ids and exactly two rows end up on server mock', async () => {
+      const mockServerDb = [];
+      vi.spyOn(matchesLib, 'addEvents').mockImplementation(async (_id, events) => {
+        for (const ev of events) {
+          const exists = mockServerDb.some((row) => row.client_event_id === ev.client_event_id);
+          if (!exists) {
+            mockServerDb.push({ ...ev, id: `srv-${mockServerDb.length + 1}` });
+          }
+        }
+        return events.map((e) => mockServerDb.find((row) => row.client_event_id === e.client_event_id));
+      });
+
+      vi.spyOn(matchesLib, 'listEvents').mockImplementation(async () => [...mockServerDb]);
+
+      render(
+        <FastPitchLogger
+          match={dummyMatch}
+          participants={dummyParticipants}
+          isReadOnly={false}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(/Tersimpan di server: 0 · Menunggu sinkron: 0/i)).toBeDefined();
+      });
+
+      // Two rapid taps in immediate succession
+      const passBtn = screen.getByRole('button', { name: /Umpan akurat/i });
+      const tackleBtn = screen.getByRole('button', { name: /Tekel berhasil/i });
+
+      fireEvent.click(passBtn);
+      fireEvent.click(tackleBtn);
+
+      await waitFor(() => {
+        expect(mockServerDb.length).toBe(2);
+      });
+
+      // Verify distinct client_event_ids
+      const id1 = mockServerDb[0].client_event_id;
+      const id2 = mockServerDb[1].client_event_id;
+      expect(id1).toBeDefined();
+      expect(id2).toBeDefined();
+      expect(id1).not.toBe(id2);
+
+      // Verify both events arrived on server mock
+      const types = mockServerDb.map((e) => e.event_type);
+      expect(types).toContain('pass');
+      expect(types).toContain('tackle');
+
+      // Outbox completely drained
+      await waitFor(() => {
+        const finalOutbox = JSON.parse(localStorage.getItem(`match_outbox_${dummyMatch.id}`) || '[]');
+        expect(finalOutbox.length).toBe(0);
+        expect(screen.getByText(/Tersimpan di server: 2 · Menunggu sinkron: 0/i)).toBeDefined();
       });
     });
   });
