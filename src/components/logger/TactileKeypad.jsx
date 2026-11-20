@@ -16,13 +16,13 @@ export default function TactileKeypad({
   onOpenShotModal
 }) {
   return (
-    <section className="space-y-2">
+    <section className="space-y-2 text-1">
       <div className="flex items-center justify-between px-1">
-        <span className="text-xs font-athletic font-bold uppercase tracking-wider text-slate-400">
-          Sideline 1-Thumb Action Grid (Tap Cepat)
+        <span className="text-xs font-mono uppercase tracking-wider text-2">
+          Tombol aksi cepat sisi lapangan
         </span>
-        <span className="text-[11px] font-mono text-[#CCFF00]">
-          Track: {activePlayer.personal_info.nickname || activePlayer.personal_info.full_name} #{activePlayer.personal_info.jersey_number}
+        <span className="text-xs font-mono text-brand">
+          Pemain: {activePlayer.personal_info.nickname || activePlayer.personal_info.full_name} #{activePlayer.personal_info.jersey_number}
         </span>
       </div>
 
@@ -33,23 +33,22 @@ export default function TactileKeypad({
           onClick={() =>
             logEvent(
               'pass_success',
-              'Pass Akurat',
-              'text-[#84CC16]',
+              'Pass akurat',
               { passesCompleted: 1, passesTotal: 1 },
               'positive'
             )
           }
-          className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#0E131F] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-md select-none ${
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-all duration-150 ease-out motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer active:opacity-85 active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
             flashingBtn === 'pass_success'
-              ? 'bg-lime-500/25 border-[#84CC16]'
-              : 'border-lime-500/30 hover:border-[#84CC16] hover:bg-[#151C2C]'
+              ? 'bg-brand/20 border-brand text-brand'
+              : 'border-line hover:bg-raised text-1'
           }`}
         >
-          <div className="flex items-center gap-1.5 text-[#84CC16] font-athletic font-bold text-sm sm:text-base">
-            <Check className="w-5 h-5 stroke-[2.5]" />
-            <span>PASS AKURAT</span>
+          <div className="flex items-center gap-1.5 text-brand font-semibold text-sm">
+            <Check className="w-4 h-4" strokeWidth={1.5} />
+            <span>Pass akurat</span>
           </div>
-          <span className="text-[10px] text-slate-400 font-mono mt-0.5">
+          <span className="text-xs text-2 font-mono mt-0.5">
             +1 Sukses ({passAccuracy}%)
           </span>
         </button>
@@ -60,24 +59,23 @@ export default function TactileKeypad({
           onClick={() =>
             logEvent(
               'pass_misplaced',
-              'Pass Meleset',
-              'text-rose-400',
+              'Pass meleset',
               { passesTotal: 1 },
               'error'
             )
           }
-          className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#0E131F] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-md select-none ${
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-all duration-150 ease-out motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer active:opacity-85 active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger ${
             flashingBtn === 'pass_misplaced'
-              ? 'bg-rose-500/25 border-rose-500'
-              : 'border-rose-500/30 hover:border-rose-500 hover:bg-[#151C2C]'
+              ? 'bg-danger/20 border-danger text-danger'
+              : 'border-line hover:bg-raised text-1'
           }`}
         >
-          <div className="flex items-center gap-1.5 text-rose-400 font-athletic font-bold text-sm sm:text-base">
-            <X className="w-5 h-5 stroke-[2.5]" />
-            <span>PASS MELESET</span>
+          <div className="flex items-center gap-1.5 text-danger font-semibold text-sm">
+            <X className="w-4 h-4" strokeWidth={1.5} />
+            <span>Pass meleset</span>
           </div>
-          <span className="text-[10px] text-slate-400 font-mono mt-0.5">
-            Salah Umpan / Out
+          <span className="text-xs text-2 font-mono mt-0.5">
+            Salah umpan / keluar
           </span>
         </button>
 
@@ -87,24 +85,23 @@ export default function TactileKeypad({
           onClick={() =>
             logEvent(
               'key_pass',
-              'Umpan Kunci (xA)',
-              'text-cyan-400',
+              'Umpan kunci',
               { keyPasses: 1, passesCompleted: 1, passesTotal: 1 },
               'creative'
             )
           }
-          className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#0E131F] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-md select-none ${
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-all duration-150 ease-out motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer active:opacity-85 active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
             flashingBtn === 'key_pass'
-              ? 'bg-cyan-500/25 border-cyan-400'
-              : 'border-cyan-500/30 hover:border-cyan-400 hover:bg-[#151C2C]'
+              ? 'bg-series-1/20 border-series-1 text-series-1'
+              : 'border-line hover:bg-raised text-1'
           }`}
         >
-          <div className="flex items-center gap-1.5 text-cyan-400 font-athletic font-bold text-sm sm:text-base">
-            <Target className="w-5 h-5" />
-            <span>UMPAN KUNCI</span>
+          <div className="flex items-center gap-1.5 text-series-1 font-semibold text-sm">
+            <Target className="w-4 h-4" strokeWidth={1.5} />
+            <span>Umpan kunci</span>
           </div>
-          <span className="text-[10px] text-slate-400 font-mono mt-0.5">
-            Through Ball / Peluang
+          <span className="text-xs text-2 font-mono mt-0.5">
+            Peluang / terobosan
           </span>
         </button>
 
@@ -114,24 +111,23 @@ export default function TactileKeypad({
           onClick={() =>
             logEvent(
               'tackle_won',
-              'Tekel & Intersep',
-              'text-emerald-400',
+              'Tekel berhasil',
               { tacklesWon: 1, tacklesTotal: 1 },
               'positive'
             )
           }
-          className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#0E131F] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-md select-none ${
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-all duration-150 ease-out motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer active:opacity-85 active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
             flashingBtn === 'tackle_won'
-              ? 'bg-emerald-500/25 border-emerald-400'
-              : 'border-emerald-500/30 hover:border-emerald-400 hover:bg-[#151C2C]'
+              ? 'bg-brand/20 border-brand text-brand'
+              : 'border-line hover:bg-raised text-1'
           }`}
         >
-          <div className="flex items-center gap-1.5 text-emerald-400 font-athletic font-bold text-sm sm:text-base">
-            <Shield className="w-5 h-5" />
-            <span>REBUT / TEKEL</span>
+          <div className="flex items-center gap-1.5 text-brand font-semibold text-sm">
+            <Shield className="w-4 h-4" strokeWidth={1.5} />
+            <span>Tekel & intersep</span>
           </div>
-          <span className="text-[10px] text-slate-400 font-mono mt-0.5">
-            Duel Darat Sukses
+          <span className="text-xs text-2 font-mono mt-0.5">
+            Duel darat sukses
           </span>
         </button>
 
@@ -141,24 +137,23 @@ export default function TactileKeypad({
           onClick={() =>
             logEvent(
               'turnover',
-              'Kehilangan Bola',
-              'text-amber-400',
+              'Kehilangan bola',
               { turnovers: 1 },
               'error'
             )
           }
-          className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#0E131F] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-md select-none ${
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-all duration-150 ease-out motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer active:opacity-85 active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning ${
             flashingBtn === 'turnover'
-              ? 'bg-amber-500/25 border-amber-400'
-              : 'border-amber-500/30 hover:border-amber-400 hover:bg-[#151C2C]'
+              ? 'bg-warning/20 border-warning text-warning'
+              : 'border-line hover:bg-raised text-1'
           }`}
         >
-          <div className="flex items-center gap-1.5 text-amber-400 font-athletic font-bold text-sm sm:text-base">
-            <AlertTriangle className="w-5 h-5" />
-            <span>TURNOVER BOLA</span>
+          <div className="flex items-center gap-1.5 text-warning font-semibold text-sm">
+            <AlertTriangle className="w-4 h-4" strokeWidth={1.5} />
+            <span>Kehilangan bola</span>
           </div>
-          <span className="text-[10px] text-slate-400 font-mono mt-0.5">
-            Kehilangan Penguasaan
+          <span className="text-xs text-2 font-mono mt-0.5">
+            Turnover penguasaan
           </span>
         </button>
 
@@ -166,18 +161,18 @@ export default function TactileKeypad({
         <button
           type="button"
           onClick={onOpenShotModal}
-          className={`min-h-[68px] sm:min-h-[76px] p-3 rounded-2xl bg-[#0E131F] border-2 transition-all duration-100 flex flex-col items-center justify-center text-center cursor-pointer active:scale-95 shadow-md select-none ${
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-all duration-150 ease-out motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer active:opacity-85 active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
             flashingBtn === 'shot'
-              ? 'bg-yellow-500/25 border-yellow-400'
-              : 'border-yellow-500/30 hover:border-yellow-400 hover:bg-[#151C2C]'
+              ? 'bg-brand/20 border-brand text-brand'
+              : 'border-line hover:bg-raised text-1'
           }`}
         >
-          <div className="flex items-center gap-1.5 text-yellow-300 font-athletic font-bold text-sm sm:text-base">
-            <Flame className="w-5 h-5" />
-            <span>TEMBAKAN / GOL</span>
+          <div className="flex items-center gap-1.5 text-brand font-semibold text-sm">
+            <Flame className="w-4 h-4" strokeWidth={1.5} />
+            <span>Tembakan & gol</span>
           </div>
-          <span className="text-[10px] text-slate-400 font-mono mt-0.5">
-            Pilih On Target / Gol
+          <span className="text-xs text-2 font-mono mt-0.5">
+            Pilih on target / gol
           </span>
         </button>
       </div>

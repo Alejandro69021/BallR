@@ -1,5 +1,8 @@
 import React from 'react';
-import { BrainCircuit, Send, Loader2 } from 'lucide-react';
+import { Send, FileText } from 'lucide-react';
+import Button from '../ui/Button';
+import Badge from '../ui/Badge';
+import Field from '../ui/Field';
 
 export default function NarrativeNotesForm({
   formData,
@@ -8,116 +11,120 @@ export default function NarrativeNotesForm({
   onGenerateAI
 }) {
   return (
-    <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl shadow-black/50 space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#1F2937]">
-        <div className="flex items-center gap-2">
-          <BrainCircuit className="w-5 h-5 text-[#CCFF00]" />
-          <div>
-            <h3 className="font-athletic text-base sm:text-lg font-bold text-white tracking-tight">
-              AI Coach Narrative Generator
-            </h3>
-            <p className="text-xs text-slate-400">
-              Ubah catatan kasar pelatih menjadi laporan evaluasi taktis formal
-            </p>
-          </div>
+    <section className="border-t border-line pt-4 space-y-4 text-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h3 className="text-sm font-semibold text-1">
+            Perumusan narasi evaluasi teknis
+          </h3>
+          <p className="text-xs text-2">
+            Rumuskan catatan observasi pelatih menjadi laporan evaluasi terstruktur
+          </p>
         </div>
 
-        <span className="text-[10px] text-cyan-300 font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 self-start sm:self-auto">
-          AFC/UEFA Scouting Standard
-        </span>
+        <Badge variant="neutral" size="sm" className="self-start sm:self-auto">
+          Standar pemantauan akademi
+        </Badge>
       </div>
 
       {/* Raw coach notes textarea */}
-      <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-slate-300 block">
-          Catatan Kasar Lapangan (Raw Coach Observations):
-        </label>
+      <Field
+        label="Catatan observasi pelatih di lapangan"
+        id="coach-raw-notes"
+        helper="Catat pengamatan mengenai pengambilan keputusan, penempatan posisi, atau komunikasi tim."
+      >
         <textarea
+          id="coach-raw-notes"
           rows="3"
           value={formData.rawNotes}
           onChange={(e) => setFormData((prev) => ({ ...prev, rawNotes: e.target.value }))}
-          className="w-full p-3 rounded-xl bg-[#090D16] border border-slate-700 focus:border-[#CCFF00] text-xs sm:text-sm text-slate-200 outline-none leading-relaxed transition-colors min-h-[80px]"
-          placeholder="Contoh: Sentuhan pertama makin rapi, tapi masih gampang hilang posisi pas diserang balik."
+          className="w-full p-3 rounded-control bg-app border border-control text-xs sm:text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors min-h-[88px]"
+          placeholder="Contoh: Sentuhan pertama konsisten rapi, tetapi perlu meningkatkan kecepatan transisi bertahan saat tim kehilangan penguasaan bola."
         />
-      </div>
+      </Field>
 
-      {/* Action Button: Generate AI Narrative */}
-      <button
+      {/* Action Button: Generate Technical Narrative */}
+      <Button
         type="button"
+        variant="secondary"
+        size="md"
         onClick={onGenerateAI}
+        loading={isGeneratingAI}
         disabled={isGeneratingAI}
-        className="w-full min-h-[48px] rounded-xl bg-gradient-to-r from-lime-400 to-[#CCFF00] hover:from-lime-300 hover:to-lime-200 text-black font-athletic font-bold text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(204,255,0,0.25)] active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50"
+        className="w-full"
+        icon={<Send className="w-4 h-4" strokeWidth={1.5} />}
       >
-        {isGeneratingAI ? (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin text-black" />
-            <span>Memproses Log Taktis & Analisis AI...</span>
-          </>
-        ) : (
-          <>
-            <Send className="w-4 h-4 text-black" />
-            <span>Generate Technical Narrative</span>
-          </>
-        )}
-      </button>
+        {isGeneratingAI ? 'Merumuskan narasi evaluasi...' : 'Rumuskan narasi evaluasi'}
+      </Button>
 
-      {/* Auto-populated Result Card */}
-      <div className="p-4 rounded-xl bg-[#090D16]/80 border border-slate-800 space-y-4">
+      {/* Populated Result Card */}
+      <div className="p-4 rounded-control bg-panel border border-line space-y-4">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-            Hasil Narasi Formal AI:
+          <span className="text-xs font-semibold text-2 block mb-1">
+            Narasi evaluasi teknis:
           </span>
-          <p className="text-xs sm:text-sm text-slate-200 leading-relaxed italic bg-[#111827]/70 p-3 rounded-lg border border-slate-800">
-            "{formData.narrative}"
-          </p>
+          {formData.narrative ? (
+            <p className="text-xs sm:text-sm text-1 leading-relaxed bg-app p-3 rounded-control border border-line">
+              {formData.narrative}
+            </p>
+          ) : (
+            <p className="text-xs text-2 italic bg-app p-3 rounded-control border border-line">
+              Belum ada data narasi evaluasi. Masukkan catatan dan klik tombol rumuskan.
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block mb-1.5">
-              Top Strengths (3 Chips):
+            <span className="text-xs font-semibold text-2 block mb-1.5">
+              Keunggulan utama:
             </span>
             <div className="flex flex-wrap gap-1.5">
-              {formData.strengths.map((s, i) => (
-                <span
-                  key={i}
-                  className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
-                >
-                  + {s}
-                </span>
-              ))}
+              {formData.strengths.length > 0 ? (
+                formData.strengths.map((s, i) => (
+                  <Badge key={i} variant="brand" size="sm">
+                    {s}
+                  </Badge>
+                ))
+              ) : (
+                <span className="text-xs text-2">Belum ada data</span>
+              )}
             </div>
           </div>
 
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 block mb-1.5">
-              Focus Growth Areas (2 Chips):
+            <span className="text-xs font-semibold text-2 block mb-1.5">
+              Area fokus pengembangan:
             </span>
             <div className="flex flex-wrap gap-1.5">
-              {formData.growthAreas.map((g, i) => (
-                <span
-                  key={i}
-                  className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30"
-                >
-                  ▲ {g}
-                </span>
-              ))}
+              {formData.growthAreas.length > 0 ? (
+                formData.growthAreas.map((g, i) => (
+                  <Badge key={i} variant="warning" size="sm">
+                    {g}
+                  </Badge>
+                ))
+              ) : (
+                <span className="text-xs text-2">Belum ada data</span>
+              )}
             </div>
           </div>
         </div>
 
-        <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-              Recommended Homework Drill:
-            </span>
-            <span className="font-athletic text-xs font-bold text-[#CCFF00]">
-              {formData.drillTitle}
-            </span>
+        <div className="pt-3 border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <FileText className="w-4 h-4 text-2" strokeWidth={1.5} />
+            <div>
+              <span className="text-xs text-2 block">
+                Rekomendasi materi latihan mandiri:
+              </span>
+              <span className="text-xs font-semibold text-1">
+                {formData.drillTitle || 'Belum ada data'}
+              </span>
+            </div>
           </div>
-          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">
-            {formData.drillDuration}
-          </span>
+          <Badge variant="neutral" size="sm">
+            {formData.drillDuration || 'Belum ada data'}
+          </Badge>
         </div>
       </div>
     </section>

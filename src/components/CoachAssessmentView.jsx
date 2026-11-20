@@ -1,49 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Save,
-  Send,
-  Loader2,
-  CheckCircle2,
-  UserCheck
-} from 'lucide-react';
+import { Save, Send, CheckCircle2, UserCheck } from 'lucide-react';
 import PitchScannerModal from './PitchScannerModal';
 import AttributeEditor from './assessment/AttributeEditor';
 import FitnessForm from './assessment/FitnessForm';
 import NarrativeNotesForm from './assessment/NarrativeNotesForm';
+import Button from './ui/Button';
+import Badge from './ui/Badge';
 import { calculateOvr } from '../lib/calculations';
 
 export default function CoachAssessmentView({
-  players,
+  players = [],
   selectedPlayerId,
+  activePlayer: activePlayerProp,
   onSelectPlayer,
   onSaveAssessment,
   onSaveFitnessRecord,
   _onSwitchToPassport,
   onToast
 }) {
-  const activePlayer = players.find((p) => p.player_id === selectedPlayerId) || players[0];
+  const activePlayer =
+    activePlayerProp ||
+    (players && players.find((p) => p.player_id === selectedPlayerId)) ||
+    (players && players[0]) ||
+    null;
 
   const [formData, setFormData] = useState({
-    attributes: activePlayer.radar_attributes.map((a) => ({ ...a })),
-    fitness: { ...activePlayer.fitness_benchmarks },
-    rawNotes: activePlayer.ai_coach_evaluation?.coach_raw_notes || '',
-    narrative: activePlayer.ai_coach_evaluation?.narrative || '',
-    strengths: [...(activePlayer.ai_coach_evaluation?.strengths || [])],
-    growthAreas: [...(activePlayer.ai_coach_evaluation?.growth_areas || [])],
-    drillTitle: activePlayer.ai_coach_evaluation?.recommended_drill?.title || 'Wall-Pass & Quick Scanning Drill',
-    drillDuration: activePlayer.ai_coach_evaluation?.recommended_drill?.duration || '15 Menit / Hari',
-    drillCategory: activePlayer.ai_coach_evaluation?.recommended_drill?.category || 'Ball Mastery'
+    attributes: activePlayer?.radar_attributes ? activePlayer.radar_attributes.map((a) => ({ ...a })) : [],
+    fitness: { ...(activePlayer?.fitness_benchmarks || {}) },
+    rawNotes: activePlayer?.ai_coach_evaluation?.coach_raw_notes || '',
+    narrative: activePlayer?.ai_coach_evaluation?.narrative || '',
+    strengths: [...(activePlayer?.ai_coach_evaluation?.strengths || [])],
+    growthAreas: [...(activePlayer?.ai_coach_evaluation?.growth_areas || [])],
+    drillTitle: activePlayer?.ai_coach_evaluation?.recommended_drill?.title || 'Wall-Pass & Quick Scanning Drill',
+    drillDuration: activePlayer?.ai_coach_evaluation?.recommended_drill?.duration || '15 Menit / Hari',
+    drillCategory: activePlayer?.ai_coach_evaluation?.recommended_drill?.category || 'Ball Mastery'
   });
 
-  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [isGeneratingAI] = useState(false);
   const [isSavingSupabase, setIsSavingSupabase] = useState(false);
   const [hasDraftSaved, setHasDraftSaved] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   useEffect(() => {
+    if (!activePlayer) return;
     setFormData({
-      attributes: activePlayer.radar_attributes.map((a) => ({ ...a })),
-      fitness: { ...activePlayer.fitness_benchmarks },
+      attributes: activePlayer.radar_attributes ? activePlayer.radar_attributes.map((a) => ({ ...a })) : [],
+      fitness: { ...(activePlayer.fitness_benchmarks || {}) },
       rawNotes: activePlayer.ai_coach_evaluation?.coach_raw_notes || '',
       narrative: activePlayer.ai_coach_evaluation?.narrative || '',
       strengths: [...(activePlayer.ai_coach_evaluation?.strengths || [])],
@@ -53,7 +55,15 @@ export default function CoachAssessmentView({
       drillCategory: activePlayer.ai_coach_evaluation?.recommended_drill?.category || 'Ball Mastery'
     });
     setHasDraftSaved(false);
-  }, [activePlayer.player_id]);
+  }, [activePlayer?.player_id]);
+
+  if (!activePlayer) {
+    return (
+      <div className="p-8 text-center text-xs text-2">
+        Belum ada data pemain yang dipilih.
+      </div>
+    );
+  }
 
   const handleAttributeChange = (index, delta) => {
     setFormData((prev) => {
@@ -91,8 +101,8 @@ export default function CoachAssessmentView({
     if (!rawText) {
       if (onToast) {
         onToast({
-          title: "Catatan Pelatih Kosong",
-          subtext: "Belum ada data catatan pelatih untuk dirumuskan narasi."
+          title: 'Catatan pelatih kosong',
+          subtext: 'Belum ada data catatan pelatih untuk dirumuskan narasi.'
         });
       }
       return;
@@ -100,7 +110,7 @@ export default function CoachAssessmentView({
 
     const sortedAttrs = [...formData.attributes].sort((a, b) => b.value - a.value);
     const topAttrNames = sortedAttrs.slice(0, 2).map((a) => a.attribute.split(' ')[0]);
-    const lowestAttrName = sortedAttrs[sortedAttrs.length - 1].attribute.split(' ')[0];
+    const lowestAttrName = sortedAttrs[sortedAttrs.length - 1]?.attribute?.split(' ')[0] || 'kebugaran';
 
     const generatedNarrative = `Catatan evaluasi lapangan untuk ${name}: "${rawText}". Atribut menonjol: ${topAttrNames.join(' & ')}. Area fokus pengembangan: ${lowestAttrName.toLowerCase()}.`;
 
@@ -113,7 +123,7 @@ export default function CoachAssessmentView({
 
     if (onToast) {
       onToast({
-        title: "Narasi Evaluasi Dihasilkan",
+        title: 'Narasi evaluasi dihasilkan',
         subtext: `Analisis catatan lapangan untuk ${name} siap ditinjau.`
       });
     }
@@ -123,8 +133,8 @@ export default function CoachAssessmentView({
     setHasDraftSaved(true);
     if (onToast) {
       onToast({
-        title: "Draf Evaluasi Tersimpan",
-        subtext: `Perubahan scoring ${activePlayer.personal_info.nickname} tersimpan lokal di sesi pelatih.`
+        title: 'Draf evaluasi tersimpan',
+        subtext: `Perubahan penilaian ${activePlayer.personal_info.nickname || activePlayer.personal_info.full_name} tersimpan di sesi pelatih.`
       });
     }
   };
@@ -145,8 +155,8 @@ export default function CoachAssessmentView({
         },
         ai_coach_evaluation: {
           ...activePlayer.ai_coach_evaluation,
-          period: "Oktober 2026",
-          coach_name: "Coach Hendro (Lisensi B AFC)",
+          period: 'Oktober 2026',
+          coach_name: 'Coach Hendro (Lisensi B AFC)',
           coach_raw_notes: formData.rawNotes,
           narrative: formData.narrative,
           strengths: formData.strengths,
@@ -168,65 +178,56 @@ export default function CoachAssessmentView({
   };
 
   return (
-    <div className="space-y-5 animate-fadeIn pb-24 text-white">
-      {/* 1. Header & Roster Switcher Strip */}
-      <section className="space-y-2">
-        <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-2">
-            <UserCheck className="w-4 h-4 text-[#CCFF00]" />
-            <span className="text-xs font-athletic font-bold uppercase tracking-wider text-slate-300">
-              Pilih Pemain Dievaluasi (Live Supabase Roster)
+    <div className="space-y-6 pb-28 text-1">
+      {/* 1. Roster Switcher Strip (if players list provided) */}
+      {players.length > 0 && (
+        <section className="space-y-2">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <UserCheck className="w-4 h-4 text-brand" strokeWidth={1.5} />
+              <span className="text-xs font-semibold text-1">
+                Pilih pemain yang dievaluasi
+              </span>
+            </div>
+            <span className="text-xs font-mono text-2">
+              {players.length} pemain di skuad
             </span>
           </div>
-          <span className="text-[10px] text-slate-400">
-            {players.length} Pemain di Skuad
-          </span>
-        </div>
 
-        <div className="flex gap-2.5 overflow-x-auto pb-1 scrollbar-none snap-x snap-mandatory">
-          {players.map((p) => {
-            const isSelected = p.player_id === activePlayer.player_id;
-            return (
-              <button
-                key={p.player_id}
-                type="button"
-                onClick={() => onSelectPlayer(p.player_id)}
-                className={`shrink-0 flex items-center gap-3 p-2.5 rounded-xl border transition-all duration-200 snap-center min-h-[48px] text-left cursor-pointer ${
-                  isSelected
-                    ? 'bg-[#1F2937] border-[#CCFF00] shadow-[0_0_15px_rgba(204,255,0,0.15)] ring-1 ring-[#CCFF00]'
-                    : 'bg-[#090D16]/80 border-[#1F2937] hover:border-slate-600 opacity-75 hover:opacity-100'
-                }`}
-              >
-                <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-[#090D16] border border-slate-700 shrink-0">
-                  <img
-                    src={p.personal_info.photo_url}
-                    alt={p.personal_info.full_name}
-                    className="w-full h-full object-cover object-top"
-                  />
-                  <span className="absolute bottom-0 right-0 px-1 py-0.2 bg-black/90 text-[9px] font-athletic font-bold text-[#CCFF00]">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none snap-x">
+            {players.map((p) => {
+              const isSelected = p.player_id === activePlayer.player_id;
+              return (
+                <button
+                  key={p.player_id}
+                  type="button"
+                  onClick={() => onSelectPlayer && onSelectPlayer(p.player_id)}
+                  className={`shrink-0 flex items-center gap-2.5 p-2 rounded-control border transition-colors duration-150 snap-center min-h-[44px] text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                    isSelected
+                      ? 'bg-raised border-control text-1 font-medium'
+                      : 'bg-panel border-line text-2 hover:text-1 hover:bg-raised'
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-control bg-panel border border-line flex items-center justify-center font-mono text-xs font-semibold shrink-0">
                     #{p.personal_info.jersey_number}
-                  </span>
-                </div>
-
-                <div>
-                  <div className="font-athletic text-xs font-bold text-white flex items-center gap-1.5">
-                    <span>{p.personal_info.nickname || p.personal_info.full_name}</span>
-                    <span className="text-[10px] font-normal text-slate-400">
-                      ({p.personal_info.position.split(' ')[0]})
-                    </span>
                   </div>
-                  <div className="text-[10px] text-slate-400 flex items-center gap-2 mt-0.5">
-                    <span>OVR: <strong className="text-[#CCFF00] font-bold">{p.personal_info.overall_rating}</strong></span>
-                    <span>•</span>
-                    <span>{p.personal_info.age} thn</span>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </section>
 
+                  <div>
+                    <div className="text-xs font-semibold text-1">
+                      {p.personal_info.nickname || p.personal_info.full_name}
+                    </div>
+                    <div className="text-[11px] text-2 font-mono">
+                      OVR: {p.personal_info.overall_rating} · {p.personal_info.position}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* 2. Core Attribute Scorer */}
       <AttributeEditor
         formData={formData}
         calculatedOvr={calculatedOvr}
@@ -236,17 +237,19 @@ export default function CoachAssessmentView({
         onResetAttributes={() => {
           setFormData((prev) => ({
             ...prev,
-            attributes: activePlayer.radar_attributes.map((a) => ({ ...a }))
+            attributes: activePlayer.radar_attributes ? activePlayer.radar_attributes.map((a) => ({ ...a })) : []
           }));
         }}
       />
 
+      {/* 3. Fitness Benchmarks */}
       <FitnessForm
         formData={formData}
         onFitnessChange={handleFitnessChange}
         onOpenScanner={() => setIsCameraOpen(true)}
       />
 
+      {/* 4. Narrative Formulation */}
       <NarrativeNotesForm
         formData={formData}
         setFormData={setFormData}
@@ -254,48 +257,43 @@ export default function CoachAssessmentView({
         onGenerateAI={handleGenerateAI}
       />
 
-      {/* Bottom Sticky Action Bar */}
-      <div className="fixed bottom-0 inset-x-0 z-40 bg-[#090D16]/95 backdrop-blur-md border-t border-[#1F2937] p-3 shadow-2xl">
+      {/* 5. Bottom Sticky Action Bar */}
+      <div className="fixed bottom-0 inset-x-0 z-40 bg-panel/95 backdrop-blur-xs border-t border-line p-3">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-300 font-medium hidden sm:inline">
-              Evaluasi: <strong className="text-white">{activePlayer.personal_info.nickname}</strong>
+            <span className="text-xs text-2 font-medium hidden sm:inline">
+              Evaluasi: <strong className="text-1">{activePlayer.personal_info.nickname || activePlayer.personal_info.full_name}</strong>
             </span>
             {hasDraftSaved && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
-                <CheckCircle2 className="w-3 h-3" /> Draf Tersimpan
-              </span>
+              <Badge variant="brand" size="sm" className="flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" strokeWidth={1.5} />
+                <span>Draf tersimpan</span>
+              </Badge>
             )}
           </div>
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="md"
               onClick={handleSaveDraft}
-              className="flex-1 sm:flex-initial min-h-[44px] px-4 rounded-xl bg-[#111827] hover:bg-[#1F2937] border border-slate-700 text-slate-300 hover:text-white font-semibold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              icon={<Save className="w-4 h-4" strokeWidth={1.5} />}
             >
-              <Save className="w-4 h-4 text-slate-400" />
-              <span>Simpan Draf</span>
-            </button>
+              Simpan draf
+            </Button>
 
-            <button
+            <Button
               type="button"
+              variant="primary"
+              size="md"
               onClick={handlePublish}
+              loading={isSavingSupabase}
               disabled={isSavingSupabase}
-              className="flex-1 sm:flex-initial min-h-[44px] px-5 rounded-xl bg-[#CCFF00] hover:bg-lime-300 text-black font-athletic font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(204,255,0,0.3)] cursor-pointer active:scale-95 disabled:opacity-50"
+              icon={<Send className="w-4 h-4" strokeWidth={1.5} />}
             >
-              {isSavingSupabase ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin text-black" />
-                  <span>Menyimpan ke Supabase...</span>
-                </>
-              ) : (
-                <>
-                  <Send className="w-4 h-4 fill-current" />
-                  <span>Publish & Upsert Supabase</span>
-                </>
-              )}
-            </button>
+              {isSavingSupabase ? 'Menyimpan...' : 'Simpan dan publikasikan'}
+            </Button>
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ import TactileKeypad from './logger/TactileKeypad';
 import EventStreamLog from './logger/EventStreamLog';
 import QuickShotModal from './logger/QuickShotModal';
 import MatchRecapModal from './logger/MatchRecapModal';
+import Button from './ui/Button';
 import {
   calculateAccuracy,
   calculateMatchRating,
@@ -12,18 +13,21 @@ import {
 } from '../lib/calculations';
 
 export default function FastPitchLogger({
-  players,
+  players = [],
   selectedPlayerId,
   onSelectPlayer,
   onFinishMatch,
   onToast
 }) {
-  const activePlayer = players.find((p) => p.player_id === selectedPlayerId) || players[0];
+  const activePlayer =
+    (players && players.find((p) => p.player_id === selectedPlayerId)) ||
+    (players && players[0]) ||
+    null;
 
   // 1. Digital Match Clock State
   const [timerSeconds, setTimerSeconds] = useState(14 * 60 + 24);
   const [isRunning, setIsRunning] = useState(true);
-  const [matchHalf, setMatchHalf] = useState('1st Half');
+  const [matchHalf, setMatchHalf] = useState('Babak 1');
   const timerRef = useRef(null);
 
   useEffect(() => {
@@ -53,30 +57,27 @@ export default function FastPitchLogger({
   // 3. Chronological Event Stream History
   const [eventHistory, setEventHistory] = useState([
     {
-      id: "ev-1",
-      time: "12:15",
-      type: "pass_success",
-      label: "✓ Successful Pass",
-      color: "text-[#84CC16]",
-      playerName: activePlayer.personal_info.nickname || activePlayer.personal_info.full_name,
+      id: 'ev-1',
+      time: '12:15',
+      type: 'pass_success',
+      label: 'Pass akurat',
+      playerName: activePlayer?.personal_info?.nickname || activePlayer?.personal_info?.full_name || 'Atlet',
       statDelta: { passesCompleted: 1, passesTotal: 1 }
     },
     {
-      id: "ev-2",
-      time: "13:40",
-      type: "tackle_won",
-      label: "Tackle / Intercept Won",
-      color: "text-emerald-400",
-      playerName: activePlayer.personal_info.nickname || activePlayer.personal_info.full_name,
+      id: 'ev-2',
+      time: '13:40',
+      type: 'tackle_won',
+      label: 'Tekel berhasil',
+      playerName: activePlayer?.personal_info?.nickname || activePlayer?.personal_info?.full_name || 'Atlet',
       statDelta: { tacklesWon: 1, tacklesTotal: 1 }
     },
     {
-      id: "ev-3",
-      time: "14:24",
-      type: "key_pass",
-      label: "Key / Through Pass",
-      color: "text-cyan-400",
-      playerName: activePlayer.personal_info.nickname || activePlayer.personal_info.full_name,
+      id: 'ev-3',
+      time: '14:24',
+      type: 'key_pass',
+      label: 'Umpan kunci',
+      playerName: activePlayer?.personal_info?.nickname || activePlayer?.personal_info?.full_name || 'Atlet',
       statDelta: { keyPasses: 1, passesCompleted: 1, passesTotal: 1 }
     }
   ]);
@@ -122,7 +123,7 @@ export default function FastPitchLogger({
     }
   };
 
-  const logEvent = (btnId, label, color, statDelta, soundType = 'positive') => {
+  const logEvent = (btnId, label, statDelta, soundType = 'positive') => {
     triggerTactile(soundType);
     setFlashingBtn(btnId);
     setTimeout(() => setFlashingBtn(null), 250);
@@ -140,8 +141,7 @@ export default function FastPitchLogger({
       time: formatSecondsToTime(timerSeconds),
       type: btnId,
       label,
-      color,
-      playerName: activePlayer.personal_info.nickname || activePlayer.personal_info.full_name,
+      playerName: activePlayer?.personal_info?.nickname || activePlayer?.personal_info?.full_name || 'Atlet',
       statDelta
     };
 
@@ -165,7 +165,7 @@ export default function FastPitchLogger({
 
     if (onToast) {
       onToast({
-        title: "Aksi Terakhir Dibatalkan ↩",
+        title: 'Aksi terakhir dibatalkan',
         subtext: `Menghapus "${lastEvent.label}" pada menit ${lastEvent.time}.`
       });
     }
@@ -177,18 +177,18 @@ export default function FastPitchLogger({
 
   const handleSelectShot = (shotType) => {
     if (shotType === 'goal') {
-      logEvent('goal', '⚽ GOL! Penyelesaian Sempurna', 'text-[#CCFF00]', { shotsOnTarget: 1, goals: 1 }, 'goal');
+      logEvent('goal', 'Gol tercipta', { shotsOnTarget: 1, goals: 1 }, 'goal');
     } else if (shotType === 'shot_on_target') {
-      logEvent('shot_on_target', 'Shot On Target (Saved / Woodwork)', 'text-yellow-400', { shotsOnTarget: 1 }, 'positive');
+      logEvent('shot_on_target', 'Tembakan tepat sasaran', { shotsOnTarget: 1 }, 'positive');
     } else {
-      logEvent('shot_off_target', 'Shot Off Target (Melenceng)', 'text-slate-400', {}, 'error');
+      logEvent('shot_off_target', 'Tembakan meleset', {}, 'error');
     }
     setShowShotModal(false);
   };
 
   const handleConfirmSync = () => {
     setShowRecapModal(false);
-    if (onFinishMatch) {
+    if (onFinishMatch && activePlayer) {
       onFinishMatch({
         playerId: activePlayer.player_id,
         playerName: activePlayer.personal_info.full_name,
@@ -202,16 +202,24 @@ export default function FastPitchLogger({
       });
     }
 
-    if (onToast) {
+    if (onToast && activePlayer) {
       onToast({
-        title: "Statistik Laga Berhasil Disinkronkan",
-        subtext: `Performa ${activePlayer.personal_info.nickname || activePlayer.personal_info.full_name} (${calculatedMatchRating} Rating) tersimpan ke paspor bakat.`
+        title: 'Statistik laga berhasil disinkronkan',
+        subtext: `Performa ${activePlayer.personal_info.nickname || activePlayer.personal_info.full_name} (${calculatedMatchRating} rating) tersimpan ke paspor.`
       });
     }
   };
 
+  if (!activePlayer) {
+    return (
+      <div className="p-8 text-center text-xs text-2">
+        Belum ada data pemain untuk pencatatan laga.
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-4 animate-fadeIn pb-28 text-white select-none">
+    <div className="space-y-4 pb-28 text-1 select-none">
       <MatchTimerBar
         timerSeconds={timerSeconds}
         isRunning={isRunning}
@@ -221,7 +229,7 @@ export default function FastPitchLogger({
           setTimerSeconds(0);
           setIsRunning(false);
         }}
-        onToggleHalf={() => setMatchHalf(matchHalf === '1st Half' ? '2nd Half' : '1st Half')}
+        onToggleHalf={() => setMatchHalf(matchHalf === 'Babak 1' ? 'Babak 2' : 'Babak 1')}
         players={players}
         activePlayer={activePlayer}
         onSelectPlayer={onSelectPlayer}
@@ -246,14 +254,16 @@ export default function FastPitchLogger({
 
       {/* Sticky Bottom Bar */}
       <div className="fixed bottom-3 inset-x-3 sm:inset-x-auto sm:right-6 sm:left-auto z-40 max-w-md">
-        <button
+        <Button
           type="button"
+          variant="primary"
+          size="md"
           onClick={() => setShowRecapModal(true)}
-          className="w-full flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-lime-500 to-[#CCFF00] hover:from-lime-400 hover:to-lime-200 text-black font-athletic font-extrabold text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(204,255,0,0.4)] border border-[#CCFF00] transition-all cursor-pointer active:scale-95"
+          className="w-full h-12 text-sm shadow-popover"
+          icon={<Award className="w-5 h-5" strokeWidth={1.5} />}
         >
-          <Award className="w-5 h-5 fill-current" />
-          <span>Selesai Laga & Sinkronkan ke Paspor</span>
-        </button>
+          Selesai laga dan sinkronkan ke paspor
+        </Button>
       </div>
 
       {showShotModal && (

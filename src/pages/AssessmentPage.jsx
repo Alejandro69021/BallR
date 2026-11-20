@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import CoachAssessmentView from '../components/CoachAssessmentView';
 import LoadingSkeleton from '../components/LoadingSkeleton';
+import EmptyState from '../components/ui/EmptyState';
+import Button from '../components/ui/Button';
 import { usePlayers } from '../hooks/usePlayers';
 
 export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinModal, onToast }) {
@@ -19,7 +21,16 @@ export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinMod
   }, [isAuthorized, playerId, openModal]);
 
   if (loading) return <LoadingSkeleton />;
-  if (!players || players.length === 0) return null;
+  if (!players || players.length === 0) {
+    return (
+      <div className="max-w-4xl mx-auto p-4">
+        <EmptyState
+          title="Belum ada data pemain"
+          description="Daftar pemain akademi belum tersedia dalam basis data."
+        />
+      </div>
+    );
+  }
 
   const activePlayer = players.find(
     (p) => p.player_id === playerId || p.public_id === playerId
@@ -30,7 +41,7 @@ export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinMod
       await saveAssessment(updatedPlayerData);
       if (onToast) {
         onToast({
-          title: "Data Berhasil Disimpan",
+          title: 'Data berhasil disimpan',
           subtext: `Evaluasi ${updatedPlayerData.personal_info.full_name} berhasil diperbarui.`
         });
       }
@@ -38,8 +49,8 @@ export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinMod
     } catch (err) {
       if (onToast) {
         onToast({
-          title: "Pemberitahuan Penyimpanan",
-          subtext: err?.message || "Data tersimpan dalam sesi memori aktif."
+          title: 'Pemberitahuan penyimpanan',
+          subtext: err?.message || 'Data tersimpan dalam sesi memori aktif.'
         });
       }
     }
@@ -50,15 +61,15 @@ export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinMod
       await recordFitness(pid, testResult);
       if (onToast) {
         onToast({
-          title: "Hasil Uji Fisik Tersimpan",
-          subtext: "Data kebugaran resmi berhasil dicatat."
+          title: 'Hasil uji fisik tersimpan',
+          subtext: 'Data kebugaran resmi berhasil dicatat.'
         });
       }
     } catch (err) {
       if (onToast) {
         onToast({
-          title: "Penyimpanan Uji Fisik",
-          subtext: err?.message || "Hasil uji fisik tersimpan lokal."
+          title: 'Penyimpanan uji fisik',
+          subtext: err?.message || 'Hasil uji fisik tersimpan lokal.'
         });
       }
     }
@@ -66,23 +77,26 @@ export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinMod
 
   if (!isAuthorized) {
     return (
-      <div className="p-8 text-center rounded-lg bg-[#0C111D] border border-slate-800 space-y-3 max-w-md mx-auto">
-        <p className="text-sm text-slate-300">
-          Akses Rapor Evaluasi Pelatih terkunci. Silakan masuk sebagai pelatih untuk membuka evaluasi.
+      <div className="p-8 text-center rounded-panel bg-panel border border-line space-y-3 max-w-md mx-auto text-1">
+        <p className="text-sm text-2">
+          Akses rapor evaluasi pelatih terkunci. Silakan masuk sebagai pelatih untuk membuka evaluasi.
         </p>
-        <button
+        <Button
           type="button"
+          variant="primary"
+          size="md"
           onClick={() => openModal && openModal(`assessment:${playerId}`)}
-          className="px-4 py-2 rounded bg-[#CCFF00] text-black font-semibold text-xs cursor-pointer"
         >
-          Masuk Akun Pelatih
-        </button>
+          Masuk akun pelatih
+        </Button>
       </div>
     );
   }
 
   return (
     <CoachAssessmentView
+      players={players}
+      selectedPlayerId={activePlayer.player_id}
       activePlayer={activePlayer}
       onSaveAssessment={handleSaveAssessment}
       onSaveFitnessRecord={handleSaveFitnessRecord}

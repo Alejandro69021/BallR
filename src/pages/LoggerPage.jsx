@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import FastPitchLogger from '../components/FastPitchLogger';
 import LoadingSkeleton from '../components/LoadingSkeleton';
+import EmptyState from '../components/ui/EmptyState';
+import Button from '../components/ui/Button';
 import { usePlayers } from '../hooks/usePlayers';
 
 export default function LoggerPage({ userRole, onOpenAuthModal, onOpenPinModal, onToast }) {
@@ -19,7 +21,16 @@ export default function LoggerPage({ userRole, onOpenAuthModal, onOpenPinModal, 
   }, [isAuthorized, matchId, openModal]);
 
   if (loading) return <LoadingSkeleton />;
-  if (!players || players.length === 0) return null;
+  if (!players || players.length === 0) {
+    return (
+      <div className="max-w-4xl mx-auto p-4">
+        <EmptyState
+          title="Belum ada data pemain"
+          description="Daftar pemain akademi belum tersedia dalam basis data."
+        />
+      </div>
+    );
+  }
 
   const handleFinishMatch = (matchSummary) => {
     syncMatchStats(matchSummary);
@@ -28,17 +39,18 @@ export default function LoggerPage({ userRole, onOpenAuthModal, onOpenPinModal, 
 
   if (!isAuthorized) {
     return (
-      <div className="p-8 text-center rounded-lg bg-[#0C111D] border border-slate-800 space-y-3 max-w-md mx-auto">
-        <p className="text-sm text-slate-300">
-          Akses Matchday Pitch Logger terkunci. Silakan masuk sebagai staf pelatih untuk melanjutkan.
+      <div className="p-8 text-center rounded-panel bg-panel border border-line space-y-3 max-w-md mx-auto text-1">
+        <p className="text-sm text-2">
+          Akses matchday pitch logger terkunci. Silakan masuk sebagai staf pelatih untuk melanjutkan.
         </p>
-        <button
+        <Button
           type="button"
+          variant="primary"
+          size="md"
           onClick={() => openModal && openModal(`logger:${matchId || 'match-01'}`)}
-          className="px-4 py-2 rounded bg-[#CCFF00] text-black font-semibold text-xs cursor-pointer"
         >
-          Masuk Akun Pelatih
-        </button>
+          Masuk akun pelatih
+        </Button>
       </div>
     );
   }

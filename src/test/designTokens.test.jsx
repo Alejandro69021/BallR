@@ -156,7 +156,7 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
     });
   });
 
-  describe('3. Zero Hex, Zero dark:, Zero Arbitrary Colors in Migrated Components (B1 & B2)', () => {
+  describe('3. Zero Hex, Zero dark:, Zero Arbitrary Colors in Migrated Components (B1, B2 & B3)', () => {
     const uiDir = path.resolve(__dirname, '../components/ui');
     const uiFiles = fs
       .readdirSync(uiDir)
@@ -169,7 +169,19 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
       path.resolve(__dirname, '../components/VerificationView.jsx'),
       path.resolve(__dirname, '../components/InstallAppBanner.jsx'),
       path.resolve(__dirname, '../components/LoadingSkeleton.jsx'),
-      path.resolve(__dirname, '../components/growth/ConsentManagerModal.jsx')
+      path.resolve(__dirname, '../components/growth/ConsentManagerModal.jsx'),
+      path.resolve(__dirname, '../components/CoachAssessmentView.jsx'),
+      path.resolve(__dirname, '../pages/AssessmentPage.jsx'),
+      path.resolve(__dirname, '../components/assessment/AttributeEditor.jsx'),
+      path.resolve(__dirname, '../components/assessment/FitnessForm.jsx'),
+      path.resolve(__dirname, '../components/assessment/NarrativeNotesForm.jsx'),
+      path.resolve(__dirname, '../components/FastPitchLogger.jsx'),
+      path.resolve(__dirname, '../pages/LoggerPage.jsx'),
+      path.resolve(__dirname, '../components/logger/MatchTimerBar.jsx'),
+      path.resolve(__dirname, '../components/logger/TactileKeypad.jsx'),
+      path.resolve(__dirname, '../components/logger/EventStreamLog.jsx'),
+      path.resolve(__dirname, '../components/logger/QuickShotModal.jsx'),
+      path.resolve(__dirname, '../components/logger/MatchRecapModal.jsx')
     ];
     const targetFiles = [...uiFiles, ...extraFiles];
 
