@@ -514,25 +514,38 @@ export async function saveFrames(scenarioId, frames = []) {
 
   if (!supabase) throw new Error('Koneksi Supabase belum dikonfigurasi.');
 
-  // Delete old frames first, then insert new batch
-  const { error: delError } = await supabase
-    .from('scenario_frames')
-    .delete()
-    .eq('scenario_id', scenarioId);
-
-  if (delError) throw delError;
-
-  if (formattedFrames.length > 0) {
-    const { data, error: insError } = await supabase
+  if (formattedFrames.length === 0) {
+    // User cleared all frames intentionally — delete the whole set
+    const { error: delAllError } = await supabase
       .from('scenario_frames')
-      .insert(formattedFrames)
-      .select();
-
-    if (insError) throw insError;
-    return data || [];
+      .delete()
+      .eq('scenario_id', scenarioId);
+    if (delAllError) throw delAllError;
+    return [];
   }
 
-  return [];
+  // (a) UPSERT new frames — idempotent, never loses data mid-flight
+  const { data: upserted, error: upsertError } = await supabase
+    .from('scenario_frames')
+    .upsert(formattedFrames, { onConflict: 'scenario_id,frame_idx' })
+    .select();
+
+  if (upsertError) throw upsertError;
+
+  // (b) TRIM surplus old frames ONLY after upsert succeeded
+  const { error: trimError } = await supabase
+    .from('scenario_frames')
+    .delete()
+    .eq('scenario_id', scenarioId)
+    .gte('frame_idx', formattedFrames.length);
+
+  if (trimError) {
+    // Upserted frames are safe; surface a non-fatal warning
+    console.warn('Gagal memangkas bingkai lama:', trimError);
+    return { data: upserted || [], trimWarning: trimError.message };
+  }
+
+  return upserted || [];
 }
 
 /**
@@ -604,7 +617,7 @@ export async function requestReview(id) {
     if (!scenario) throw new Error('Skema tidak ditemukan');
 
     scenario.status = 'reviewed';
-    scenario.reviewed_by = 'demo-coach-peer';
+    scenario.reviewed_by = '(demo) Pelatih Peninjau';
     scenario.reviewed_at = new Date().toISOString();
     scenario.updated_at = new Date().toISOString();
     saveDemoStore(store);
@@ -655,7 +668,7 @@ export async function publish(id) {
 
     scenario.status = 'published';
     if (!scenario.reviewed_by) {
-      scenario.reviewed_by = 'demo-coach-reviewer';
+      scenario.reviewed_by = '(demo) Pelatih Peninjau';
       scenario.reviewed_at = new Date().toISOString();
     }
     scenario.updated_at = new Date().toISOString();

@@ -135,7 +135,7 @@ describe('scenarios.js data layer (demo mode & error translations)', () => {
 
       const reviewed = await requestReview(id);
       expect(reviewed.status).toBe('reviewed');
-      expect(reviewed.reviewed_by).toBeDefined();
+      expect(reviewed.reviewed_by).toBe('(demo) Pelatih Peninjau');
       expect(reviewed.reviewed_at).toBeDefined();
     });
 
@@ -207,6 +207,86 @@ describe('scenarios.js data layer (demo mode & error translations)', () => {
 
       const afterDelete = await getScenario(id);
       expect(afterDelete).toBeNull();
+    });
+  });
+
+  describe('saveFrames atomicity (demo mode)', () => {
+    it('upsert preserves new frames even if save is called twice (idempotent)', async () => {
+      const list = await listScenarios();
+      const id = list[0].id;
+
+      const frames = [
+        { scenario_id: id, frame_idx: 0, t_ms: 1000, players: [], ball: null, arrows: [], note: 'A' },
+        { scenario_id: id, frame_idx: 1, t_ms: 2000, players: [], ball: null, arrows: [], note: 'B' }
+      ];
+
+      const first = await saveFrames(id, frames);
+      expect(first.length).toBe(2);
+
+      const second = await saveFrames(id, frames);
+      expect(second.length).toBe(2);
+
+      const reloaded = await getScenario(id);
+      expect(reloaded.frames.length).toBe(2);
+    });
+
+    it('trimming surplus frames: saving fewer frames removes the extras', async () => {
+      const list = await listScenarios();
+      const id = list[0].id;
+
+      const threeFrames = [
+        { scenario_id: id, frame_idx: 0, t_ms: 1000, players: [], ball: null, arrows: [], note: 'F0' },
+        { scenario_id: id, frame_idx: 1, t_ms: 1000, players: [], ball: null, arrows: [], note: 'F1' },
+        { scenario_id: id, frame_idx: 2, t_ms: 1000, players: [], ball: null, arrows: [], note: 'F2' }
+      ];
+      await saveFrames(id, threeFrames);
+
+      const oneFrame = [
+        { scenario_id: id, frame_idx: 0, t_ms: 1500, players: [], ball: null, arrows: [], note: 'Only' }
+      ];
+      await saveFrames(id, oneFrame);
+
+      const reloaded = await getScenario(id);
+      expect(reloaded.frames.length).toBe(1);
+      expect(reloaded.frames[0].note).toBe('Only');
+    });
+
+    it('reordering frames persists correct frame_idx values', async () => {
+      const list = await listScenarios();
+      const id = list[0].id;
+
+      const original = [
+        { scenario_id: id, frame_idx: 0, t_ms: 1000, players: [], ball: null, arrows: [], note: 'Alpha' },
+        { scenario_id: id, frame_idx: 1, t_ms: 1000, players: [], ball: null, arrows: [], note: 'Beta' }
+      ];
+      await saveFrames(id, original);
+
+      const reordered = [
+        { scenario_id: id, frame_idx: 0, t_ms: 1000, players: [], ball: null, arrows: [], note: 'Beta' },
+        { scenario_id: id, frame_idx: 1, t_ms: 1000, players: [], ball: null, arrows: [], note: 'Alpha' }
+      ];
+      await saveFrames(id, reordered);
+
+      const reloaded = await getScenario(id);
+      expect(reloaded.frames[0].note).toBe('Beta');
+      expect(reloaded.frames[1].note).toBe('Alpha');
+    });
+  });
+
+  describe('Demo reviewer label', () => {
+    it('requestReview sets reviewed_by to "(demo) Pelatih Peninjau"', async () => {
+      const list = await listScenarios();
+      const id = list[0].id;
+
+      const reviewed = await requestReview(id);
+      expect(reviewed.reviewed_by).toBe('(demo) Pelatih Peninjau');
+    });
+
+    it('publish sets fallback reviewed_by to "(demo) Pelatih Peninjau"', async () => {
+      const list = await listScenarios();
+      const id = list[0].id;
+      const published = await publish(id);
+      expect(published.reviewed_by).toBe('(demo) Pelatih Peninjau');
     });
   });
 

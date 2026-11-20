@@ -336,7 +336,52 @@ describe('Tactical Board & Scenarios Components (Phase 5c)', () => {
     });
   });
 
-  describe('6. Zero Forbidden Words & Design Rules Scanner', () => {
+  describe('6. Review Workflow Wording (5c-fix)', () => {
+    it('review button label is "Saya sudah meninjau skema ini"', async () => {
+      // TacticsDetailPage requires router and async data; test via label scan of TacticsDetailPage source
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const src = fs.readFileSync(
+        path.resolve(process.cwd(), 'src/pages/TacticsDetailPage.jsx'),
+        'utf-8'
+      );
+      expect(src).toContain('Saya sudah meninjau skema ini');
+      expect(src).not.toContain('Ajukan tinjauan');
+    });
+
+    it('helper text "Peninjau harus pelatih lain" appears below review button', async () => {
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const src = fs.readFileSync(
+        path.resolve(process.cwd(), 'src/pages/TacticsDetailPage.jsx'),
+        'utf-8'
+      );
+      expect(src).toContain('Peninjau harus pelatih lain');
+    });
+
+    it('self-review error path uses "Minta pelatih lain meninjau skema ini"', async () => {
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const src = fs.readFileSync(
+        path.resolve(process.cwd(), 'src/pages/TacticsDetailPage.jsx'),
+        'utf-8'
+      );
+      expect(src).toContain('Minta pelatih lain meninjau skema ini');
+    });
+
+    it('toast success title is "Tinjauan dicatat"', async () => {
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const src = fs.readFileSync(
+        path.resolve(process.cwd(), 'src/pages/TacticsDetailPage.jsx'),
+        'utf-8'
+      );
+      expect(src).toContain("'Tinjauan dicatat'");
+      expect(src).toContain("'Gagal mencatat tinjauan'");
+    });
+  });
+
+  describe('7. Zero Forbidden Words & Design Rules Scanner', () => {
     const targetFiles = [
       'src/lib/board.js',
       'src/lib/scenarios.js',

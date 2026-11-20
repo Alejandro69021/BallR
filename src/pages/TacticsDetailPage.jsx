@@ -417,14 +417,22 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
         validateFrame(frames[i], pitchDims);
       }
 
-      await saveFrames(scenario.id, frames);
+      const framesResult = await saveFrames(scenario.id, frames);
       await setReferences(scenario.id, references);
 
       setIsDirty(false);
-      onToast?.({
-        title: 'Perubahan Disimpan',
-        subtext: 'Rangkaian bingkai dan rujukan berhasil diperbarui.'
-      });
+      if (framesResult && framesResult.trimWarning) {
+        onToast?.({
+          title: 'Bingkai Tersimpan',
+          subtext: 'Bingkai tersimpan; gagal memangkas bingkai lama. Periksa kembali.',
+          variant: 'warning'
+        });
+      } else {
+        onToast?.({
+          title: 'Perubahan Disimpan',
+          subtext: 'Rangkaian bingkai dan rujukan berhasil diperbarui.'
+        });
+      }
     } catch (err) {
       console.warn('Gagal menyimpan skema:', err);
       onToast?.({
@@ -444,13 +452,19 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
       const updated = await requestReview(scenario.id);
       setScenario(updated);
       onToast?.({
-        title: 'Tinjauan Diajukan',
+        title: 'Tinjauan dicatat',
         subtext: 'Status skema diperbarui menjadi ditinjau pelatih.'
       });
     } catch (err) {
+      const errMsg = formatScenarioError(err);
+      const isSelfReview =
+        errMsg.includes('Peninjau harus berbeda') ||
+        errMsg.includes('pembuat skema');
       onToast?.({
-        title: 'Gagal Mengajukan Tinjauan',
-        subtext: formatScenarioError(err),
+        title: 'Gagal mencatat tinjauan',
+        subtext: isSelfReview
+          ? 'Minta pelatih lain meninjau skema ini'
+          : errMsg,
         variant: 'error'
       });
     }
@@ -636,6 +650,22 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
               <p className="text-xs text-2 font-mono mt-0.5">
                 Fase: {SCENARIO_PHASE_LABELS[scenario.phase] || scenario.phase} • Format: {scenario.format} • Lapangan: {scenario.pitch_length_m}&times;{scenario.pitch_width_m}m
               </p>
+              <div className="text-xs text-2 font-mono space-y-0.5 mt-1">
+                {scenario.created_by && (
+                  <div>Dibuat oleh: <span className="text-1">{scenario.created_by}</span></div>
+                )}
+                {scenario.reviewed_by && (
+                  <div>
+                    Ditinjau oleh:{' '}
+                    <span className="text-1">{scenario.reviewed_by}</span>
+                    {scenario.reviewed_at && (
+                      <span className="ml-2">
+                        ({new Date(scenario.reviewed_at).toLocaleDateString('id-ID')})
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -659,8 +689,11 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
                   icon={<CheckCircle className="w-4 h-4" strokeWidth={1.5} />}
                   onClick={handleRequestReview}
                 >
-                  Ajukan tinjauan
+                  Saya sudah meninjau skema ini
                 </Button>
+                <p className="text-xs text-2 mt-1">
+                  Peninjau harus pelatih lain, bukan pembuat skema (kecuali akademi hanya memiliki satu staf).
+                </p>
               </>
             )}
 
