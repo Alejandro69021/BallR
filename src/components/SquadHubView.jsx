@@ -1,238 +1,422 @@
 import React, { useState, useMemo } from 'react';
 import {
   Users,
-  Search,
-  Filter,
-  ArrowUpDown,
-  ShieldCheck,
-  CheckCircle2,
-  Clock
+  LayoutList,
+  LayoutGrid,
+  Eye,
+  Edit3
 } from 'lucide-react';
+import Table from './ui/Table';
+import Badge from './ui/Badge';
+import Button from './ui/Button';
+import Field from './ui/Field';
+import Select from './ui/Select';
+import EmptyState from './ui/EmptyState';
 import SquadPlayerCard from './squad/SquadPlayerCard';
 
 export default function SquadHubView({
-  players,
+  players = [],
   userRole = 'public',
   onViewPassport,
   onEvaluatePlayer
 }) {
-  const [activeAgeGroup] = useState('U-13');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPosition, setSelectedPosition] = useState('ALL');
-  const [sortBy, setSortBy] = useState('name_asc');
+  const [sortKey, setSortKey] = useState('name');
+  const [sortDirection, setSortDirection] = useState('asc');
+  const [viewMode, setViewMode] = useState('table'); // 'table' (default) or 'cards'
 
-  const ageCategories = [
-    { id: 'U-11', label: 'U-11 Grassroots', count: 18 },
-    { id: 'U-13', label: 'U-13 Elite (Active)', count: players.length, active: true },
-    { id: 'U-15', label: 'U-15 National Pool', count: 22 }
-  ];
+  const isCoach = userRole === 'coach' || userRole === 'admin';
 
   const positionFilters = [
-    { id: 'ALL', label: 'All Positions' },
-    { id: 'GK', label: 'Goalkeepers' },
-    { id: 'DEF', label: 'Defenders' },
-    { id: 'MID', label: 'Midfielders' },
-    { id: 'FWD', label: 'Forwards' }
+    { id: 'ALL', label: 'Semua posisi' },
+    { id: 'GK', label: 'Kiper (GK)' },
+    { id: 'DEF', label: 'Bek (DEF)' },
+    { id: 'MID', label: 'Gelandang (MID)' },
+    { id: 'FWD', label: 'Penyerang (FWD)' }
   ];
 
   const totalCount = players.length;
   const publishedCount = players.filter(
-    (p) => p.personal_info.evaluation_status === 'ready'
+    (p) => p.personal_info?.evaluation_status === 'ready'
   ).length;
-  const pendingCount = totalCount - publishedCount;
+  const pendingCount = players.filter(
+    (p) => p.personal_info?.evaluation_status === 'pending'
+  ).length;
+
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortDirection('asc');
+    }
+  };
 
   const filteredPlayers = useMemo(() => {
     return players
       .filter((p) => {
         const query = searchQuery.toLowerCase().trim();
-        const matchesName =
-          p.personal_info.full_name.toLowerCase().includes(query) ||
-          (p.personal_info.nickname && p.personal_info.nickname.toLowerCase().includes(query)) ||
-          p.personal_info.jersey_number.toString().includes(query);
+        const info = p.personal_info || {};
+        const fullName = (info.full_name || '').toLowerCase();
+        const nickname = (info.nickname || '').toLowerCase();
+        const jerseyStr = (info.jersey_number ?? '').toString();
 
+        const matchesQuery = !query || fullName.includes(query) || nickname.includes(query) || jerseyStr.includes(query);
+
+        const posGroup = info.position_group || '';
+        const posText = info.position || '';
         const matchesPos =
           selectedPosition === 'ALL' ||
-          p.personal_info.position_group === selectedPosition ||
-          (selectedPosition === 'GK' && p.personal_info.position.includes('Goalkeeper')) ||
-          (selectedPosition === 'DEF' && (p.personal_info.position.includes('Back') || p.personal_info.position.includes('CB') || p.personal_info.position.includes('RB') || p.personal_info.position.includes('LB'))) ||
-          (selectedPosition === 'MID' && (p.personal_info.position.includes('Midfielder') || p.personal_info.position.includes('CAM') || p.personal_info.position.includes('CDM') || p.personal_info.position.includes('CM'))) ||
-          (selectedPosition === 'FWD' && (p.personal_info.position.includes('Winger') || p.personal_info.position.includes('Forward') || p.personal_info.position.includes('ST') || p.personal_info.position.includes('RW') || p.personal_info.position.includes('LW')));
+          posGroup === selectedPosition ||
+          (selectedPosition === 'GK' && (posText.includes('Goalkeeper') || posText.includes('GK'))) ||
+          (selectedPosition === 'DEF' && (posText.includes('Back') || posText.includes('CB') || posText.includes('RB') || posText.includes('LB') || posText.includes('DEF'))) ||
+          (selectedPosition === 'MID' && (posText.includes('Midfielder') || posText.includes('CAM') || posText.includes('CDM') || posText.includes('CM') || posText.includes('MID'))) ||
+          (selectedPosition === 'FWD' && (posText.includes('Winger') || posText.includes('Forward') || posText.includes('ST') || posText.includes('RW') || posText.includes('LW') || posText.includes('FWD')));
 
-        return matchesName && matchesPos;
+        return matchesQuery && matchesPos;
       })
       .sort((a, b) => {
-        if (sortBy === 'name_asc') {
-          return (a.personal_info.full_name || '').localeCompare(b.personal_info.full_name || '');
+        const dir = sortDirection === 'asc' ? 1 : -1;
+        const aInfo = a.personal_info || {};
+        const bInfo = b.personal_info || {};
+
+        if (sortKey === 'name') {
+          return dir * (aInfo.full_name || '').localeCompare(bInfo.full_name || '');
         }
-        if (sortBy === 'jersey_asc') {
-          return (a.personal_info.jersey_number || 0) - (b.personal_info.jersey_number || 0);
+        if (sortKey === 'jersey' || sortKey === 'jersey_number') {
+          const numA = Number(aInfo.jersey_number ?? 9999);
+          const numB = Number(bInfo.jersey_number ?? 9999);
+          return dir * (numA - numB);
         }
-        if (sortBy === 'position_asc') {
-          return (a.personal_info.position || '').localeCompare(b.personal_info.position || '');
+        if (sortKey === 'position') {
+          return dir * (aInfo.position || '').localeCompare(bInfo.position || '');
         }
-        if (sortBy === 'assessment_date_desc') {
+        if (sortKey === 'assessment_date' || sortKey === 'last_assessment') {
           const dateA = a.fitness_benchmarks?.test_date || a.ai_coach_evaluation?.period || '';
           const dateB = b.fitness_benchmarks?.test_date || b.ai_coach_evaluation?.period || '';
-          return dateB.localeCompare(dateA);
-        }
-        if (sortBy === 'need_eval') {
-          const aPending = a.personal_info.evaluation_status === 'pending' ? 1 : 0;
-          const bPending = b.personal_info.evaluation_status === 'pending' ? 1 : 0;
-          return bPending - aPending;
+          return dir * dateA.localeCompare(dateB);
         }
         return 0;
       });
-  }, [players, searchQuery, selectedPosition, sortBy]);
+  }, [players, searchQuery, selectedPosition, sortKey, sortDirection]);
+
+  // Extract radar attribute helper
+  const formatSixAttributes = (radarAttributes = []) => {
+    if (!radarAttributes || radarAttributes.length === 0) {
+      return <span className="text-2 italic">Belum ada data</span>;
+    }
+
+    const attrs = [
+      { key: 'pace', code: 'PAC' },
+      { key: 'shooting', code: 'SHO' },
+      { key: 'passing', code: 'PAS' },
+      { key: 'dribbling', code: 'DRI' },
+      { key: 'defending', code: 'DEF' },
+      { key: 'physical', code: 'PHY' }
+    ];
+
+    const parts = attrs.map(({ key, code }) => {
+      const match = radarAttributes.find((a) =>
+        a.attribute && a.attribute.toLowerCase().includes(key)
+      );
+      return { code, val: match && match.value !== null && match.value !== undefined ? match.value : null };
+    });
+
+    const hasAnyRealVal = parts.some((p) => p.val !== null);
+    if (!hasAnyRealVal) {
+      return <span className="text-2 italic">Belum ada data</span>;
+    }
+
+    return (
+      <span className="font-mono tabular-nums text-xs text-1 space-x-1.5 whitespace-nowrap">
+        {parts.map((p, idx) => (
+          <span key={p.code}>
+            <span className="text-2 text-[10px] font-sans mr-0.5">{p.code}</span>
+            <span className="font-semibold">{p.val ?? '-'}</span>
+            {idx < parts.length - 1 && <span className="text-line ml-1.5">·</span>}
+          </span>
+        ))}
+      </span>
+    );
+  };
+
+  // Table columns definition
+  const columns = [
+    {
+      key: 'jersey',
+      header: 'No.',
+      sortable: true,
+      tabular: true,
+      align: 'center',
+      render: (_, row) => (
+        <span className="font-mono font-semibold text-xs text-1">
+          #{row.personal_info?.jersey_number ?? '-'}
+        </span>
+      )
+    },
+    {
+      key: 'name',
+      header: 'Nama',
+      sortable: true,
+      render: (_, row) => (
+        <button
+          type="button"
+          onClick={() => onViewPassport(row.player_id)}
+          className="text-left font-medium text-1 hover:text-brand hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded"
+        >
+          <div className="font-semibold text-xs text-1">
+            {row.personal_info?.full_name || 'Atlet'}
+          </div>
+          {row.personal_info?.nickname && (
+            <div className="text-[11px] text-2 font-mono">
+              "{row.personal_info.nickname}"
+            </div>
+          )}
+        </button>
+      )
+    },
+    {
+      key: 'position',
+      header: 'Posisi',
+      sortable: true,
+      render: (_, row) => (
+        <span className="text-xs text-2">
+          {row.personal_info?.position || '-'}
+        </span>
+      )
+    },
+    {
+      key: 'assessment_date',
+      header: 'Asesmen terakhir',
+      sortable: true,
+      render: (_, row) => {
+        const period = row.ai_coach_evaluation?.period || row.fitness_benchmarks?.test_date;
+        return period ? (
+          <span className="font-mono text-xs text-1">{period}</span>
+        ) : (
+          <span className="text-xs text-2 italic">Belum ada data</span>
+        );
+      }
+    },
+    {
+      key: 'status',
+      header: 'Status rapor',
+      align: 'center',
+      render: (_, row) => {
+        const status = row.personal_info?.evaluation_status;
+        if (status === 'ready') {
+          return <Badge variant="success">Diterbitkan</Badge>;
+        }
+        if (status === 'pending') {
+          return <Badge variant="warning">Draf</Badge>;
+        }
+        return <Badge variant="neutral">Belum ada</Badge>;
+      }
+    },
+    {
+      key: 'indicators',
+      header: 'Indikator kunci (0-100)',
+      render: (_, row) => formatSixAttributes(row.radar_attributes)
+    },
+    {
+      key: 'actions',
+      header: 'Aksi',
+      align: 'right',
+      render: (_, row) => (
+        <div className="inline-flex items-center gap-1.5">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => onViewPassport(row.player_id)}
+            icon={<Eye className="w-3.5 h-3.5" strokeWidth={1.5} />}
+            className="min-h-[36px]"
+          >
+            Paspor
+          </Button>
+
+          {isCoach && (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => onEvaluatePlayer(row.player_id)}
+              icon={<Edit3 className="w-3.5 h-3.5" strokeWidth={1.5} />}
+              className="min-h-[36px]"
+            >
+              Evaluasi
+            </Button>
+          )}
+        </div>
+      )
+    }
+  ];
 
   return (
-    <div className="space-y-5 animate-fadeIn pb-16">
-      {/* 1. Academy & Age-Group Header Card */}
-      <section className="relative overflow-hidden rounded-2xl bg-[#111827] border border-[#1F2937] p-4 sm:p-6 shadow-xl shadow-black/50">
-        <div className="pointer-events-none absolute -top-16 -right-16 w-56 h-56 bg-[#CCFF00]/10 rounded-full blur-3xl" />
-
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#1F2937]">
+    <div className="space-y-6 animate-fadeIn pb-16 text-1">
+      {/* 1. Directory Header */}
+      <section className="rounded-panel border border-line bg-panel p-4 sm:p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-athletic text-xs font-bold uppercase tracking-wider text-[#CCFF00] bg-lime-500/10 px-2 py-0.5 rounded border border-[#CCFF00]/20">
-                Pusat Talenta Resmi
-              </span>
-              <span className="text-xs text-slate-400">PSSI DIY Region</span>
+              <Badge variant="brand">Akademi U-13</Badge>
+              <span className="text-xs text-2">Basis Data Pembinaan</span>
             </div>
-            <h2 className="font-athletic text-xl sm:text-3xl font-black text-white tracking-tight">
-              Mataram Putra FA — Squad Directory
-            </h2>
-            <p className="text-xs text-slate-400 mt-1 max-w-xl">
-              Direktori resmi basis data pemain binaan akademi. Jelajahi paspor bakat, rekor fisik, dan rapor teknis bulanan.
+            <h1 className="text-xl sm:text-2xl font-semibold text-1">
+              Direktori Skuad
+            </h1>
+            <p className="text-xs text-2 mt-1 max-w-xl">
+              Basis data resmi rekam jejak atlet binaan, status asesmen berkala, dan rekam kebugaran fisik.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-[#090D16] border border-[#1F2937] self-start md:self-auto">
-            {ageCategories.map((cat) => (
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            {/* View Mode Toggle */}
+            <div className="inline-flex rounded-control border border-control bg-raised p-0.5">
               <button
-                key={cat.id}
                 type="button"
-                className={`px-3 py-1.5 rounded-lg text-xs font-athletic font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                  cat.active
-                    ? 'bg-[#CCFF00] text-black shadow-[0_0_12px_rgba(204,255,0,0.3)]'
-                    : 'text-slate-400 hover:text-white'
+                onClick={() => setViewMode('table')}
+                aria-pressed={viewMode === 'table'}
+                className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[36px] ${
+                  viewMode === 'table'
+                    ? 'bg-panel text-1 shadow-sm font-semibold'
+                    : 'text-2 hover:text-1'
                 }`}
               >
-                {cat.label} ({cat.count})
+                <LayoutList className="w-4 h-4" strokeWidth={1.5} />
+                <span>Tabel</span>
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => setViewMode('cards')}
+                aria-pressed={viewMode === 'cards'}
+                className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[36px] ${
+                  viewMode === 'cards'
+                    ? 'bg-panel text-1 shadow-sm font-semibold'
+                    : 'text-2 hover:text-1'
+                }`}
+              >
+                <LayoutGrid className="w-4 h-4" strokeWidth={1.5} />
+                <span>Kartu</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Summary Stats Strip */}
-        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
-          <div className="p-3 rounded-xl bg-[#090D16]/80 border border-[#1F2937]">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
-              <span>Total Roster {activeAgeGroup}</span>
-              <Users className="w-4 h-4 text-[#CCFF00]" />
+        {/* Roster Summary Strip */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div className="p-3 rounded-control border border-line bg-raised flex items-center justify-between">
+            <div>
+              <p className="text-xs text-2">Total Atlet Terdaftar</p>
+              <p className="text-xl font-semibold font-mono tabular-nums text-1 mt-0.5">
+                {totalCount} <span className="text-xs font-normal text-2">pemain</span>
+              </p>
             </div>
-            <div className="font-athletic text-2xl font-black text-white mt-1">
-              {totalCount} <span className="text-xs font-normal text-slate-400">Pemain</span>
-            </div>
+            <Users className="w-5 h-5 text-2" strokeWidth={1.5} />
           </div>
 
-          <div className="p-3 rounded-xl bg-[#090D16]/80 border border-[#1F2937]">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
-              <span>Status Rapor Bulanan</span>
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div className="flex items-center gap-3 mt-1.5 text-xs font-bold font-athletic">
-              <span className="text-emerald-400 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" /> {publishedCount} Ready
-              </span>
-              <span className="text-slate-500">•</span>
-              <span className="text-amber-400 flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" /> {pendingCount} Pending
-              </span>
+          <div className="p-3 rounded-control border border-line bg-raised flex items-center justify-between">
+            <div>
+              <p className="text-xs text-2">Status Asesmen Bulanan</p>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant="success">{publishedCount} Diterbitkan</Badge>
+                <Badge variant="warning">{pendingCount} Draf</Badge>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. Interactive Search, Position Filter & Sorting Bar */}
-      <section className="rounded-2xl bg-[#111827] border border-[#1F2937] p-3.5 sm:p-4 shadow-xl shadow-black/50 space-y-3">
+      {/* 2. Search, Filter & Sort Controls */}
+      <section className="rounded-panel border border-line bg-panel p-3.5 sm:p-4 space-y-3">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
+          <div className="flex-1">
+            <Field
+              type="search"
+              placeholder="Cari atlet berdasarkan nama atau nomor punggung..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari atlet berdasarkan nama atau nomor punggung..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#090D16] border border-slate-700 focus:border-[#CCFF00] text-white text-xs sm:text-sm outline-none transition-colors"
+              className="w-full text-xs sm:text-sm"
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="relative flex items-center">
-              <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="pl-8 pr-8 py-2 rounded-xl bg-[#090D16] border border-slate-700 text-slate-200 text-xs font-semibold appearance-none cursor-pointer focus:border-[#CCFF00] outline-none"
-              >
-                <option value="name_asc">Nama Pemain (A-Z)</option>
-                <option value="jersey_asc">Nomor Punggung (Kecil-Besar)</option>
-                <option value="position_asc">Posisi (A-Z)</option>
-                <option value="assessment_date_desc">Tanggal Penilaian Terakhir</option>
-                <option value="need_eval">Perlu Evaluasi (Pending)</option>
-              </select>
-            </div>
+          <div className="flex items-center gap-2 self-start md:self-auto">
+            <span className="text-xs text-2 whitespace-nowrap">Urutkan:</span>
+            <Select
+              value={sortKey}
+              onChange={(e) => setSortKey(e.target.value)}
+              className="text-xs min-h-[44px]"
+            >
+              <option value="name">Nama (A-Z)</option>
+              <option value="jersey">Nomor Punggung</option>
+              <option value="position">Posisi</option>
+              <option value="assessment_date">Tanggal Asesmen</option>
+            </Select>
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#1F2937] overflow-x-auto scrollbar-none">
-          <div className="flex items-center gap-1.5 shrink-0">
-            <Filter className="w-3.5 h-3.5 text-[#CCFF00]" />
-            <span className="text-[11px] font-athletic font-bold uppercase tracking-wider text-slate-400 mr-1">
-              Posisi:
-            </span>
-            {positionFilters.map((pos) => (
-              <button
-                key={pos.id}
-                type="button"
-                onClick={() => setSelectedPosition(pos.id)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                  selectedPosition === pos.id
-                    ? 'bg-[#CCFF00] text-black font-bold shadow-sm'
-                    : 'bg-[#090D16] text-slate-400 hover:text-white border border-[#1F2937]'
-                }`}
-              >
-                {pos.label}
-              </button>
-            ))}
-          </div>
-
-          <span className="text-[11px] font-mono text-slate-400 shrink-0 hidden sm:inline">
-            Menampilkan {filteredPlayers.length} atlet
+        {/* Position Filter Chips */}
+        <div className="flex items-center gap-1.5 pt-2 border-t border-line overflow-x-auto scrollbar-none">
+          <span className="text-xs font-medium text-2 mr-1 shrink-0">
+            Posisi:
+          </span>
+          {positionFilters.map((pos) => (
+            <button
+              key={pos.id}
+              type="button"
+              onClick={() => setSelectedPosition(pos.id)}
+              className={`px-3 py-1.5 rounded-control text-xs font-medium transition-colors cursor-pointer shrink-0 min-h-[36px] ${
+                selectedPosition === pos.id
+                  ? 'bg-brand text-app font-semibold'
+                  : 'bg-raised text-2 hover:text-1 border border-line'
+              }`}
+            >
+              {pos.label}
+            </button>
+          ))}
+          <span className="text-xs font-mono text-2 ml-auto shrink-0 hidden sm:inline">
+            Menampilkan {filteredPlayers.length} dari {totalCount}
           </span>
         </div>
       </section>
 
-      {/* 3. Interactive Player Roster Grid */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
-        {filteredPlayers.length === 0 ? (
-          <div className="col-span-full p-12 text-center rounded-2xl bg-[#111827] border border-[#1F2937]">
-            <p className="text-sm text-slate-400">
-              Tidak ada pemain yang cocok dengan filter atau kata kunci "{searchQuery}".
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedPosition('ALL');
-              }}
-              className="mt-3 px-4 py-1.5 rounded-lg bg-[#1F2937] text-xs font-bold text-[#CCFF00] border border-slate-700 hover:bg-slate-700 cursor-pointer"
-            >
-              Reset Semua Filter
-            </button>
-          </div>
-        ) : (
-          filteredPlayers.map((player) => (
+      {/* 3. Main Roster Content: Table (Default) or Compact Cards */}
+      {filteredPlayers.length === 0 ? (
+        <div className="p-10 border border-line rounded-panel bg-panel text-center">
+          <EmptyState
+            title="Tidak ada pemain ditemukan"
+            description={searchQuery ? `Tidak ada data yang cocok dengan "${searchQuery}".` : 'Daftar pemain kosong.'}
+            action={
+              (searchQuery || selectedPosition !== 'ALL') ? (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedPosition('ALL');
+                  }}
+                >
+                  Reset Filter
+                </Button>
+              ) : undefined
+            }
+          />
+        </div>
+      ) : viewMode === 'table' ? (
+        <Table
+          columns={columns}
+          data={filteredPlayers}
+          sortKey={sortKey}
+          sortDirection={sortDirection}
+          onSort={handleSort}
+          stickyHeader={true}
+          emptyMessage="Belum ada data pemain"
+        />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+          {filteredPlayers.map((player) => (
             <SquadPlayerCard
               key={player.player_id}
               player={player}
@@ -240,9 +424,9 @@ export default function SquadHubView({
               onViewPassport={onViewPassport}
               onEvaluatePlayer={onEvaluatePlayer}
             />
-          ))
-        )}
-      </section>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

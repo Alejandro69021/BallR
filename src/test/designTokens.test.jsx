@@ -181,7 +181,17 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
       path.resolve(__dirname, '../components/logger/TactileKeypad.jsx'),
       path.resolve(__dirname, '../components/logger/EventStreamLog.jsx'),
       path.resolve(__dirname, '../components/logger/QuickShotModal.jsx'),
-      path.resolve(__dirname, '../components/logger/MatchRecapModal.jsx')
+      path.resolve(__dirname, '../components/logger/MatchRecapModal.jsx'),
+      path.resolve(__dirname, '../pages/SquadPage.jsx'),
+      path.resolve(__dirname, '../components/SquadHubView.jsx'),
+      path.resolve(__dirname, '../components/squad/SquadPlayerCard.jsx'),
+      path.resolve(__dirname, '../pages/PassportPage.jsx'),
+      path.resolve(__dirname, '../components/PlayerHeader.jsx'),
+      path.resolve(__dirname, '../components/FitnessStrip.jsx'),
+      path.resolve(__dirname, '../components/PerformanceRadar.jsx'),
+      path.resolve(__dirname, '../components/AICoachCard.jsx'),
+      path.resolve(__dirname, '../components/MatchMoments.jsx'),
+      path.resolve(__dirname, '../components/OfficialDossierFooter.jsx')
     ];
     const targetFiles = [...uiFiles, ...extraFiles];
 

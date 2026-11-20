@@ -1,167 +1,152 @@
 import React from 'react';
-import { Footprints, Ruler, Calendar, Scale, Share2 } from 'lucide-react';
+import { Share2 } from 'lucide-react';
+import Button from './ui/Button';
 
-export default function PlayerHeader({ personalInfo, onOpenStoryCard }) {
+export default function PlayerHeader({ player, personalInfo: propPersonalInfo, onOpenStoryCard }) {
+  const personalInfo = propPersonalInfo || player?.personal_info || {};
   const {
     full_name,
     nickname,
     jersey_number,
     position,
-    age,
+    age_group,
     preferred_foot,
-    height_cm,
-    weight_kg,
     academy,
     photo_url
   } = personalInfo;
 
+  const publicId = player?.public_id || personalInfo?.public_id || player?.player_id || '-';
+  const ageGroupDisplay = age_group || personalInfo?.age_group || 'U-13';
+
+  // 1. Position
+  const positionDisplay = position || 'Belum ada data';
+
+  // 2. Age group
+  // ageGroupDisplay
+
+  // 3. Latest assessment period
+  const latestAssessmentPeriod =
+    player?.ai_coach_evaluation?.period ||
+    personalInfo?.assessment_period ||
+    null;
+
+  // 4. The 3 highest of the six real attribute values
+  const radarAttributes = player?.radar_attributes || personalInfo?.radar_attributes || [];
+  const validAttributes = radarAttributes
+    .filter((a) => a && a.value !== null && a.value !== undefined && a.value !== '')
+    .map((a) => ({
+      name: a.attribute ? a.attribute.split(' ')[0] : 'Atribut',
+      value: Number(a.value)
+    }))
+    .filter((a) => Number.isFinite(a.value))
+    .sort((a, b) => b.value - a.value);
+
+  const top3Attributes = validAttributes.slice(0, 3);
+  const top3Display =
+    top3Attributes.length > 0
+      ? top3Attributes
+          .map((a) => `${a.name}: ${a.value} (skala 0-100)`)
+          .join(' · ')
+      : 'Belum ada data';
+
+  // 5. Date of last fitness test
+  const lastFitnessDate = player?.fitness_benchmarks?.test_date || null;
+
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-[#0B0E14] border border-[#1E2638] p-4 sm:p-6 shadow-xl">
-      <div className="relative flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5">
-        
-        {/* Left Side: Athlete Portrait */}
-        <div className="flex items-center gap-4 w-full sm:w-auto">
-          <div className="relative shrink-0">
-            <div className="w-24 h-28 sm:w-28 sm:h-32 rounded-2xl overflow-hidden bg-[#111827] border-2 border-slate-700 shadow-md flex items-center justify-center">
-              {photo_url ? (
-                <img
-                  src={photo_url}
-                  alt={full_name || nickname || 'Atlet'}
-                  className="w-full h-full object-cover object-top scale-105 filter contrast-105"
-                  loading="eager"
-                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                />
-              ) : (
-                <span className="font-athletic text-2xl font-black text-slate-600">
-                  #{jersey_number || '-'}
+    <section className="space-y-4 text-1">
+      {/* Identity Block */}
+      <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+        <div className="flex items-start gap-4">
+          {/* Athlete photo ONLY if photo_url exists; no placeholder */}
+          {photo_url ? (
+            <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-control overflow-hidden border border-line bg-raised shrink-0">
+              <img
+                src={photo_url}
+                alt={full_name || nickname || 'Atlet'}
+                className="w-full h-full object-cover object-top"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            </div>
+          ) : null}
+
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-mono text-xs text-2">
+                ID: {publicId}
+              </span>
+              {jersey_number != null && (
+                <span className="font-mono text-xs font-semibold text-1 bg-raised px-1.5 py-0.5 rounded border border-line">
+                  #{jersey_number}
                 </span>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-50 pointer-events-none" />
-              <div className="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-md bg-black/80 border border-slate-700 flex items-center gap-1">
-                <span className="text-[10px] font-mono font-bold text-[#84CC16]">
-                  #{jersey_number ?? '-'}
+            </div>
+
+            <h1 className="text-xl sm:text-2xl font-semibold text-1">
+              {full_name || 'Atlet'}
+              {nickname && (
+                <span className="text-sm font-normal text-2 ml-2">
+                  "{nickname}"
                 </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile view player name + position next to image */}
-          <div className="flex-1 sm:hidden">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-lime-500/10 border border-[#84CC16]/30 text-[#84CC16] text-[11px] font-athletic font-bold tracking-wider mb-1">
-              <span>{position}</span>
-            </div>
-            <h1 className="font-athletic text-2xl font-bold text-white tracking-tight leading-tight">
-              {full_name}
+              )}
             </h1>
-            <p className="text-xs text-slate-400 font-medium mt-0.5">
-              "{nickname}" • {academy?.city || 'Yogyakarta'}
-            </p>
 
-            {onOpenStoryCard && (
-              <button
-                type="button"
-                onClick={onOpenStoryCard}
-                className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#84CC16] text-black font-athletic font-bold text-[10px] tracking-wider uppercase shadow-sm active:scale-95 cursor-pointer"
-              >
-                <Share2 className="w-3 h-3" />
-                <span>Story Card 9:16</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Middle: Player Details (Desktop view & specs) */}
-        <div className="flex-1 text-center sm:text-left w-full">
-          <div className="hidden sm:flex items-center justify-between mb-1.5">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-lime-500/10 border border-[#84CC16]/30 text-[#84CC16] text-xs font-athletic font-bold tracking-wider uppercase">
-                {position}
-              </span>
-              <span className="text-xs text-slate-400 font-medium">
-                No. #{jersey_number}
-              </span>
-              <span className="text-slate-600 text-xs">•</span>
-              <span className="text-xs text-slate-400 font-medium">
-                Nama Panggilan: <strong className="text-white">{nickname}</strong>
-              </span>
-            </div>
-
-            {onOpenStoryCard && (
-              <button
-                type="button"
-                onClick={onOpenStoryCard}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#111827] hover:bg-[#1E2638] text-slate-200 hover:text-white border border-slate-700 font-athletic font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer active:scale-95 shadow-sm"
-                title="Ekspor Story Card 9:16 untuk Instagram / WhatsApp"
-              >
-                <Share2 className="w-3.5 h-3.5 text-[#84CC16]" />
-                <span>Ekspor Story Card 9:16</span>
-              </button>
-            )}
-          </div>
-
-          <h1 className="hidden sm:block font-athletic text-3xl font-black text-white tracking-tight">
-            {full_name}
-          </h1>
-
-          <p className="hidden sm:block text-xs text-slate-400 font-medium mt-1">
-            {academy?.name || 'Mataram Putra Football Academy'} • {academy?.city || 'Yogyakarta, ID'}
-          </p>
-
-          {/* Physical Specs Strip */}
-          <div className="mt-3 sm:mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 py-2.5 px-3 rounded-xl bg-[#0E131F] border border-[#1E2638] text-left">
-            <div className="flex flex-col min-w-0">
-              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1 truncate">
-                <Calendar className="w-3 h-3 text-slate-500 shrink-0" /> Usia
-              </span>
-              <span className="font-athletic text-sm sm:text-base font-bold text-white truncate">
-                {age ? <>{age} <span className="text-[10px] font-normal text-slate-400">thn</span></> : <span className="text-xs font-normal text-slate-400 font-sans">Belum ada data</span>}
-              </span>
-            </div>
-
-            <div className="flex flex-col min-w-0 sm:border-l sm:border-slate-800 sm:pl-3">
-              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1 truncate">
-                <Ruler className="w-3 h-3 text-slate-500 shrink-0" /> Tinggi
-              </span>
-              <span className="font-athletic text-sm sm:text-base font-bold text-white truncate">
-                {height_cm ? <>{height_cm} <span className="text-[10px] font-normal text-slate-400">cm</span></> : <span className="text-xs font-normal text-slate-400 font-sans">Belum ada data</span>}
-              </span>
-            </div>
-
-            <div className="flex flex-col min-w-0 sm:border-l sm:border-slate-800 sm:pl-3">
-              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1 truncate">
-                <Scale className="w-3 h-3 text-slate-500 shrink-0" /> Berat
-              </span>
-              <span className="font-athletic text-sm sm:text-base font-bold text-white truncate">
-                {weight_kg ? <>{weight_kg} <span className="text-[10px] font-normal text-slate-400">kg</span></> : <span className="text-xs font-normal text-slate-400 font-sans">Belum ada data</span>}
-              </span>
-            </div>
-
-            <div className="flex flex-col min-w-0 sm:border-l sm:border-slate-800 sm:pl-3">
-              <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1 truncate">
-                <Footprints className="w-3 h-3 text-slate-500 shrink-0" /> Kaki Utama
-              </span>
-              <span className="font-athletic text-xs sm:text-sm font-bold text-[#84CC16] truncate" title={preferred_foot || ''}>
-                {preferred_foot || <span className="text-xs font-normal text-slate-400 font-sans">Belum ada data</span>}
-              </span>
+            <div className="text-xs text-2 space-y-0.5 pt-0.5">
+              <p>
+                {academy?.name || 'Akademi Sepakbola'} {academy?.city ? `· ${academy.city}` : ''}
+              </p>
+              <p>
+                Kelompok usia: <span className="text-1 font-medium">{ageGroupDisplay}</span> · Posisi: <span className="text-1 font-medium">{positionDisplay}</span> · Kaki utama: <span className="text-1 font-medium">{preferred_foot || 'Belum ada data'}</span>
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Right Side: Story Card Share Action */}
         {onOpenStoryCard && (
-          <div className="hidden sm:flex shrink-0 self-start">
-            <button
-              type="button"
-              onClick={onOpenStoryCard}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-panel border border-control text-1 text-xs font-medium hover:bg-raised transition-colors cursor-pointer"
-              title="Buka Story Card 9:16"
-            >
-              <Share2 className="w-4 h-4 text-text-2" />
-              <span>Bagikan Kartu</span>
-            </button>
-          </div>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={onOpenStoryCard}
+            icon={<Share2 className="w-4 h-4" strokeWidth={1.5} />}
+            className="no-print shrink-0"
+          >
+            Bagikan Kartu
+          </Button>
         )}
+      </div>
 
+      {/* 5-Line Technical Summary */}
+      <div className="rounded-panel border border-line bg-panel p-4 space-y-2">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-2 font-mono pb-1 border-b border-line">
+          Ringkasan Paspor Atlet
+        </h2>
+
+        <dl className="grid grid-cols-1 gap-1.5 text-xs">
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+            <dt className="text-2 w-48 shrink-0">1. Posisi:</dt>
+            <dd className="text-1 font-medium">{positionDisplay}</dd>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+            <dt className="text-2 w-48 shrink-0">2. Kelompok usia:</dt>
+            <dd className="text-1 font-medium">{ageGroupDisplay}</dd>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+            <dt className="text-2 w-48 shrink-0">3. Periode asesmen terakhir:</dt>
+            <dd className="text-1 font-mono">{latestAssessmentPeriod || 'Belum ada data'}</dd>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+            <dt className="text-2 w-48 shrink-0">4. Indikator atribut tertinggi:</dt>
+            <dd className="text-1 font-mono tabular-nums">{top3Display}</dd>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+            <dt className="text-2 w-48 shrink-0">5. Tanggal tes kebugaran terakhir:</dt>
+            <dd className="text-1 font-mono">{lastFitnessDate || 'Belum ada data'}</dd>
+          </div>
+        </dl>
       </div>
     </section>
   );
