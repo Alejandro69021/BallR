@@ -1,43 +1,42 @@
 import React from 'react';
-import { Database, Loader2 } from 'lucide-react';
+import Skeleton from './ui/Skeleton';
 
 export default function LoadingSkeleton() {
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-8 space-y-6 animate-pulse">
+    <div
+      role="status"
+      aria-label="Memuat data rekam jejak"
+      className="w-full max-w-5xl mx-auto px-4 py-6 space-y-6"
+    >
       {/* Top Banner Skeleton */}
-      <div className="flex items-center justify-between p-4 rounded-2xl bg-[#111827] border border-[#1F2937]">
+      <div className="flex items-center justify-between p-4 rounded-panel bg-panel border border-line">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-slate-800/80 flex items-center justify-center">
-            <Database className="w-5 h-5 text-[#CCFF00] animate-bounce" />
-          </div>
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <div className="h-3.5 w-32 bg-slate-700 rounded-md"></div>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-lime-500/10 text-[#CCFF00] border border-[#CCFF00]/20 flex items-center gap-1">
-                <Loader2 className="w-2.5 h-2.5 animate-spin" />
-                <span>SYNCING SUPABASE LIVE</span>
-              </span>
-            </div>
-            <div className="h-2.5 w-48 bg-slate-800 rounded-md"></div>
+          <Skeleton variant="rect" width={40} height={40} />
+          <div className="space-y-2">
+            <Skeleton variant="text" width={140} height={14} />
+            <Skeleton variant="text" width={220} height={12} />
           </div>
         </div>
-        <div className="h-8 w-24 bg-slate-800 rounded-lg"></div>
+        <Skeleton variant="rect" width={96} height={32} />
       </div>
 
       {/* Header Card Skeleton */}
-      <div className="p-6 rounded-2xl bg-[#111827] border border-[#1F2937] space-y-4">
+      <div className="p-6 rounded-panel bg-panel border border-line space-y-4">
         <div className="flex items-center justify-between">
           <div className="space-y-2">
-            <div className="h-5 w-44 bg-slate-800 rounded-lg"></div>
-            <div className="h-8 w-72 bg-slate-700 rounded-xl"></div>
-            <div className="h-3 w-56 bg-slate-800/80 rounded-md"></div>
+            <Skeleton variant="text" width={160} height={14} />
+            <Skeleton variant="text" width={240} height={24} />
+            <Skeleton variant="text" width={180} height={12} />
           </div>
-          <div className="w-20 h-24 rounded-2xl bg-slate-800 border-2 border-slate-700/60"></div>
+          <Skeleton variant="rect" width={80} height={96} />
         </div>
 
-        <div className="grid grid-cols-4 gap-3 pt-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-16 rounded-xl bg-[#090D16] border border-slate-800/80"></div>
+            <div key={i} className="p-3 rounded-control bg-app border border-line space-y-1.5">
+              <Skeleton variant="text" width={60} height={12} />
+              <Skeleton variant="text" width={80} height={16} />
+            </div>
           ))}
         </div>
       </div>
@@ -47,18 +46,18 @@ export default function LoadingSkeleton() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="p-4 rounded-2xl bg-[#111827] border border-[#1F2937] space-y-3"
+            className="p-4 rounded-panel bg-panel border border-line space-y-3"
           >
             <div className="flex items-start justify-between">
-              <div className="w-16 h-20 rounded-xl bg-slate-800"></div>
-              <div className="w-12 h-14 rounded-xl bg-slate-800"></div>
+              <Skeleton variant="rect" width={64} height={72} />
+              <Skeleton variant="rect" width={48} height={48} />
             </div>
-            <div className="h-4 w-32 bg-slate-700 rounded"></div>
-            <div className="h-3 w-20 bg-slate-800 rounded"></div>
-            <div className="h-12 rounded-xl bg-[#090D16]"></div>
-            <div className="grid grid-cols-2 gap-2 pt-2">
-              <div className="h-8 rounded-lg bg-slate-800"></div>
-              <div className="h-8 rounded-lg bg-slate-800"></div>
+            <Skeleton variant="text" width={120} height={14} />
+            <Skeleton variant="text" width={80} height={12} />
+            <Skeleton variant="rect" height={48} />
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <Skeleton variant="rect" height={32} />
+              <Skeleton variant="rect" height={32} />
             </div>
           </div>
         ))}
@@ -66,4 +65,3 @@ export default function LoadingSkeleton() {
     </div>
   );
 }
-

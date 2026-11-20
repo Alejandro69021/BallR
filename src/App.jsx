@@ -8,7 +8,7 @@ import TopNav from './components/TopNav';
 import VideoModal from './components/VideoModal';
 import StoryFlexCardModal from './components/StoryFlexCardModal';
 import AuthModal from './components/auth/AuthModal';
-import Toast from './components/Toast';
+import Toast from './components/ui/Toast';
 import InstallAppBanner from './components/InstallAppBanner';
 import OfflineIndicator from './components/OfflineIndicator';
 import LoadingSkeleton from './components/LoadingSkeleton';

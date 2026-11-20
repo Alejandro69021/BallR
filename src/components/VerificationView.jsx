@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Hash, ArrowLeft, CheckCircle2, Lock, Building2, Calendar, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Copy, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { useParams, Link } from 'react-router-dom';
 import { verifyPassportHash, buildPassportSnapshotPayload, generatePassportHash } from '../lib/integrity';
 import { fetchPassportSnapshot } from '../lib/supabase';
+import Badge from './ui/Badge';
+import Button from './ui/Button';
+import SourceNote from './ui/SourceNote';
 
 export default function VerificationView({ players = [] }) {
   const { hash } = useParams();
@@ -10,6 +13,7 @@ export default function VerificationView({ players = [] }) {
   const [isValid, setIsValid] = useState(false);
   const [snapshotData, setSnapshotData] = useState(null);
   const [showPayload, setShowPayload] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -82,114 +86,125 @@ export default function VerificationView({ players = [] }) {
     return () => { isMounted = false; };
   }, [hash, players]);
 
+  const handleCopyHash = () => {
+    if (hash && navigator?.clipboard) {
+      navigator.clipboard.writeText(hash);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
-    <div className="space-y-4 max-w-2xl mx-auto text-white pb-12">
+    <div className="space-y-4 max-w-2xl mx-auto text-1 pb-12">
       <div>
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded bg-[#0C111D] border border-slate-800 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-2 hover:text-1 px-2.5 py-1 rounded-control bg-panel border border-control transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
         >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Kembali ke Beranda</span>
+          <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
+          <span>Kembali ke beranda</span>
         </Link>
       </div>
 
-      <div className="rounded-lg bg-[#0C111D] border border-slate-800 p-5 space-y-5">
-        {/* Header */}
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
-          <div className={`p-2.5 rounded border ${
-            isValid
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-              : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
-          }`}>
-            <ShieldCheck className="w-6 h-6" />
-          </div>
+      {/* Technical Certificate */}
+      <div className="rounded-panel bg-panel border border-line p-6 space-y-6">
+        {/* Certificate Header */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 pb-4 border-b border-line">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
-                Pemeriksa Kriptografi Paspor
-              </span>
-              {!loading && (
-                <span className={`text-xs font-mono font-semibold flex items-center gap-1 ${
-                  isValid ? 'text-emerald-400' : 'text-rose-400'
-                }`}>
-                  {isValid ? (
-                    <>
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>SHA-256 Valid</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertTriangle className="w-3.5 h-3.5" />
-                      <span>Tidak Terverifikasi</span>
-                    </>
-                  )}
-                </span>
-              )}
-            </div>
-            <h1 className="text-base font-semibold text-white mt-0.5">
+            <span className="text-xs font-mono text-2 uppercase tracking-wider block">
+              Pemeriksa kriptografi paspor
+            </span>
+            <h1 className="text-xl font-semibold text-1 mt-1">
               Verifikasi Integritas Rekam Jejak Atlet
             </h1>
           </div>
+          <div>
+            {!loading && (
+              isValid ? (
+                <Badge variant="brand" size="md">
+                  SHA-256 Valid
+                </Badge>
+              ) : (
+                <Badge variant="danger" size="md">
+                  Tidak ditemukan
+                </Badge>
+              )
+            )}
+          </div>
         </div>
 
-        {/* Loading State */}
+        {/* Certificate Content */}
         {loading ? (
-          <div className="p-6 text-center text-xs text-slate-400 font-mono">
+          <div className="p-8 text-center text-xs text-2 font-mono">
             Memeriksa hash kriptografis ke basis data snapshot...
           </div>
         ) : isValid && snapshotData ? (
-          /* Valid State */
-          <div className="space-y-4">
-            <div className="p-3 rounded bg-slate-950 border border-slate-800 space-y-1.5">
-              <span className="text-[10px] uppercase font-semibold text-slate-400 flex items-center gap-1">
-                <Hash className="w-3.5 h-3.5 text-[#CCFF00]" />
-                Hash Kriptografis (SHA-256)
-              </span>
-              <div className="text-[#CCFF00] font-mono text-xs break-all bg-slate-900 p-2 rounded border border-slate-800">
-                {hash}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
-              <div className="p-3 rounded bg-slate-900 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 flex items-center gap-1">
-                  <Building2 className="w-3.5 h-3.5 text-slate-400" /> Penerbit / Akademi
-                </span>
-                <div className="font-sans font-semibold text-white">
+          <div className="space-y-5">
+            {/* Certificate Metadata Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="p-3 rounded-control bg-app border border-line space-y-1">
+                <span className="text-xs text-2 block">Akademi penerbit</span>
+                <p className="text-sm font-semibold text-1">
                   {snapshotData.academy_name}
-                </div>
-                <div className="text-[11px] text-slate-400">
-                  ID Paspor: {snapshotData.public_id}
-                </div>
+                </p>
               </div>
 
-              <div className="p-3 rounded bg-slate-900 border border-slate-800 space-y-1">
-                <span className="text-[10px] text-slate-400 flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-slate-400" /> Periode & Verifikasi
-                </span>
-                <div className="font-sans font-semibold text-white">
+              <div className="p-3 rounded-control bg-app border border-line space-y-1">
+                <span className="text-xs text-2 block">ID publik atlet</span>
+                <p className="text-sm font-mono font-semibold text-1">
+                  {snapshotData.public_id}
+                </p>
+              </div>
+
+              <div className="p-3 rounded-control bg-app border border-line space-y-1">
+                <span className="text-xs text-2 block">Periode snapshot</span>
+                <p className="text-sm font-semibold text-1">
                   {snapshotData.period}
-                </div>
-                <div className="text-[11px] text-emerald-400">
-                  Status: Terverifikasi Otentik
-                </div>
+                </p>
               </div>
             </div>
+
+            {/* SHA-256 Hash with Copy Button */}
+            <div className="p-3 rounded-control bg-app border border-line space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono text-2 uppercase tracking-wide">
+                  Hash SHA-256 kanonikal
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCopyHash}
+                  className="h-7 px-2 text-xs text-2 hover:text-1"
+                  icon={copied ? <Check className="w-4 h-4 text-brand" strokeWidth={1.5} /> : <Copy className="w-4 h-4" strokeWidth={1.5} />}
+                >
+                  {copied ? 'Tersalin' : 'Salin hash'}
+                </Button>
+              </div>
+              <p className="font-mono text-xs text-1 break-all select-all p-2 bg-panel rounded-control border border-line">
+                {hash}
+              </p>
+            </div>
+
+            {/* Source Note with Payload Version */}
+            <SourceNote
+              source="Snapshot paspor kanonikal"
+              date={snapshotData.created_at ? new Date(snapshotData.created_at).toLocaleDateString('id-ID') : undefined}
+              citationKey={`versi ${snapshotData.payload?.version || 'v1.0'}`}
+            />
 
             {/* Collapsible Canonical Payload Inspector */}
-            <div className="border border-slate-800 rounded">
+            <div className="border border-line rounded-control overflow-hidden">
               <button
                 type="button"
                 onClick={() => setShowPayload(!showPayload)}
-                className="w-full flex items-center justify-between p-2.5 text-xs text-slate-300 hover:bg-slate-900 transition-colors"
+                className="w-full flex items-center justify-between p-3 text-xs text-2 hover:text-1 hover:bg-raised transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
-                <span className="font-mono text-[11px]">Inspeksi Data Kanonikal Terenkripsi</span>
-                {showPayload ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                <span className="font-mono text-xs">Inspeksi data kanonikal terenkripsi</span>
+                {showPayload ? <ChevronUp className="w-4 h-4" strokeWidth={1.5} /> : <ChevronDown className="w-4 h-4" strokeWidth={1.5} />}
               </button>
               {showPayload && (
-                <div className="p-3 bg-slate-950 border-t border-slate-800">
-                  <pre className="text-[11px] font-mono text-slate-300 overflow-x-auto p-2 bg-slate-900 rounded max-h-60">
+                <div className="p-3 bg-app border-t border-line">
+                  <pre className="text-xs font-mono text-1 overflow-x-auto p-2 bg-panel rounded-control border border-line max-h-60">
                     {JSON.stringify(snapshotData.payload, null, 2)}
                   </pre>
                 </div>
@@ -198,20 +213,23 @@ export default function VerificationView({ players = [] }) {
           </div>
         ) : (
           /* Invalid / Not Found State */
-          <div className="p-4 rounded bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs space-y-2">
-            <p className="font-semibold text-white">Data Integritas Tidak Ditemukan</p>
-            <p className="text-slate-300 leading-relaxed text-[11px]">
-              Hash <code className="text-rose-200 font-mono break-all">{hash}</code> tidak cocok dengan rekaman resmi manapun di basis data integritas. Kemungkinan dokumen belum diterbitkan, atau isi berkas telah mengalami perubahan setelah penerbitan.
-            </p>
+          <div className="space-y-4">
+            <div className="p-4 rounded-control bg-danger/10 border border-danger/30 text-xs space-y-2">
+              <p className="font-semibold text-sm text-1">Data Integritas Tidak Ditemukan</p>
+              <p className="text-2 leading-relaxed">
+                Hash <span className="font-mono text-1 break-all">{hash}</span> tidak cocok dengan rekam jejak resmi manapun di basis data integritas. Kemungkinan dokumen belum diterbitkan atau berkas telah mengalami perubahan setelah penerbitan.
+              </p>
+            </div>
+            <SourceNote
+              source="Sistem verifikasi kriptografi paspor"
+              citationKey="tidak terverifikasi"
+            />
           </div>
         )}
 
-        {/* Footer Guarantee */}
-        <div className="p-3 rounded bg-slate-900/60 border border-slate-800 text-xs text-slate-400 flex items-start gap-2">
-          <Lock className="w-4 h-4 text-[#CCFF00] shrink-0 mt-0.5" />
-          <p className="text-[11px] leading-relaxed">
-            Sistem hashing kanonikal BallR menjamin bahwa setiap angka kebugaran, usia, dan evaluasi taktis tidak dapat diubah tanpa merusak validitas hash.
-          </p>
+        {/* Certificate Guarantee Footer */}
+        <div className="pt-4 border-t border-line text-xs text-2 leading-relaxed">
+          Sistem hashing kanonikal BallR menjamin setiap metrik kebugaran, usia, dan evaluasi performa terkunci secara kriptografis dan tidak dapat diubah tanpa merusak validitas berkas.
         </div>
       </div>
     </div>

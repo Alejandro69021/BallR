@@ -156,22 +156,28 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
     });
   });
 
-  describe('3. Zero Hex, Zero dark:, Zero Arbitrary Colors in src/components/ui/ & TopNav.jsx', () => {
+  describe('3. Zero Hex, Zero dark:, Zero Arbitrary Colors in Migrated Components (B1 & B2)', () => {
     const uiDir = path.resolve(__dirname, '../components/ui');
     const uiFiles = fs
       .readdirSync(uiDir)
       .filter((file) => file.endsWith('.jsx') || file.endsWith('.js'))
       .map((file) => path.join(uiDir, file));
 
-    const topNavPath = path.resolve(__dirname, '../components/TopNav.jsx');
-    const targetFiles = [...uiFiles, topNavPath];
+    const extraFiles = [
+      path.resolve(__dirname, '../components/TopNav.jsx'),
+      path.resolve(__dirname, '../components/auth/AuthModal.jsx'),
+      path.resolve(__dirname, '../components/VerificationView.jsx'),
+      path.resolve(__dirname, '../components/InstallAppBanner.jsx'),
+      path.resolve(__dirname, '../components/LoadingSkeleton.jsx'),
+      path.resolve(__dirname, '../components/growth/ConsentManagerModal.jsx')
+    ];
+    const targetFiles = [...uiFiles, ...extraFiles];
 
     targetFiles.forEach((filePath) => {
       const fileName = path.basename(filePath);
       const fileContent = fs.readFileSync(filePath, 'utf-8');
 
       it(`verifies ${fileName} has no hard-coded hex colors`, () => {
-        // Matches #FFF, #123456, but not CSS comments or markdown
         const hexMatches = fileContent.match(/#[0-9a-fA-F]{3,8}\b/g) || [];
         expect(hexMatches, `Found hex colors in ${fileName}: ${hexMatches.join(', ')}`).toEqual([]);
       });
@@ -190,6 +196,18 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
           arbitraryMatches,
           `Found arbitrary colors in ${fileName}: ${arbitraryMatches.join(', ')}`
         ).toEqual([]);
+      });
+
+      it(`verifies ${fileName} has no forbidden patterns`, () => {
+        const forbiddenPatterns = ['#' + 'CCFF00', 'font-' + 'athletic', 'grad' + 'ient', 'shadow-' + '2xl'];
+        forbiddenPatterns.forEach((pattern) => {
+          expect(fileContent.includes(pattern), `Found forbidden pattern '${pattern}' in ${fileName}`).toBe(false);
+        });
+      });
+
+      it(`verifies ${fileName} has no emojis`, () => {
+        const emojiMatches = fileContent.match(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u) || [];
+        expect(emojiMatches, `Found emoji in ${fileName}: ${emojiMatches.join(', ')}`).toEqual([]);
       });
     });
   });

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, KeyRound, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Mail, KeyRound, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 import { signInWithEmail, signInWithMagicLink, getCurrentUserProfile } from '../../lib/supabase';
+import Dialog from '../ui/Dialog';
+import Field from '../ui/Field';
+import Button from '../ui/Button';
+import Badge from '../ui/Badge';
 
 export default function AuthModal({
   isOpen,
@@ -49,184 +53,149 @@ export default function AuthModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="auth-modal-title"
+    <Dialog
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Masuk ke BallR"
+      description="Akses staf pelatih dan orang tua/wali"
+      className="max-w-sm"
     >
-      <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
+      {/* Mode toggle */}
+      <div className="grid grid-cols-2 gap-1 p-0.5 bg-app border border-line rounded-control text-xs font-medium">
+        <button
+          type="button"
+          onClick={() => {
+            setAuthMode('password');
+            setErrorMsg('');
+          }}
+          className={`py-1.5 px-2 rounded-control transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+            authMode === 'password'
+              ? 'bg-panel text-1 shadow-sm'
+              : 'text-2 hover:text-1'
+          }`}
+        >
+          Kata sandi
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setAuthMode('magic-link');
+            setErrorMsg('');
+          }}
+          className={`py-1.5 px-2 rounded-control transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+            authMode === 'magic-link'
+              ? 'bg-panel text-1 shadow-sm'
+              : 'text-2 hover:text-1'
+          }`}
+        >
+          Tautan masuk
+        </button>
+      </div>
 
-      <div className="relative w-full max-w-sm bg-[#0C111D] border border-slate-800 rounded-lg shadow-xl p-5 text-white z-10 space-y-4">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded bg-slate-800 text-slate-200">
-              <Lock className="w-4 h-4 text-[#CCFF00]" />
-            </div>
-            <div>
-              <h2 id="auth-modal-title" className="text-sm font-semibold text-white">
-                Masuk ke BallR
-              </h2>
-              <p className="text-xs text-slate-400">
-                Akses resmi staf pelatih dan orang tua/wali
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-            aria-label="Tutup dialog"
-          >
-            <X className="w-4 h-4" />
-          </button>
+      {errorMsg && (
+        <div
+          role="alert"
+          className="p-2.5 rounded-control bg-danger/10 border border-danger/30 text-danger text-xs flex items-start gap-2"
+        >
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" strokeWidth={1.5} />
+          <p className="leading-snug">{errorMsg}</p>
         </div>
+      )}
 
-        {/* Tab Toggle: Kata Sandi vs Magic Link */}
-        <div className="grid grid-cols-2 gap-1 p-0.5 bg-slate-900 border border-slate-800 rounded text-xs font-medium">
-          <button
+      {magicLinkSent ? (
+        <div className="p-4 rounded-panel bg-panel border border-line text-xs space-y-2 text-center">
+          <CheckCircle2 className="w-5 h-5 mx-auto text-brand" strokeWidth={1.5} />
+          <p className="font-semibold text-1 text-sm">Tautan masuk terkirim</p>
+          <p className="text-2 leading-relaxed">
+            Periksa kotak masuk email <span className="font-mono text-brand">{email}</span> untuk masuk langsung.
+          </p>
+          <Button
             type="button"
-            onClick={() => {
-              setAuthMode('password');
-              setErrorMsg('');
-            }}
-            className={`py-1.5 rounded transition-colors ${
-              authMode === 'password'
-                ? 'bg-slate-800 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+            variant="ghost"
+            size="sm"
+            onClick={() => setMagicLinkSent(false)}
+            className="mt-2 text-xs text-2 hover:text-1"
           >
-            Kata sandi
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setAuthMode('magic-link');
-              setErrorMsg('');
-            }}
-            className={`py-1.5 rounded transition-colors ${
-              authMode === 'magic-link'
-                ? 'bg-slate-800 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Tautan masuk (Email)
-          </button>
+            Kirim ulang atau gunakan cara lain
+          </Button>
         </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <Field label="Alamat email" id="auth-email" required>
+            <div className="relative">
+              <Mail className="w-4 h-4 text-2 absolute left-2.5 top-2 pointer-events-none" strokeWidth={1.5} />
+              <input
+                id="auth-email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="pelatih@akademi.id"
+                className="w-full pl-9 pr-3 h-8 bg-app border border-control rounded-control text-xs text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+              />
+            </div>
+          </Field>
 
-        {errorMsg && (
-          <div className="p-2.5 rounded bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <p className="leading-snug">{errorMsg}</p>
-          </div>
-        )}
-
-        {magicLinkSent ? (
-          <div className="p-4 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs space-y-2 text-center">
-            <CheckCircle2 className="w-6 h-6 mx-auto text-emerald-400" />
-            <p className="font-semibold text-white">Tautan masuk terkirim</p>
-            <p className="text-slate-300 text-[11px] leading-relaxed">
-              Periksa kotak masuk email <span className="font-mono text-emerald-300">{email}</span> untuk masuk langsung tanpa kata sandi.
-            </p>
-            <button
-              type="button"
-              onClick={() => setMagicLinkSent(false)}
-              className="mt-2 text-[11px] text-slate-400 hover:text-white underline block mx-auto"
-            >
-              Kirim ulang atau gunakan cara lain
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div>
-              <label htmlFor="auth-email" className="block text-xs font-medium text-slate-300 mb-1">
-                Alamat email
-              </label>
+          {authMode === 'password' && (
+            <Field label="Kata sandi" id="auth-password" required>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-500 absolute left-2.5 top-2.5 pointer-events-none" />
+                <KeyRound className="w-4 h-4 text-2 absolute left-2.5 top-2 pointer-events-none" strokeWidth={1.5} />
                 <input
-                  id="auth-email"
-                  type="email"
+                  id="auth-password"
+                  type="password"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="pelatih@akademi.id"
-                  className="w-full pl-9 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#CCFF00]"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full pl-9 pr-3 h-8 bg-app border border-control rounded-control text-xs text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
                 />
               </div>
-            </div>
+            </Field>
+          )}
 
-            {authMode === 'password' && (
-              <div>
-                <label htmlFor="auth-password" className="block text-xs font-medium text-slate-300 mb-1">
-                  Kata sandi
-                </label>
-                <div className="relative">
-                  <KeyRound className="w-4 h-4 text-slate-500 absolute left-2.5 top-2.5 pointer-events-none" />
-                  <input
-                    id="auth-password"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full pl-9 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#CCFF00]"
-                  />
-                </div>
-              </div>
-            )}
+          <Button
+            type="submit"
+            variant="primary"
+            size="md"
+            disabled={loading}
+            loading={loading}
+            className="w-full mt-2"
+            icon={authMode === 'password' ? <ArrowRight className="w-4 h-4" strokeWidth={1.5} /> : <Mail className="w-4 h-4" strokeWidth={1.5} />}
+          >
+            {loading ? 'Memproses...' : authMode === 'password' ? 'Masuk' : 'Kirim tautan masuk'}
+          </Button>
+        </form>
+      )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full mt-2 py-2 px-3 bg-[#CCFF00] hover:bg-[#b8e600] text-black font-semibold rounded text-xs transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
-            >
-              {loading ? (
-                <span>Memproses...</span>
-              ) : authMode === 'password' ? (
-                <>
-                  <span>Masuk</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </>
-              ) : (
-                <>
-                  <span>Kirim tautan masuk</span>
-                  <Mail className="w-3.5 h-3.5" />
-                </>
-              )}
-            </button>
-          </form>
-        )}
-
-        {/* Demo Mode / Offline quick switcher (labeled clearly as illustration) */}
-        {isDemoMode && (
-          <div className="pt-3 border-t border-slate-800 space-y-2">
-            <div className="flex items-center justify-between text-[11px] text-slate-400">
-              <span className="font-mono uppercase tracking-wider text-[10px] text-amber-400">
-                Mode Demo Aktif
-              </span>
-              <span>Simulasi Cepat</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => handleDemoLogin('coach')}
-                className="py-1.5 px-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded text-xs text-slate-200 transition-colors text-center"
-              >
-                Masuk Pelatih
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoLogin('parent')}
-                className="py-1.5 px-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded text-xs text-slate-200 transition-colors text-center"
-              >
-                Masuk Orang Tua
-              </button>
-            </div>
+      {/* Demo mode quick switcher */}
+      {isDemoMode && (
+        <div className="pt-3 border-t border-line space-y-2">
+          <div className="flex items-center justify-between text-xs text-2">
+            <Badge variant="warning" size="sm">Mode demo</Badge>
+            <span>Simulasi peran</span>
           </div>
-        )}
-      </div>
-    </div>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => handleDemoLogin('coach')}
+              className="w-full text-xs"
+            >
+              Masuk pelatih (Mode demo)
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => handleDemoLogin('parent')}
+              className="w-full text-xs"
+            >
+              Masuk orang tua (Mode demo)
+            </Button>
+          </div>
+        </div>
+      )}
+    </Dialog>
   );
 }
