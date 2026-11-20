@@ -14,27 +14,27 @@ export default function Table({
 }) {
   const getSortIcon = (colKey) => {
     if (sortKey !== colKey) {
-      return <ArrowUpDown className="w-3.5 h-3.5 text-[#788594] dark:text-[#64748B] opacity-60 group-hover:opacity-100" aria-hidden="true" />;
+      return <ArrowUpDown className="w-3.5 h-3.5 text-2 opacity-60 group-hover:opacity-100" aria-hidden="true" />;
     }
     return sortDirection === 'asc' ? (
-      <ArrowUp className="w-3.5 h-3.5 text-[#2E7D5B] dark:text-[#4FB286]" aria-hidden="true" />
+      <ArrowUp className="w-3.5 h-3.5 text-brand" aria-hidden="true" />
     ) : (
-      <ArrowDown className="w-3.5 h-3.5 text-[#2E7D5B] dark:text-[#4FB286]" aria-hidden="true" />
+      <ArrowDown className="w-3.5 h-3.5 text-brand" aria-hidden="true" />
     );
   };
 
   if (!data || data.length === 0) {
     return (
-      <div className={`w-full p-8 border border-[#DAD6CC] dark:border-[#2C3643] rounded-[8px] bg-white dark:bg-[#11161D] ${className}`}>
+      <div className={`w-full p-8 border border-line rounded-panel bg-panel ${className}`}>
         <EmptyState title={emptyMessage} />
       </div>
     );
   }
 
   return (
-    <div className={`w-full overflow-x-auto border border-[#DAD6CC] dark:border-[#2C3643] rounded-[8px] bg-white dark:bg-[#11161D] ${className}`}>
+    <div className={`w-full overflow-x-auto border border-line rounded-panel bg-panel ${className}`}>
       <table className="w-full text-left text-xs border-collapse">
-        <thead className={`border-b border-[#DAD6CC] dark:border-[#2C3643] bg-[#F6F4EF] dark:bg-[#1A212B] text-[#4A5360] dark:text-[#9AA6B5] ${stickyHeader ? 'sticky top-0 z-10' : ''}`}>
+        <thead className={`border-b border-line bg-raised text-2 ${stickyHeader ? 'sticky top-0 z-10' : ''}`}>
           <tr>
             {columns.map((col) => {
               const isSorted = sortKey === col.key;
@@ -56,7 +56,7 @@ export default function Table({
                     <button
                       type="button"
                       onClick={() => onSort(col.key)}
-                      className="group inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#4FB286] rounded cursor-pointer"
+                      className="group inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded cursor-pointer"
                     >
                       <span>{col.header}</span>
                       {getSortIcon(col.key)}
@@ -69,11 +69,11 @@ export default function Table({
             })}
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#DAD6CC] dark:divide-[#2C3643] text-[#14181F] dark:text-[#E8ECF1]">
+        <tbody className="divide-y divide-line text-1">
           {data.map((row, rowIdx) => (
             <tr
               key={row.id || row.player_id || rowIdx}
-              className="hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition-colors duration-150 ease-out"
+              className="hover:bg-raised/50 transition-colors duration-150 ease-out"
             >
               {columns.map((col) => {
                 const alignClass =

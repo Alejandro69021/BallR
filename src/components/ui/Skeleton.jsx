@@ -8,7 +8,7 @@ export default function Skeleton({
 }) {
   const variantClasses = {
     text: 'h-3.5 w-full rounded-[4px]',
-    rect: 'rounded-[6px]',
+    rect: 'rounded-control',
     circle: 'rounded-full'
   };
 
@@ -20,7 +20,7 @@ export default function Skeleton({
     <div
       aria-hidden="true"
       style={style}
-      className={`bg-slate-200 dark:bg-[#1A212B] animate-pulse ${variantClasses[variant] || variantClasses.text} ${className}`}
+      className={`bg-raised animate-pulse ${variantClasses[variant] || variantClasses.text} ${className}`}
     />
   );
 }

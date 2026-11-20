@@ -13,6 +13,7 @@ import InstallAppBanner from './components/InstallAppBanner';
 import OfflineIndicator from './components/OfflineIndicator';
 import LoadingSkeleton from './components/LoadingSkeleton';
 import VerificationView from './components/VerificationView';
+import Surface from './components/ui/Surface';
 
 import PassportPage from './pages/PassportPage';
 import MatchAnalysisPage from './pages/MatchAnalysisPage';
@@ -110,6 +111,17 @@ function MainApp() {
   const [toastInfo, setToastInfo] = useState(null);
 
   // Active player derived from URL or roster fallback
+  const surface = useMemo(() => {
+    const p = location.pathname;
+    if (p.startsWith('/verifikasi/')) return 'paper';
+    if (p === '/rujukan') return 'paper';
+    if (p.startsWith('/pemain/') && (p.includes('/laga') || p.includes('/pertumbuhan'))) {
+      return 'dark';
+    }
+    if (p.startsWith('/pemain/')) return 'paper';
+    return 'dark';
+  }, [location.pathname]);
+
   const activePlayer = useMemo(() => {
     if (!players || players.length === 0) {
       return {
@@ -231,7 +243,7 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05070B] text-white flex flex-col items-center justify-start pb-12 selection:bg-[#CCFF00] selection:text-black">
+    <Surface surface={surface} className="min-h-screen flex flex-col items-center justify-start pb-12 selection:bg-brand selection:text-app">
       <OfflineIndicator />
 
       <TopNav
@@ -385,7 +397,7 @@ function MainApp() {
       )}
 
       <InstallAppBanner />
-    </div>
+    </Surface>
   );
 }
 

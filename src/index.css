@@ -4,91 +4,83 @@
   --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
 
-  /* Dark Workspace Surface Tokens */
-  --color-dark-bg: #0B0F14;
-  --color-dark-surface: #11161D;
-  --color-dark-raised: #1A212B;
-  --color-dark-line: #2C3643;
-  --color-dark-border-control: #64748B;
-  --color-dark-text-1: #E8ECF1;
-  --color-dark-text-2: #9AA6B5;
-  --color-brand-dark: #4FB286;
+  --color-app: var(--app-bg);
+  --color-panel: var(--panel);
+  --color-raised: var(--raised);
+  --color-line: var(--line);
+  --color-control: var(--control-border);
+  --color-1: var(--text-1);
+  --color-2: var(--text-2);
+  --color-brand: var(--brand);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
 
-  /* Paper Dossier Surface Tokens */
-  --color-paper-bg: #F6F4EF;
-  --color-paper-surface: #FFFFFF;
-  --color-paper-line: #DAD6CC;
-  --color-paper-border-control: #788594;
-  --color-paper-text-1: #14181F;
-  --color-paper-text-2: #4A5360;
-  --color-brand-paper: #2E7D5B;
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
+  --color-series-3: var(--series-3);
+  --color-series-4: var(--series-4);
+  --color-series-5: var(--series-5);
 
-  /* Semantic Status Tokens (Validated WCAG AA >= 4.5:1) */
-  --color-semantic-warning-dark: #C98A1B;
-  --color-semantic-warning-paper: #8A5B00;
-  --color-semantic-danger-dark: #E06D66;
-  --color-semantic-danger-paper: #C2453D;
-  --color-semantic-success-dark: #4FB286;
-  --color-semantic-success-paper: #2E7D5B;
-
-  /* Data Series (Okabe-Ito Dark & Paper >= 3.0:1) */
-  --color-series-dark-1: #0072B2;
-  --color-series-dark-2: #E69F00;
-  --color-series-dark-3: #009E73;
-  --color-series-dark-4: #D55E00;
-  --color-series-dark-5: #CC79A7;
-
-  --color-series-paper-1: #0072B2;
-  --color-series-paper-2: #9E5B00;
-  --color-series-paper-3: #007A59;
-  --color-series-paper-4: #B34700;
-  --color-series-paper-5: #9C4472;
-
-  /* Brand Aliases */
-  --color-brand: #2E7D5B;
-  --color-brand-accent: #4FB286;
-
-  /* Shape Tokens */
   --radius-control: 6px;
   --radius-panel: 8px;
 }
 
+[data-surface="dark"] {
+  --app-bg: #0B0F14;
+  --panel: #11161D;
+  --raised: #1A212B;
+  --line: #2C3643;
+  --control-border: #64748B;
+  --text-1: #E8ECF1;
+  --text-2: #9AA6B5;
+  --brand: #4FB286;
+  --warning: #C98A1B;
+  --danger: #E06D66;
+  --success: #4FB286;
+  --series-1: #0072B2;
+  --series-2: #E69F00;
+  --series-3: #009E73;
+  --series-4: #D55E00;
+  --series-5: #CC79A7;
+}
+
+[data-surface="paper"] {
+  --app-bg: #F6F4EF;
+  --panel: #FFFFFF;
+  --raised: #F6F4EF;
+  --line: #DAD6CC;
+  --control-border: #788594;
+  --text-1: #14181F;
+  --text-2: #4A5360;
+  --brand: #2E7D5B;
+  --warning: #8A5B00;
+  --danger: #C2453D;
+  --success: #2E7D5B;
+  --series-1: #0072B2;
+  --series-2: #9E5B00;
+  --series-3: #007A59;
+  --series-4: #B34700;
+  --series-5: #9C4472;
+}
+
 :root {
-  --color-dark-bg: #0B0F14;
-  --color-dark-surface: #11161D;
-  --color-dark-raised: #1A212B;
-  --color-dark-line: #2C3643;
-  --color-dark-border-control: #64748B;
-  --color-dark-text-1: #E8ECF1;
-  --color-dark-text-2: #9AA6B5;
-  --color-brand-dark: #4FB286;
-
-  --color-paper-bg: #F6F4EF;
-  --color-paper-surface: #FFFFFF;
-  --color-paper-line: #DAD6CC;
-  --color-paper-border-control: #788594;
-  --color-paper-text-1: #14181F;
-  --color-paper-text-2: #4A5360;
-  --color-brand-paper: #2E7D5B;
-
-  --color-semantic-warning-dark: #C98A1B;
-  --color-semantic-warning-paper: #8A5B00;
-  --color-semantic-danger-dark: #E06D66;
-  --color-semantic-danger-paper: #C2453D;
-  --color-semantic-success-dark: #4FB286;
-  --color-semantic-success-paper: #2E7D5B;
-
-  --color-series-dark-1: #0072B2;
-  --color-series-dark-2: #E69F00;
-  --color-series-dark-3: #009E73;
-  --color-series-dark-4: #D55E00;
-  --color-series-dark-5: #CC79A7;
-
-  --color-series-paper-1: #0072B2;
-  --color-series-paper-2: #9E5B00;
-  --color-series-paper-3: #007A59;
-  --color-series-paper-4: #B34700;
-  --color-series-paper-5: #9C4472;
+  --app-bg: #0B0F14;
+  --panel: #11161D;
+  --raised: #1A212B;
+  --line: #2C3643;
+  --control-border: #64748B;
+  --text-1: #E8ECF1;
+  --text-2: #9AA6B5;
+  --brand: #4FB286;
+  --warning: #C98A1B;
+  --danger: #E06D66;
+  --success: #4FB286;
+  --series-1: #0072B2;
+  --series-2: #E69F00;
+  --series-3: #009E73;
+  --series-4: #D55E00;
+  --series-5: #CC79A7;
 }
 
 @layer base {
@@ -104,8 +96,8 @@
 
   body {
     font-family: var(--font-sans, 'IBM Plex Sans', -apple-system, sans-serif);
-    background-color: #0B0F14;
-    color: #E8ECF1;
+    background-color: var(--app-bg);
+    color: var(--text-1);
     -webkit-tap-highlight-color: transparent;
   }
   
@@ -142,14 +134,14 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0B0F14;
+  background: var(--app-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #2C3643;
+  background: var(--line);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748B;
+  background: var(--control-border);
 }
 
 /* Single popover shadow specification */
@@ -168,11 +160,30 @@
   animation: shakeKeyframe 0.5s cubic-bezier(.36,.07,.19,.97) both;
 }
 
-/* Print optimizations for A4 Dossier export */
+/* Print optimizations for A4 Dossier export - everything renders as paper */
 @media print {
   @page {
     size: A4 portrait;
     margin: 12mm;
+  }
+
+  [data-surface="dark"], [data-surface="paper"], :root {
+    --app-bg: #FFFFFF;
+    --panel: #FFFFFF;
+    --raised: #FFFFFF;
+    --line: #DAD6CC;
+    --control-border: #788594;
+    --text-1: #14181F;
+    --text-2: #4A5360;
+    --brand: #2E7D5B;
+    --warning: #8A5B00;
+    --danger: #C2453D;
+    --success: #2E7D5B;
+    --series-1: #0072B2;
+    --series-2: #9E5B00;
+    --series-3: #007A59;
+    --series-4: #B34700;
+    --series-5: #9C4472;
   }
 
   body {

@@ -13,7 +13,7 @@ export default function Button({
   ...props
 }) {
   const baseClasses =
-    'inline-flex items-center justify-center font-medium rounded-[6px] border transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer select-none';
+    'inline-flex items-center justify-center font-medium rounded-control border transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer select-none';
 
   const sizeClasses = {
     sm: 'h-8 px-2.5 text-xs gap-1.5',
@@ -22,13 +22,13 @@ export default function Button({
 
   const variantClasses = {
     primary:
-      'bg-[#2E7D5B] dark:bg-[#4FB286] text-white dark:text-[#0B0F14] border-transparent hover:brightness-105 active:brightness-95 focus-visible:ring-[#2E7D5B] dark:focus-visible:ring-[#4FB286]',
+      'bg-brand text-app border-transparent hover:opacity-90 active:opacity-95 focus-visible:ring-brand',
     secondary:
-      'bg-white dark:bg-[#1A212B] text-[#14181F] dark:text-[#E8ECF1] border-[#788594] dark:border-[#64748B] hover:bg-slate-50 dark:hover:bg-[#222B38] focus-visible:ring-[#4FB286]',
+      'bg-panel text-1 border-control hover:bg-raised focus-visible:ring-brand',
     danger:
-      'bg-[#C2453D] dark:bg-[#E06D66] text-white dark:text-[#0B0F14] border-transparent hover:brightness-105 active:brightness-95 focus-visible:ring-[#E06D66]',
+      'bg-danger text-app border-transparent hover:opacity-90 active:opacity-95 focus-visible:ring-danger',
     ghost:
-      'bg-transparent text-[#14181F] dark:text-[#E8ECF1] border-transparent hover:bg-black/5 dark:hover:bg-white/5 focus-visible:ring-[#4FB286]'
+      'bg-transparent text-1 border-transparent hover:bg-raised focus-visible:ring-brand'
   };
 
   return (

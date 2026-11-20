@@ -31,7 +31,7 @@ export default function Dialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs transition-opacity duration-150 ease-out"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity duration-150 ease-out"
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'dialog-title' : undefined}
@@ -45,17 +45,17 @@ export default function Dialog({
 
       <div
         ref={dialogRef}
-        className={`relative w-full max-w-lg rounded-[8px] border border-[#DAD6CC] dark:border-[#2C3643] bg-white dark:bg-[#11161D] text-[#14181F] dark:text-[#E8ECF1] shadow-popover z-10 p-5 space-y-4 ${className}`}
+        className={`relative w-full max-w-lg rounded-panel border border-line bg-panel text-1 shadow-popover z-10 p-5 space-y-4 ${className}`}
       >
-        <div className="flex items-start justify-between gap-3 pb-3 border-b border-[#DAD6CC] dark:border-[#2C3643]">
+        <div className="flex items-start justify-between gap-3 pb-3 border-b border-line">
           <div>
             {title && (
-              <h2 id="dialog-title" className="text-base font-semibold text-[#14181F] dark:text-[#E8ECF1]">
+              <h2 id="dialog-title" className="text-base font-semibold text-1">
                 {title}
               </h2>
             )}
             {description && (
-              <p id="dialog-desc" className="text-xs text-[#4A5360] dark:text-[#9AA6B5] mt-0.5">
+              <p id="dialog-desc" className="text-xs text-2 mt-0.5">
                 {description}
               </p>
             )}
@@ -71,7 +71,7 @@ export default function Dialog({
         <div className="space-y-3">{children}</div>
 
         {footer && (
-          <div className="pt-3 border-t border-[#DAD6CC] dark:border-[#2C3643] flex items-center justify-end gap-2">
+          <div className="pt-3 border-t border-line flex items-center justify-end gap-2">
             {footer}
           </div>
         )}

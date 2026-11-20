@@ -1,0 +1,240 @@
+import { describe, it, expect } from 'vitest';
+import fs from 'fs';
+import path from 'path';
+import React from 'react';
+import { render } from '@testing-library/react';
+import Surface from '../components/ui/Surface';
+
+/**
+ * Calculates WCAG 2.1 Relative Luminance for an sRGB hex code.
+ */
+function getRelativeLuminance(hex) {
+  const cleanHex = hex.replace('#', '').trim();
+  const r = parseInt(cleanHex.slice(0, 2), 16) / 255;
+  const g = parseInt(cleanHex.slice(2, 4), 16) / 255;
+  const b = parseInt(cleanHex.slice(4, 6), 16) / 255;
+
+  const [rl, gl, bl] = [r, g, b].map((c) =>
+    c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+  );
+
+  return 0.2126 * rl + 0.7152 * gl + 0.0722 * bl;
+}
+
+/**
+ * Calculates WCAG Contrast Ratio between two hex colors.
+ */
+function getContrastRatio(hex1, hex2) {
+  const lum1 = getRelativeLuminance(hex1);
+  const lum2 = getRelativeLuminance(hex2);
+  const lighter = Math.max(lum1, lum2);
+  const darker = Math.min(lum1, lum2);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/**
+ * Parses CSS custom properties from a specific CSS selector block.
+ */
+function parseCssSelectorBlock(cssContent, selector) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`${escapedSelector}\\s*\\{([^}]+)\\}`, 'm');
+  const match = cssContent.match(regex);
+  if (!match) return null;
+
+  const declarations = match[1];
+  const varMap = {};
+  const varRegex = /(--[a-zA-Z0-9_-]+)\s*:\s*([^;]+);/g;
+  let varMatch;
+
+  while ((varMatch = varRegex.exec(declarations)) !== null) {
+    varMap[varMatch[1].trim()] = varMatch[2].trim();
+  }
+
+  return varMap;
+}
+
+describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () => {
+  const cssPath = path.resolve(__dirname, '../index.css');
+  const cssContent = fs.readFileSync(cssPath, 'utf-8');
+
+  const requiredVars = [
+    '--app-bg',
+    '--panel',
+    '--raised',
+    '--line',
+    '--control-border',
+    '--text-1',
+    '--text-2',
+    '--brand',
+    '--warning',
+    '--danger',
+    '--success',
+    '--series-1',
+    '--series-2',
+    '--series-3',
+    '--series-4',
+    '--series-5'
+  ];
+
+  const darkTokens = parseCssSelectorBlock(cssContent, '[data-surface="dark"]');
+  const paperTokens = parseCssSelectorBlock(cssContent, '[data-surface="paper"]');
+
+  it('parses both [data-surface="dark"] and [data-surface="paper"] blocks from src/index.css', () => {
+    expect(darkTokens).not.toBeNull();
+    expect(paperTokens).not.toBeNull();
+  });
+
+  describe('1. Completeness: All required variables must exist in both surfaces', () => {
+    requiredVars.forEach((varName) => {
+      it(`verifies ${varName} is defined in [data-surface="dark"]`, () => {
+        expect(darkTokens[varName]).toBeDefined();
+        expect(darkTokens[varName]).toMatch(/^#[0-9a-fA-F]{6}$/);
+      });
+
+      it(`verifies ${varName} is defined in [data-surface="paper"]`, () => {
+        expect(paperTokens[varName]).toBeDefined();
+        expect(paperTokens[varName]).toMatch(/^#[0-9a-fA-F]{6}$/);
+      });
+    });
+  });
+
+  describe('2. WCAG Contrast Verification from Parsed CSS Tokens', () => {
+    const surfaces = [
+      { name: 'dark', tokens: darkTokens },
+      { name: 'paper', tokens: paperTokens }
+    ];
+
+    surfaces.forEach(({ name, tokens }) => {
+      describe(`Surface [data-surface="${name}"]`, () => {
+        const bgTargets = [
+          { label: 'app-bg', color: tokens['--app-bg'] },
+          { label: 'panel', color: tokens['--panel'] },
+          { label: 'raised', color: tokens['--raised'] }
+        ];
+
+        // Text-1 & Text-2 on app-bg, panel, raised >= 4.5:1
+        bgTargets.forEach(({ label, color }) => {
+          it(`text-1 reaches >= 4.5:1 against ${label}`, () => {
+            const ratio = getContrastRatio(tokens['--text-1'], color);
+            expect(ratio).toBeGreaterThanOrEqual(4.5);
+          });
+
+          it(`text-2 reaches >= 4.5:1 against ${label}`, () => {
+            const ratio = getContrastRatio(tokens['--text-2'], color);
+            expect(ratio).toBeGreaterThanOrEqual(4.5);
+          });
+        });
+
+        // Brand, warning, danger on app-bg and panel >= 4.5:1
+        ['--brand', '--warning', '--danger'].forEach((role) => {
+          it(`${role} reaches >= 4.5:1 against app-bg`, () => {
+            const ratio = getContrastRatio(tokens[role], tokens['--app-bg']);
+            expect(ratio).toBeGreaterThanOrEqual(4.5);
+          });
+
+          it(`${role} reaches >= 4.5:1 against panel`, () => {
+            const ratio = getContrastRatio(tokens[role], tokens['--panel']);
+            expect(ratio).toBeGreaterThanOrEqual(4.5);
+          });
+        });
+
+        // Control border against panel >= 3.0:1
+        it('control-border reaches >= 3.0:1 against panel', () => {
+          const ratio = getContrastRatio(tokens['--control-border'], tokens['--panel']);
+          expect(ratio).toBeGreaterThanOrEqual(3.0);
+        });
+
+        // Series 1..5 against panel >= 3.0:1
+        for (let i = 1; i <= 5; i++) {
+          const seriesKey = `--series-${i}`;
+          it(`${seriesKey} reaches >= 3.0:1 against panel`, () => {
+            const ratio = getContrastRatio(tokens[seriesKey], tokens['--panel']);
+            expect(ratio).toBeGreaterThanOrEqual(3.0);
+          });
+        }
+      });
+    });
+  });
+
+  describe('3. Zero Hex, Zero dark:, Zero Arbitrary Colors in src/components/ui/ & TopNav.jsx', () => {
+    const uiDir = path.resolve(__dirname, '../components/ui');
+    const uiFiles = fs
+      .readdirSync(uiDir)
+      .filter((file) => file.endsWith('.jsx') || file.endsWith('.js'))
+      .map((file) => path.join(uiDir, file));
+
+    const topNavPath = path.resolve(__dirname, '../components/TopNav.jsx');
+    const targetFiles = [...uiFiles, topNavPath];
+
+    targetFiles.forEach((filePath) => {
+      const fileName = path.basename(filePath);
+      const fileContent = fs.readFileSync(filePath, 'utf-8');
+
+      it(`verifies ${fileName} has no hard-coded hex colors`, () => {
+        // Matches #FFF, #123456, but not CSS comments or markdown
+        const hexMatches = fileContent.match(/#[0-9a-fA-F]{3,8}\b/g) || [];
+        expect(hexMatches, `Found hex colors in ${fileName}: ${hexMatches.join(', ')}`).toEqual([]);
+      });
+
+      it(`verifies ${fileName} has no "dark:" Tailwind prefixes`, () => {
+        const darkPrefixMatches = fileContent.match(/\bdark:[a-zA-Z0-9_\-[\]/]+/g) || [];
+        expect(
+          darkPrefixMatches,
+          `Found "dark:" classes in ${fileName}: ${darkPrefixMatches.join(', ')}`
+        ).toEqual([]);
+      });
+
+      it(`verifies ${fileName} has no arbitrary [#...] color classes`, () => {
+        const arbitraryMatches = fileContent.match(/\[#[a-zA-Z0-9]+\]/g) || [];
+        expect(
+          arbitraryMatches,
+          `Found arbitrary colors in ${fileName}: ${arbitraryMatches.join(', ')}`
+        ).toEqual([]);
+      });
+    });
+  });
+
+  describe('4. Render Test: <Surface> sets data-surface and computes different variable values', () => {
+    it('picks different computed variable values inside dark vs paper surface', () => {
+      // Inject CSS into test document head
+      const styleEl = document.createElement('style');
+      styleEl.innerHTML = `
+        [data-surface="dark"] {
+          --app-bg: #0B0F14;
+          --panel: #11161D;
+        }
+        [data-surface="paper"] {
+          --app-bg: #F6F4EF;
+          --panel: #FFFFFF;
+        }
+      `;
+      document.head.appendChild(styleEl);
+
+      const { container } = render(
+        <div>
+          <Surface surface="dark" data-testid="surface-dark">
+            <span id="child-dark">Gelap</span>
+          </Surface>
+          <Surface surface="paper" data-testid="surface-paper">
+            <span id="child-paper">Kertas</span>
+          </Surface>
+        </div>
+      );
+
+      const darkEl = container.querySelector('[data-testid="surface-dark"]');
+      const paperEl = container.querySelector('[data-testid="surface-paper"]');
+
+      expect(darkEl).toHaveAttribute('data-surface', 'dark');
+      expect(paperEl).toHaveAttribute('data-surface', 'paper');
+
+      const darkAppBg = window.getComputedStyle(darkEl).getPropertyValue('--app-bg').trim();
+      const paperAppBg = window.getComputedStyle(paperEl).getPropertyValue('--app-bg').trim();
+
+      expect(darkAppBg.toLowerCase()).toBe('#0b0f14');
+      expect(paperAppBg.toLowerCase()).toBe('#f6f4ef');
+      expect(darkAppBg).not.toBe(paperAppBg);
+
+      document.head.removeChild(styleEl);
+    });
+  });
+});

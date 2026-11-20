@@ -27,44 +27,40 @@ export default function RefChip({ referenceId, customLabel }) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors cursor-pointer align-baseline select-none"
+        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-control text-[10px] font-mono bg-raised hover:bg-panel text-2 hover:text-1 border border-control transition-colors cursor-pointer align-baseline select-none"
         title={`Lihat rujukan: ${ref.title}`}
         aria-haspopup="dialog"
       >
-        <BookOpen className="w-3 h-3 text-[#4FB286] shrink-0" />
+        <BookOpen className="w-3 h-3 text-brand shrink-0" />
         <span className="truncate max-w-[160px]">{labelText}</span>
       </button>
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
           role="dialog"
           aria-modal="true"
           aria-labelledby="ref-modal-title"
         >
           <div className="fixed inset-0" onClick={() => setIsOpen(false)} aria-hidden="true" />
 
-          <div className="relative w-full max-w-md bg-[#0C111D] border border-slate-800 rounded-lg p-5 text-white z-10 space-y-4 shadow-xl">
+          <div className="relative w-full max-w-md bg-panel border border-line rounded-panel p-5 text-1 z-10 space-y-4 shadow-popover">
             {/* Header */}
-            <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-800">
+            <div className="flex items-start justify-between gap-3 pb-3 border-b border-line">
               <div className="flex items-start gap-2.5">
-                <div className="p-1.5 rounded bg-slate-800 text-[#4FB286] mt-0.5 shrink-0">
+                <div className="p-1.5 rounded-control bg-raised text-brand mt-0.5 shrink-0">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-2">
                       Rujukan Dokumen
                     </span>
-                    <span className={`text-[9px] font-mono uppercase px-1.5 py-0.2 rounded border ${
-                      ref.status === 'located'
-                        ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
-                        : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
-                    }`}>
+                    <span className="text-[9px] font-mono uppercase px-1.5 py-0.2 rounded border bg-raised border-line text-2">
                       {ref.status || 'unverified'}
                     </span>
                   </div>
-                  <h3 id="ref-modal-title" className="text-sm font-semibold text-white leading-snug mt-0.5">
+                  <h3 id="ref-modal-title" className="text-sm font-semibold text-1 leading-snug mt-0.5">
                     {ref.title}
                   </h3>
                 </div>
@@ -72,7 +68,7 @@ export default function RefChip({ referenceId, customLabel }) {
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1 rounded text-2 hover:text-1 hover:bg-raised transition-colors"
                 aria-label="Tutup rujukan"
               >
                 <X className="w-4 h-4" />
@@ -81,33 +77,33 @@ export default function RefChip({ referenceId, customLabel }) {
 
             {/* Details */}
             <div className="space-y-2 text-xs">
-              <div className="grid grid-cols-2 gap-2 p-2.5 rounded bg-slate-950 border border-slate-800 font-mono text-[11px]">
+              <div className="grid grid-cols-2 gap-2 p-2.5 rounded bg-raised border border-line font-mono text-[11px]">
                 <div>
-                  <span className="text-slate-500 block">Penerbit / Penulis:</span>
-                  <span className="text-slate-200">{ref.publisher || 'Belum terkonfirmasi'}</span>
+                  <span className="text-2 block">Penerbit / Penulis:</span>
+                  <span className="text-1">{ref.publisher || 'Belum terkonfirmasi'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block">Tahun Publikasi:</span>
-                  <span className="text-slate-200">{ref.year || 'Belum terkonfirmasi'}</span>
+                  <span className="text-2 block">Tahun Publikasi:</span>
+                  <span className="text-1">{ref.year || 'Belum terkonfirmasi'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block">Bagian / Halaman:</span>
-                  <span className="text-[#4FB286] font-medium">{ref.section || ref.section_page || 'Dokumen penuh'}</span>
+                  <span className="text-2 block">Bagian / Halaman:</span>
+                  <span className="text-brand font-medium">{ref.section || ref.section_page || 'Dokumen penuh'}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block">Kategori:</span>
-                  <span className="text-slate-300 capitalize">{ref.type}</span>
+                  <span className="text-2 block">Kategori:</span>
+                  <span className="text-1 capitalize">{ref.type}</span>
                 </div>
               </div>
 
               {ref.notes && (
-                <div className="p-2.5 rounded bg-slate-900 border border-slate-800 text-slate-300 text-[11px] leading-relaxed">
-                  <span className="font-semibold text-slate-200 block mb-0.5">Catatan Metodologi:</span>
+                <div className="p-2.5 rounded bg-raised border border-line text-2 text-[11px] leading-relaxed">
+                  <span className="font-semibold text-1 block mb-0.5">Catatan Metodologi:</span>
                   {ref.notes}
                 </div>
               )}
 
-              <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1 font-mono">
+              <div className="flex items-center justify-between text-[10px] text-2 pt-1 font-mono">
                 <span className="flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
                   Diverifikasi: {ref.verified_on || 'Belum diverifikasi mandiri'}
@@ -119,25 +115,25 @@ export default function RefChip({ referenceId, customLabel }) {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+            <div className="flex items-center justify-between pt-2 border-t border-line">
               {ref.url ? (
                 <a
                   href={ref.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-[#4FB286] hover:underline font-medium"
+                  className="inline-flex items-center gap-1 text-xs text-brand hover:underline font-medium"
                 >
                   <span>Buka Dokumen Sumber</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               ) : (
-                <span className="text-[11px] text-slate-500 italic">Tautan dokumen tidak tersedia</span>
+                <span className="text-[11px] text-2 italic">Tautan dokumen tidak tersedia</span>
               )}
 
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium cursor-pointer"
+                className="px-3 py-1 rounded bg-raised hover:bg-panel text-1 border border-control text-xs font-medium cursor-pointer transition-colors"
               >
                 Tutup
               </button>
