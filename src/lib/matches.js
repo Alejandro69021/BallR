@@ -177,6 +177,14 @@ export function validateEvent(event, pitchDimensions = { pitch_length_m: 90, pit
     throw new Error('Hasil kejadian harus "success" atau "fail"');
   }
 
+  // 9. Video time in seconds (0..14400, optional)
+  if (event.video_time_s !== null && event.video_time_s !== undefined && event.video_time_s !== '') {
+    const vts = Number(event.video_time_s);
+    if (isNaN(vts) || vts < 0 || vts > 14400) {
+      throw new Error('Waktu video harus antara 0 dan 14400 detik');
+    }
+  }
+
   return true;
 }
 
@@ -225,6 +233,8 @@ function createInitialDemoState() {
     own_score: 2,
     opponent_score: 1,
     status: 'final',
+    video_offset_s: null,
+    video_offset_p2_s: null,
     created_by: 'demo-coach-01',
     created_at: '2026-10-18T08:00:00Z',
     updated_at: '2026-10-18T10:00:00Z'
@@ -284,6 +294,8 @@ function createInitialDemoState() {
     own_score: null,
     opponent_score: null,
     status: 'draft',
+    video_offset_s: null,
+    video_offset_p2_s: null,
     created_by: 'demo-coach-01',
     created_at: '2026-10-20T08:00:00Z',
     updated_at: '2026-10-20T08:00:00Z'
@@ -696,7 +708,8 @@ export async function addEvents(matchId, events = []) {
     y_m: evt.y_m !== null && evt.y_m !== undefined && evt.y_m !== '' ? Number(evt.y_m) : null,
     end_x_m: evt.end_x_m !== null && evt.end_x_m !== undefined && evt.end_x_m !== '' ? Number(evt.end_x_m) : null,
     end_y_m: evt.end_y_m !== null && evt.end_y_m !== undefined && evt.end_y_m !== '' ? Number(evt.end_y_m) : null,
-    note: evt.note || ''
+    note: evt.note || '',
+    video_time_s: evt.video_time_s !== null && evt.video_time_s !== undefined && evt.video_time_s !== '' ? Number(Number(evt.video_time_s).toFixed(1)) : null
   }));
 
   if (isDemoModeActive()) {
@@ -853,3 +866,67 @@ export async function listParticipants(matchId) {
   if (error) throw error;
   return data || [];
 }
+
+/**
+ * Get video sync offsets for a match (period 1 and period 2).
+ */
+export function getMatchVideoOffsets(matchId) {
+  if (!matchId) return { p1: null, p2: null };
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      const raw = window.localStorage.getItem(`ballr_video_offset_${matchId}`);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return {
+          p1: parsed.p1 != null ? Number(parsed.p1) : null,
+          p2: parsed.p2 != null ? Number(parsed.p2) : null
+        };
+      }
+    } catch {}
+  }
+
+  if (isDemoModeActive()) {
+    const store = getDemoStore();
+    const match = store.matches?.find((m) => m.id === matchId);
+    if (match) {
+      return {
+        p1: match.video_offset_s != null ? Number(match.video_offset_s) : null,
+        p2: match.video_offset_p2_s != null ? Number(match.video_offset_p2_s) : null
+      };
+    }
+  }
+
+  return { p1: null, p2: null };
+}
+
+/**
+ * Update video sync offsets for a match.
+ */
+export async function updateMatchVideoOffsets(matchId, { offsetP1, offsetP2 }) {
+  if (!matchId) return;
+
+  const p1Val = offsetP1 !== null && offsetP1 !== undefined && offsetP1 !== '' ? Number(offsetP1) : null;
+  const p2Val = offsetP2 !== null && offsetP2 !== undefined && offsetP2 !== '' ? Number(offsetP2) : null;
+
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      window.localStorage.setItem(
+        `ballr_video_offset_${matchId}`,
+        JSON.stringify({ p1: p1Val, p2: p2Val })
+      );
+    } catch (e) {
+      console.warn('Gagal menyimpan offset video di localStorage:', e);
+    }
+  }
+
+  if (isDemoModeActive()) {
+    const store = getDemoStore();
+    const match = store.matches?.find((m) => m.id === matchId);
+    if (match) {
+      match.video_offset_s = p1Val;
+      match.video_offset_p2_s = p2Val;
+      saveDemoStore(store);
+    }
+  }
+}
+

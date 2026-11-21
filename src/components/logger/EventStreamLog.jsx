@@ -3,6 +3,7 @@ import { Target, Shield, Flame, Activity, Undo2, RefreshCw } from 'lucide-react'
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
 import { EVENT_TYPE_LABELS } from '../../lib/matches';
+import { formatSecondsToTime } from '../../lib/calculations';
 
 export default function EventStreamLog({
   events = [],
@@ -10,6 +11,7 @@ export default function EventStreamLog({
   playerMap = {},
   onUndo,
   onFlush,
+  onPlayClip,
   isFlushing = false,
   isReadOnly = false,
   isDemoMode = import.meta.env?.VITE_DEMO_MODE === 'true'
@@ -226,6 +228,17 @@ export default function EventStreamLog({
                       <span className="font-mono text-2 text-xs hidden sm:inline">
                         ({evt.x_m}, {evt.y_m} m)
                       </span>
+                    )}
+
+                    {evt.video_time_s != null && onPlayClip && (
+                      <button
+                        type="button"
+                        onClick={() => onPlayClip(evt.video_time_s)}
+                        className="font-mono text-brand hover:underline cursor-pointer text-xs"
+                        title="Putar video kejadian"
+                      >
+                        [▶ {formatSecondsToTime(evt.video_time_s)}]
+                      </button>
                     )}
                   </div>
 

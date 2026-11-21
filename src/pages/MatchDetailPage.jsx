@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -24,6 +24,7 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import EmptyState from '../components/ui/EmptyState';
 import EventMap from '../components/match/EventMap';
+import LocalVideoPanel from '../components/video/LocalVideoPanel';
 
 export default function MatchDetailPage({ userRole = 'public', onToast }) {
   const { matchId } = useParams();
@@ -50,6 +51,26 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
 
   // Deleting event state
   const [deletingEvtId, setDeletingEvtId] = useState(null);
+
+  // Local Video Panel state
+  const videoPanelRef = useRef(null);
+  const [hasVideo, setHasVideo] = useState(false);
+  const [isVideoPanelOpen, setIsVideoPanelOpen] = useState(false);
+
+  const handlePlayClip = (videoTimeS) => {
+    setIsVideoPanelOpen(true);
+    if (!hasVideo) {
+      onToast?.({
+        title: 'Video Belum Dipilih',
+        subtext: 'Pilih video untuk memutar klip',
+        variant: 'warning'
+      });
+      videoPanelRef.current?.openFilePicker?.();
+      return;
+    }
+    const seekTarget = Math.max(0, Number(videoTimeS) - 5);
+    videoPanelRef.current?.seekTo?.(seekTarget, true);
+  };
 
   // Map player_id to friendly display
   const playerMap = useMemo(() => {
@@ -377,17 +398,30 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       header: 'Aksi',
       align: 'right',
       render: (_val, row) => {
-        if (match?.status === 'final') return null;
         return (
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={deletingEvtId === row.id}
-            onClick={() => handleDeleteEvent(row.id)}
-            className="text-2 hover:text-danger"
-          >
-            Hapus
-          </Button>
+          <div className="flex items-center justify-end gap-1.5 flex-wrap">
+            {row.video_time_s != null && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => handlePlayClip(row.video_time_s)}
+                className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
+              >
+                Putar
+              </Button>
+            )}
+            {match?.status !== 'final' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={deletingEvtId === row.id}
+                onClick={() => handleDeleteEvent(row.id)}
+                className="text-2 hover:text-danger min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
+              >
+                Hapus
+              </Button>
+            )}
+          </div>
         );
       }
     }
@@ -586,6 +620,34 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
           )}
         </div>
       </div>
+
+      {/* Local Video Panel Section */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-1">Rekaman Video Pertandingan</h2>
+            {hasVideo && <Badge variant="brand" size="sm">Video Terhubung</Badge>}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsVideoPanelOpen((prev) => !prev)}
+            className="min-h-[44px] sm:min-h-0 text-xs"
+          >
+            {isVideoPanelOpen ? 'Sembunyikan Panel Video' : 'Buka Panel Video'}
+          </Button>
+        </div>
+
+        <div className={isVideoPanelOpen ? 'block' : 'hidden'}>
+          <LocalVideoPanel
+            ref={videoPanelRef}
+            matchId={matchId}
+            period={1}
+            onVideoLoadedChange={setHasVideo}
+            onToast={onToast}
+          />
+        </div>
+      </section>
 
       {/* Event Map Section */}
       <div className="space-y-3 pt-2">

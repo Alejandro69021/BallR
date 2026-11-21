@@ -5,6 +5,8 @@ import TactileKeypad from './logger/TactileKeypad';
 import EventStreamLog from './logger/EventStreamLog';
 import MatchRecapModal from './logger/MatchRecapModal';
 import Button from './ui/Button';
+import Badge from './ui/Badge';
+import LocalVideoPanel from './video/LocalVideoPanel';
 import {
   listEvents,
   addEvents,
@@ -31,6 +33,11 @@ export default function FastPitchLogger({
   const [isRunning, setIsRunning] = useState(false);
   const [period, setPeriod] = useState(1);
   const timerRef = useRef(null);
+
+  // Local Video Panel State
+  const videoPanelRef = useRef(null);
+  const [hasVideo, setHasVideo] = useState(false);
+  const [isVideoPanelOpen, setIsVideoPanelOpen] = useState(true);
 
   // Load clock state from localStorage on mount
   useEffect(() => {
@@ -253,7 +260,24 @@ export default function FastPitchLogger({
       return;
     }
 
-    const calculatedMinute = Number((timerSeconds / 60).toFixed(2));
+    let calculatedMinute = Number((timerSeconds / 60).toFixed(2));
+    let videoTimeS = null;
+
+    if (hasVideo && videoPanelRef.current) {
+      const vTime = videoPanelRef.current.getCurrentTime?.();
+      if (vTime != null && !isNaN(vTime)) {
+        videoTimeS = Number(Number(vTime).toFixed(1));
+        const { p1, p2 } = videoPanelRef.current.getOffsets?.() || {};
+        const activeOffset = period === 1 ? p1 : (period === 2 ? p2 : null);
+
+        if (activeOffset != null && !isNaN(activeOffset)) {
+          calculatedMinute = Number(Math.max(0, (vTime - activeOffset) / 60).toFixed(2));
+        } else {
+          calculatedMinute = Number((timerSeconds / 60).toFixed(2));
+        }
+      }
+    }
+
     const clientEventId = generateUUID();
 
     const fullEvent = {
@@ -261,7 +285,8 @@ export default function FastPitchLogger({
       client_event_id: clientEventId,
       match_id: matchId,
       period,
-      minute: calculatedMinute
+      minute: calculatedMinute,
+      ...(videoTimeS != null ? { video_time_s: videoTimeS } : {})
     };
 
     // Client-side validation before appending
@@ -390,15 +415,52 @@ export default function FastPitchLogger({
         isReadOnly={isReadOnly}
       />
 
-      {/* Tactile Keypad */}
-      <TactileKeypad
-        match={match}
-        participants={participants}
-        selectedPlayerId={selectedPlayerId}
-        onSelectPlayer={(pid) => setSelectedPlayerId(pid)}
-        onLogEvent={handleLogEvent}
-        isReadOnly={isReadOnly}
-      />
+      {/* Time Source Indicator & Video Toggle */}
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2">
+          <Badge variant={hasVideo ? 'brand' : 'neutral'} size="sm">
+            Sumber waktu: {hasVideo ? 'Video' : 'Stopwatch'}
+          </Badge>
+          {hasVideo && (
+            <span className="text-xs text-2 font-mono">
+              (Waktu video aktif)
+            </span>
+          )}
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsVideoPanelOpen((prev) => !prev)}
+          className="min-h-[44px] sm:min-h-0 text-xs"
+        >
+          {isVideoPanelOpen ? 'Sembunyikan Video' : 'Tampilkan Video'}
+        </Button>
+      </div>
+
+      {/* Main Logging Area: Video panel beside (>= lg) or above (< lg) the keypad */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+        <div className={isVideoPanelOpen ? 'lg:col-span-6 xl:col-span-5 space-y-4' : 'hidden'}>
+          <LocalVideoPanel
+            ref={videoPanelRef}
+            matchId={matchId}
+            period={period}
+            onVideoLoadedChange={setHasVideo}
+            onToast={onToast}
+          />
+        </div>
+
+        <div className={isVideoPanelOpen ? 'lg:col-span-6 xl:col-span-7 space-y-4' : 'lg:col-span-12 space-y-4'}>
+          <TactileKeypad
+            match={match}
+            participants={participants}
+            selectedPlayerId={selectedPlayerId}
+            onSelectPlayer={(pid) => setSelectedPlayerId(pid)}
+            onLogEvent={handleLogEvent}
+            isReadOnly={isReadOnly}
+          />
+        </div>
+      </div>
 
       {/* Event Stream Log & Honest Counts */}
       <EventStreamLog
@@ -407,6 +469,7 @@ export default function FastPitchLogger({
         playerMap={playerMap}
         onUndo={handleUndo}
         onFlush={flushOutbox}
+        onPlayClip={(vTime) => videoPanelRef.current?.seekTo(Math.max(0, vTime - 5))}
         isFlushing={isFlushing}
         isReadOnly={isReadOnly}
       />
