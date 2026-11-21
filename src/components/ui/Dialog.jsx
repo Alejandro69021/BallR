@@ -12,6 +12,11 @@ export default function Dialog({
   className = ''
 }) {
   const dialogRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -21,7 +26,7 @@ export default function Dialog({
       'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
     const timer = setTimeout(() => {
-      if (dialogRef.current) {
+      if (dialogRef.current && !dialogRef.current.contains(document.activeElement)) {
         const focusables = dialogRef.current.querySelectorAll(focusableSelector);
         if (focusables.length > 0) {
           focusables[0].focus();
@@ -32,7 +37,7 @@ export default function Dialog({
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         e.preventDefault();
-        onClose?.();
+        onCloseRef.current?.();
         return;
       }
 
@@ -67,7 +72,7 @@ export default function Dialog({
         previouslyFocused.focus();
       }
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
