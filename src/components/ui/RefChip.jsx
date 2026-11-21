@@ -27,7 +27,7 @@ export default function RefChip({ referenceId, customLabel }) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-control text-xs font-mono bg-raised hover:bg-panel text-2 hover:text-1 border border-control transition-colors cursor-pointer align-baseline select-none"
+        className="inline-flex items-center gap-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 px-2 py-1 sm:px-1.5 sm:py-0.5 rounded-control text-xs font-mono bg-raised hover:bg-panel text-2 hover:text-1 border border-control transition-colors cursor-pointer align-baseline select-none"
         title={`Lihat rujukan: ${ref.title}`}
         aria-haspopup="dialog"
       >
@@ -68,7 +68,7 @@ export default function RefChip({ referenceId, customLabel }) {
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="p-1 rounded text-2 hover:text-1 hover:bg-raised transition-colors"
+                className="p-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 rounded text-2 hover:text-1 hover:bg-raised transition-colors flex items-center justify-center"
                 aria-label="Tutup rujukan"
               >
                 <X className="w-4 h-4" />

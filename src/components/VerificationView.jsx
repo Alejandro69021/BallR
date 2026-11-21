@@ -99,7 +99,7 @@ export default function VerificationView({ players = [] }) {
       <div>
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-xs text-2 hover:text-1 px-2.5 py-1 rounded-control bg-panel border border-control transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          className="inline-flex items-center gap-1.5 text-xs text-2 hover:text-1 px-3 py-1.5 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:px-2.5 sm:py-1 rounded-control bg-panel border border-control transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
         >
           <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
           <span>Kembali ke beranda</span>
@@ -174,7 +174,7 @@ export default function VerificationView({ players = [] }) {
                   variant="ghost"
                   size="sm"
                   onClick={handleCopyHash}
-                  className="h-7 px-2 text-xs text-2 hover:text-1"
+                  className="sm:h-7 px-2 text-xs text-2 hover:text-1"
                   icon={copied ? <Check className="w-4 h-4 text-brand" strokeWidth={1.5} /> : <Copy className="w-4 h-4" strokeWidth={1.5} />}
                 >
                   {copied ? 'Tersalin' : 'Salin hash'}

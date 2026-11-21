@@ -61,14 +61,14 @@ export default function AuthModal({
       className="max-w-sm"
     >
       {/* Mode toggle */}
-      <div className="grid grid-cols-2 gap-1 p-0.5 bg-app border border-line rounded-control text-xs font-medium">
+      <div className="grid grid-cols-2 gap-2 p-0.5 bg-app border border-line rounded-control text-xs font-medium">
         <button
           type="button"
           onClick={() => {
             setAuthMode('password');
             setErrorMsg('');
           }}
-          className={`py-1.5 px-2 rounded-control transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+          className={`py-1.5 px-2 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center rounded-control transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
             authMode === 'password'
               ? 'bg-panel text-1 shadow-sm'
               : 'text-2 hover:text-1'
@@ -82,7 +82,7 @@ export default function AuthModal({
             setAuthMode('magic-link');
             setErrorMsg('');
           }}
-          className={`py-1.5 px-2 rounded-control transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+          className={`py-1.5 px-2 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center rounded-control transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
             authMode === 'magic-link'
               ? 'bg-panel text-1 shadow-sm'
               : 'text-2 hover:text-1'

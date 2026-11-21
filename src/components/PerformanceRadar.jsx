@@ -15,9 +15,9 @@ export default function PerformanceRadar({
   athleteName = 'Atlet',
   period = 'Oktober 2026'
 }) {
-  const size = 280;
+  const size = 320;
   const center = size / 2;
-  const radius = 95;
+  const radius = 90;
   const totalPoints = 6;
 
   // Align attributes to the canonical 6 items
@@ -155,7 +155,7 @@ export default function PerformanceRadar({
                 const angle = (i * 2 * Math.PI) / totalPoints - Math.PI / 2;
                 const { x, y } = getCoordinates(attr.value ?? 0, i);
 
-                const labelRadius = radius + 22;
+                const labelRadius = radius + 26;
                 const lx = center + labelRadius * Math.cos(angle);
                 const ly = center + labelRadius * Math.sin(angle);
 
@@ -175,8 +175,9 @@ export default function PerformanceRadar({
                       x={lx}
                       y={ly + 4}
                       textAnchor="middle"
-                      fill="var(--text-1)"
-                      fontSize="11"
+                      fill="var(--text-2)"
+                      className="radar-label fill-[var(--text-2)] text-xs select-none"
+                      style={{ fontSize: '12px' }}
                       fontFamily="sans-serif"
                       fontWeight="500"
                     >

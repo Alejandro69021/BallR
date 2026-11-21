@@ -57,8 +57,8 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
     if (players && players.length > 0) {
       players.forEach((p) => {
         const pid = p.player_id || p.public_id;
-        const num = p.personal_info?.jersey_number ?? '-';
-        const name = p.personal_info?.nickname || p.personal_info?.full_name || pid;
+        const num = p.personal_info?.jersey_number != null ? p.personal_info.jersey_number : null;
+        const name = p.personal_info?.nickname || p.personal_info?.full_name || 'Pemain tanpa nama';
         map[pid] = {
           name,
           number: num,
@@ -66,8 +66,26 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         };
       });
     }
+    if (participants && participants.length > 0) {
+      participants.forEach((part) => {
+        if (!map[part.player_id]) {
+          map[part.player_id] = {
+            name: part.player_name || 'Pemain tanpa nama',
+            number: part.jersey_number != null ? part.jersey_number : null,
+            position: part.position || ''
+          };
+        } else {
+          if (map[part.player_id].number == null && part.jersey_number != null) {
+            map[part.player_id].number = part.jersey_number;
+          }
+          if ((!map[part.player_id].name || map[part.player_id].name.startsWith('PLAYER-') || map[part.player_id].name.startsWith('WK-')) && part.player_name) {
+            map[part.player_id].name = part.player_name;
+          }
+        }
+      });
+    }
     return map;
-  }, [players]);
+  }, [players, participants]);
 
   const loadMatchData = useCallback(async () => {
     if (!matchId) return;
@@ -128,11 +146,12 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
 
     const ownList = Object.entries(counts)
       .map(([pid, count]) => {
-        const info = playerMap[pid] || { name: pid, number: '-' };
+        const info = playerMap[pid] || { name: 'Pemain tanpa nama', number: null };
+        const name = info.name && !info.name.startsWith('PLAYER-') && !info.name.startsWith('WK-') ? info.name : 'Pemain tanpa nama';
         return {
           id: pid,
-          name: info.name,
-          number: info.number,
+          name,
+          number: info.number != null && info.number !== '-' && info.number !== '' ? info.number : null,
           count
         };
       })
@@ -286,11 +305,17 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         if (row.team === 'own') {
           if (!row.player_id) return <span className="text-2">-</span>;
           const info = playerMap[row.player_id];
-          if (!info) return <span className="font-mono text-2">{row.player_id}</span>;
+          const name = info?.name && !info.name.startsWith('PLAYER-') && !info.name.startsWith('WK-')
+            ? info.name
+            : 'Pemain tanpa nama';
+          const numDisplay =
+            info?.number != null && info?.number !== '-' && info?.number !== ''
+              ? `#${info.number}`
+              : 'Tanpa nomor';
           return (
             <div className="flex items-center gap-1.5">
-              <span className="font-mono text-2">#{info.number}</span>
-              <span className="font-medium text-1">{info.name}</span>
+              <span className="font-mono text-2">{numDisplay}</span>
+              <span className="font-medium text-1">{name}</span>
             </div>
           );
         }
@@ -538,7 +563,9 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                   key={p.id}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control bg-raised border border-line text-xs"
                 >
-                  <span className="font-mono text-2">#{p.number}</span>
+                  <span className="font-mono text-2">
+                    {p.number != null ? `#${p.number}` : 'Tanpa nomor'}
+                  </span>
                   <span className="text-1 font-medium">{p.name}</span>
                   <span className="font-mono tabular-nums text-brand font-semibold">n = {p.count}</span>
                 </div>
@@ -592,7 +619,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                 required
                 value={ownScoreInput}
                 onChange={(e) => setOwnScoreInput(e.target.value)}
-                className="w-full px-3 h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
 
@@ -604,7 +631,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                 required
                 value={oppScoreInput}
                 onChange={(e) => setOppScoreInput(e.target.value)}
-                className="w-full px-3 h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
           </div>

@@ -48,7 +48,7 @@ export default function Toast({
           type="button"
           onClick={onClose}
           aria-label="Tutup pemberitahuan"
-          className="p-1 rounded text-2 hover:text-1 transition-colors cursor-pointer"
+          className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 p-1 rounded text-2 hover:text-1 transition-colors cursor-pointer flex items-center justify-center"
         >
           <X className="w-3.5 h-3.5" />
         </button>

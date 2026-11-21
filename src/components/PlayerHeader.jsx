@@ -1,6 +1,7 @@
 import React from 'react';
 import { Share2 } from 'lucide-react';
 import Button from './ui/Button';
+import { formatPositionLabel, formatPreferredFoot, formatAttributeName } from '../lib/displayLabels';
 
 export default function PlayerHeader({ player, personalInfo: propPersonalInfo, onOpenStoryCard }) {
   const personalInfo = propPersonalInfo || player?.personal_info || {};
@@ -19,7 +20,8 @@ export default function PlayerHeader({ player, personalInfo: propPersonalInfo, o
   const ageGroupDisplay = age_group || personalInfo?.age_group || 'U-13';
 
   // 1. Position
-  const positionDisplay = position || 'Belum ada data';
+  const positionDisplay = formatPositionLabel(position);
+  const preferredFootDisplay = formatPreferredFoot(preferred_foot);
 
   // 2. Age group
   // ageGroupDisplay
@@ -45,7 +47,7 @@ export default function PlayerHeader({ player, personalInfo: propPersonalInfo, o
   const top3Display =
     top3Attributes.length > 0
       ? top3Attributes
-          .map((a) => `${a.name}: ${a.value} (skala 0-100)`)
+          .map((a) => `${formatAttributeName(a.name)}: ${a.value} (skala 0-100)`)
           .join(' · ')
       : 'Belum ada data';
 
@@ -95,7 +97,7 @@ export default function PlayerHeader({ player, personalInfo: propPersonalInfo, o
                 {academy?.name || 'Akademi Sepakbola'} {academy?.city ? `· ${academy.city}` : ''}
               </p>
               <p>
-                Kelompok usia: <span className="text-1 font-medium">{ageGroupDisplay}</span> · Posisi: <span className="text-1 font-medium">{positionDisplay}</span> · Kaki utama: <span className="text-1 font-medium">{preferred_foot || 'Belum ada data'}</span>
+                Kelompok usia: <span className="text-1 font-medium">{ageGroupDisplay}</span> · Posisi: <span className="text-1 font-medium">{positionDisplay}</span> · Kaki utama: <span className="text-1 font-medium">{preferredFootDisplay}</span>
               </p>
             </div>
           </div>

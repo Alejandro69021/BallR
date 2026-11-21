@@ -12,6 +12,12 @@
 import { EVENT_TYPE_LABELS, ALLOWED_EVENT_TYPES } from '../matches';
 
 /**
+ * Minimum sample size threshold for statistical stability.
+ * When n < SMALL_SAMPLE_N, figures must be flagged as "sampel kecil".
+ */
+export const SMALL_SAMPLE_N = 10;
+
+/**
  * Registry definisi metrik resmi.
  */
 export const METRIC_DEFINITIONS = [
@@ -193,7 +199,7 @@ export function countsByPlayer(events = [], participants = []) {
       is_starter: Boolean(part.is_starter),
       counts_by_type: counts,
       n: totalForPlayer,
-      small_sample: totalForPlayer < 5,
+      small_sample: totalForPlayer < SMALL_SAMPLE_N,
       unit: 'kejadian'
     };
   });

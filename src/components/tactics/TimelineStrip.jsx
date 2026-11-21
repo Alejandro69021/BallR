@@ -100,7 +100,7 @@ export default function TimelineStrip({
           <div className="flex items-center gap-2">
             <span className="text-xs text-2">Urutan bingkai:</span>
             {isEditing ? (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <IconButton
                   icon={<ChevronLeft className="w-4 h-4" strokeWidth={1.5} />}
                   label="Geser ke kiri"

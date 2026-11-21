@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatPositionLabel, formatPreferredFoot } from '../../lib/displayLabels';
 
 export function formatPlayerName(fullName, isPrivate) {
   if (!fullName) return 'Belum ada data';
@@ -8,6 +9,30 @@ export function formatPlayerName(fullName, isPrivate) {
     .split(/\s+/)
     .map((part) => `${part.charAt(0).toUpperCase()}.`)
     .join(' ');
+}
+
+/**
+ * Truncates coach narrative up to 280 characters without cutting mid-sentence.
+ * Appends summary notice if shortened.
+ * @param {string} note
+ * @param {number} [maxLength=280]
+ * @returns {string}
+ */
+export function formatCoachNote(note, maxLength = 280) {
+  if (!note) return 'Belum ada data';
+  const trimmed = note.trim();
+  if (trimmed.length <= maxLength) return trimmed;
+
+  const slice = trimmed.slice(0, maxLength);
+  const lastPunctuation = Math.max(slice.lastIndexOf('.'), slice.lastIndexOf('!'), slice.lastIndexOf('?'));
+  if (lastPunctuation !== -1 && lastPunctuation >= 20) {
+    const fullSentence = slice.slice(0, lastPunctuation + 1).trim();
+    return `${fullSentence} (ringkasan; lihat paspor untuk catatan lengkap)`;
+  }
+
+  const lastSpace = slice.lastIndexOf(' ');
+  const cleanCut = lastSpace !== -1 ? slice.slice(0, lastSpace).trim() : slice.trim();
+  return `${cleanCut}... (ringkasan; lihat paspor untuk catatan lengkap)`;
 }
 
 export default function StoryCardCanvas({
@@ -21,13 +46,13 @@ export default function StoryCardCanvas({
   const academy = personalInfo.academy || {};
 
   const nameDisplay = formatPlayerName(personalInfo.full_name, isPrivate);
-  const positionDisplay = personalInfo.position || 'Belum ada data';
+  const positionDisplay = formatPositionLabel(personalInfo.position);
+  const preferredFootDisplay = formatPreferredFoot(personalInfo.preferred_foot);
   const ageGroupDisplay =
     personalInfo.age_group ||
     (personalInfo.age ? `U-${personalInfo.age}` : null) ||
     'Belum ada data';
   const academyDisplay = academy.name || 'Belum ada data';
-  const playerId = player?.player_id || player?.public_id || player?.id || 'Belum ada data';
 
   const heightDisplay = personalInfo.height_cm ? `${personalInfo.height_cm} cm` : 'Belum ada data';
   const weightDisplay = personalInfo.weight_kg ? `${personalInfo.weight_kg} kg` : 'Belum ada data';
@@ -40,10 +65,14 @@ export default function StoryCardCanvas({
     fitness.shuttle_run_sec != null ? `${fitness.shuttle_run_sec} s` : 'Belum ada data';
   const fitnessDate = fitness.test_date || 'Belum ada data';
 
-  const narrativeDisplay = evaluation.narrative || 'Belum ada data';
+  const coachNote = formatCoachNote(evaluation.narrative || 'Belum ada data');
   const coachDisplay = evaluation.period
     ? `${evaluation.period} • ${evaluation.coach_name || 'Pelatih'}`
     : 'Belum ada data';
+
+  const isPublished =
+    personalInfo.evaluation_status === 'ready' ||
+    player?.latest_assessment_status === 'published';
 
   return (
     <div className="flex justify-center items-center w-full">
@@ -52,7 +81,7 @@ export default function StoryCardCanvas({
         data-testid="progress-card-canvas"
         className="w-full max-w-[340px] bg-panel border border-line rounded-panel p-5 text-1 font-sans space-y-4 select-none"
       >
-        {/* Header */}
+        {/* Header - No internal player id in shareable card */}
         <div className="pb-3 border-b border-line flex items-center justify-between gap-2">
           <div>
             <div className="text-xs uppercase tracking-wider text-2 font-medium">
@@ -63,8 +92,8 @@ export default function StoryCardCanvas({
             </div>
           </div>
           <div className="text-right">
-            <span className="inline-block px-2 py-0.5 rounded text-xs border border-line bg-raised text-2">
-              ID: {playerId}
+            <span className="inline-block px-2 py-0.5 rounded text-xs border border-line bg-raised text-2 font-mono">
+              {personalInfo.jersey_number != null ? `#${personalInfo.jersey_number}` : ageGroupDisplay}
             </span>
           </div>
         </div>
@@ -78,10 +107,10 @@ export default function StoryCardCanvas({
             <span className="text-brand font-medium">{positionDisplay}</span>
             <span>•</span>
             <span>{ageGroupDisplay}</span>
-            {personalInfo.preferred_foot && (
+            {preferredFootDisplay && preferredFootDisplay !== 'Belum ada data' && (
               <>
                 <span>•</span>
-                <span>{personalInfo.preferred_foot}</span>
+                <span>{preferredFootDisplay}</span>
               </>
             )}
           </div>
@@ -136,18 +165,27 @@ export default function StoryCardCanvas({
           <div className="text-xs font-semibold text-2 uppercase tracking-wider">
             Evaluasi Pelatih
           </div>
-          <p className="text-xs text-1 italic line-clamp-3 leading-relaxed">
-            "{narrativeDisplay}"
+          <p className="text-xs text-1 italic leading-relaxed">
+            "{coachNote}"
           </p>
           <div className="text-xs text-2 pt-1 border-t border-line">
             Periode: {coachDisplay} • Sumber: Catatan Resmi Pelatih
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="pt-2 border-t border-line flex items-center justify-between text-xs text-2">
-          <span>Paspor Atlet BallR</span>
-          <span>Data Terverifikasi</span>
+        {/* Footer - derived factual line, no "Data Terverifikasi" */}
+        <div className="pt-2 border-t border-line space-y-1 text-xs text-2">
+          <div className="flex items-center justify-between">
+            <span>Paspor Atlet BallR</span>
+            <span>
+              {isPublished
+                ? `Asesmen diterbitkan${evaluation.period ? ` ${evaluation.period}` : ''}`
+                : 'Asesmen belum diterbitkan'}
+            </span>
+          </div>
+          <div className="text-xs opacity-80 text-right">
+            Sumber: catatan akademi
+          </div>
         </div>
       </div>
     </div>

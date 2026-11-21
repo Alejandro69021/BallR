@@ -153,9 +153,9 @@ describe('Matches Components & Integration (MatchesPage, MatchDetailPage, TopNav
       expect(screen.getByRole('columnheader', { name: /Status/i })).toBeInTheDocument();
 
       // Seeded fictional match
-      expect(screen.getByText(/Contoh: vs Lawan Contoh/i)).toBeInTheDocument();
-      expect(screen.getByText('2 - 1')).toBeInTheDocument();
-      expect(screen.getByText('Final')).toBeInTheDocument();
+      expect(screen.getAllByText(/Lawan Contoh/i)[0]).toBeInTheDocument();
+      expect(screen.getAllByText('2 - 1')[0]).toBeInTheDocument();
+      expect(screen.getAllByText('Final')[0]).toBeInTheDocument();
     });
 
     it('opens create dialog, auto-updates pitch size on format change, and creates match', async () => {
@@ -236,7 +236,7 @@ describe('Matches Components & Integration (MatchesPage, MatchDetailPage, TopNav
       );
 
       await waitFor(() => {
-        expect(screen.getByText(/Contoh: vs Lawan Contoh/i)).toBeInTheDocument();
+        expect(screen.getByText(/Lawan Contoh/i)).toBeInTheDocument();
       });
 
       // Header score
@@ -337,7 +337,7 @@ describe('Matches Components & Integration (MatchesPage, MatchDetailPage, TopNav
       );
 
       await waitFor(() => {
-        expect(screen.getByText(/Contoh: vs Lawan Contoh/i)).toBeInTheDocument();
+        expect(screen.getByText(/Lawan Contoh/i)).toBeInTheDocument();
       });
 
       // Coach should NOT see "Buka kembali"

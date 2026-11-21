@@ -2,6 +2,7 @@ import React from 'react';
 import { Eye, Edit3 } from 'lucide-react';
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
+import { formatPositionLabel, formatPreferredFoot } from '../../lib/displayLabels';
 
 export default function SquadPlayerCard({
   player,
@@ -55,7 +56,7 @@ export default function SquadPlayerCard({
 
           <div className="flex flex-col items-end gap-1.5">
             <span className="px-2 py-0.5 rounded-control bg-raised border border-line text-xs font-medium text-2">
-              {personal_info?.position?.split(' ')[0] || personal_info?.position || '-'}
+              {formatPositionLabel(personal_info?.position)}
             </span>
             <Badge variant={isPublished ? 'success' : 'warning'}>
               {isPublished ? 'Diterbitkan' : 'Draf'}
@@ -73,13 +74,13 @@ export default function SquadPlayerCard({
           </h3>
 
           <div className="flex items-center gap-1.5 text-xs text-2">
-            <span className="truncate">{personal_info?.position || 'Pemain'}</span>
+            <span className="truncate">{formatPositionLabel(personal_info?.position)}</span>
             <span>·</span>
             <span>{personal_info?.age ? `${personal_info.age} thn` : 'Belum ada data'}</span>
           </div>
 
           <div className="text-xs text-2 flex items-center justify-between pt-1">
-            <span>Kaki: <span className="text-1 font-medium">{personal_info?.preferred_foot || 'Belum ada data'}</span></span>
+            <span>Kaki: <span className="text-1 font-medium">{formatPreferredFoot(personal_info?.preferred_foot)}</span></span>
             <span>{personal_info?.height_cm ? `${personal_info.height_cm} cm` : 'Belum ada data'}</span>
           </div>
         </div>

@@ -99,7 +99,7 @@ describe('Event Analysis Pure Engine (events.js)', () => {
       expect(res.rows[2].player_id).toBe('p1');
       expect(res.rows[2].jersey_number).toBe(10);
       expect(res.rows[2].n).toBe(6);
-      expect(res.rows[2].small_sample).toBe(false); // 6 >= 5
+      expect(res.rows[2].small_sample).toBe(true); // 6 < 10 (SMALL_SAMPLE_N)
     });
   });
 

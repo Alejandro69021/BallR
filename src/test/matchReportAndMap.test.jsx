@@ -325,7 +325,7 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
       // Section 1: Ringkasan laga
       await waitFor(() => {
         expect(screen.getByText(/Bagian 1 • Dokumen Resmi Pertandingan/i)).toBeInTheDocument();
-        expect(screen.getByText(/Laporan Pertandingan: vs Bintang Muda FC/i)).toBeInTheDocument();
+        expect(screen.getByText(/Laporan Pertandingan: (vs )?Bintang Muda FC/i)).toBeInTheDocument();
       });
 
       // Section 2: Kualitas data (mandatory) & fixed statement
@@ -384,7 +384,7 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText(/Laporan Pertandingan: vs Bintang Muda FC/i)).toBeInTheDocument();
+        expect(screen.getByText(/Laporan Pertandingan: (vs )?Bintang Muda FC/i)).toBeInTheDocument();
       });
 
       const sectionTexts = Array.from(container.querySelectorAll('section span.font-mono.uppercase'))

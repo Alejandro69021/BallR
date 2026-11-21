@@ -47,6 +47,45 @@ export function canShareProgressCard(consents) {
 }
 
 /**
+ * Evaluates the specific reason why a player's progress card cannot be shared.
+ *
+ * Returns:
+ * - 'none': no consents recorded or empty list
+ * - 'revoked': latest consent was revoked
+ * - 'no_public_profile': latest consent does not include public_profile: true
+ * - null: sharing is allowed (canShareProgressCard is true)
+ *
+ * @param {Array<Object>|null|undefined} consents
+ * @returns {'none' | 'revoked' | 'no_public_profile' | null}
+ */
+export function getShareBlockReason(consents) {
+  if (!Array.isArray(consents) || consents.length === 0) {
+    return 'none';
+  }
+
+  const sorted = [...consents].sort((a, b) => {
+    const timeA = a?.granted_at ? new Date(a.granted_at).getTime() : 0;
+    const timeB = b?.granted_at ? new Date(b.granted_at).getTime() : 0;
+    return timeB - timeA;
+  });
+
+  const latest = sorted[0];
+  if (!latest || typeof latest !== 'object') {
+    return 'none';
+  }
+
+  if (latest.revoked_at) {
+    return 'revoked';
+  }
+
+  if (!latest.purposes || typeof latest.purposes !== 'object' || Array.isArray(latest.purposes) || latest.purposes.public_profile !== true) {
+    return 'no_public_profile';
+  }
+
+  return null;
+}
+
+/**
  * Builds the export filename from the exact displayed name (e.g. initials when private),
  * ensuring full names are never leaked in filenames for private players.
  *

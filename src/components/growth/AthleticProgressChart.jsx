@@ -142,7 +142,7 @@ export default function AthleticProgressChart({
         </div>
 
         {/* Tab Buttons */}
-        <div className="flex items-center gap-1.5 p-1 rounded-control bg-raised border border-line overflow-x-auto self-start sm:self-auto">
+        <div className="flex items-center gap-2 p-1 rounded-control bg-raised border border-line overflow-x-auto self-start sm:self-auto">
           {metricsData.height && (
             <button
               type="button"
@@ -150,7 +150,7 @@ export default function AthleticProgressChart({
                 setActiveMetric('height');
                 setSelectedPointIndex(metricsData.height.points.length - 1);
               }}
-              className={`px-2.5 py-1 rounded-control text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+              className={`px-2.5 py-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 rounded-control text-xs font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                 activeMetric === 'height'
                   ? 'bg-panel text-1 border border-line shadow-xs'
                   : 'text-2 hover:text-1'
@@ -168,7 +168,7 @@ export default function AthleticProgressChart({
                 setActiveMetric('sprint');
                 setSelectedPointIndex(metricsData.sprint.points.length - 1);
               }}
-              className={`px-2.5 py-1 rounded-control text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+              className={`px-2.5 py-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 rounded-control text-xs font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                 activeMetric === 'sprint'
                   ? 'bg-panel text-1 border border-line shadow-xs'
                   : 'text-2 hover:text-1'
@@ -186,7 +186,7 @@ export default function AthleticProgressChart({
                 setActiveMetric('jump');
                 setSelectedPointIndex(metricsData.jump.points.length - 1);
               }}
-              className={`px-2.5 py-1 rounded-control text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+              className={`px-2.5 py-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 rounded-control text-xs font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                 activeMetric === 'jump'
                   ? 'bg-panel text-1 border border-line shadow-xs'
                   : 'text-2 hover:text-1'

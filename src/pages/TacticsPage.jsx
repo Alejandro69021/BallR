@@ -12,6 +12,7 @@ import {
 } from '../lib/scenarios';
 import { formationTemplates, TEMPLATE_DISCLAIMER } from '../lib/board';
 import Table from '../components/ui/Table';
+import ResponsiveList from '../components/ui/ResponsiveList';
 import Dialog from '../components/ui/Dialog';
 import Field from '../components/ui/Field';
 import Select from '../components/ui/Select';
@@ -270,113 +271,170 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
           }
         />
       ) : (
-        <Table
-          columns={[
-            {
-              key: 'title',
-              header: 'Judul Skema',
-              sortable: true,
-              render: (val, row) => (
-                <div className="space-y-0.5">
-                  <div className="font-semibold text-1 hover:text-brand transition-colors">
-                    {val || row.title}
-                  </div>
-                  {row.description && (
-                    <div className="text-2 text-xs truncate max-w-xs">
-                      {row.description}
+        <div className="space-y-3">
+          {/* Mobile Sort Control */}
+          <div className="flex sm:hidden items-center justify-between gap-2 p-2 rounded-control bg-raised border border-line">
+            <span className="text-xs text-2 whitespace-nowrap">Urutkan:</span>
+            <Select
+              value={sortKey}
+              onChange={(e) => handleSort(e.target.value)}
+              options={[
+                { value: 'updated_at', label: 'Terakhir Diperbarui' },
+                { value: 'title', label: 'Judul Skema' },
+                { value: 'phase', label: 'Fase Permainan' }
+              ]}
+              className="text-xs min-h-[44px]"
+            />
+          </div>
+
+          <ResponsiveList
+            columns={[
+              {
+                key: 'title',
+                header: 'Judul Skema',
+                sortable: true,
+                render: (val, row) => (
+                  <div className="space-y-0.5">
+                    <div className="font-semibold text-1 hover:text-brand transition-colors">
+                      {val || row.title}
                     </div>
-                  )}
-                </div>
-              )
-            },
-            {
-              key: 'phase',
-              header: 'Fase',
-              sortable: true,
-              render: (val) => (
-                <span className="text-xs text-1">
-                  {SCENARIO_PHASE_LABELS[val] || val}
-                </span>
-              )
-            },
-            {
-              key: 'format',
-              header: 'Format',
-              sortable: true,
-              tabular: true,
-              render: (val) => (
-                <span className="text-xs font-mono text-2">
-                  {val || '11v11'}
-                </span>
-              )
-            },
-            {
-              key: 'status',
-              header: 'Status',
-              sortable: true,
-              render: (val) => {
-                let variant = 'neutral';
-                if (val === 'published') variant = 'success';
-                else if (val === 'reviewed') variant = 'info';
-                return (
-                  <Badge variant={variant} size="sm">
-                    {SCENARIO_STATUS_LABELS[val] || val}
-                  </Badge>
-                );
+                    {row.description && (
+                      <div className="text-2 text-xs truncate max-w-xs">
+                        {row.description}
+                      </div>
+                    )}
+                  </div>
+                )
+              },
+              {
+                key: 'phase',
+                header: 'Fase',
+                sortable: true,
+                render: (val) => (
+                  <span className="text-xs text-1">
+                    {SCENARIO_PHASE_LABELS[val] || val}
+                  </span>
+                )
+              },
+              {
+                key: 'format',
+                header: 'Format',
+                sortable: true,
+                tabular: true,
+                render: (val) => (
+                  <span className="text-xs font-mono text-2">
+                    {val || '11v11'}
+                  </span>
+                )
+              },
+              {
+                key: 'status',
+                header: 'Status',
+                sortable: true,
+                render: (val) => {
+                  let variant = 'neutral';
+                  if (val === 'published') variant = 'success';
+                  else if (val === 'reviewed') variant = 'info';
+                  return (
+                    <Badge variant={variant} size="sm">
+                      {SCENARIO_STATUS_LABELS[val] || val}
+                    </Badge>
+                  );
+                }
+              },
+              {
+                key: 'frames_count',
+                header: 'Bingkai',
+                tabular: true,
+                render: (val) => (
+                  <span className="text-xs font-mono tabular-nums text-1">
+                    {val || 0}
+                  </span>
+                )
+              },
+              {
+                key: 'references_count',
+                header: 'Rujukan',
+                tabular: true,
+                render: (val) => (
+                  <span className="text-xs font-mono tabular-nums text-1">
+                    {val || 0}
+                  </span>
+                )
+              },
+              {
+                key: 'updated_at',
+                header: 'Pembaruan',
+                sortable: true,
+                tabular: true,
+                render: (val) => (
+                  <span className="text-xs font-mono text-2">
+                    {val
+                      ? new Date(val).toLocaleDateString('id-ID')
+                      : '-'}
+                  </span>
+                )
+              },
+              {
+                key: 'actions',
+                header: '',
+                render: (_val, row) => (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => navigate(`/taktik/${row.id}`)}
+                    className="whitespace-nowrap"
+                  >
+                    Buka skema
+                  </Button>
+                )
               }
-            },
-            {
-              key: 'frames_count',
-              header: 'Bingkai',
-              tabular: true,
-              render: (val) => (
-                <span className="text-xs font-mono tabular-nums text-1">
-                  {val || 0}
-                </span>
-              )
-            },
-            {
-              key: 'references_count',
-              header: 'Rujukan',
-              tabular: true,
-              render: (val) => (
-                <span className="text-xs font-mono tabular-nums text-1">
-                  {val || 0}
-                </span>
-              )
-            },
-            {
-              key: 'updated_at',
-              header: 'Pembaruan',
-              sortable: true,
-              tabular: true,
-              render: (val) => (
-                <span className="text-xs font-mono text-2">
-                  {val
-                    ? new Date(val).toLocaleDateString('id-ID')
-                    : '-'}
-                </span>
-              )
-            },
-            {
-              key: 'actions',
-              header: '',
-              render: (_val, row) => (
+            ]}
+            data={sortedScenarios}
+            sortKey={sortKey}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+            renderCard={(row) => (
+              <div className="p-4 rounded-panel border border-line bg-panel space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-semibold text-1">{row.title}</h3>
+                    <div className="text-xs text-2 mt-0.5 space-x-1.5 font-mono">
+                      <span>{SCENARIO_PHASE_LABELS[row.phase] || row.phase}</span>
+                      <span>•</span>
+                      <span>{row.format || '11v11'}</span>
+                    </div>
+                  </div>
+                  <Badge
+                    variant={row.status === 'published' ? 'success' : row.status === 'reviewed' ? 'info' : 'neutral'}
+                    size="sm"
+                  >
+                    {SCENARIO_STATUS_LABELS[row.status] || row.status}
+                  </Badge>
+                </div>
+
+                {row.description && (
+                  <p className="text-xs text-2 line-clamp-2">{row.description}</p>
+                )}
+
+                <div className="flex items-center justify-between text-xs py-1 border-t border-b border-line font-mono text-2">
+                  <span>{row.frames_count || 0} bingkai</span>
+                  <span>{row.references_count || 0} rujukan</span>
+                  <span>{row.updated_at ? new Date(row.updated_at).toLocaleDateString('id-ID') : '-'}</span>
+                </div>
+
                 <Button
-                  variant="secondary"
+                  variant="primary"
                   size="sm"
+                  className="w-full justify-center min-h-[44px] whitespace-nowrap"
                   onClick={() => navigate(`/taktik/${row.id}`)}
                 >
                   Buka skema
                 </Button>
-              )
-            }
-          ]}
-          data={sortedScenarios}
-          sortKey={sortKey}
-          sortDirection={sortDirection}
-          onSort={handleSort}
-        />
+              </div>
+            )}
+          />
+        </div>
       )}
 
       {/* Skema Baru Modal Dialog */}

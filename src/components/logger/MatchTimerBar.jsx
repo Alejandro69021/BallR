@@ -66,7 +66,7 @@ export default function MatchTimerBar({
               type="button"
               disabled={isReadOnly}
               onClick={handleNextPeriod}
-              className="cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-control disabled:opacity-60 disabled:cursor-not-allowed"
+              className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 inline-flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-control disabled:opacity-60 disabled:cursor-not-allowed"
               title="Ganti babak pertandingan"
             >
               <Badge variant={isRunning ? 'brand' : 'neutral'} size="md">
@@ -79,7 +79,7 @@ export default function MatchTimerBar({
         {/* Stopwatch & Manual Adjust Controls */}
         <div className="flex items-center gap-2 flex-wrap">
           {/* Manual Adjust: -1m & +1m */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               disabled={isReadOnly}

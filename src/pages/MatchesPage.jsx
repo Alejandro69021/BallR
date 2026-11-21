@@ -9,6 +9,7 @@ import {
   formatMatchError
 } from '../lib/matches';
 import Table from '../components/ui/Table';
+import ResponsiveList from '../components/ui/ResponsiveList';
 import Dialog from '../components/ui/Dialog';
 import Field from '../components/ui/Field';
 import Select from '../components/ui/Select';
@@ -269,6 +270,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
               variant="brand"
               size="sm"
               onClick={() => navigate(`/pencatatan/${row.id}`)}
+              className="whitespace-nowrap"
             >
               Catat kejadian
             </Button>
@@ -277,6 +279,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
             variant="secondary"
             size="sm"
             onClick={() => navigate(`/laga/${row.id}`)}
+            className="whitespace-nowrap"
           >
             Detail
           </Button>
@@ -332,7 +335,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
         </Button>
       </div>
 
-      {/* Main Table */}
+      {/* Main Table / Responsive Cards */}
       {loading ? (
         <div className="p-8 border border-line rounded-panel bg-panel text-center">
           <p className="text-xs text-2">Memuat daftar pertandingan...</p>
@@ -347,14 +350,71 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
           />
         </div>
       ) : (
-        <Table
-          columns={columns}
-          data={sortedMatches}
-          sortKey={sortKey}
-          sortDirection={sortDirection}
-          onSort={handleSort}
-          emptyMessage="Belum ada rekaman laga"
-        />
+        <div className="space-y-3">
+          {/* Mobile Sort Control */}
+          <div className="flex md:hidden items-center justify-between gap-2 p-2 rounded-control bg-raised border border-line">
+            <span className="text-xs text-2 whitespace-nowrap">Urutkan:</span>
+            <Select
+              value={sortKey}
+              onChange={(e) => handleSort(e.target.value)}
+              options={[
+                { value: 'match_date', label: 'Tanggal Laga' },
+                { value: 'opponent_name', label: 'Nama Lawan' }
+              ]}
+              className="text-xs min-h-[44px]"
+            />
+          </div>
+
+          <ResponsiveList
+            columns={columns}
+            data={sortedMatches}
+            sortKey={sortKey}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+            emptyMessage="Belum ada rekaman laga"
+            renderCard={(row) => (
+              <div className="p-4 rounded-panel border border-line bg-panel space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-semibold text-1">{row.opponent_name}</h3>
+                    <div className="text-xs text-2 mt-0.5 space-x-1.5 font-mono">
+                      <span>{row.match_date || '-'}</span>
+                      <span>•</span>
+                      <span>{row.format || '11v11'}</span>
+                      {row.competition && (
+                        <>
+                          <span>•</span>
+                          <span>{row.competition}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  <Badge variant={row.status === 'final' ? 'brand' : 'neutral'} size="sm">
+                    {row.status === 'final' ? 'Final' : 'Draf'}
+                  </Badge>
+                </div>
+
+                <div className="flex items-center justify-between text-xs py-1 border-t border-b border-line">
+                  <span className="text-2">Skor:</span>
+                  <span className="font-mono font-bold text-1">
+                    {row.status === 'final' && row.own_score != null
+                      ? `${row.own_score} - ${row.opponent_score}`
+                      : 'Belum ada skor'}
+                  </span>
+                </div>
+
+                <Button
+                  variant={row.status === 'draft' ? 'brand' : 'secondary'}
+                  size="sm"
+                  className="w-full justify-center min-h-[44px] whitespace-nowrap"
+                  onClick={() => navigate(row.status === 'draft' ? `/pencatatan/${row.id}` : `/laga/${row.id}`)}
+                >
+                  {row.status === 'draft' ? 'Catat kejadian' : 'Detail'}
+                </Button>
+              </div>
+            )}
+          />
+        </div>
       )}
 
       {/* Modal: Laga baru */}
@@ -373,7 +433,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
               value={opponentName}
               onChange={(e) => setOpponentName(e.target.value)}
               placeholder="Contoh: SSB Bintang Muda"
-              className="w-full px-3 h-8 bg-app border border-control rounded-control text-xs text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+              className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
             />
           </Field>
 
@@ -385,7 +445,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                 required
                 value={matchDate}
                 onChange={(e) => setMatchDate(e.target.value)}
-                className="w-full px-3 h-8 bg-app border border-control rounded-control text-xs text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
 
@@ -396,7 +456,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                 value={competition}
                 onChange={(e) => setCompetition(e.target.value)}
                 placeholder="Contoh: Liga Remaja U-13"
-                className="w-full px-3 h-8 bg-app border border-control rounded-control text-xs text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
           </div>
@@ -426,7 +486,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                 required
                 value={pitchLength}
                 onChange={(e) => setPitchLength(e.target.value)}
-                className="w-full px-3 h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
 
@@ -440,7 +500,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                 required
                 value={pitchWidth}
                 onChange={(e) => setPitchWidth(e.target.value)}
-                className="w-full px-3 h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
           </div>

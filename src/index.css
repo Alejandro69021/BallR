@@ -148,6 +148,18 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Touch device 44px hit area guarantee (Phase B9) */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  select,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  [role="tab"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
 /* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;

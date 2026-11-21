@@ -2,8 +2,8 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import StoryFlexCardModal from '../components/StoryFlexCardModal';
-import StoryCardCanvas from '../components/story/StoryCardCanvas';
-import { canShareProgressCard, buildCardDownloadFilename } from '../lib/consent';
+import StoryCardCanvas, { formatCoachNote } from '../components/story/StoryCardCanvas';
+import { canShareProgressCard, buildCardDownloadFilename, getShareBlockReason } from '../lib/consent';
 import * as supabaseLib from '../lib/supabase';
 
 vi.mock('html-to-image', () => ({
@@ -173,6 +173,63 @@ describe('1. Pure canShareProgressCard (Table-driven)', () => {
   });
 });
 
+describe('1b. Pure getShareBlockReason (Table-driven)', () => {
+  const table = [
+    {
+      description: '[] -> none',
+      consents: [],
+      expected: 'none'
+    },
+    {
+      description: 'null/undefined -> none',
+      consents: null,
+      expected: 'none'
+    },
+    {
+      description: 'latest revoked -> revoked',
+      consents: [
+        {
+          id: 'c1',
+          granted_at: '2026-10-01T10:00:00Z',
+          revoked_at: '2026-10-05T10:00:00Z',
+          purposes: { public_profile: true }
+        }
+      ],
+      expected: 'revoked'
+    },
+    {
+      description: 'latest active without public_profile -> no_public_profile',
+      consents: [
+        {
+          id: 'c1',
+          granted_at: '2026-10-01T10:00:00Z',
+          revoked_at: null,
+          purposes: { training_analysis: true }
+        }
+      ],
+      expected: 'no_public_profile'
+    },
+    {
+      description: 'latest active with public_profile -> null (allowed)',
+      consents: [
+        {
+          id: 'c1',
+          granted_at: '2026-10-01T10:00:00Z',
+          revoked_at: null,
+          purposes: { public_profile: true }
+        }
+      ],
+      expected: null
+    }
+  ];
+
+  table.forEach(({ description, consents, expected }) => {
+    it(`returns block reason: ${description}`, () => {
+      expect(getShareBlockReason(consents)).toBe(expected);
+    });
+  });
+});
+
 describe('2. Modal Rendering & Consent Gating', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -228,12 +285,40 @@ describe('2. Modal Rendering & Consent Gating', () => {
         screen.getByText('Butuh persetujuan wali yang tercatat untuk membagikan kartu')
       ).toBeInTheDocument();
       expect(
-        screen.queryByText('Persetujuan wali yang tercatat belum mencakup berbagi profil')
-      ).not.toBeInTheDocument();
+        screen.getByText('Belum ada persetujuan wali yang tercatat')
+      ).toBeInTheDocument();
     });
 
     expect(screen.getByRole('button', { name: /Unduh Gambar/i })).toBeDisabled();
     expect(screen.getByRole('button', { name: /Salin Ringkasan/i })).toBeDisabled();
+  });
+
+  it('revoked consent shows exact revoked date message', async () => {
+    vi.spyOn(supabaseLib, 'fetchPlayerConsents').mockResolvedValue([
+      {
+        id: 'c-revoked',
+        player_id: 'WK-2026-0042',
+        granted_at: '2026-10-01T10:00:00Z',
+        revoked_at: '2026-10-15T12:00:00Z',
+        purposes: { public_profile: true }
+      }
+    ]);
+
+    render(
+      <StoryFlexCardModal
+        isOpen={true}
+        player={mockPlayer}
+        onClose={() => {}}
+      />
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Persetujuan wali dicabut pada/i)
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('button', { name: /Unduh Gambar/i })).toBeDisabled();
   });
 
   it('fetch error keeps the card disabled (fail closed)', async () => {
@@ -366,7 +451,7 @@ describe('4. Card Content Honest Metrics', () => {
     expect(content).not.toMatch(/\bRekor\b/i);
 
     expect(screen.getByText('Dimas Arya Pratama')).toBeInTheDocument();
-    expect(screen.getByText(/Attacking Midfielder \(CAM\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Gelandang serang \(CAM\)|Attacking Midfielder \(CAM\)/i)).toBeInTheDocument();
     expect(screen.getByText('158 cm')).toBeInTheDocument();
     expect(screen.getByText('44.5 cm')).toBeInTheDocument();
     expect(screen.getByText('3.42 s')).toBeInTheDocument();
@@ -389,6 +474,40 @@ describe('4. Card Content Honest Metrics', () => {
 
     const noDataElements = screen.getAllByText('Belum ada data');
     expect(noDataElements.length).toBeGreaterThan(0);
+  });
+
+  it('G1: draft-assessment player card never contains "Terverifikasi"', () => {
+    const draftPlayer = {
+      ...mockPlayer,
+      personal_info: {
+        ...mockPlayer.personal_info,
+        evaluation_status: 'pending'
+      }
+    };
+
+    render(<StoryCardCanvas player={draftPlayer} isPrivate={false} />);
+    const canvas = screen.getByTestId('progress-card-canvas');
+    expect(canvas.textContent).not.toContain('Terverifikasi');
+    expect(canvas.textContent).toContain('Asesmen belum diterbitkan');
+    expect(canvas.textContent).toContain('Sumber: catatan akademi');
+  });
+
+  it('G2: exported card DOM contains no internal player ID (/WK-\\d{4}-\\d{4}/)', () => {
+    render(<StoryCardCanvas player={mockPlayer} isPrivate={false} />);
+    const canvas = screen.getByTestId('progress-card-canvas');
+    expect(canvas.textContent).not.toMatch(/WK-\d{4}-\d{4}/);
+  });
+
+  it('G5: coach note never cuts mid-sentence; short note unchanged, long note shortened with suffix', () => {
+    const shortNote = 'Fokus latihan bulan ini adalah kontrol bola. Penempatan posisi sangat baik.';
+    expect(formatCoachNote(shortNote, 280)).toBe(shortNote);
+
+    const longNote =
+      'Dimas menunjukkan peningkatan signifikan dalam hal scanning ruang sebelum menerima bola. Distribusi umpan terobosannya sangat efektif saat transisi positif. Fokus perkembangan bulan depan adalah mempercepat keputusan melepas bola saat ditekan dua pemain lawan di area tengah lapangan.';
+    const formatted = formatCoachNote(longNote, 200);
+    expect(formatted).toContain('(ringkasan; lihat paspor untuk catatan lengkap)');
+    // Must end with punctuation before the suffix
+    expect(formatted).toMatch(/[.!?]\s\(ringkasan; lihat paspor untuk catatan lengkap\)$/);
   });
 });
 

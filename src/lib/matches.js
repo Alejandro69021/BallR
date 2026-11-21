@@ -213,7 +213,7 @@ function createInitialDemoState() {
   const initialMatch = {
     id: matchId,
     academy_id: 'demo-academy-01',
-    opponent_name: 'Contoh: vs Lawan Contoh',
+    opponent_name: 'Lawan Contoh',
     match_date: '2026-10-18',
     competition: 'Liga Remaja U-13 (Contoh)',
     age_group: 'U-13',
@@ -229,48 +229,86 @@ function createInitialDemoState() {
   };
 
   const initialParticipants = [
-    { match_id: matchId, player_id: 'PLAYER-01', started: true, position: 'GK', minute_in: 0, minute_out: 90 },
-    { match_id: matchId, player_id: 'PLAYER-02', started: true, position: 'CB', minute_in: 0, minute_out: 90 },
-    { match_id: matchId, player_id: 'PLAYER-03', started: true, position: 'CM', minute_in: 0, minute_out: 90 },
-    { match_id: matchId, player_id: 'PLAYER-04', started: true, position: 'LW', minute_in: 0, minute_out: 75 },
-    { match_id: matchId, player_id: 'PLAYER-05', started: true, position: 'RW', minute_in: 0, minute_out: 90 },
-    { match_id: matchId, player_id: 'PLAYER-06', started: true, position: 'CF', minute_in: 0, minute_out: 90 },
-    { match_id: matchId, player_id: 'PLAYER-07', started: false, position: 'LB', minute_in: 75, minute_out: 90 }
+    { match_id: matchId, player_id: 'WK-2026-0046', player_name: 'Muhammad Rafli', jersey_number: 1, started: true, position: 'Goalkeeper (GK)', minute_in: 0, minute_out: 90 },
+    { match_id: matchId, player_id: 'WK-2026-0045', player_name: 'Bagas Ramadhan', jersey_number: 4, started: true, position: 'Center Back (CB)', minute_in: 0, minute_out: 90 },
+    { match_id: matchId, player_id: 'WK-2026-0048', player_name: 'Ilham Satria', jersey_number: 2, started: true, position: 'Right Back (RB)', minute_in: 0, minute_out: 90 },
+    { match_id: matchId, player_id: 'WK-2026-0047', player_name: 'Fajar Pratama', jersey_number: 6, started: true, position: 'Defensive Midfielder (CDM)', minute_in: 0, minute_out: 90 },
+    { match_id: matchId, player_id: 'WK-2026-0042', player_name: 'Dimas Arya Pratama', jersey_number: 10, started: true, position: 'Attacking Midfielder (CAM)', minute_in: 0, minute_out: 90 },
+    { match_id: matchId, player_id: 'WK-2026-0043', player_name: 'Kevin Maulana', jersey_number: 7, started: true, position: 'Right Winger (RW)', minute_in: 0, minute_out: 90 },
+    { match_id: matchId, player_id: 'WK-2026-0044', player_name: 'Rizky Alamsyah', jersey_number: 11, started: true, position: 'Center Forward (ST)', minute_in: 0, minute_out: 90 }
   ];
 
-  // Exactly 25 realistic fictional events with coordinates
+  // Exactly 25 realistic fictional events referencing demo player ids
   const initialEvents = [
-    { id: 'demo-evt-01', match_id: matchId, client_event_id: 'c-evt-01', period: 1, minute: 2.5, team: 'own', player_id: 'PLAYER-01', opponent_number: null, event_type: 'pass', outcome: 'success', x_m: 45.0, y_m: 30.0, end_x_m: 55.0, end_y_m: 22.0, note: '' },
+    { id: 'demo-evt-01', match_id: matchId, client_event_id: 'c-evt-01', period: 1, minute: 2.5, team: 'own', player_id: 'WK-2026-0046', opponent_number: null, event_type: 'pass', outcome: 'success', x_m: 45.0, y_m: 30.0, end_x_m: 55.0, end_y_m: 22.0, note: '' },
     { id: 'demo-evt-02', match_id: matchId, client_event_id: 'c-evt-02', period: 1, minute: 5.0, team: 'opponent', player_id: null, opponent_number: 7, event_type: 'interception', outcome: 'success', x_m: 52.0, y_m: 20.0, end_x_m: null, end_y_m: null, note: '' },
-    { id: 'demo-evt-03', match_id: matchId, client_event_id: 'c-evt-03', period: 1, minute: 8.2, team: 'own', player_id: 'PLAYER-02', opponent_number: null, event_type: 'tackle', outcome: 'success', x_m: 38.0, y_m: 45.0, end_x_m: null, end_y_m: null, note: '' },
-    { id: 'demo-evt-04', match_id: matchId, client_event_id: 'c-evt-04', period: 1, minute: 11.4, team: 'own', player_id: 'PLAYER-03', opponent_number: null, event_type: 'pass', outcome: 'success', x_m: 40.0, y_m: 42.0, end_x_m: 62.0, end_y_m: 48.0, note: '' },
-    { id: 'demo-evt-05', match_id: matchId, client_event_id: 'c-evt-05', period: 1, minute: 12.1, team: 'own', player_id: 'PLAYER-04', opponent_number: null, event_type: 'dribble', outcome: 'success', x_m: 62.0, y_m: 48.0, end_x_m: 72.0, end_y_m: 40.0, note: '' },
+    { id: 'demo-evt-03', match_id: matchId, client_event_id: 'c-evt-03', period: 1, minute: 8.2, team: 'own', player_id: 'WK-2026-0045', opponent_number: null, event_type: 'tackle', outcome: 'success', x_m: 38.0, y_m: 45.0, end_x_m: null, end_y_m: null, note: '' },
+    { id: 'demo-evt-04', match_id: matchId, client_event_id: 'c-evt-04', period: 1, minute: 11.4, team: 'own', player_id: 'WK-2026-0047', opponent_number: null, event_type: 'pass', outcome: 'success', x_m: 40.0, y_m: 42.0, end_x_m: 62.0, end_y_m: 48.0, note: '' },
+    { id: 'demo-evt-05', match_id: matchId, client_event_id: 'c-evt-05', period: 1, minute: 12.1, team: 'own', player_id: 'WK-2026-0042', opponent_number: null, event_type: 'dribble', outcome: 'success', x_m: 62.0, y_m: 48.0, end_x_m: 72.0, end_y_m: 40.0, note: '' },
     { id: 'demo-evt-06', match_id: matchId, client_event_id: 'c-evt-06', period: 1, minute: 14.8, team: 'opponent', player_id: null, opponent_number: 4, event_type: 'foul_committed', outcome: 'fail', x_m: 72.0, y_m: 40.0, end_x_m: null, end_y_m: null, note: '' },
-    { id: 'demo-evt-07', match_id: matchId, client_event_id: 'c-evt-07', period: 1, minute: 15.0, team: 'own', player_id: 'PLAYER-04', opponent_number: null, event_type: 'foul_won', outcome: 'success', x_m: 72.0, y_m: 40.0, end_x_m: null, end_y_m: null, note: '' },
-    { id: 'demo-evt-08', match_id: matchId, client_event_id: 'c-evt-08', period: 1, minute: 16.2, team: 'own', player_id: 'PLAYER-05', opponent_number: null, event_type: 'free_kick', outcome: 'success', x_m: 72.0, y_m: 40.0, end_x_m: 82.0, end_y_m: 30.0, note: '' },
-    { id: 'demo-evt-09', match_id: matchId, client_event_id: 'c-evt-09', period: 1, minute: 16.5, team: 'own', player_id: 'PLAYER-06', opponent_number: null, event_type: 'shot_on_target', outcome: 'success', x_m: 82.0, y_m: 30.0, end_x_m: null, end_y_m: null, note: '' },
-    { id: 'demo-evt-10', match_id: matchId, client_event_id: 'c-evt-10', period: 1, minute: 16.6, team: 'own', player_id: 'PLAYER-06', opponent_number: null, event_type: 'goal', outcome: 'success', x_m: 88.0, y_m: 30.0, end_x_m: null, end_y_m: null, note: 'Gol pembuka tendangan bebas' },
+    { id: 'demo-evt-07', match_id: matchId, client_event_id: 'c-evt-07', period: 1, minute: 15.0, team: 'own', player_id: 'WK-2026-0042', opponent_number: null, event_type: 'foul_won', outcome: 'success', x_m: 72.0, y_m: 40.0, end_x_m: null, end_y_m: null, note: '' },
+    { id: 'demo-evt-08', match_id: matchId, client_event_id: 'c-evt-08', period: 1, minute: 16.2, team: 'own', player_id: 'WK-2026-0043', opponent_number: null, event_type: 'free_kick', outcome: 'success', x_m: 72.0, y_m: 40.0, end_x_m: 82.0, end_y_m: 30.0, note: '' },
+    { id: 'demo-evt-09', match_id: matchId, client_event_id: 'c-evt-09', period: 1, minute: 16.5, team: 'own', player_id: 'WK-2026-0044', opponent_number: null, event_type: 'shot_on_target', outcome: 'success', x_m: 82.0, y_m: 30.0, end_x_m: null, end_y_m: null, note: '' },
+    { id: 'demo-evt-10', match_id: matchId, client_event_id: 'c-evt-10', period: 1, minute: 16.6, team: 'own', player_id: 'WK-2026-0044', opponent_number: null, event_type: 'goal', outcome: 'success', x_m: 88.0, y_m: 30.0, end_x_m: null, end_y_m: null, note: 'Gol pembuka tendangan bebas' },
     { id: 'demo-evt-11', match_id: matchId, client_event_id: 'c-evt-11', period: 1, minute: 22.0, team: 'opponent', player_id: null, opponent_number: 10, event_type: 'pass', outcome: 'success', x_m: 35.0, y_m: 25.0, end_x_m: 25.0, end_y_m: 32.0, note: '' },
     { id: 'demo-evt-12', match_id: matchId, client_event_id: 'c-evt-12', period: 1, minute: 23.4, team: 'opponent', player_id: null, opponent_number: 9, event_type: 'shot', outcome: 'fail', x_m: 20.0, y_m: 32.0, end_x_m: null, end_y_m: null, note: '' },
-    { id: 'demo-evt-13', match_id: matchId, client_event_id: 'c-evt-13', period: 1, minute: 23.6, team: 'own', player_id: 'PLAYER-01', opponent_number: null, event_type: 'goal_kick', outcome: 'success', x_m: 5.5, y_m: 30.0, end_x_m: 42.0, end_y_m: 28.0, note: '' },
-    { id: 'demo-evt-14', match_id: matchId, client_event_id: 'c-evt-14', period: 1, minute: 31.0, team: 'own', player_id: 'PLAYER-03', opponent_number: null, event_type: 'ball_recovery', outcome: 'success', x_m: 50.0, y_m: 15.0, end_x_m: null, end_y_m: null, note: '' },
+    { id: 'demo-evt-13', match_id: matchId, client_event_id: 'c-evt-13', period: 1, minute: 23.6, team: 'own', player_id: 'WK-2026-0046', opponent_number: null, event_type: 'goal_kick', outcome: 'success', x_m: 5.5, y_m: 30.0, end_x_m: 42.0, end_y_m: 28.0, note: '' },
+    { id: 'demo-evt-14', match_id: matchId, client_event_id: 'c-evt-14', period: 1, minute: 31.0, team: 'own', player_id: 'WK-2026-0047', opponent_number: null, event_type: 'ball_recovery', outcome: 'success', x_m: 50.0, y_m: 15.0, end_x_m: null, end_y_m: null, note: '' },
     { id: 'demo-evt-15', match_id: matchId, client_event_id: 'c-evt-15', period: 1, minute: 38.5, team: 'opponent', player_id: null, opponent_number: 8, event_type: 'duel_ground', outcome: 'success', x_m: 48.0, y_m: 35.0, end_x_m: null, end_y_m: null, note: '' },
     { id: 'demo-evt-16', match_id: matchId, client_event_id: 'c-evt-16', period: 2, minute: 48.2, team: 'opponent', player_id: null, opponent_number: 11, event_type: 'corner', outcome: 'success', x_m: 0.0, y_m: 0.0, end_x_m: 10.0, end_y_m: 30.0, note: '' },
     { id: 'demo-evt-17', match_id: matchId, client_event_id: 'c-evt-17', period: 2, minute: 48.5, team: 'opponent', player_id: null, opponent_number: 5, event_type: 'goal', outcome: 'success', x_m: 8.0, y_m: 30.0, end_x_m: null, end_y_m: null, note: 'Gol sundulan sepak pojok' },
-    { id: 'demo-evt-18', match_id: matchId, client_event_id: 'c-evt-18', period: 2, minute: 54.0, team: 'own', player_id: 'PLAYER-07', opponent_number: null, event_type: 'clearance', outcome: 'success', x_m: 18.0, y_m: 42.0, end_x_m: null, end_y_m: null, note: '' },
-    { id: 'demo-evt-19', match_id: matchId, client_event_id: 'c-evt-19', period: 2, minute: 61.2, team: 'own', player_id: 'PLAYER-02', opponent_number: null, event_type: 'key_pass', outcome: 'success', x_m: 60.0, y_m: 28.0, end_x_m: 78.0, end_y_m: 34.0, note: '' },
-    { id: 'demo-evt-20', match_id: matchId, client_event_id: 'c-evt-20', period: 2, minute: 61.5, team: 'own', player_id: 'PLAYER-04', opponent_number: null, event_type: 'shot_on_target', outcome: 'success', x_m: 78.0, y_m: 34.0, end_x_m: null, end_y_m: null, note: '' },
-    { id: 'demo-evt-21', match_id: matchId, client_event_id: 'c-evt-21', period: 2, minute: 61.6, team: 'own', player_id: 'PLAYER-04', opponent_number: null, event_type: 'goal', outcome: 'success', x_m: 86.0, y_m: 32.0, end_x_m: null, end_y_m: null, note: 'Gol penyelesaian cepat' },
+    { id: 'demo-evt-18', match_id: matchId, client_event_id: 'c-evt-18', period: 2, minute: 54.0, team: 'own', player_id: 'WK-2026-0048', opponent_number: null, event_type: 'clearance', outcome: 'success', x_m: 18.0, y_m: 42.0, end_x_m: null, end_y_m: null, note: '' },
+    { id: 'demo-evt-19', match_id: matchId, client_event_id: 'c-evt-19', period: 2, minute: 61.2, team: 'own', player_id: 'WK-2026-0045', opponent_number: null, event_type: 'key_pass', outcome: 'success', x_m: 60.0, y_m: 28.0, end_x_m: 78.0, end_y_m: 34.0, note: '' },
+    { id: 'demo-evt-20', match_id: matchId, client_event_id: 'c-evt-20', period: 2, minute: 61.5, team: 'own', player_id: 'WK-2026-0042', opponent_number: null, event_type: 'shot_on_target', outcome: 'success', x_m: 78.0, y_m: 34.0, end_x_m: null, end_y_m: null, note: '' },
+    { id: 'demo-evt-21', match_id: matchId, client_event_id: 'c-evt-21', period: 2, minute: 61.6, team: 'own', player_id: 'WK-2026-0042', opponent_number: null, event_type: 'goal', outcome: 'success', x_m: 86.0, y_m: 32.0, end_x_m: null, end_y_m: null, note: 'Gol penyelesaian cepat' },
     { id: 'demo-evt-22', match_id: matchId, client_event_id: 'c-evt-22', period: 2, minute: 70.0, team: 'opponent', player_id: null, opponent_number: 9, event_type: 'offside', outcome: 'fail', x_m: 22.0, y_m: 38.0, end_x_m: null, end_y_m: null, note: '' },
-    { id: 'demo-evt-23', match_id: matchId, client_event_id: 'c-evt-23', period: 2, minute: 75.4, team: 'own', player_id: 'PLAYER-01', opponent_number: null, event_type: 'save', outcome: 'success', x_m: 4.0, y_m: 30.0, end_x_m: null, end_y_m: null, note: '' },
-    { id: 'demo-evt-24', match_id: matchId, client_event_id: 'c-evt-24', period: 2, minute: 82.1, team: 'own', player_id: 'PLAYER-05', opponent_number: null, event_type: 'throw_in', outcome: 'success', x_m: 65.0, y_m: 60.0, end_x_m: 62.0, end_y_m: 50.0, note: '' },
-    { id: 'demo-evt-25', match_id: matchId, client_event_id: 'c-evt-25', period: 2, minute: 89.0, team: 'own', player_id: 'PLAYER-02', opponent_number: null, event_type: 'ball_loss', outcome: 'fail', x_m: 55.0, y_m: 32.0, end_x_m: null, end_y_m: null, note: '' }
+    { id: 'demo-evt-23', match_id: matchId, client_event_id: 'c-evt-23', period: 2, minute: 75.4, team: 'own', player_id: 'WK-2026-0046', opponent_number: null, event_type: 'save', outcome: 'success', x_m: 4.0, y_m: 30.0, end_x_m: null, end_y_m: null, note: '' },
+    { id: 'demo-evt-24', match_id: matchId, client_event_id: 'c-evt-24', period: 2, minute: 82.1, team: 'own', player_id: 'WK-2026-0043', opponent_number: null, event_type: 'throw_in', outcome: 'success', x_m: 65.0, y_m: 60.0, end_x_m: 62.0, end_y_m: 50.0, note: '' },
+    { id: 'demo-evt-25', match_id: matchId, client_event_id: 'c-evt-25', period: 2, minute: 89.0, team: 'own', player_id: 'WK-2026-0045', opponent_number: null, event_type: 'ball_loss', outcome: 'fail', x_m: 55.0, y_m: 32.0, end_x_m: null, end_y_m: null, note: '' }
+  ];
+
+  // Second match: Draft match to make logger route accessible in demo mode
+  const draftMatchId = 'demo-match-draft-02';
+  const draftMatch = {
+    id: draftMatchId,
+    academy_id: 'demo-academy-01',
+    opponent_name: 'Lawan Contoh 2',
+    match_date: '2026-11-25',
+    competition: 'Liga Remaja U-13 (Contoh)',
+    age_group: 'U-13',
+    format: '11v11',
+    pitch_length_m: 90,
+    pitch_width_m: 60,
+    own_score: null,
+    opponent_score: null,
+    status: 'draft',
+    created_by: 'demo-coach-01',
+    created_at: '2026-10-20T08:00:00Z',
+    updated_at: '2026-10-20T08:00:00Z'
+  };
+
+  const draftParticipants = initialParticipants.map((p) => ({
+    ...p,
+    match_id: draftMatchId
+  }));
+
+  // Starter events for draft match
+  const draftEvents = [
+    { id: 'demo-draft-evt-01', match_id: draftMatchId, client_event_id: 'd-evt-01', period: 1, minute: 3.0, team: 'own', player_id: 'WK-2026-0046', opponent_number: null, event_type: 'pass', outcome: 'success', x_m: 10.0, y_m: 30.0, end_x_m: 25.0, end_y_m: 32.0, note: '' },
+    { id: 'demo-draft-evt-02', match_id: draftMatchId, client_event_id: 'd-evt-02', period: 1, minute: 6.5, team: 'own', player_id: 'WK-2026-0047', opponent_number: null, event_type: 'interception', outcome: 'success', x_m: 45.0, y_m: 28.0, end_x_m: null, end_y_m: null, note: '' },
+    { id: 'demo-draft-evt-03', match_id: draftMatchId, client_event_id: 'd-evt-03', period: 1, minute: 8.0, team: 'own', player_id: 'WK-2026-0042', opponent_number: null, event_type: 'key_pass', outcome: 'success', x_m: 60.0, y_m: 35.0, end_x_m: 78.0, end_y_m: 30.0, note: '' }
   ];
 
   return {
-    matches: [initialMatch],
-    participants: { [matchId]: initialParticipants },
-    events: { [matchId]: initialEvents }
+    matches: [initialMatch, draftMatch],
+    participants: {
+      [matchId]: initialParticipants,
+      [draftMatchId]: draftParticipants
+    },
+    events: {
+      [matchId]: initialEvents,
+      [draftMatchId]: draftEvents
+    }
   };
 }
 
@@ -285,7 +323,19 @@ function getDemoStore() {
       window.localStorage.setItem(DEMO_STORE_KEY, JSON.stringify(initial));
       return initial;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    // Auto-migrate legacy demo stores (e.g. if opponent has old 'vs' prefix or PLAYER-01)
+    const hasOldOpponent = parsed.matches?.some((m) => m.opponent_name?.includes('Contoh: vs'));
+    const hasOldPlayer = Object.values(parsed.participants || {}).some((list) =>
+      list?.some((p) => String(p.player_id).startsWith('PLAYER-'))
+    );
+    const hasDraft = parsed.matches?.some((m) => m.status === 'draft');
+    if (hasOldOpponent || hasOldPlayer || !hasDraft) {
+      const fresh = createInitialDemoState();
+      window.localStorage.setItem(DEMO_STORE_KEY, JSON.stringify(fresh));
+      return fresh;
+    }
+    return parsed;
   } catch (e) {
     console.warn('Gagal membaca demo store dari localStorage:', e);
     return createInitialDemoState();

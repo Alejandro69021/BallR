@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { toPng } from 'html-to-image';
 import { Download, Copy, AlertCircle } from 'lucide-react';
 import Dialog from './ui/Dialog';
 import Button from './ui/Button';
 import { fetchPlayerConsents } from '../lib/supabase';
-import { canShareProgressCard, buildCardDownloadFilename } from '../lib/consent';
+import { canShareProgressCard, buildCardDownloadFilename, getShareBlockReason } from '../lib/consent';
 import StoryCardCanvas, { formatPlayerName } from './story/StoryCardCanvas';
 
 export default function StoryFlexCardModal({
@@ -55,6 +55,16 @@ export default function StoryFlexCardModal({
   }, [isOpen, playerId]);
 
   const canShare = canShareProgressCard(consents);
+  const blockReason = getShareBlockReason(consents);
+
+  const latestConsent = useMemo(() => {
+    if (!consents || consents.length === 0) return null;
+    return [...consents].sort((a, b) => {
+      const timeA = a?.granted_at ? new Date(a.granted_at).getTime() : 0;
+      const timeB = b?.granted_at ? new Date(b.granted_at).getTime() : 0;
+      return timeB - timeA;
+    })[0];
+  }, [consents]);
 
   const handleDownload = async () => {
     if (!cardRef.current || !canShare) return;
@@ -125,13 +135,30 @@ export default function StoryFlexCardModal({
           >
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <div className="space-y-0.5">
-              <div>Butuh persetujuan wali yang tercatat untuk membagikan kartu</div>
-              {consents.length > 0 && (
-                <div className="text-warning/80">
-                  Persetujuan wali yang tercatat belum mencakup berbagi profil
-                </div>
-              )}
+              <div className="font-semibold">
+                Butuh persetujuan wali yang tercatat untuk membagikan kartu
+              </div>
+              <div className="text-warning/90">
+                {blockReason === 'none' && 'Belum ada persetujuan wali yang tercatat'}
+                {blockReason === 'revoked' && (
+                  `Persetujuan wali dicabut pada ${
+                    latestConsent?.revoked_at
+                      ? new Date(latestConsent.revoked_at).toLocaleDateString('id-ID')
+                      : 'tanggal yang tercatat'
+                  }`
+                )}
+                {blockReason === 'no_public_profile' && (
+                  'Persetujuan wali yang tercatat belum mencakup berbagi profil'
+                )}
+              </div>
             </div>
+          </div>
+        )}
+
+        {/* Staff identifier shown outside exported canvas */}
+        {playerId && (
+          <div className="text-right text-xs text-2 font-mono">
+            ID Atlet: {playerId}
           </div>
         )}
 

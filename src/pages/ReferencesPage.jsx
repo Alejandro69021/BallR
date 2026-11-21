@@ -48,7 +48,7 @@ export default function ReferencesPage() {
           />
         </div>
 
-        <div className="flex items-center gap-1 overflow-x-auto text-xs">
+        <div className="flex items-center gap-2 overflow-x-auto text-xs">
           {[
             { id: 'all', label: 'Semua' },
             { id: 'curriculum', label: 'Kurikulum' },
@@ -61,7 +61,7 @@ export default function ReferencesPage() {
               key={cat.id}
               type="button"
               onClick={() => setFilterType(cat.id)}
-              className={`px-2.5 py-1 rounded text-xs transition-colors whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:px-2.5 sm:py-1 rounded text-xs transition-colors whitespace-nowrap cursor-pointer inline-flex items-center justify-center ${
                 filterType === cat.id
                   ? 'bg-raised text-1 font-medium border border-line'
                   : 'text-2 hover:text-1'

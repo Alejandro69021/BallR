@@ -330,4 +330,87 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
       expect(violations, `Found arbitrary text-[...] sizes in:\n${violations.join('\n')}`).toEqual([]);
     });
   });
+
+  describe('6. Scan Test: Interactive Touch Targets >= 44px on Narrow/Coarse Screens (Phase B9)', () => {
+    function walkDir(dir) {
+      let results = [];
+      const list = fs.readdirSync(dir);
+      list.forEach((file) => {
+        const fullPath = path.join(dir, file);
+        const stat = fs.statSync(fullPath);
+        if (stat && stat.isDirectory()) {
+          results = results.concat(walkDir(fullPath));
+        } else if (file.endsWith('.jsx') || file.endsWith('.js')) {
+          results.push(fullPath);
+        }
+      });
+      return results;
+    }
+
+    const scanDirs = [
+      path.resolve(__dirname, '../components'),
+      path.resolve(__dirname, '../pages')
+    ];
+
+    const allFiles = scanDirs.flatMap((d) => walkDir(d));
+
+    it('verifies Button and IconButton definitions enforce 44px touch targets on size="sm"', () => {
+      const buttonPath = path.resolve(__dirname, '../components/ui/Button.jsx');
+      const iconButtonPath = path.resolve(__dirname, '../components/ui/IconButton.jsx');
+
+      const buttonContent = fs.readFileSync(buttonPath, 'utf-8');
+      const iconButtonContent = fs.readFileSync(iconButtonPath, 'utf-8');
+
+      expect(buttonContent).toMatch(/sm:\s*['"][^'"]*min-h-\[44px\][^'"]*min-w-\[44px\]/);
+      expect(iconButtonContent).toMatch(/sm:\s*['"][^'"]*min-h-\[44px\][^'"]*min-w-\[44px\]/);
+    });
+
+    it('verifies no interactive component uses fixed h-7, h-8, or h-9 without responsive min-height override', () => {
+      const violations = [];
+      const interactiveTagRegex = /<(?:button|input|select|textarea|a|Link|Button|IconButton)\b[^>]*>/gs;
+
+      allFiles.forEach((file) => {
+        const content = fs.readFileSync(file, 'utf-8');
+        let match;
+        while ((match = interactiveTagRegex.exec(content)) !== null) {
+          const tag = match[0];
+          const fixedHeightMatch = /(?<!(?:sm|md|lg|xl|2xl):)\bh-[789]\b/.test(tag);
+          const hasMinHeightOverride = /\bmin-h-\[44px\]|\bmin-h-11\b/.test(tag);
+
+          if (fixedHeightMatch && !hasMinHeightOverride) {
+            violations.push(
+              `${path.relative(path.resolve(__dirname, '..'), file)}: ${tag.slice(0, 100).replace(/\s+/g, ' ')}`
+            );
+          }
+        }
+      });
+
+      expect(violations, `Found interactive components with h-7/h-8/h-9 without responsive min-height override:\n${violations.join('\n')}`).toEqual([]);
+    });
+
+    it('verifies size="sm" in interactive components is supported by responsive min-height override', () => {
+      const violations = [];
+      const interactiveSmRegex = /<(?:button|input|select|textarea|a|Link|Button|IconButton)\b[^>]*size=["']sm["'][^>]*>/gs;
+
+      allFiles.forEach((file) => {
+        const content = fs.readFileSync(file, 'utf-8');
+        let match;
+        while ((match = interactiveSmRegex.exec(content)) !== null) {
+          const tag = match[0];
+          if (/(?<!(?:sm|md|lg|xl|2xl):)\bh-[789]\b/.test(tag) && !/\bmin-h-\[44px\]/.test(tag)) {
+            violations.push(
+              `${path.relative(path.resolve(__dirname, '..'), file)}: ${tag.slice(0, 100).replace(/\s+/g, ' ')}`
+            );
+          }
+          if (/\bmin-h-\[(?:[0-3]\d|[0-9])px\]/.test(tag) && !/(?:sm|md|lg|xl|2xl):min-h-/.test(tag)) {
+            violations.push(
+              `${path.relative(path.resolve(__dirname, '..'), file)}: ${tag.slice(0, 100).replace(/\s+/g, ' ')}`
+            );
+          }
+        }
+      });
+
+      expect(violations, `Found size="sm" interactive elements with substandard min-height override:\n${violations.join('\n')}`).toEqual([]);
+    });
+  });
 });

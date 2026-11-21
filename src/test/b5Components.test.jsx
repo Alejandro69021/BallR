@@ -270,9 +270,9 @@ describe('B5: Squad & Passport Migration Tests', () => {
       // Highest 3: Passing (89), Pace (84), Dribbling (82)
       const summaryText = screen.getByText(/4\. Indikator atribut tertinggi:/i).closest('div').textContent;
 
-      expect(summaryText).toContain('Passing: 89 (skala 0-100)');
-      expect(summaryText).toContain('Pace: 84 (skala 0-100)');
-      expect(summaryText).toContain('Dribbling: 82 (skala 0-100)');
+      expect(summaryText).toMatch(/(Passing|Operan): 89 \(skala 0-100\)/);
+      expect(summaryText).toMatch(/(Pace|Kecepatan): 84 \(skala 0-100\)/);
+      expect(summaryText).toMatch(/(Dribbling|Menggiring): 82 \(skala 0-100\)/);
 
       // Verify order: 89 before 84, 84 before 82
       const idx89 = summaryText.indexOf('89');

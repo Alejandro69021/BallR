@@ -143,7 +143,7 @@ export default function PlaybackBar({
         {/* Speed & Loop settings */}
         <div className="flex items-center gap-3">
           {/* Speed picker */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <span className="text-xs text-2 mr-1 flex items-center gap-1">
               <Gauge className="w-3.5 h-3.5" strokeWidth={1.5} />
               Kecepatan:
@@ -153,7 +153,7 @@ export default function PlaybackBar({
                 key={`speed-${s}`}
                 type="button"
                 onClick={() => onChangeSpeed?.(s)}
-                className={`px-2 py-1 rounded-control text-xs font-mono min-h-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
+                className={`px-2 py-1 rounded-control text-xs font-mono min-h-[44px] min-w-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer flex items-center justify-center ${
                   playbackSpeed === s
                     ? 'bg-raised border border-brand text-brand font-bold'
                     : 'bg-app border border-line text-2 hover:text-1'

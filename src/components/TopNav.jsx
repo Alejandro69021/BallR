@@ -37,7 +37,7 @@ export default function TopNav({
       ? [
         { id: 'matches', label: 'Laga', shortLabel: 'Laga', icon: <Trophy className="w-4 h-4 shrink-0" /> },
         { id: 'tactics', label: 'Taktik', shortLabel: 'Taktik', icon: <Compass className="w-4 h-4 shrink-0" /> },
-        { id: 'logger', label: 'Pitch logger', shortLabel: 'Logger', icon: <Timer className="w-4 h-4 shrink-0" /> },
+        { id: 'logger', label: 'Logger', shortLabel: 'Logger', icon: <Timer className="w-4 h-4 shrink-0" /> },
         { id: 'assessment', label: 'Evaluasi', shortLabel: 'Evaluasi', icon: <ClipboardEdit className="w-4 h-4 shrink-0" /> }
       ]
       : [])
@@ -51,23 +51,27 @@ export default function TopNav({
 
           {/* Left: Academy Brand Identity */}
           <div className="flex items-center gap-2.5 min-w-0">
-            <div
-              className="w-7 h-7 rounded-control bg-raised border border-line flex items-center justify-center overflow-hidden shrink-0 cursor-pointer"
+            <button
+              type="button"
+              aria-label="Navigasi beranda akademi"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center -ml-1 sm:ml-0 sm:min-h-0 sm:min-w-0 cursor-pointer bg-transparent border-none p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-control"
               onClick={() => onSwitchView?.(isCoach ? 'roster' : 'passport')}
             >
-              {academy?.logo_url ? (
-                <img
-                  src={academy.logo_url}
-                  alt={academy.name || 'Akademi'}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              ) : (
-                <span className="text-xs font-mono font-bold text-2">FA</span>
-              )}
-            </div>
+              <div className="w-7 h-7 rounded-control bg-raised border border-line flex items-center justify-center overflow-hidden shrink-0">
+                {academy?.logo_url ? (
+                  <img
+                    src={academy.logo_url}
+                    alt={academy.name || 'Akademi'}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <span className="text-xs font-mono font-bold text-2">FA</span>
+                )}
+              </div>
+            </button>
 
             <div className="flex items-center gap-1.5 min-w-0">
               <span className="text-xs font-semibold text-1 truncate max-w-[140px] sm:max-w-none">
@@ -122,9 +126,9 @@ export default function TopNav({
                 Masuk
               </Button>
             ) : (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 {isDemoMode && (
-                  <Badge variant="warning" size="sm">Mode demo</Badge>
+                  <Badge variant="warning" size="sm" className="hidden sm:inline-flex">Mode demo</Badge>
                 )}
                 <span className="hidden sm:inline-block text-xs font-medium text-brand">
                   {isCoach ? 'Pelatih' : isParent ? 'Wali' : 'Admin'}

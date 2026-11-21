@@ -7,9 +7,42 @@ export default function Field({
   error,
   helper,
   required = false,
+  icon,
   children,
-  className = ''
+  className = '',
+  ...inputProps
 }) {
+  const responsiveClass = 'min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0';
+
+  const renderContent = () => {
+    if (children) {
+      return React.Children.map(children, (child) => {
+        if (!React.isValidElement(child)) return child;
+        const childClass = child.props.className || '';
+        return React.cloneElement(child, {
+          className: `${responsiveClass} ${childClass}`.trim()
+        });
+      });
+    }
+
+    return (
+      <div className="relative w-full">
+        {icon && (
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-2">
+            {icon}
+          </span>
+        )}
+        <input
+          id={id}
+          className={`w-full ${icon ? 'pl-9' : 'px-3'} pr-3 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-[38px] bg-panel border ${
+            error ? 'border-danger focus:ring-danger' : 'border-control focus:ring-brand'
+          } rounded-control text-xs text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-colors ${responsiveClass}`}
+          {...inputProps}
+        />
+      </div>
+    );
+  };
+
   return (
     <div className={`space-y-1.5 text-left ${className}`}>
       {label && (
@@ -22,7 +55,7 @@ export default function Field({
         </label>
       )}
 
-      {children}
+      {renderContent()}
 
       {error ? (
         <p

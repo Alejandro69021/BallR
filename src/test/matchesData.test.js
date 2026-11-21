@@ -194,7 +194,7 @@ describe('Matches Data Layer (src/lib/matches.js)', () => {
       const matches = await listMatches();
       expect(matches.length).toBeGreaterThanOrEqual(1);
 
-      const demoMatch = matches.find((m) => m.opponent_name.includes('Contoh: vs Lawan Contoh'));
+      const demoMatch = matches.find((m) => m.opponent_name === 'Lawan Contoh');
       expect(demoMatch).toBeDefined();
       expect(demoMatch.format).toBe('11v11');
       expect(demoMatch.pitch_length_m).toBe(90);

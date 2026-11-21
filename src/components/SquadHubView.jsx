@@ -7,12 +7,14 @@ import {
   Edit3
 } from 'lucide-react';
 import Table from './ui/Table';
+import ResponsiveList from './ui/ResponsiveList';
 import Badge from './ui/Badge';
 import Button from './ui/Button';
 import Field from './ui/Field';
 import Select from './ui/Select';
 import EmptyState from './ui/EmptyState';
 import SquadPlayerCard from './squad/SquadPlayerCard';
+import { formatPositionLabel } from '../lib/displayLabels';
 
 export default function SquadHubView({
   players = [],
@@ -181,8 +183,8 @@ export default function SquadHubView({
       header: 'Posisi',
       sortable: true,
       render: (_, row) => (
-        <span className="text-xs text-2">
-          {row.personal_info?.position || '-'}
+        <span className="text-xs text-2 whitespace-nowrap">
+          {formatPositionLabel(row.personal_info?.position)}
         </span>
       )
     },
@@ -224,14 +226,14 @@ export default function SquadHubView({
       header: 'Aksi',
       align: 'right',
       render: (_, row) => (
-        <div className="inline-flex items-center gap-1.5">
+        <div className="inline-flex items-center gap-1.5 whitespace-nowrap">
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={() => onViewPassport(row.player_id)}
             icon={<Eye className="w-3.5 h-3.5" strokeWidth={1.5} />}
-            className="min-h-[36px]"
+            className="whitespace-nowrap"
           >
             Paspor
           </Button>
@@ -243,7 +245,7 @@ export default function SquadHubView({
               size="sm"
               onClick={() => onEvaluatePlayer(row.player_id)}
               icon={<Edit3 className="w-3.5 h-3.5" strokeWidth={1.5} />}
-              className="min-h-[36px]"
+              className="whitespace-nowrap"
             >
               Evaluasi
             </Button>
@@ -273,12 +275,12 @@ export default function SquadHubView({
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
             {/* View Mode Toggle */}
-            <div className="inline-flex rounded-control border border-control bg-raised p-0.5">
+            <div className="inline-flex rounded-control border border-control bg-raised p-0.5 gap-2">
               <button
                 type="button"
                 onClick={() => setViewMode('table')}
                 aria-pressed={viewMode === 'table'}
-                className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[36px] ${
+                className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${
                   viewMode === 'table'
                     ? 'bg-panel text-1 shadow-sm font-semibold'
                     : 'text-2 hover:text-1'
@@ -291,7 +293,7 @@ export default function SquadHubView({
                 type="button"
                 onClick={() => setViewMode('cards')}
                 aria-pressed={viewMode === 'cards'}
-                className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[36px] ${
+                className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${
                   viewMode === 'cards'
                     ? 'bg-panel text-1 shadow-sm font-semibold'
                     : 'text-2 hover:text-1'
@@ -357,7 +359,7 @@ export default function SquadHubView({
         </div>
 
         {/* Position Filter Chips */}
-        <div className="flex items-center gap-1.5 pt-2 border-t border-line overflow-x-auto scrollbar-none">
+        <div className="flex items-center gap-2 pt-2 border-t border-line overflow-x-auto scrollbar-none">
           <span className="text-xs font-medium text-2 mr-1 shrink-0">
             Posisi:
           </span>
@@ -366,7 +368,7 @@ export default function SquadHubView({
               key={pos.id}
               type="button"
               onClick={() => setSelectedPosition(pos.id)}
-              className={`px-3 py-1.5 rounded-control text-xs font-medium transition-colors cursor-pointer shrink-0 min-h-[36px] ${
+              className={`px-3 py-1.5 rounded-control text-xs font-medium transition-colors cursor-pointer shrink-0 min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${
                 selectedPosition === pos.id
                   ? 'bg-brand text-app font-semibold'
                   : 'bg-raised text-2 hover:text-1 border border-line'
@@ -405,7 +407,7 @@ export default function SquadHubView({
           />
         </div>
       ) : viewMode === 'table' ? (
-        <Table
+        <ResponsiveList
           columns={columns}
           data={filteredPlayers}
           sortKey={sortKey}
@@ -413,6 +415,14 @@ export default function SquadHubView({
           onSort={handleSort}
           stickyHeader={true}
           emptyMessage="Belum ada data pemain"
+          renderCard={(player) => (
+            <SquadPlayerCard
+              player={player}
+              userRole={userRole}
+              onViewPassport={onViewPassport}
+              onEvaluatePlayer={onEvaluatePlayer}
+            />
+          )}
         />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">

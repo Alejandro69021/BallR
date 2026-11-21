@@ -19,8 +19,10 @@ import {
   thirds,
   ppda,
   dataQuality,
-  METRIC_DEFINITIONS
+  METRIC_DEFINITIONS,
+  SMALL_SAMPLE_N
 } from '../lib/analysis/events';
+import { formatPositionLabel } from '../lib/displayLabels';
 import {
   buildReportPayload,
   computeSnapshotHash,
@@ -401,25 +403,25 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
       {/* SECTION 1: RINGKASAN LAGA */}
       <section className="space-y-3 pb-6 border-b border-line">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div>
             <span className="text-xs font-mono uppercase tracking-wider text-2">
               Bagian 1 • Dokumen Resmi Pertandingan
             </span>
             <h1 className="text-2xl font-bold tracking-tight text-1 mt-0.5">
-              Laporan Pertandingan: vs {activeMatch.opponent_name}
+              Laporan Pertandingan: {activeMatch.opponent_name ? activeMatch.opponent_name.replace(/^(?:contoh:\s*)?(?:vs\.?\s*)?/i, '').trim() : ''}
             </h1>
             <p className="text-xs text-2 font-mono mt-1">
               Tanggal: {activeMatch.match_date || '-'} • Format: {activeMatch.format || '11v11'} • Lapangan: {activeMatch.pitch_length_m}&times;{activeMatch.pitch_width_m}m
             </p>
           </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold font-mono text-1">
+          <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-start gap-2 sm:gap-0 sm:text-right shrink-0">
+            <div className="text-2xl font-bold font-mono text-1 whitespace-nowrap tabular-nums">
               {activeMatch.status === 'final'
                 ? `${activeMatch.own_score ?? 0} - ${activeMatch.opponent_score ?? 0}`
                 : 'Belum final'}
             </div>
-            <span className="text-xs text-2 font-mono">Skor Akhir</span>
+            <span className="text-xs text-2 font-mono whitespace-nowrap">Skor Akhir</span>
           </div>
         </div>
 
@@ -498,35 +500,55 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           {/* Umpan */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-1.5">
-            <span className="font-semibold text-1 block">Akurasi Umpan</span>
-            <div className="text-xl font-bold font-mono text-1">
-              {activeOwnPass.value !== null ? `${activeOwnPass.value}%` : 'Belum ada data'}
+            <div className="flex items-center justify-between gap-1">
+              <span className="font-semibold text-1 block">Akurasi Umpan</span>
+              {activeOwnPass.n < SMALL_SAMPLE_N && (
+                <Badge variant="warning" size="sm">sampel kecil</Badge>
+              )}
+            </div>
+            <div className="text-base font-bold font-mono text-1">
+              {activeOwnPass.total.value > 0 ? (
+                <>
+                  <span>{activeOwnPass.successful.value} dari {activeOwnPass.total.value} umpan</span>
+                  <span className="text-xs text-2 font-normal font-sans ml-1.5">
+                    ({activeOwnPass.value !== null ? `${activeOwnPass.value}%` : '0%'})
+                  </span>
+                </>
+              ) : (
+                'Belum ada data'
+              )}
             </div>
             <div className="text-2 font-mono text-xs space-y-0.5">
               <div>Sukses: {activeOwnPass.successful.value} umpan</div>
               <div>Gagal: {activeOwnPass.failed.value} umpan</div>
-              <div>Total: {activeOwnPass.total.value} umpan (n={activeOwnPass.n})</div>
+              <div>Total penyebut: {activeOwnPass.total.value} umpan (n={activeOwnPass.n})</div>
             </div>
           </div>
 
           {/* Tembakan */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-1.5">
-            <span className="font-semibold text-1 block">Tembakan &amp; Sasaran</span>
-            <div className="text-xl font-bold font-mono text-1">
-              {activeOwnShots.goals.value} Gol ({activeOwnShots.accuracy_pct.value ?? 0}%)
+            <div className="flex items-center justify-between gap-1">
+              <span className="font-semibold text-1 block">Tembakan &amp; Sasaran</span>
+              {activeOwnShots.n < SMALL_SAMPLE_N && (
+                <Badge variant="warning" size="sm">sampel kecil</Badge>
+              )}
+            </div>
+            <div className="text-sm font-bold font-mono text-1">
+              {activeOwnShots.goals.value} gol dari {activeOwnShots.on_target.value} tembakan tepat sasaran; {activeOwnShots.off_target.value} meleset
             </div>
             <div className="text-2 font-mono text-xs space-y-0.5">
-              <div>Tepat sasaran: {activeOwnShots.on_target.value} tembakan</div>
-              <div>Meleset: {activeOwnShots.off_target.value} tembakan</div>
-              <div>Total: {activeOwnShots.total.value} tembakan (n={activeOwnShots.n})</div>
+              <div>Akurasi tepat sasaran: {activeOwnShots.accuracy_pct.value ?? 0}% (dari {activeOwnShots.total.value} tembakan)</div>
+              <div>Total tembakan dicatat: n={activeOwnShots.n}</div>
             </div>
           </div>
 
           {/* PPDA */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-1.5">
-            <div className="flex items-center justify-between">
+            <div className="space-y-1">
               <span className="font-semibold text-1 block">PPDA (Intensitas Pressing)</span>
-              <RefChip referenceId="trainor-ppda-2014" />
+              <div className="w-full truncate">
+                <RefChip referenceId="trainor-ppda-2014" />
+              </div>
             </div>
             <div className="text-xl font-bold font-mono text-1">
               {activePpdaMetric.value !== null ? activePpdaMetric.value : '-'}
@@ -544,22 +566,27 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
         {/* Sepertiga Lapangan */}
         <div className="p-3 rounded-control bg-raised border border-line space-y-2">
-          <span className="font-semibold text-1 text-xs block">Distribusi Sepertiga Lapangan (Arah Serang Kiri ke Kanan)</span>
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-1 text-xs block">Distribusi Sepertiga Lapangan (Arah Serang Kiri ke Kanan)</span>
+            {activeOwnThirds.n < SMALL_SAMPLE_N && (
+              <Badge variant="warning" size="sm">sampel kecil</Badge>
+            )}
+          </div>
           <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
             <div className="p-2 rounded bg-app border border-line">
               <span className="text-2 block">Pertahanan (x &lt; 1/3)</span>
-              <span className="text-sm font-bold text-1">{activeOwnThirds.defensive.value ?? 0}%</span>
-              <span className="text-2 block text-xs mt-0.5">({activeOwnThirds.defensive.count} aksi)</span>
+              <span className="text-sm font-bold text-1">{activeOwnThirds.defensive.count} dari {activeOwnThirds.n} aksi</span>
+              <span className="text-2 block text-xs mt-0.5">({activeOwnThirds.defensive.value ?? 0}%)</span>
             </div>
             <div className="p-2 rounded bg-app border border-line">
               <span className="text-2 block">Tengah (1/3 &le; x &lt; 2/3)</span>
-              <span className="text-sm font-bold text-1">{activeOwnThirds.middle.value ?? 0}%</span>
-              <span className="text-2 block text-xs mt-0.5">({activeOwnThirds.middle.count} aksi)</span>
+              <span className="text-sm font-bold text-1">{activeOwnThirds.middle.count} dari {activeOwnThirds.n} aksi</span>
+              <span className="text-2 block text-xs mt-0.5">({activeOwnThirds.middle.value ?? 0}%)</span>
             </div>
             <div className="p-2 rounded bg-app border border-line">
               <span className="text-2 block">Akhir (x &ge; 2/3)</span>
-              <span className="text-sm font-bold text-1">{activeOwnThirds.final.value ?? 0}%</span>
-              <span className="text-2 block text-xs mt-0.5">({activeOwnThirds.final.count} aksi)</span>
+              <span className="text-sm font-bold text-1">{activeOwnThirds.final.count} dari {activeOwnThirds.n} aksi</span>
+              <span className="text-2 block text-xs mt-0.5">({activeOwnThirds.final.value ?? 0}%)</span>
             </div>
           </div>
           <div className="text-2 text-xs font-mono text-right">
@@ -575,7 +602,9 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             <span className="text-xs font-mono uppercase tracking-wider text-2">
               Bagian 4 • Analisis Lawan
             </span>
-            <h2 className="text-xl font-bold text-1">Lawan ({activeMatch.opponent_name})</h2>
+            <h2 className="text-xl font-bold text-1">
+              Lawan ({activeMatch.opponent_name ? activeMatch.opponent_name.replace(/^(?:contoh:\s*)?(?:vs\.?\s*)?/i, '').trim() : ''})
+            </h2>
           </div>
           <Badge variant="neutral" size="sm">
             pengamatan satu laga
@@ -588,31 +617,55 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           <div className="p-3 rounded-control bg-raised border border-line space-y-1">
-            <span className="font-semibold text-1 block">Aksi Umpan Lawan</span>
-            <div className="text-xl font-bold font-mono text-1">
-              {activeOppPass.value !== null ? `${activeOppPass.value}%` : '-'}
+            <div className="flex items-center justify-between gap-1">
+              <span className="font-semibold text-1 block">Aksi Umpan Lawan</span>
+              {activeOppPass.n < SMALL_SAMPLE_N && (
+                <Badge variant="warning" size="sm">sampel kecil</Badge>
+              )}
+            </div>
+            <div className="text-base font-bold font-mono text-1">
+              {activeOppPass.total.value > 0 ? (
+                <>
+                  <span>{activeOppPass.successful.value} dari {activeOppPass.total.value} umpan</span>
+                  <span className="text-xs text-2 font-normal font-sans ml-1.5">
+                    ({activeOppPass.value !== null ? `${activeOppPass.value}%` : '0%'})
+                  </span>
+                </>
+              ) : (
+                '-'
+              )}
             </div>
             <div className="text-2 font-mono text-xs">
-              Sukses {activeOppPass.successful.value} • Gagal {activeOppPass.failed.value} (n={activeOppPass.n})
+              Sukses {activeOppPass.successful.value} • Gagal {activeOppPass.failed.value} (penyebut n={activeOppPass.n})
             </div>
           </div>
 
           <div className="p-3 rounded-control bg-raised border border-line space-y-1">
-            <span className="font-semibold text-1 block">Tembakan Lawan</span>
-            <div className="text-xl font-bold font-mono text-1">
-              {activeOppShots.goals.value} Gol ({activeOppShots.accuracy_pct.value ?? 0}%)
+            <div className="flex items-center justify-between gap-1">
+              <span className="font-semibold text-1 block">Tembakan Lawan</span>
+              {activeOppShots.n < SMALL_SAMPLE_N && (
+                <Badge variant="warning" size="sm">sampel kecil</Badge>
+              )}
+            </div>
+            <div className="text-sm font-bold font-mono text-1">
+              {activeOppShots.goals.value} gol dari {activeOppShots.on_target.value} tepat sasaran; {activeOppShots.off_target.value} meleset
             </div>
             <div className="text-2 font-mono text-xs">
-              Tepat sasaran {activeOppShots.on_target.value} • Total {activeOppShots.total.value} (n={activeOppShots.n})
+              Tepat sasaran {activeOppShots.on_target.value} dari total {activeOppShots.total.value} (n={activeOppShots.n})
             </div>
           </div>
 
           <div className="p-3 rounded-control bg-raised border border-line space-y-1">
-            <span className="font-semibold text-1 block">Sebaran Area Aksi Lawan</span>
+            <div className="flex items-center justify-between gap-1">
+              <span className="font-semibold text-1 block">Sebaran Area Aksi Lawan</span>
+              {activeOppThirds.n < SMALL_SAMPLE_N && (
+                <Badge variant="warning" size="sm">sampel kecil</Badge>
+              )}
+            </div>
             <div className="text-xs font-mono space-y-0.5 mt-1 text-2">
-              <div>Pertahanan: {activeOppThirds.defensive.value ?? 0}% ({activeOppThirds.defensive.count})</div>
-              <div>Tengah: {activeOppThirds.middle.value ?? 0}% ({activeOppThirds.middle.count})</div>
-              <div>Akhir: {activeOppThirds.final.value ?? 0}% ({activeOppThirds.final.count})</div>
+              <div>Pertahanan: {activeOppThirds.defensive.count} dari {activeOppThirds.n} ({activeOppThirds.defensive.value ?? 0}%)</div>
+              <div>Tengah: {activeOppThirds.middle.count} dari {activeOppThirds.n} ({activeOppThirds.middle.value ?? 0}%)</div>
+              <div>Akhir: {activeOppThirds.final.count} dari {activeOppThirds.n} ({activeOppThirds.final.value ?? 0}%)</div>
             </div>
           </div>
         </div>
@@ -638,19 +691,29 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               header: 'No.',
               render: (_val, row) => (
                 <span className="font-mono text-xs font-bold text-1">
-                  #{row.jersey_number ?? '-'}
+                  {row.jersey_number != null && row.jersey_number !== '-' && row.jersey_number !== ''
+                    ? `#${row.jersey_number}`
+                    : 'Tanpa nomor'}
                 </span>
               )
             },
             {
               key: 'player_name',
               header: 'Nama Pemain',
-              render: (_val, row) => (
-                <div>
-                  <span className="font-semibold text-1 block">{row.player_name}</span>
-                  <span className="text-xs text-2 font-mono">{row.position} • {row.is_starter ? 'Starter' : 'Cadangan'}</span>
-                </div>
-              )
+              render: (_val, row) => {
+                const name =
+                  row.player_name && !row.player_name.startsWith('PLAYER-') && !row.player_name.startsWith('WK-')
+                    ? row.player_name
+                    : 'Pemain tanpa nama';
+                return (
+                  <div>
+                    <span className="font-semibold text-1 block">{name}</span>
+                    <span className="text-xs text-2 font-mono">
+                      {formatPositionLabel(row.position)} • {row.is_starter ? 'Starter' : 'Cadangan'}
+                    </span>
+                  </div>
+                );
+              }
             },
             {
               key: 'minutes_played',

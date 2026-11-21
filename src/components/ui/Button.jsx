@@ -16,8 +16,8 @@ export default function Button({
     'inline-flex items-center justify-center font-medium rounded-control border transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer select-none';
 
   const sizeClasses = {
-    sm: 'h-8 px-2.5 text-xs gap-1.5',
-    md: 'h-[38px] px-3.5 text-sm gap-2'
+    sm: 'min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-8 px-2.5 text-xs gap-1.5',
+    md: 'min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-[38px] px-3.5 text-sm gap-2'
   };
 
   const variantClasses = {

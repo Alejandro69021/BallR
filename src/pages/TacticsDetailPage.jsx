@@ -817,7 +817,7 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
                     onClick={() =>
                       setDrawingArrowKind((prev) => (prev === arr.kind ? null : arr.kind))
                     }
-                    className={`px-2 py-1 rounded-control text-xs min-h-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
+                    className={`px-2 py-1 rounded-control text-xs min-h-[44px] min-w-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
                       isActive
                         ? 'bg-raised border border-brand text-brand font-bold'
                         : 'bg-app border border-line text-2 hover:text-1'
@@ -831,11 +831,11 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
             </div>
 
             {/* Snap & Delete tools */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setSnapToGrid((prev) => !prev)}
-                className={`px-2 py-1 rounded-control text-xs min-h-[44px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
+                className={`px-2 py-1 rounded-control text-xs min-h-[44px] min-w-[44px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
                   snapToGrid
                     ? 'bg-raised border-brand text-brand font-medium'
                     : 'bg-app border-line text-2 hover:text-1'

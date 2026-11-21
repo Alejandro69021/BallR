@@ -50,13 +50,15 @@ export default function Table({
                   key={col.key}
                   scope="col"
                   aria-sort={isSorted ? (sortDirection === 'asc' ? 'ascending' : 'descending') : undefined}
-                  className={`py-2.5 px-3 font-semibold select-none ${alignClass}`}
+                  className={`font-semibold select-none ${col.sortable && onSort ? 'p-0' : 'py-2 px-2.5 sm:px-3'} ${alignClass}`}
                 >
                   {col.sortable && onSort ? (
                     <button
                       type="button"
                       onClick={() => onSort(col.key)}
-                      className="group inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded cursor-pointer"
+                      className={`group inline-flex items-center gap-1.5 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 py-2.5 px-2.5 sm:py-2 sm:px-3 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded cursor-pointer ${
+                        col.align === 'right' ? 'justify-end' : col.align === 'center' ? 'justify-center' : 'justify-start'
+                      }`}
                     >
                       <span>{col.header}</span>
                       {getSortIcon(col.key)}
@@ -86,7 +88,7 @@ export default function Table({
                 const cellVal = row[col.key];
 
                 return (
-                  <td key={col.key} className={`py-2.5 px-3 ${alignClass} ${tabularClass}`}>
+                  <td key={col.key} className={`py-2 px-2.5 sm:px-3 ${alignClass} ${tabularClass}`}>
                     {col.render ? col.render(cellVal, row) : (cellVal ?? '-')}
                   </td>
                 );

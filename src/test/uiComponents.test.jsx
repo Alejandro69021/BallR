@@ -36,6 +36,20 @@ describe('UI Component Library (src/components/ui/)', () => {
       rerender(<Button loading>Memuat</Button>);
       expect(screen.getByRole('button')).toBeDisabled();
     });
+
+    it('applies 44px min-height/min-width touch target classes below sm breakpoint', () => {
+      const { rerender } = render(<Button size="sm">Aksi Sm</Button>);
+      const btnSm = screen.getByRole('button', { name: 'Aksi Sm' });
+      expect(btnSm.className).toContain('min-h-[44px]');
+      expect(btnSm.className).toContain('min-w-[44px]');
+      expect(btnSm.className).toContain('sm:min-h-0');
+
+      rerender(<Button size="md">Aksi Md</Button>);
+      const btnMd = screen.getByRole('button', { name: 'Aksi Md' });
+      expect(btnMd.className).toContain('min-h-[44px]');
+      expect(btnMd.className).toContain('min-w-[44px]');
+      expect(btnMd.className).toContain('sm:min-h-0');
+    });
   });
 
   // 2. IconButton
@@ -47,6 +61,26 @@ describe('UI Component Library (src/components/ui/)', () => {
       expect(btn).toBeInTheDocument();
       fireEvent.click(btn);
       expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('applies 44px touch target classes below sm breakpoint and compact sizes at sm', () => {
+      const { rerender } = render(<IconButton icon={<User />} label="Ikon Sm" size="sm" />);
+      const btnSm = screen.getByRole('button', { name: 'Ikon Sm' });
+      expect(btnSm.className).toContain('w-[44px]');
+      expect(btnSm.className).toContain('h-[44px]');
+      expect(btnSm.className).toContain('min-h-[44px]');
+      expect(btnSm.className).toContain('min-w-[44px]');
+      expect(btnSm.className).toContain('sm:w-7');
+      expect(btnSm.className).toContain('sm:h-7');
+
+      rerender(<IconButton icon={<User />} label="Ikon Md" size="md" />);
+      const btnMd = screen.getByRole('button', { name: 'Ikon Md' });
+      expect(btnMd.className).toContain('w-[44px]');
+      expect(btnMd.className).toContain('h-[44px]');
+      expect(btnMd.className).toContain('min-h-[44px]');
+      expect(btnMd.className).toContain('min-w-[44px]');
+      expect(btnMd.className).toContain('sm:w-[34px]');
+      expect(btnMd.className).toContain('sm:h-[34px]');
     });
   });
 
@@ -71,6 +105,26 @@ describe('UI Component Library (src/components/ui/)', () => {
       const alert = screen.getByRole('alert');
       expect(alert).toHaveTextContent('Format email tidak valid');
     });
+
+    it('injects 44px min-height/min-width touch target classes to wrapped inputs', () => {
+      render(
+        <Field label="Input Sentuh" id="touch-input">
+          <input id="touch-input" />
+        </Field>
+      );
+      const input = screen.getByLabelText('Input Sentuh');
+      expect(input.className).toContain('min-h-[44px]');
+      expect(input.className).toContain('min-w-[44px]');
+      expect(input.className).toContain('sm:min-h-0');
+    });
+
+    it('renders input with 44px min-height/min-width when called without children', () => {
+      render(<Field id="standalone-input" placeholder="Cari..." />);
+      const input = screen.getByPlaceholderText('Cari...');
+      expect(input.className).toContain('min-h-[44px]');
+      expect(input.className).toContain('min-w-[44px]');
+      expect(input.className).toContain('sm:min-h-0');
+    });
   });
 
   // 4. Select
@@ -86,6 +140,14 @@ describe('UI Component Library (src/components/ui/)', () => {
       expect(select).toHaveValue('u13');
       fireEvent.change(select, { target: { value: 'u15' } });
       expect(handleChange).toHaveBeenCalled();
+    });
+
+    it('applies 44px min-height/min-width touch target classes below sm breakpoint', () => {
+      render(<Select id="touch-select" options={[{ value: '1', label: 'Satu' }]} />);
+      const select = screen.getByRole('combobox');
+      expect(select.className).toContain('min-h-[44px]');
+      expect(select.className).toContain('min-w-[44px]');
+      expect(select.className).toContain('sm:min-h-0');
     });
   });
 
@@ -105,6 +167,14 @@ describe('UI Component Library (src/components/ui/)', () => {
 
       fireEvent.keyDown(tab1, { key: 'ArrowRight' });
       expect(handleChange).toHaveBeenCalledWith('tab2');
+    });
+
+    it('applies 44px min-height/min-width touch target classes to tab triggers', () => {
+      render(<Tabs tabs={[{ id: 't1', label: 'Tab 1' }]} activeTab="t1" />);
+      const tab = screen.getByRole('tab', { name: 'Tab 1' });
+      expect(tab.className).toContain('min-h-[44px]');
+      expect(tab.className).toContain('min-w-[44px]');
+      expect(tab.className).toContain('sm:min-h-0');
     });
   });
 
@@ -137,6 +207,22 @@ describe('UI Component Library (src/components/ui/)', () => {
       const sortBtn = screen.getByRole('button', { name: /Nama Atlet/i });
       fireEvent.click(sortBtn);
       expect(handleSort).toHaveBeenCalledWith('name');
+    });
+
+    it('applies at least 44px touch target classes to sortable header buttons', () => {
+      render(
+        <Table
+          columns={columns}
+          data={data}
+          sortKey="name"
+          sortDirection="asc"
+          onSort={vi.fn()}
+        />
+      );
+      const sortBtn = screen.getByRole('button', { name: /Nama Atlet/i });
+      expect(sortBtn.className).toContain('min-h-[44px]');
+      expect(sortBtn.className).toContain('min-w-[44px]');
+      expect(sortBtn.className).toContain('sm:min-h-0');
     });
 
     it('renders empty message when data is empty', () => {

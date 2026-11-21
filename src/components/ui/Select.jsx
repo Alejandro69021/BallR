@@ -6,13 +6,14 @@ export default function Select({
   value,
   onChange,
   options = [],
+  children,
   error,
   disabled = false,
   className = '',
   ...props
 }) {
   const baseClasses =
-    'w-full appearance-none h-[38px] pl-3 pr-8 py-1.5 rounded-control text-xs transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-45 disabled:cursor-not-allowed bg-panel text-1';
+    'w-full appearance-none min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-[38px] pl-3 pr-8 py-1.5 rounded-control text-xs transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-45 disabled:cursor-not-allowed bg-panel text-1';
 
   const borderClasses = error
     ? 'border border-danger focus:ring-danger'
@@ -29,11 +30,12 @@ export default function Select({
         className={`${baseClasses} ${borderClasses} ${className}`}
         {...props}
       >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value} className="bg-panel text-1">
-            {opt.label}
-          </option>
-        ))}
+        {children ||
+          options.map((opt) => (
+            <option key={opt.value} value={opt.value} className="bg-panel text-1">
+              {opt.label}
+            </option>
+          ))}
       </select>
       <ChevronDown
         className="w-4 h-4 text-2 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"

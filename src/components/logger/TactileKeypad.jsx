@@ -119,19 +119,34 @@ export default function TactileKeypad({
           </div>
 
           {/* Location Toggle (Catat lokasi) */}
-          <label className="flex items-center gap-2 text-xs font-medium text-2 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              disabled={isReadOnly}
-              checked={recordLocation}
-              onChange={(e) => setRecordLocation(e.target.checked)}
-              className="rounded border-control text-brand focus:ring-brand"
-            />
+          <button
+            type="button"
+            role="switch"
+            aria-checked={recordLocation}
+            disabled={isReadOnly}
+            onClick={() => setRecordLocation((prev) => !prev)}
+            className={`flex items-center gap-2 min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-control border text-xs font-medium cursor-pointer transition-colors duration-150 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+              recordLocation
+                ? 'bg-raised border-control text-1'
+                : 'bg-transparent border-transparent text-2 hover:text-1'
+            }`}
+          >
+            <span
+              className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+                recordLocation
+                  ? 'bg-brand border-brand text-app font-bold'
+                  : 'border-control bg-app'
+              }`}
+            >
+              {recordLocation && (
+                <Check className="w-3 h-3 stroke-[2.5]" />
+              )}
+            </span>
             <span className="flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-series-1" strokeWidth={1.5} />
               Catat lokasi koordinat
             </span>
-          </label>
+          </button>
         </div>
 
         {/* Player or Opponent Selector */}
