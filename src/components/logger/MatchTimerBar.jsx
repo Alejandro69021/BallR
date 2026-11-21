@@ -30,8 +30,8 @@ export default function MatchTimerBar({
   };
 
   return (
-    <section className="rounded-panel bg-panel border border-line p-4 text-1">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <section className="rounded-panel bg-panel border border-line p-3 sm:p-3.5 text-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
         {/* Match Label & Clock Display */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 flex-wrap">

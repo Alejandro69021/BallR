@@ -417,7 +417,7 @@ export default function FastPitchLogger({
   }, [participants]);
 
   return (
-    <div className="space-y-4 pb-28 text-1 select-none">
+    <div className="space-y-3 lg:space-y-2.5 pb-36 sm:pb-32 text-1 select-none">
       {/* Timer Bar */}
       <MatchTimerBar
         match={match}
@@ -454,9 +454,9 @@ export default function FastPitchLogger({
         </Button>
       </div>
 
-      {/* Main Logging Area: Video panel beside (>= lg) or above (< lg) the keypad */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-        <div className={isVideoPanelOpen ? 'lg:col-span-6 xl:col-span-5 space-y-4' : 'hidden'}>
+      {/* Main Logging Area: Video panel beside (>= lg) or sticky above (< lg) the keypad */}
+      <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-4 items-start">
+        <div className={isVideoPanelOpen ? 'sticky top-14 z-20 lg:static lg:col-span-6 xl:col-span-5' : 'hidden'}>
           <LocalVideoPanel
             ref={videoPanelRef}
             matchId={matchId}
@@ -467,7 +467,7 @@ export default function FastPitchLogger({
           />
         </div>
 
-        <div className={isVideoPanelOpen ? 'lg:col-span-6 xl:col-span-7 space-y-4' : 'lg:col-span-12 space-y-4'}>
+        <div className={isVideoPanelOpen ? 'lg:col-span-6 xl:col-span-7' : 'lg:col-span-12'}>
           <TactileKeypad
             match={match}
             participants={participants}
@@ -491,8 +491,8 @@ export default function FastPitchLogger({
         isReadOnly={isReadOnly}
       />
 
-      {/* Sticky Bottom Recap / Finalise Bar */}
-      <div className="fixed bottom-3 inset-x-3 sm:inset-x-auto sm:right-6 sm:left-auto z-40 max-w-md">
+      {/* Sticky Bottom Recap / Finalise Bar: offset above mobile bottom nav on < md */}
+      <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:bottom-4 inset-x-3 sm:inset-x-auto sm:right-6 sm:left-auto z-40 max-w-md">
         <Button
           type="button"
           variant="brand"

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Download, X, Share } from 'lucide-react';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
 
 export default function InstallAppBanner() {
+  const location = useLocation();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isDismissed, setIsDismissed] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -68,6 +70,11 @@ export default function InstallAppBanner() {
     setIsDismissed(true);
     sessionStorage.setItem('prospek_pwa_dismissed', 'true');
   };
+
+  // Do not render on /pencatatan/* routes (pitch logger ergonomics)
+  if (location?.pathname?.startsWith('/pencatatan')) {
+    return null;
+  }
 
   // Don't render if already installed or dismissed
   if (isStandalone || isDismissed) {

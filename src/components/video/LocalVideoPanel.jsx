@@ -16,12 +16,29 @@ import {
   AlertTriangle,
   Clock,
   Film,
-  CheckCircle2
+  CheckCircle2,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import Button from '../ui/Button';
 import Badge from '../ui/Badge';
 import { formatSecondsToTime } from '../../lib/calculations';
 import { getMatchVideoOffsets, updateMatchVideoOffsets } from '../../lib/matches';
+
+/**
+ * Checks if a match has remembered video metadata in localStorage.
+ */
+export function hasStoredVideoMeta(matchId) {
+  if (typeof window === 'undefined' || !window.localStorage || !matchId) return false;
+  try {
+    const raw = localStorage.getItem(`ballr_video_meta_${matchId}`);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    return Boolean(parsed && parsed.name);
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Converts a time string "mm:ss" or numeric seconds to integer seconds.
@@ -94,6 +111,10 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
   const [offsetP1Secs, setOffsetP1Secs] = useState(null);
   const [offsetP2Secs, setOffsetP2Secs] = useState(null);
   const [p2StartMinVal, setP2StartMinVal] = useState(null);
+
+  // Ergonomics: offset collapse state & mobile mini player
+  const [userExpanded, setUserExpanded] = useState(false);
+  const [isMini, setIsMini] = useState(false);
 
   // Load existing offsets
   useEffect(() => {
@@ -360,18 +381,41 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
 
   const activeOffsetSecs = period === 1 ? offsetP1Secs : (period === 2 ? offsetP2Secs : null);
 
+  // Ergonomics: offset completeness for active period
+  const isPeriod1Complete = offsetP1Secs != null;
+  const isPeriod2Complete = offsetP2Secs != null && p2StartMinVal != null;
+  const isCompleteForPeriod = offsetP1Secs != null && (period === 1 || isPeriod2Complete);
+  const isOffsetCollapsed = isCompleteForPeriod && !userExpanded;
+
+  const getOffsetSummaryText = () => {
+    const parts = [];
+    if (offsetP1Secs != null) {
+      parts.push(`Babak 1 mulai ${formatSecondsToTime(offsetP1Secs)}`);
+    } else {
+      parts.push('Babak 1 belum diatur');
+    }
+
+    if (offsetP2Secs != null && p2StartMinVal != null) {
+      parts.push(`Babak 2 mulai ${formatSecondsToTime(offsetP2Secs)} (menit ${p2StartMinVal})`);
+    } else if (offsetP2Secs != null) {
+      parts.push(`Babak 2 mulai ${formatSecondsToTime(offsetP2Secs)}`);
+    }
+
+    return `Sinkron: ${parts.join(' · ')}`;
+  };
+
   return (
-    <div className={`p-3.5 sm:p-4 rounded-panel bg-panel border border-line space-y-3 text-1 ${className}`}>
+    <div className={`p-2.5 sm:p-3 rounded-panel bg-panel border border-line space-y-2 text-1 ${className}`}>
       {/* Header & Source Notice */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-2.5 border-b border-line">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-line">
+        <div className="flex items-center gap-1.5 shrink-0">
           <Film className="w-4 h-4 text-brand shrink-0" />
-          <h3 className="text-sm font-semibold text-1">Video Laga Lokal</h3>
+          <h3 className="text-xs sm:text-sm font-semibold text-1">Video Laga Lokal</h3>
           <Badge variant="neutral" size="sm">
             Fase A
           </Badge>
         </div>
-        <p className="text-xs text-2 font-mono">
+        <p className="text-xs text-2 font-mono truncate max-w-[220px] sm:max-w-none text-right">
           Video diputar dari perangkat ini dan tidak diunggah.
         </p>
       </div>
@@ -394,12 +438,54 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
 
       {/* Video Element or File Selector */}
       {videoSrc && !codecError ? (
-        <div className="space-y-2">
-          <div className="relative aspect-video bg-black rounded-control overflow-hidden flex items-center justify-center">
+        <div
+          data-testid="mini-player"
+          className="sticky top-14 z-20 lg:static bg-panel space-y-1.5"
+        >
+          <div className="flex items-center justify-between pb-0.5 text-xs">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-xs text-2 font-mono truncate max-w-[140px] sm:max-w-[200px]">
+                {savedMeta?.name || 'Video terpasang'}
+              </span>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="min-h-[44px] sm:min-h-0 text-xs text-brand hover:underline font-medium inline-flex items-center shrink-0 cursor-pointer"
+              >
+                Ganti berkas
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsMini((prev) => !prev)}
+              aria-label={isMini ? 'Perbesar video' : 'Kecilkan video'}
+              className="min-h-[44px] sm:min-h-0 text-xs px-2.5 py-1 rounded-control bg-raised border border-line hover:border-brand text-2 hover:text-1 inline-flex items-center gap-1 cursor-pointer transition-colors shrink-0"
+            >
+              {isMini ? (
+                <>
+                  <Maximize2 className="w-3.5 h-3.5" />
+                  <span>Perbesar video</span>
+                </>
+              ) : (
+                <>
+                  <Minimize2 className="w-3.5 h-3.5" />
+                  <span>Kecilkan video</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div
+            className={`relative aspect-video bg-black rounded-control overflow-hidden flex items-center justify-center mx-auto transition-all ${
+              isMini ? 'max-h-[28vh]' : 'max-h-[40vh]'
+            }`}
+          >
             <video
               ref={videoRef}
               src={videoSrc}
-              className="w-full h-full object-contain"
+              className={`w-full h-full object-contain ${
+                isMini ? 'max-h-[28vh]' : 'max-h-[40vh]'
+              }`}
               onLoadedMetadata={handleLoadedMetadata}
               onTimeUpdate={handleTimeUpdate}
               onError={handleVideoError}
@@ -408,7 +494,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
           </div>
 
           {/* Scrubber & Time */}
-          <div className="space-y-1">
+          <div className="space-y-0.5">
             <div className="flex items-center gap-2">
               <input
                 type="range"
@@ -418,7 +504,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 value={currentTime}
                 onChange={handleScrub}
                 aria-label="Garis waktu video"
-                className="w-full h-2 cursor-pointer accent-brand bg-raised rounded-lg min-h-[44px] sm:min-h-0"
+                className="w-full h-1.5 cursor-pointer accent-brand bg-raised rounded-lg min-h-[44px] sm:min-h-0"
               />
             </div>
             <div className="flex items-center justify-between text-xs font-mono tabular-nums text-2">
@@ -427,17 +513,17 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
             </div>
           </div>
 
-          {/* Controls Bar: All buttons >= 44px touch targets */}
-          <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+          {/* Controls Bar: All buttons >= 44px touch targets on coarse screens */}
+          <div className="flex items-center justify-between gap-1.5 pt-0.5 overflow-x-auto">
             {/* Play/Pause & Jumps */}
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-1 shrink-0">
               <button
                 type="button"
                 onClick={togglePlay}
                 aria-label={isPlaying ? 'Jeda video' : 'Putar video'}
-                className="min-h-[44px] min-w-[44px] px-3 py-1.5 rounded-control bg-brand text-slate-950 hover:bg-brand/90 font-medium inline-flex items-center justify-center gap-1.5 text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-fit px-2 sm:px-2.5 py-1 rounded-control bg-brand text-slate-950 hover:bg-brand/90 font-medium inline-flex items-center justify-center gap-1 text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
-                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
                 <span>{isPlaying ? 'Jeda' : 'Putar'}</span>
               </button>
 
@@ -445,9 +531,9 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 type="button"
                 onClick={() => jumpTime(-5)}
                 aria-label="Mundur 5 detik"
-                className="min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-control bg-raised border border-line text-1 hover:border-brand text-xs inline-flex items-center justify-center gap-1 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-8 px-1.5 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand text-xs inline-flex items-center justify-center gap-0.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
-                <Rewind className="w-3.5 h-3.5" />
+                <Rewind className="w-3 h-3" />
                 <span>-5s</span>
               </button>
 
@@ -455,7 +541,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 type="button"
                 onClick={() => jumpTime(-1)}
                 aria-label="Mundur 1 detik"
-                className="min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-control bg-raised border border-line text-1 hover:border-brand text-xs inline-flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-7 px-1 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand text-xs inline-flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 -1s
               </button>
@@ -464,7 +550,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 type="button"
                 onClick={() => jumpTime(1)}
                 aria-label="Maju 1 detik"
-                className="min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-control bg-raised border border-line text-1 hover:border-brand text-xs inline-flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-7 px-1 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand text-xs inline-flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 +1s
               </button>
@@ -473,22 +559,21 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 type="button"
                 onClick={() => jumpTime(5)}
                 aria-label="Maju 5 detik"
-                className="min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-control bg-raised border border-line text-1 hover:border-brand text-xs inline-flex items-center justify-center gap-1 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-8 px-1.5 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand text-xs inline-flex items-center justify-center gap-0.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <span>+5s</span>
-                <FastForward className="w-3.5 h-3.5" />
+                <FastForward className="w-3 h-3" />
               </button>
             </div>
 
             {/* Playback Speeds */}
-            <div className="flex items-center gap-1">
-              <span className="text-xs text-2 mr-1">Kecepatan:</span>
+            <div className="flex items-center gap-1 shrink-0">
               {PLAYBACK_SPEEDS.map((sp) => (
                 <button
                   key={sp}
                   type="button"
                   onClick={() => changeSpeed(sp)}
-                  className={`min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 px-2 py-1 rounded-control text-xs font-mono font-medium transition-colors cursor-pointer ${
+                  className={`min-h-[44px] min-w-[44px] sm:min-h-7 sm:min-w-7 px-1.5 py-0.5 rounded-control text-xs font-mono font-medium transition-colors cursor-pointer ${
                     playbackSpeed === sp
                       ? 'bg-raised border border-brand text-brand'
                       : 'bg-app border border-line text-2 hover:text-1'
@@ -534,174 +619,191 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
         aria-label="Pilih berkas video dari perangkat"
       />
 
-      {/* Change video button if video is loaded */}
-      {videoSrc && (
-        <div className="flex items-center justify-between text-xs text-2 pt-1 border-t border-line">
-          <span className="truncate max-w-[200px] sm:max-w-xs font-mono">
-            {savedMeta?.name || 'Video terpasang'}
-          </span>
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="min-h-[44px] sm:min-h-0 text-brand hover:underline font-medium inline-flex items-center"
-          >
-            Ganti berkas video
-          </button>
-        </div>
-      )}
-
       {/* Sync Offset Controls */}
-      <div className="pt-2.5 border-t border-line space-y-2.5">
+      <div className="pt-2 border-t border-line space-y-1.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5 text-2" />
             <h4 className="text-xs font-semibold text-1">
-              Sinkronisasi Offset Pertandingan
+              Sinkronisasi Offset
             </h4>
           </div>
           <span className="text-xs text-2 font-mono tabular-nums">
             {activeOffsetSecs != null
               ? `Offset B${period}: ${formatSecondsToTime(activeOffsetSecs)}`
-              : 'Offset belum diatur'}
+              : 'Belum diatur'}
           </span>
         </div>
 
-        <div className="space-y-2">
-          {/* Period 1 Offset Card */}
+        {isOffsetCollapsed ? (
           <div
-            className={`p-2.5 rounded-control border transition-colors ${
-              period === 1
-                ? 'bg-panel border-brand/40 ring-1 ring-brand/10'
-                : 'bg-app border-line'
-            }`}
+            data-testid="offset-summary"
+            className="flex items-center justify-between gap-2 p-2 rounded-control bg-app border border-line text-xs"
           >
-            <div className="flex items-center justify-between gap-2 mb-1.5">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-1">Babak 1</span>
-                {period === 1 && (
-                  <Badge variant="brand" size="sm">
-                    Aktif
-                  </Badge>
-                )}
-              </div>
-              <span className="text-xs text-2 font-mono tabular-nums">
-                {offsetP1Secs != null
-                  ? `Peluit: ${formatSecondsToTime(offsetP1Secs)}`
-                  : 'Belum diatur'}
+            <div className="flex items-center gap-1.5 min-w-0">
+              <CheckCircle2 className="w-3.5 h-3.5 text-brand shrink-0" />
+              <span className="font-mono text-1 text-xs truncate">
+                {getOffsetSummaryText()}
               </span>
             </div>
-
-            <div className="flex items-center gap-2">
-              <label htmlFor={`video-offset-p1-${matchId}`} className="sr-only">
-                Menit video saat peluit mulai (Babak 1)
-              </label>
-              <input
-                id={`video-offset-p1-${matchId}`}
-                type="text"
-                placeholder="Peluit mulai video (mm:ss, misal 01:00)"
-                value={offsetP1Input}
-                onChange={(e) => setOffsetP1Input(e.target.value)}
-                onBlur={handleOffsetP1Blur}
-                className="flex-1 px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
-              />
-              {videoSrc && (
+            <button
+              type="button"
+              onClick={() => setUserExpanded(true)}
+              className="min-h-[44px] sm:min-h-7 px-2.5 py-0.5 rounded-control bg-raised border border-line hover:border-brand text-xs font-medium text-brand shrink-0 cursor-pointer transition-colors"
+            >
+              Ubah
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {isCompleteForPeriod && (
+              <div className="flex justify-end">
                 <button
                   type="button"
-                  onClick={handleUseCurrentTimeForP1}
-                  title="Gunakan waktu video saat ini sebagai offset Babak 1"
-                  className="min-h-[44px] sm:min-h-0 px-2.5 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-xs text-1 whitespace-nowrap cursor-pointer transition-colors"
+                  onClick={() => setUserExpanded(false)}
+                  className="min-h-[44px] sm:min-h-0 text-xs text-brand hover:underline font-medium cursor-pointer"
                 >
-                  Set saat ini
+                  Selesai mengubah
                 </button>
-              )}
-            </div>
-          </div>
-
-          {/* Period 2 Offset Card */}
-          <div
-            className={`p-2.5 rounded-control border transition-colors ${
-              period === 2
-                ? 'bg-panel border-brand/40 ring-1 ring-brand/10'
-                : 'bg-app border-line'
-            }`}
-          >
-            <div className="flex items-center justify-between gap-2 mb-1.5">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-1">Babak 2</span>
-                {period === 2 && (
-                  <Badge variant="brand" size="sm">
-                    Aktif
-                  </Badge>
-                )}
               </div>
-              <span className="text-xs text-2 font-mono tabular-nums truncate">
-                {offsetP2Secs != null
-                  ? `Peluit: ${formatSecondsToTime(offsetP2Secs)}`
-                  : 'Belum diatur'}
-                {p2StartMinVal != null && ` · Mulai menit ${p2StartMinVal}`}
-              </span>
-            </div>
+            )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
-              <div className="sm:col-span-7 flex items-center gap-1.5">
-                <label htmlFor={`video-offset-p2-${matchId}`} className="sr-only">
-                  Babak 2 mulai di menit video…
+            {/* Period 1 Offset Card */}
+            <div
+              className={`p-2.5 rounded-control border transition-colors ${
+                period === 1
+                  ? 'bg-panel border-brand/40 ring-1 ring-brand/10'
+                  : 'bg-app border-line'
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-semibold text-1">Babak 1</span>
+                  {period === 1 && (
+                    <Badge variant="brand" size="sm">
+                      Aktif
+                    </Badge>
+                  )}
+                </div>
+                <span className="text-xs text-2 font-mono tabular-nums">
+                  {offsetP1Secs != null
+                    ? `Peluit: ${formatSecondsToTime(offsetP1Secs)}`
+                    : 'Belum diatur'}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <label htmlFor={`video-offset-p1-${matchId}`} className="sr-only">
+                  Menit video saat peluit mulai (Babak 1)
                 </label>
                 <input
-                  id={`video-offset-p2-${matchId}`}
+                  id={`video-offset-p1-${matchId}`}
                   type="text"
-                  placeholder="Peluit video (mm:ss)"
-                  value={offsetP2Input}
-                  onChange={(e) => setOffsetP2Input(e.target.value)}
-                  onBlur={handleOffsetP2Blur}
+                  placeholder="Peluit mulai video (mm:ss, misal 01:00)"
+                  value={offsetP1Input}
+                  onChange={(e) => setOffsetP1Input(e.target.value)}
+                  onBlur={handleOffsetP1Blur}
                   className="flex-1 px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
                 />
                 {videoSrc && (
                   <button
                     type="button"
-                    onClick={handleUseCurrentTimeForP2}
-                    title="Gunakan waktu video saat ini sebagai offset Babak 2"
-                    className="min-h-[44px] sm:min-h-0 px-2 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-xs text-1 whitespace-nowrap cursor-pointer transition-colors"
+                    onClick={handleUseCurrentTimeForP1}
+                    title="Gunakan waktu video saat ini sebagai offset Babak 1"
+                    className="min-h-[44px] sm:min-h-0 px-2.5 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-xs text-1 whitespace-nowrap cursor-pointer transition-colors"
                   >
                     Set saat ini
                   </button>
                 )}
               </div>
-
-              <div className="sm:col-span-5">
-                <label htmlFor={`video-p2-start-min-${matchId}`} className="sr-only">
-                  Menit pertandingan saat Babak 2 mulai
-                </label>
-                <input
-                  id={`video-p2-start-min-${matchId}`}
-                  type="number"
-                  min="1"
-                  max="130"
-                  step="any"
-                  placeholder="Menit laga (misal: 45)"
-                  value={p2StartMinInput}
-                  onChange={(e) => setP2StartMinInput(e.target.value)}
-                  onBlur={handleP2StartMinBlur}
-                  className="w-full px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
-                />
-              </div>
             </div>
 
-            {offsetP2Secs != null && p2StartMinVal == null && (
-              <div className="mt-2 p-1.5 rounded-control bg-warning/10 border border-warning/30 text-warning text-xs">
-                Belum lengkap: pencatatan Babak 2 memakai stopwatch
+            {/* Period 2 Offset Card */}
+            <div
+              className={`p-2.5 rounded-control border transition-colors ${
+                period === 2
+                  ? 'bg-panel border-brand/40 ring-1 ring-brand/10'
+                  : 'bg-app border-line'
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-semibold text-1">Babak 2</span>
+                  {period === 2 && (
+                    <Badge variant="brand" size="sm">
+                      Aktif
+                    </Badge>
+                  )}
+                </div>
+                <span className="text-xs text-2 font-mono tabular-nums truncate">
+                  {offsetP2Secs != null
+                    ? `Peluit: ${formatSecondsToTime(offsetP2Secs)}`
+                    : 'Belum diatur'}
+                  {p2StartMinVal != null && ` · Mulai menit ${p2StartMinVal}`}
+                </span>
               </div>
-            )}
-          </div>
-        </div>
 
-        <p className="text-xs text-2 leading-relaxed">
-          {period === 1 && offsetP1Secs != null
-            ? `Formula Babak 1: menit laga = max(0, (waktu video - ${formatSecondsToTime(offsetP1Secs)}) / 60).`
-            : period === 2 && offsetP2Secs != null && p2StartMinVal != null
-            ? `Formula Babak 2: menit laga = ${p2StartMinVal} + max(0, (waktu video - ${formatSecondsToTime(offsetP2Secs)}) / 60).`
-            : 'Belum ada offset lengkap untuk babak ini: penandaan kejadian memakai stopwatch pencatat.'}
-        </p>
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                <div className="sm:col-span-7 flex items-center gap-1.5">
+                  <label htmlFor={`video-offset-p2-${matchId}`} className="sr-only">
+                    Babak 2 mulai di menit video…
+                  </label>
+                  <input
+                    id={`video-offset-p2-${matchId}`}
+                    type="text"
+                    placeholder="Peluit video (mm:ss)"
+                    value={offsetP2Input}
+                    onChange={(e) => setOffsetP2Input(e.target.value)}
+                    onBlur={handleOffsetP2Blur}
+                    className="flex-1 px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
+                  />
+                  {videoSrc && (
+                    <button
+                      type="button"
+                      onClick={handleUseCurrentTimeForP2}
+                      title="Gunakan waktu video saat ini sebagai offset Babak 2"
+                      className="min-h-[44px] sm:min-h-0 px-2 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-xs text-1 whitespace-nowrap cursor-pointer transition-colors"
+                    >
+                      Set saat ini
+                    </button>
+                  )}
+                </div>
+
+                <div className="sm:col-span-5">
+                  <label htmlFor={`video-p2-start-min-${matchId}`} className="sr-only">
+                    Menit pertandingan saat Babak 2 mulai
+                  </label>
+                  <input
+                    id={`video-p2-start-min-${matchId}`}
+                    type="number"
+                    min="1"
+                    max="130"
+                    step="any"
+                    placeholder="Menit laga (misal: 45)"
+                    value={p2StartMinInput}
+                    onChange={(e) => setP2StartMinInput(e.target.value)}
+                    onBlur={handleP2StartMinBlur}
+                    className="w-full px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
+                  />
+                </div>
+              </div>
+
+              {offsetP2Secs != null && p2StartMinVal == null && (
+                <div className="mt-2 p-1.5 rounded-control bg-warning/10 border border-warning/30 text-warning text-xs">
+                  Belum lengkap: pencatatan Babak 2 memakai stopwatch
+                </div>
+              )}
+            </div>
+
+            <p className="text-xs text-2 leading-relaxed">
+              {period === 1 && offsetP1Secs != null
+                ? `Formula Babak 1: menit laga = max(0, (waktu video - ${formatSecondsToTime(offsetP1Secs)}) / 60).`
+                : period === 2 && offsetP2Secs != null && p2StartMinVal != null
+                ? `Formula Babak 2: menit laga = ${p2StartMinVal} + max(0, (waktu video - ${formatSecondsToTime(offsetP2Secs)}) / 60).`
+                : 'Belum ada offset lengkap untuk babak ini: penandaan kejadian memakai stopwatch pencatat.'}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

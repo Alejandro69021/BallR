@@ -83,9 +83,9 @@ export default function TactileKeypad({
   };
 
   return (
-    <section className="space-y-4 text-1 select-none">
+    <section className="space-y-3 sm:space-y-3.5 text-1 select-none">
       {/* 1. Team Switcher & Opponent/Player Picker Bar */}
-      <div className="p-3.5 rounded-panel bg-panel border border-line space-y-3">
+      <div className="p-2.5 sm:p-3 rounded-panel bg-panel border border-line space-y-2.5 sm:space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           {/* Team Switcher: Tim kita vs Lawan (min 44px) */}
           <div className="inline-flex rounded-control border border-control p-1 bg-app self-start">
@@ -93,11 +93,10 @@ export default function TactileKeypad({
               type="button"
               disabled={isReadOnly}
               onClick={() => setTeam('own')}
-              className={`min-h-[44px] px-4 rounded-control text-xs font-semibold transition-colors duration-150 cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
-                team === 'own'
-                  ? 'bg-brand text-app shadow-xs'
-                  : 'text-2 hover:text-1'
-              }`}
+              className={`min-h-[44px] px-4 rounded-control text-xs font-semibold transition-colors duration-150 cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${team === 'own'
+                ? 'bg-brand text-app shadow-xs'
+                : 'text-2 hover:text-1'
+                }`}
             >
               <Users className="w-4 h-4" strokeWidth={1.5} />
               <span>Tim kita</span>
@@ -107,11 +106,10 @@ export default function TactileKeypad({
               type="button"
               disabled={isReadOnly}
               onClick={() => setTeam('opponent')}
-              className={`min-h-[44px] px-4 rounded-control text-xs font-semibold transition-colors duration-150 cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
-                team === 'opponent'
-                  ? 'bg-raised text-1 border border-line shadow-xs'
-                  : 'text-2 hover:text-1'
-              }`}
+              className={`min-h-[44px] px-4 rounded-control text-xs font-semibold transition-colors duration-150 cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${team === 'opponent'
+                ? 'bg-raised text-1 border border-line shadow-xs'
+                : 'text-2 hover:text-1'
+                }`}
             >
               <Shield className="w-4 h-4" strokeWidth={1.5} />
               <span>Lawan</span>
@@ -125,18 +123,16 @@ export default function TactileKeypad({
             aria-checked={recordLocation}
             disabled={isReadOnly}
             onClick={() => setRecordLocation((prev) => !prev)}
-            className={`flex items-center gap-2 min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-control border text-xs font-medium cursor-pointer transition-colors duration-150 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
-              recordLocation
-                ? 'bg-raised border-control text-1'
-                : 'bg-transparent border-transparent text-2 hover:text-1'
-            }`}
+            className={`flex items-center gap-2 min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-control border text-xs font-medium cursor-pointer transition-colors duration-150 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${recordLocation
+              ? 'bg-raised border-control text-1'
+              : 'bg-transparent border-transparent text-2 hover:text-1'
+              }`}
           >
             <span
-              className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                recordLocation
-                  ? 'bg-brand border-brand text-app font-bold'
-                  : 'border-control bg-app'
-              }`}
+              className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${recordLocation
+                ? 'bg-brand border-brand text-app font-bold'
+                : 'border-control bg-app'
+                }`}
             >
               {recordLocation && (
                 <Check className="w-3 h-3 stroke-[2.5]" />
@@ -171,11 +167,10 @@ export default function TactileKeypad({
                       type="button"
                       disabled={isReadOnly}
                       onClick={() => onSelectPlayer?.(p.player_id)}
-                      className={`shrink-0 min-h-[44px] px-3 rounded-control border text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
-                        isSelected
-                          ? 'bg-brand/10 text-brand border-brand/40 font-semibold'
-                          : 'bg-raised hover:bg-panel text-2 hover:text-1 border-line'
-                      }`}
+                      className={`shrink-0 min-h-[44px] px-3 rounded-control border text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isSelected
+                        ? 'bg-brand/10 text-brand border-brand/40 font-semibold'
+                        : 'bg-raised hover:bg-panel text-2 hover:text-1 border-line'
+                        }`}
                     >
                       <span className="font-mono font-bold">#{p.number}</span>
                       <span className="truncate max-w-[100px]">{p.name}</span>
@@ -304,11 +299,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('pass_success', 'pass', 'success', 'Umpan akurat')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'pass_success'
-              ? 'bg-brand/20 border-brand text-brand'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'pass_success'
+            ? 'bg-brand/20 border-brand text-brand'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 text-brand font-semibold text-xs">
             <Check className="w-4 h-4" strokeWidth={1.5} />
@@ -322,11 +316,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('pass_fail', 'pass', 'fail', 'Umpan meleset')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'pass_fail'
-              ? 'bg-danger/20 border-danger text-danger'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'pass_fail'
+            ? 'bg-danger/20 border-danger text-danger'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 text-danger font-semibold text-xs">
             <X className="w-4 h-4" strokeWidth={1.5} />
@@ -340,11 +333,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('key_pass', 'key_pass', 'success', 'Umpan kunci')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'key_pass'
-              ? 'bg-brand/20 border-brand text-brand'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'key_pass'
+            ? 'bg-brand/20 border-brand text-brand'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 text-brand font-semibold text-xs">
             <Target className="w-4 h-4" strokeWidth={1.5} />
@@ -358,11 +350,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('goal', 'goal', 'success', 'Gol')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'goal'
-              ? 'bg-brand/30 border-brand text-brand'
-              : 'border-brand/40 bg-brand/10 hover:bg-brand/15 text-brand'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'goal'
+            ? 'bg-brand/30 border-brand text-brand'
+            : 'border-brand/40 bg-brand/10 hover:bg-brand/15 text-brand'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-bold text-xs">
             <Target className="w-4 h-4" strokeWidth={1.5} />
@@ -376,11 +367,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('shot_on_target', 'shot_on_target', 'success', 'Tembakan tepat sasaran')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'shot_on_target'
-              ? 'bg-brand/20 border-brand text-brand'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'shot_on_target'
+            ? 'bg-brand/20 border-brand text-brand'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-1">
             <Target className="w-4 h-4 text-2" strokeWidth={1.5} />
@@ -394,11 +384,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('shot_off', 'shot', 'fail', 'Tembakan meleset')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'shot_off'
-              ? 'bg-danger/20 border-danger text-danger'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'shot_off'
+            ? 'bg-danger/20 border-danger text-danger'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-danger">
             <X className="w-4 h-4" strokeWidth={1.5} />
@@ -412,11 +401,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('tackle_won', 'tackle', 'success', 'Tekel berhasil')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'tackle_won'
-              ? 'bg-brand/20 border-brand text-brand'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'tackle_won'
+            ? 'bg-brand/20 border-brand text-brand'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-brand">
             <Shield className="w-4 h-4" strokeWidth={1.5} />
@@ -430,11 +418,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('tackle_lost', 'tackle', 'fail', 'Tekel gagal')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'tackle_lost'
-              ? 'bg-danger/20 border-danger text-danger'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'tackle_lost'
+            ? 'bg-danger/20 border-danger text-danger'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-danger">
             <Shield className="w-4 h-4" strokeWidth={1.5} />
@@ -448,11 +435,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('interception', 'interception', 'success', 'Intersepsi')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'interception'
-              ? 'bg-brand/20 border-brand text-brand'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'interception'
+            ? 'bg-brand/20 border-brand text-brand'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-1">
             <Shield className="w-4 h-4 text-brand" strokeWidth={1.5} />
@@ -466,11 +452,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('clearance', 'clearance', 'success', 'Sapuan')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'clearance'
-              ? 'bg-brand/20 border-brand text-brand'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'clearance'
+            ? 'bg-brand/20 border-brand text-brand'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-1">
             <Shield className="w-4 h-4 text-2" strokeWidth={1.5} />
@@ -484,11 +469,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('ball_recovery', 'ball_recovery', 'success', 'Rebut bola')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'ball_recovery'
-              ? 'bg-brand/20 border-brand text-brand'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'ball_recovery'
+            ? 'bg-brand/20 border-brand text-brand'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-brand">
             <Check className="w-4 h-4" strokeWidth={1.5} />
@@ -502,11 +486,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('ball_loss', 'ball_loss', 'fail', 'Kehilangan bola')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'ball_loss'
-              ? 'bg-danger/20 border-danger text-danger'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'ball_loss'
+            ? 'bg-danger/20 border-danger text-danger'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-danger">
             <X className="w-4 h-4" strokeWidth={1.5} />
@@ -520,11 +503,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('foul_won', 'foul_won', 'success', 'Pelanggaran didapat')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'foul_won'
-              ? 'bg-brand/20 border-brand text-brand'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'foul_won'
+            ? 'bg-brand/20 border-brand text-brand'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-1">
             <Check className="w-4 h-4 text-brand" strokeWidth={1.5} />
@@ -538,11 +520,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('foul_committed', 'foul_committed', 'fail', 'Pelanggaran dibuat')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'foul_committed'
-              ? 'bg-danger/20 border-danger text-danger'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'foul_committed'
+            ? 'bg-danger/20 border-danger text-danger'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-danger">
             <X className="w-4 h-4" strokeWidth={1.5} />
@@ -556,11 +537,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('save', 'save', 'success', 'Penyelamatan')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'save'
-              ? 'bg-brand/20 border-brand text-brand'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'save'
+            ? 'bg-brand/20 border-brand text-brand'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-brand">
             <Shield className="w-4 h-4" strokeWidth={1.5} />
@@ -574,11 +554,10 @@ export default function TactileKeypad({
           type="button"
           disabled={isReadOnly}
           onClick={() => triggerLog('corner', 'corner', null, 'Sepak pojok')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
-            flashingKey === 'corner'
-              ? 'bg-brand/20 border-brand text-brand'
-              : 'border-line hover:bg-raised text-1'
-          }`}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'corner'
+            ? 'bg-brand/20 border-brand text-brand'
+            : 'border-line hover:bg-raised text-1'
+            }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-1">
             <Target className="w-4 h-4 text-2" strokeWidth={1.5} />

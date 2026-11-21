@@ -140,7 +140,7 @@ export default function LoggerPage({ userRole = 'public', onOpenAuthModal, onToa
   const isReadOnly = match.status === 'final';
 
   return (
-    <div className="space-y-4 max-w-5xl mx-auto">
+    <div className="space-y-3 lg:space-y-2.5 max-w-5xl mx-auto">
       {/* Back navigation bar */}
       <div className="flex items-center justify-between gap-3">
         <Button

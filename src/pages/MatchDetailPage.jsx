@@ -24,7 +24,7 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import EmptyState from '../components/ui/EmptyState';
 import EventMap from '../components/match/EventMap';
-import LocalVideoPanel from '../components/video/LocalVideoPanel';
+import LocalVideoPanel, { hasStoredVideoMeta } from '../components/video/LocalVideoPanel';
 
 export default function MatchDetailPage({ userRole = 'public', onToast }) {
   const { matchId } = useParams();
@@ -52,10 +52,16 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   // Deleting event state
   const [deletingEvtId, setDeletingEvtId] = useState(null);
 
-  // Local Video Panel state
+  // Local Video Panel state (auto-opens if match has stored video metadata, never auto-plays)
   const videoPanelRef = useRef(null);
   const [hasVideo, setHasVideo] = useState(false);
-  const [isVideoPanelOpen, setIsVideoPanelOpen] = useState(false);
+  const [isVideoPanelOpen, setIsVideoPanelOpen] = useState(() => hasStoredVideoMeta(matchId));
+
+  useEffect(() => {
+    if (matchId && hasStoredVideoMeta(matchId)) {
+      setIsVideoPanelOpen(true);
+    }
+  }, [matchId]);
 
   const handlePlayClip = (videoTimeS) => {
     setIsVideoPanelOpen(true);
