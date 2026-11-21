@@ -992,6 +992,26 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         isOpen={isFreezeModalOpen}
         onClose={() => setIsFreezeModalOpen(false)}
         title="Bekukan Laporan Pertandingan"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsFreezeModalOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<ShieldCheck className="w-4 h-4" strokeWidth={1.5} />}
+              onClick={handleFreezeReport}
+              disabled={freezing || !selectedReviewer || reviewerCandidates.length === 0}
+            >
+              {freezing ? 'Membekukan...' : 'Konfirmasi & Bekukan'}
+            </Button>
+          </>
+        }
       >
         <div className="space-y-4 text-xs">
           <p className="text-2 leading-relaxed">
@@ -1031,25 +1051,6 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                 </p>
               </>
             )}
-          </div>
-
-          <div className="flex items-center justify-end gap-2 pt-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setIsFreezeModalOpen(false)}
-            >
-              Batal
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              icon={<ShieldCheck className="w-4 h-4" strokeWidth={1.5} />}
-              onClick={handleFreezeReport}
-              disabled={freezing || !selectedReviewer || reviewerCandidates.length === 0}
-            >
-              {freezing ? 'Membekukan...' : 'Konfirmasi & Bekukan'}
-            </Button>
           </div>
         </div>
       </Dialog>

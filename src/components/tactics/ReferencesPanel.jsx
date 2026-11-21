@@ -4,6 +4,7 @@ import Button from '../ui/Button';
 import IconButton from '../ui/IconButton';
 import Badge from '../ui/Badge';
 import RefChip from '../ui/RefChip';
+import Dialog from '../ui/Dialog';
 import { REFERENCES_REGISTRY } from '../../data/references';
 
 /**
@@ -174,117 +175,92 @@ export default function ReferencesPanel({
       )}
 
       {/* Modal Picker for adding reference */}
-      {isPickerOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="ref-picker-title"
-        >
-          <div
-            className="fixed inset-0"
-            onClick={() => setIsPickerOpen(false)}
-            aria-hidden="true"
-          />
-
-          <div className="relative w-full max-w-lg bg-panel border border-line rounded-panel p-5 text-1 z-10 space-y-4 shadow-popover">
-            <div className="flex items-start justify-between pb-3 border-b border-line">
-              <div>
-                <h4 id="ref-picker-title" className="text-sm font-semibold text-1">
-                  Pilih Rujukan Metodologi
-                </h4>
-                <p className="text-xs text-2 mt-0.5">
-                  Lampirkan pedoman resmi atau dokumen kajian yang melandasi skema taktik.
-                </p>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsPickerOpen(false)}
+      <Dialog
+        isOpen={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+        title="Pilih Rujukan Metodologi"
+        description="Lampirkan pedoman resmi atau dokumen kajian yang melandasi skema taktik."
+        footer={
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsPickerOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              disabled={!selectedRefId}
+              onClick={handleConfirmAttach}
+            >
+              Lampirkan rujukan
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          {availableRegistry.map((entry) => {
+            const isSelected = selectedRefId === entry.id;
+            return (
+              <button
+                key={entry.id}
+                type="button"
+                onClick={() => setSelectedRefId(entry.id)}
+                className={`w-full text-left p-3 rounded-control border text-xs transition-colors flex items-start justify-between gap-3 min-h-[44px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                  isSelected
+                    ? 'bg-raised border-brand text-1'
+                    : 'bg-app border-line text-2 hover:text-1'
+                }`}
               >
-                Batal
-              </Button>
-            </div>
-
-            <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1">
-              {availableRegistry.map((entry) => {
-                const isSelected = selectedRefId === entry.id;
-                return (
-                  <button
-                    key={entry.id}
-                    type="button"
-                    onClick={() => setSelectedRefId(entry.id)}
-                    className={`w-full text-left p-3 rounded-control border text-xs transition-colors flex items-start justify-between gap-3 min-h-[44px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
-                      isSelected
-                        ? 'bg-raised border-brand text-1'
-                        : 'bg-app border-line text-2 hover:text-1'
-                    }`}
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-mono font-semibold text-1">
-                          {entry.title}
-                        </span>
-                        <Badge
-                          variant={entry.status === 'verified' ? 'success' : 'neutral'}
-                          size="sm"
-                        >
-                          {entry.status === 'verified' ? 'Terverifikasi' : 'Belum diverifikasi'}
-                        </Badge>
-                      </div>
-                      <p className="text-2 text-xs">
-                        {entry.publisher} ({entry.year})
-                      </p>
-                      {entry.notes && (
-                        <p className="text-2 text-xs line-clamp-2 italic">
-                          {entry.notes}
-                        </p>
-                      )}
-                    </div>
-                    {isSelected && (
-                      <Check className="w-4 h-4 text-brand shrink-0 mt-1" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {selectedRefId && (
-              <div className="space-y-1 pt-2 border-t border-line">
-                <label htmlFor="picker-note-input" className="text-xs font-medium text-1">
-                  Catatan relevansi (opsional):
-                </label>
-                <input
-                  id="picker-note-input"
-                  type="text"
-                  value={refNote}
-                  onChange={(e) => setRefNote(e.target.value)}
-                  placeholder="Contoh: Bab 4 - Penataan zona sirkulasi bola."
-                  className="w-full px-3 py-2 text-xs rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
-                />
-              </div>
-            )}
-
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-line">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setIsPickerOpen(false)}
-              >
-                Batal
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                disabled={!selectedRefId}
-                onClick={handleConfirmAttach}
-              >
-                Lampirkan rujukan
-              </Button>
-            </div>
-          </div>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-mono font-semibold text-1">
+                      {entry.title}
+                    </span>
+                    <Badge
+                      variant={entry.status === 'verified' ? 'success' : 'neutral'}
+                      size="sm"
+                    >
+                      {entry.status === 'verified' ? 'Terverifikasi' : 'Belum diverifikasi'}
+                    </Badge>
+                  </div>
+                  <p className="text-2 text-xs">
+                    {entry.publisher} ({entry.year})
+                  </p>
+                  {entry.notes && (
+                    <p className="text-2 text-xs line-clamp-2 italic">
+                      {entry.notes}
+                    </p>
+                  )}
+                </div>
+                {isSelected && (
+                  <Check className="w-4 h-4 text-brand shrink-0 mt-1" />
+                )}
+              </button>
+            );
+          })}
         </div>
-      )}
+
+        {selectedRefId && (
+          <div className="space-y-1 pt-2 border-t border-line">
+            <label htmlFor="picker-note-input" className="text-xs font-medium text-1">
+              Catatan relevansi (opsional):
+            </label>
+            <input
+              id="picker-note-input"
+              type="text"
+              value={refNote}
+              onChange={(e) => setRefNote(e.target.value)}
+              placeholder="Contoh: Bab 4 - Penataan zona sirkulasi bola."
+              className="w-full px-3 py-2 text-xs rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
+            />
+          </div>
+        )}
+      </Dialog>
     </div>
   );
 }

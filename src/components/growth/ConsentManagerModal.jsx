@@ -137,8 +137,21 @@ export default function ConsentManagerModal({
       title="Tata kelola data pribadi anak"
       description="Persetujuan orang tua/wali (UU PDP No. 27/2022 Pasal 25)"
       className="max-w-md"
+      footer={
+        <div className="w-full text-xs text-2 flex items-center justify-between">
+          <span>UU PDP No. 27/2022 Pasal 25</span>
+          <a
+            href="docs/CONSENT_DRAFT.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-2 hover:text-1 underline flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          >
+            <FileText className="w-4 h-4" strokeWidth={1.5} />
+            <span>Lihat draf perjanjian</span>
+          </a>
+        </div>
+      }
     >
-      {/* Player and Visibility Metadata */}
       <div className="p-3 rounded-control bg-app border border-line text-xs space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-2">Nama atlet:</span>
@@ -241,20 +254,6 @@ export default function ConsentManagerModal({
           </p>
         </div>
       ) : null}
-
-      {/* Footer Reference */}
-      <div className="text-xs text-2 flex items-center justify-between pt-1 border-t border-line">
-        <span>UU PDP No. 27/2022 Pasal 25</span>
-        <a
-          href="docs/CONSENT_DRAFT.md"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-2 hover:text-1 underline flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-        >
-          <FileText className="w-4 h-4" strokeWidth={1.5} />
-          <span>Lihat draf perjanjian</span>
-        </a>
-      </div>
     </Dialog>
   );
 }

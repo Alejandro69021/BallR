@@ -443,8 +443,28 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
         onClose={() => setIsCreateOpen(false)}
         title="Buat Skema Taktik Baru"
         description="Tentukan parameter pertandingan, format, dan dimensi lapangan sebenarnya."
+        onSubmit={handleCreateSubmit}
+        footer={
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setIsCreateOpen(false)}
+              disabled={submitting}
+            >
+              Batal
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={submitting || !newTitle.trim()}
+            >
+              {submitting ? 'Menyimpan...' : 'Buat skema'}
+            </Button>
+          </>
+        }
       >
-        <form onSubmit={handleCreateSubmit} className="space-y-4">
+        <div className="space-y-4">
           {createError && (
             <div className="p-3 rounded-control bg-rose-500/10 border border-rose-500/20 text-danger text-xs leading-relaxed">
               {createError}
@@ -583,25 +603,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
               Contoh: 1. Sentuhan pertama membuka ruang. 2. Komunikasi vokal.
             </p>
           </div>
-
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setIsCreateOpen(false)}
-              disabled={submitting}
-            >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={submitting || !newTitle.trim()}
-            >
-              {submitting ? 'Menyimpan...' : 'Buat skema'}
-            </Button>
-          </div>
-        </form>
+        </div>
       </Dialog>
     </div>
   );

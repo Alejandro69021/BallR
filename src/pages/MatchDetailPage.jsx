@@ -620,8 +620,30 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         onClose={() => setIsFinaliseOpen(false)}
         title="Selesaikan laga"
         description="Masukkan skor akhir untuk memfinalkan pertandingan ini. Pertandingan final tidak dapat diubah kecuali dibuka kembali oleh admin."
+        onSubmit={handleFinaliseSubmit}
+        footer={
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsFinaliseOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              type="submit"
+              variant="brand"
+              size="sm"
+              loading={finalising}
+              disabled={ownScoreInput === '' || oppScoreInput === ''}
+            >
+              Simpan & finalkan
+            </Button>
+          </>
+        }
       >
-        <form onSubmit={handleFinaliseSubmit} className="space-y-4">
+        <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <Field label="Skor tim sendiri" id="score-own" required error={finaliseError}>
               <input
@@ -664,27 +686,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               Pakai angka ini
             </Button>
           </div>
-
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => setIsFinaliseOpen(false)}
-            >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              variant="brand"
-              size="sm"
-              loading={finalising}
-              disabled={ownScoreInput === '' || oppScoreInput === ''}
-            >
-              Simpan & finalkan
-            </Button>
-          </div>
-        </form>
+        </div>
       </Dialog>
     </div>
   );

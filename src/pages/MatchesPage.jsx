@@ -450,8 +450,29 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
         onClose={() => setIsCreateOpen(false)}
         title="Laga baru"
         description="Catat jadwal dan konfigurasi teknis pertandingan akademi."
+        onSubmit={handleCreateSubmit}
+        footer={
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsCreateOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              type="submit"
+              variant="brand"
+              size="sm"
+              loading={submitting}
+            >
+              Buat laga
+            </Button>
+          </>
+        }
       >
-        <form onSubmit={handleCreateSubmit} className="space-y-4">
+        <div className="space-y-4">
           <Field label="Nama tim lawan" id="opponent-name" required error={createError}>
             <input
               id="opponent-name"
@@ -590,26 +611,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
               )}
             </div>
           </div>
-
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => setIsCreateOpen(false)}
-            >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              variant="brand"
-              size="sm"
-              loading={submitting}
-            >
-              Buat laga
-            </Button>
-          </div>
-        </form>
+        </div>
       </Dialog>
     </div>
   );

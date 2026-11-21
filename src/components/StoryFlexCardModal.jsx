@@ -122,9 +122,30 @@ export default function StoryFlexCardModal({
       description="Ringkasan data terverifikasi atlet untuk pemantauan perkembangan."
       className="max-w-md"
       footer={
-        <Button variant="ghost" size="sm" onClick={onClose}>
-          Tutup
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full justify-end">
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            Tutup
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={!canShare}
+            onClick={handleCopySummary}
+            icon={<Copy className="w-4 h-4" />}
+          >
+            Salin Ringkasan
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            disabled={!canShare || isExporting}
+            loading={isExporting}
+            onClick={handleDownload}
+            icon={<Download className="w-4 h-4" />}
+          >
+            Unduh Gambar (PNG)
+          </Button>
+        </div>
       }
     >
       <div className="space-y-4">
@@ -162,35 +183,12 @@ export default function StoryFlexCardModal({
           </div>
         )}
 
-        <StoryCardCanvas
-          cardRef={cardRef}
-          player={player}
-          isPrivate={isPrivate}
-        />
-
-        <div className="space-y-2 pt-2">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button
-              variant="primary"
-              disabled={!canShare || isExporting}
-              loading={isExporting}
-              onClick={handleDownload}
-              icon={<Download className="w-4 h-4" />}
-              className="flex-1"
-            >
-              Unduh Gambar (PNG)
-            </Button>
-
-            <Button
-              variant="secondary"
-              disabled={!canShare}
-              onClick={handleCopySummary}
-              icon={<Copy className="w-4 h-4" />}
-              className="flex-1"
-            >
-              Salin Ringkasan
-            </Button>
-          </div>
+        <div className="max-h-[50vh] sm:max-h-[55vh] overflow-y-auto rounded-control flex justify-center">
+          <StoryCardCanvas
+            cardRef={cardRef}
+            player={player}
+            isPrivate={isPrivate}
+          />
         </div>
       </div>
     </Dialog>

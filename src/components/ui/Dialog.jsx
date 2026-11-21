@@ -9,7 +9,10 @@ export default function Dialog({
   description,
   children,
   footer,
-  className = ''
+  className = '',
+  icon,
+  size = 'md',
+  onSubmit
 }) {
   const dialogRef = useRef(null);
   const onCloseRef = useRef(onClose);
@@ -20,6 +23,9 @@ export default function Dialog({
 
   useEffect(() => {
     if (!isOpen) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
     const previouslyFocused = document.activeElement;
     const focusableSelector =
@@ -66,6 +72,7 @@ export default function Dialog({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => {
+      document.body.style.overflow = prevOverflow;
       clearTimeout(timer);
       window.removeEventListener('keydown', handleKeyDown);
       if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
@@ -76,9 +83,31 @@ export default function Dialog({
 
   if (!isOpen) return null;
 
+  const defaultMaxW = className.includes('max-w-')
+    ? ''
+    : size === 'sm'
+    ? 'max-w-sm'
+    : size === 'lg'
+    ? 'max-w-2xl'
+    : size === 'xl'
+    ? 'max-w-4xl'
+    : 'max-w-lg';
+
+  const bodyContent = (
+    <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-5 pr-3 sm:pr-4 space-y-3">
+      {children}
+    </div>
+  );
+
+  const footerContent = footer ? (
+    <div className="shrink-0 px-4 py-3 sm:px-5 border-t border-line flex items-center justify-end gap-2">
+      {footer}
+    </div>
+  ) : null;
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity duration-150 ease-out"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity duration-150 ease-out"
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'dialog-title' : undefined}
@@ -86,41 +115,52 @@ export default function Dialog({
     >
       <div
         className="fixed inset-0"
-        onClick={onClose}
+        onClick={() => onCloseRef.current?.()}
         aria-hidden="true"
       />
 
       <div
         ref={dialogRef}
-        className={`relative w-full max-w-lg rounded-panel border border-line bg-panel text-1 shadow-popover z-10 p-5 space-y-4 ${className}`}
+        className={`relative w-full ${defaultMaxW} flex flex-col max-h-[calc(100vh-1rem)] max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] rounded-panel border border-line bg-panel text-1 shadow-popover z-10 ${className}`}
       >
-        <div className="flex items-start justify-between gap-3 pb-3 border-b border-line">
-          <div>
-            {title && (
-              <h2 id="dialog-title" className="text-base font-semibold text-1">
-                {title}
-              </h2>
-            )}
-            {description && (
-              <p id="dialog-desc" className="text-xs text-2 mt-0.5">
-                {description}
-              </p>
-            )}
+        <div className="flex items-start justify-between gap-3 p-4 sm:p-5 pb-3 border-b border-line shrink-0">
+          <div className="flex items-start gap-2.5 min-w-0">
+            {icon && <div className="shrink-0 mt-0.5">{icon}</div>}
+            <div className="min-w-0">
+              {title && (
+                typeof title === 'string' ? (
+                  <h2 id="dialog-title" className="text-base font-semibold text-1 leading-snug break-words">
+                    {title}
+                  </h2>
+                ) : (
+                  <div id="dialog-title">{title}</div>
+                )
+              )}
+              {description && (
+                <p id="dialog-desc" className="text-xs text-2 mt-0.5">
+                  {description}
+                </p>
+              )}
+            </div>
           </div>
           <IconButton
             icon={<X className="w-4 h-4" />}
             label="Tutup dialog"
-            onClick={onClose}
+            onClick={() => onCloseRef.current?.()}
             size="sm"
           />
         </div>
 
-        <div className="space-y-3">{children}</div>
-
-        {footer && (
-          <div className="pt-3 border-t border-line flex items-center justify-end gap-2">
-            {footer}
-          </div>
+        {onSubmit ? (
+          <form onSubmit={onSubmit} className="flex flex-col flex-1 min-h-0">
+            {bodyContent}
+            {footerContent}
+          </form>
+        ) : (
+          <>
+            {bodyContent}
+            {footerContent}
+          </>
         )}
       </div>
     </div>

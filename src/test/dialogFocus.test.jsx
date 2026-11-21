@@ -107,3 +107,137 @@ describe('Dialog focus while typing', () => {
     expect(document.activeElement).toBe(lastInput);
   });
 });
+
+describe('Dialog layout & overflow contract', () => {
+  it('renders panel with max-height contract, scrollable body and shrink-0 header/footer', () => {
+    render(
+      <Dialog
+        isOpen={true}
+        onClose={() => {}}
+        title="Layout Test"
+        footer={<button id="test-submit">Simpan</button>}
+      >
+        <p>Konten uji</p>
+      </Dialog>
+    );
+
+    const dialogPanel = screen.getByRole('dialog');
+    expect(dialogPanel.className).toMatch(/max-h-\[calc\(100vh-1rem\)\]/);
+    expect(dialogPanel.className).toMatch(/max-h-\[calc\(100dvh-1rem\)\]/);
+    expect(dialogPanel.className).toMatch(/sm:max-h-\[calc\(100dvh-2rem\)\]/);
+    expect(dialogPanel.className).toMatch(/flex flex-col/);
+
+    // Header has shrink-0
+    const headerTitle = screen.getByText('Layout Test');
+    const headerEl = headerTitle.closest('.shrink-0');
+    expect(headerEl).not.toBeNull();
+
+    // Body has overflow-y-auto and min-h-0
+    const bodyContent = screen.getByText('Konten uji');
+    const bodyEl = bodyContent.closest('.overflow-y-auto');
+    expect(bodyEl).not.toBeNull();
+    expect(bodyEl.className).toMatch(/min-h-0/);
+    expect(bodyEl.className).toMatch(/flex-1/);
+
+    // Footer has shrink-0 and button is accessible
+    const footerBtn = screen.getByRole('button', { name: 'Simpan' });
+    const footerEl = footerBtn.closest('.shrink-0');
+    expect(footerEl).not.toBeNull();
+  });
+
+  it('keeps footer buttons reachable when children are tall', () => {
+    const items = Array.from({ length: 50 }, (_, i) => `Item baris ke-${i + 1}`);
+    render(
+      <Dialog
+        isOpen={true}
+        onClose={() => {}}
+        title="Tall Content Test"
+        footer={<button id="tall-submit-btn">Aksi Bawah</button>}
+      >
+        <div data-testid="tall-list">
+          {items.map((it) => (
+            <div key={it}>{it}</div>
+          ))}
+        </div>
+      </Dialog>
+    );
+
+    expect(screen.getByText('Item baris ke-50')).toBeInTheDocument();
+    const actionBtn = screen.getByRole('button', { name: 'Aksi Bawah' });
+    expect(actionBtn).toBeInTheDocument();
+    expect(actionBtn.closest('.shrink-0')).not.toBeNull();
+  });
+
+  it('locks document.body scroll when open and restores it when closed/unmounted', () => {
+    document.body.style.overflow = 'auto';
+
+    function ToggleHost() {
+      const [isOpen, setIsOpen] = useState(true);
+      return (
+        <div>
+          <button onClick={() => setIsOpen(false)}>Tutup</button>
+          <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} title="Scroll Lock">
+            <p>Lock test</p>
+          </Dialog>
+        </div>
+      );
+    }
+
+    const { unmount } = render(<ToggleHost />);
+    expect(document.body.style.overflow).toBe('hidden');
+
+    // Close via button
+    fireEvent.click(screen.getByRole('button', { name: 'Tutup' }));
+    expect(document.body.style.overflow).toBe('auto');
+
+    // Re-mount and unmount
+    const res = render(
+      <Dialog isOpen={true} onClose={() => {}} title="Unmount Test">
+        <p>Unmount</p>
+      </Dialog>
+    );
+    expect(document.body.style.overflow).toBe('hidden');
+    res.unmount();
+    expect(document.body.style.overflow).toBe('auto');
+
+    unmount();
+  });
+
+  it('ensures role="dialog" and aria-modal="true" exist strictly in Dialog.jsx across src/', async () => {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+
+    function scanDir(dir, fileList = []) {
+      const files = fs.readdirSync(dir);
+      for (const file of files) {
+        const fullPath = path.join(dir, file);
+        const stat = fs.statSync(fullPath);
+        if (stat.isDirectory()) {
+          scanDir(fullPath, fileList);
+        } else if (file.endsWith('.jsx') || file.endsWith('.js')) {
+          fileList.push(fullPath);
+        }
+      }
+      return fileList;
+    }
+
+    const srcDir = path.resolve(process.cwd(), 'src');
+    const allFiles = scanDir(srcDir);
+    const dialogFilesWithRole = [];
+    const dialogFilesWithModal = [];
+
+    for (const file of allFiles) {
+      if (file.includes('test') || file.includes('__tests__')) continue;
+      const content = fs.readFileSync(file, 'utf8');
+      if (/role\s*=\s*["']dialog["']/.test(content)) {
+        dialogFilesWithRole.push(path.relative(srcDir, file).replace(/\\/g, '/'));
+      }
+      if (/aria-modal\s*=\s*["']true["']/.test(content)) {
+        dialogFilesWithModal.push(path.relative(srcDir, file).replace(/\\/g, '/'));
+      }
+    }
+
+    expect(dialogFilesWithRole).toEqual(['components/ui/Dialog.jsx']);
+    expect(dialogFilesWithModal).toEqual(['components/ui/Dialog.jsx']);
+  });
+});
