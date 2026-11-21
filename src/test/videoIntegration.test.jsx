@@ -170,6 +170,210 @@ describe('Video Laga Phase A - Local Video & Tagging', () => {
     expect(outbox[0].video_time_s).toBe(95.2);
   });
 
+  it('4b. Period 2 tagging: p2=3000s, p2StartMin=45, videoTime=3180 -> minute 48.00, video_time_s 3180.0', () => {
+    const mockMatch = {
+      id: 'match-p2-test',
+      status: 'draft',
+      pitch_length_m: 90,
+      pitch_width_m: 60,
+      opponent_name: 'Lawan Uji'
+    };
+    const mockParticipants = [
+      { player_id: 'p1', name: 'Dimas Arya', number: 10 }
+    ];
+
+    localStorage.setItem('ballr_video_offset_match-p2-test', JSON.stringify({
+      p1: 60,
+      p2: 3000,
+      p2StartMin: 45
+    }));
+
+    localStorage.setItem('match_clock_match-p2-test', JSON.stringify({
+      timerSeconds: 3000,
+      isRunning: false,
+      period: 2
+    }));
+
+    const { container } = render(
+      <FastPitchLogger
+        match={mockMatch}
+        participants={mockParticipants}
+        isReadOnly={false}
+      />
+    );
+
+    const fileInput = screen.getByLabelText('Pilih berkas video dari perangkat');
+    const dummyFile = new File(['mock'], 'laga.mp4', { type: 'video/mp4' });
+    fireEvent.change(fileInput, { target: { files: [dummyFile] } });
+
+    const videoEl = container.querySelector('video');
+    Object.defineProperty(videoEl, 'currentTime', { value: 3180.0, writable: true });
+    fireEvent.timeUpdate(videoEl);
+
+    // Period 2 with valid offsets: badge is Video
+    expect(screen.getByText(/Sumber waktu: Video/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Dimas Arya/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Umpan akurat/i }));
+
+    const outbox = JSON.parse(localStorage.getItem('match_outbox_match-p2-test'));
+    expect(outbox.length).toBe(1);
+    // 45 + (3180 - 3000) / 60 = 45 + 3 = 48.00
+    expect(outbox[0].minute).toBe(48);
+    expect(outbox[0].video_time_s).toBe(3180.0);
+    expect(outbox[0].period).toBe(2);
+  });
+
+  it('4c. Period 2 with p2 set but p2StartMin missing -> fallback to stopwatch, no guessing', () => {
+    const mockMatch = {
+      id: 'match-p2-missing',
+      status: 'draft',
+      pitch_length_m: 90,
+      pitch_width_m: 60,
+      opponent_name: 'Lawan Uji'
+    };
+    const mockParticipants = [
+      { player_id: 'p1', name: 'Dimas Arya', number: 10 }
+    ];
+
+    // p2 set but p2StartMin null
+    localStorage.setItem('ballr_video_offset_match-p2-missing', JSON.stringify({
+      p1: 60,
+      p2: 3000,
+      p2StartMin: null
+    }));
+
+    localStorage.setItem('match_clock_match-p2-missing', JSON.stringify({
+      timerSeconds: 2820,
+      isRunning: false,
+      period: 2
+    }));
+
+    const { container } = render(
+      <FastPitchLogger
+        match={mockMatch}
+        participants={mockParticipants}
+        isReadOnly={false}
+      />
+    );
+
+    const fileInput = screen.getByLabelText('Pilih berkas video dari perangkat');
+    fireEvent.change(fileInput, { target: { files: [new File(['mock'], 'laga.mp4', { type: 'video/mp4' })] } });
+
+    const videoEl = container.querySelector('video');
+    Object.defineProperty(videoEl, 'currentTime', { value: 3180.0, writable: true });
+    fireEvent.timeUpdate(videoEl);
+
+    // Warning text displayed
+    expect(screen.getByText(/Belum lengkap: pencatatan Babak 2 memakai stopwatch/i)).toBeInTheDocument();
+    // Badge says Stopwatch
+    expect(screen.getByText(/Sumber waktu: Stopwatch/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Dimas Arya/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Umpan akurat/i }));
+
+    const outbox = JSON.parse(localStorage.getItem('match_outbox_match-p2-missing'));
+    expect(outbox[0].minute).toBe(47); // Stopwatch minute (2820 / 60)
+    expect(outbox[0].video_time_s).toBe(3180.0);
+  });
+
+  it('4d. Period 3 fallback to stopwatch and minute cap at 130', () => {
+    const mockMatch = {
+      id: 'match-p3-test',
+      status: 'draft',
+      pitch_length_m: 90,
+      pitch_width_m: 60,
+      opponent_name: 'Lawan Uji'
+    };
+    const mockParticipants = [
+      { player_id: 'p1', name: 'Dimas Arya', number: 10 }
+    ];
+
+    localStorage.setItem('ballr_video_offset_match-p3-test', JSON.stringify({
+      p1: 60,
+      p2: 3000,
+      p2StartMin: 45
+    }));
+
+    localStorage.setItem('match_clock_match-p3-test', JSON.stringify({
+      timerSeconds: 5400,
+      isRunning: false,
+      period: 3
+    }));
+
+    const { container } = render(
+      <FastPitchLogger
+        match={mockMatch}
+        participants={mockParticipants}
+        isReadOnly={false}
+      />
+    );
+
+    const fileInput = screen.getByLabelText('Pilih berkas video dari perangkat');
+    fireEvent.change(fileInput, { target: { files: [new File(['mock'], 'laga.mp4', { type: 'video/mp4' })] } });
+
+    const videoEl = container.querySelector('video');
+    Object.defineProperty(videoEl, 'currentTime', { value: 6000.0, writable: true });
+    fireEvent.timeUpdate(videoEl);
+
+    // Period 3: badge is Stopwatch
+    expect(screen.getByText(/Sumber waktu: Stopwatch/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Dimas Arya/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Umpan akurat/i }));
+
+    const outbox = JSON.parse(localStorage.getItem('match_outbox_match-p3-test'));
+    expect(outbox[0].minute).toBe(90);
+    expect(outbox[0].video_time_s).toBe(6000.0);
+  });
+
+  it('4e. Video calculation caps result at 130 minutes', () => {
+    const mockMatch = {
+      id: 'match-cap-test',
+      status: 'draft',
+      pitch_length_m: 90,
+      pitch_width_m: 60,
+      opponent_name: 'Lawan Uji'
+    };
+    const mockParticipants = [
+      { player_id: 'p1', name: 'Dimas Arya', number: 10 }
+    ];
+
+    // p2 = 0, p2StartMin = 120, videoTime = 7200 (120 min) -> 120 + 120 = 240 -> capped at 130
+    localStorage.setItem('ballr_video_offset_match-cap-test', JSON.stringify({
+      p1: null,
+      p2: 0,
+      p2StartMin: 120
+    }));
+
+    localStorage.setItem('match_clock_match-cap-test', JSON.stringify({
+      timerSeconds: 100,
+      isRunning: false,
+      period: 2
+    }));
+
+    const { container } = render(
+      <FastPitchLogger
+        match={mockMatch}
+        participants={mockParticipants}
+        isReadOnly={false}
+      />
+    );
+
+    const fileInput = screen.getByLabelText('Pilih berkas video dari perangkat');
+    fireEvent.change(fileInput, { target: { files: [new File(['mock'], 'laga.mp4', { type: 'video/mp4' })] } });
+
+    const videoEl = container.querySelector('video');
+    Object.defineProperty(videoEl, 'currentTime', { value: 7200.0, writable: true });
+    fireEvent.timeUpdate(videoEl);
+
+    fireEvent.click(screen.getByRole('button', { name: /Dimas Arya/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Umpan akurat/i }));
+
+    const outbox = JSON.parse(localStorage.getItem('match_outbox_match-cap-test'));
+    expect(outbox[0].minute).toBe(130);
+  });
+
   it('5. validateEvent: validates video_time_s range (0..14400)', () => {
     const baseEvent = {
       event_type: 'pass',

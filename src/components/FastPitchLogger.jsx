@@ -14,7 +14,8 @@ import {
   finaliseMatch,
   validateEvent,
   generateUUID,
-  formatMatchError
+  formatMatchError,
+  getMatchVideoOffsets
 } from '../lib/matches';
 
 export default function FastPitchLogger({
@@ -38,6 +39,20 @@ export default function FastPitchLogger({
   const videoPanelRef = useRef(null);
   const [hasVideo, setHasVideo] = useState(false);
   const [isVideoPanelOpen, setIsVideoPanelOpen] = useState(true);
+  const [videoOffsets, setVideoOffsets] = useState(() => getMatchVideoOffsets(matchId));
+
+  useEffect(() => {
+    if (matchId) {
+      setVideoOffsets(getMatchVideoOffsets(matchId));
+    }
+  }, [matchId]);
+
+  const isVideoSourceActive = useMemo(() => {
+    if (!hasVideo) return false;
+    if (period === 1) return videoOffsets.p1 != null;
+    if (period === 2) return videoOffsets.p2 != null && videoOffsets.p2StartMin != null;
+    return false;
+  }, [hasVideo, period, videoOffsets]);
 
   // Load clock state from localStorage on mount
   useEffect(() => {
@@ -267,11 +282,12 @@ export default function FastPitchLogger({
       const vTime = videoPanelRef.current.getCurrentTime?.();
       if (vTime != null && !isNaN(vTime)) {
         videoTimeS = Number(Number(vTime).toFixed(1));
-        const { p1, p2 } = videoPanelRef.current.getOffsets?.() || {};
-        const activeOffset = period === 1 ? p1 : (period === 2 ? p2 : null);
+        const { p1, p2, p2StartMin } = videoPanelRef.current.getOffsets?.() || videoOffsets;
 
-        if (activeOffset != null && !isNaN(activeOffset)) {
-          calculatedMinute = Number(Math.max(0, (vTime - activeOffset) / 60).toFixed(2));
+        if (period === 1 && p1 != null && !isNaN(p1)) {
+          calculatedMinute = Number(Math.min(130, Math.max(0, (vTime - p1) / 60)).toFixed(2));
+        } else if (period === 2 && p2 != null && !isNaN(p2) && p2StartMin != null && !isNaN(p2StartMin)) {
+          calculatedMinute = Number(Math.min(130, Math.max(0, p2StartMin + Math.max(0, (vTime - p2) / 60))).toFixed(2));
         } else {
           calculatedMinute = Number((timerSeconds / 60).toFixed(2));
         }
@@ -418,10 +434,10 @@ export default function FastPitchLogger({
       {/* Time Source Indicator & Video Toggle */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2">
-          <Badge variant={hasVideo ? 'brand' : 'neutral'} size="sm">
-            Sumber waktu: {hasVideo ? 'Video' : 'Stopwatch'}
+          <Badge variant={isVideoSourceActive ? 'brand' : 'neutral'} size="sm">
+            Sumber waktu: {isVideoSourceActive ? 'Video' : 'Stopwatch'}
           </Badge>
-          {hasVideo && (
+          {isVideoSourceActive && (
             <span className="text-xs text-2 font-mono">
               (Waktu video aktif)
             </span>
@@ -446,6 +462,7 @@ export default function FastPitchLogger({
             matchId={matchId}
             period={period}
             onVideoLoadedChange={setHasVideo}
+            onOffsetChange={setVideoOffsets}
             onToast={onToast}
           />
         </div>

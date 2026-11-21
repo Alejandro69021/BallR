@@ -90,8 +90,10 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
   // Sync offsets state (stored in localStorage / demo store)
   const [offsetP1Input, setOffsetP1Input] = useState('');
   const [offsetP2Input, setOffsetP2Input] = useState('');
+  const [p2StartMinInput, setP2StartMinInput] = useState('');
   const [offsetP1Secs, setOffsetP1Secs] = useState(null);
   const [offsetP2Secs, setOffsetP2Secs] = useState(null);
+  const [p2StartMinVal, setP2StartMinVal] = useState(null);
 
   // Load existing offsets
   useEffect(() => {
@@ -104,6 +106,10 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
     if (offsets.p2 != null) {
       setOffsetP2Secs(offsets.p2);
       setOffsetP2Input(formatSecondsToTime(offsets.p2));
+    }
+    if (offsets.p2StartMin != null) {
+      setP2StartMinVal(offsets.p2StartMin);
+      setP2StartMinInput(String(offsets.p2StartMin));
     }
   }, [matchId]);
 
@@ -127,7 +133,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
     () => ({
       getCurrentTime: () => videoRef.current?.currentTime || 0,
       hasVideo: Boolean(videoSrc && !codecError),
-      getOffsets: () => ({ p1: offsetP1Secs, p2: offsetP2Secs }),
+      getOffsets: () => ({ p1: offsetP1Secs, p2: offsetP2Secs, p2StartMin: p2StartMinVal }),
       seekTo: (seconds, shouldPlay = true) => {
         if (!videoRef.current) return;
         const target = Math.max(0, Number(seconds) || 0);
@@ -142,7 +148,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
         fileInputRef.current?.click();
       }
     }),
-    [videoSrc, codecError, offsetP1Secs, offsetP2Secs]
+    [videoSrc, codecError, offsetP1Secs, offsetP2Secs, p2StartMinVal]
   );
 
   // File selection handler
@@ -279,8 +285,12 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
     if (secs !== null) {
       setOffsetP1Input(formatSecondsToTime(secs));
     }
-    updateMatchVideoOffsets(matchId, { offsetP1: secs, offsetP2: offsetP2Secs });
-    onOffsetChange?.({ p1: secs, p2: offsetP2Secs });
+    updateMatchVideoOffsets(matchId, {
+      offsetP1: secs,
+      offsetP2: offsetP2Secs,
+      p2StartMin: p2StartMinVal
+    });
+    onOffsetChange?.({ p1: secs, p2: offsetP2Secs, p2StartMin: p2StartMinVal });
   };
 
   const handleOffsetP2Blur = () => {
@@ -289,16 +299,41 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
     if (secs !== null) {
       setOffsetP2Input(formatSecondsToTime(secs));
     }
-    updateMatchVideoOffsets(matchId, { offsetP1: offsetP1Secs, offsetP2: secs });
-    onOffsetChange?.({ p1: offsetP1Secs, p2: secs });
+    updateMatchVideoOffsets(matchId, {
+      offsetP1: offsetP1Secs,
+      offsetP2: secs,
+      p2StartMin: p2StartMinVal
+    });
+    onOffsetChange?.({ p1: offsetP1Secs, p2: secs, p2StartMin: p2StartMinVal });
+  };
+
+  const handleP2StartMinBlur = () => {
+    const num = Number(p2StartMinInput);
+    const valid = !isNaN(num) && num > 0 && num <= 130 ? Number(num.toFixed(2)) : null;
+    setP2StartMinVal(valid);
+    if (valid !== null) {
+      setP2StartMinInput(String(valid));
+    } else {
+      setP2StartMinInput('');
+    }
+    updateMatchVideoOffsets(matchId, {
+      offsetP1: offsetP1Secs,
+      offsetP2: offsetP2Secs,
+      p2StartMin: valid
+    });
+    onOffsetChange?.({ p1: offsetP1Secs, p2: offsetP2Secs, p2StartMin: valid });
   };
 
   const handleUseCurrentTimeForP1 = () => {
     const rounded = Math.floor(currentTime);
     setOffsetP1Secs(rounded);
     setOffsetP1Input(formatSecondsToTime(rounded));
-    updateMatchVideoOffsets(matchId, { offsetP1: rounded, offsetP2: offsetP2Secs });
-    onOffsetChange?.({ p1: rounded, p2: offsetP2Secs });
+    updateMatchVideoOffsets(matchId, {
+      offsetP1: rounded,
+      offsetP2: offsetP2Secs,
+      p2StartMin: p2StartMinVal
+    });
+    onOffsetChange?.({ p1: rounded, p2: offsetP2Secs, p2StartMin: p2StartMinVal });
     onToast?.({
       title: 'Offset Babak 1 Disimpan',
       subtext: `Menit mulai Babak 1 disinkronkan ke ${formatSecondsToTime(rounded)}`,
@@ -310,8 +345,12 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
     const rounded = Math.floor(currentTime);
     setOffsetP2Secs(rounded);
     setOffsetP2Input(formatSecondsToTime(rounded));
-    updateMatchVideoOffsets(matchId, { offsetP1: offsetP1Secs, offsetP2: rounded });
-    onOffsetChange?.({ p1: offsetP1Secs, p2: rounded });
+    updateMatchVideoOffsets(matchId, {
+      offsetP1: offsetP1Secs,
+      offsetP2: rounded,
+      p2StartMin: p2StartMinVal
+    });
+    onOffsetChange?.({ p1: offsetP1Secs, p2: rounded, p2StartMin: p2StartMinVal });
     onToast?.({
       title: 'Offset Babak 2 Disimpan',
       subtext: `Menit mulai Babak 2 disinkronkan ke ${formatSecondsToTime(rounded)}`,
@@ -559,42 +598,76 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
             </div>
           </div>
 
-          {/* Period 2 Offset */}
-          <div className="p-2.5 rounded-control bg-app border border-line space-y-1.5">
-            <label
-              htmlFor={`video-offset-p2-${matchId}`}
-              className="block text-xs font-medium text-1"
-            >
-              Babak 2 mulai di menit video…
-            </label>
-            <div className="flex items-center gap-2">
-              <input
-                id={`video-offset-p2-${matchId}`}
-                type="text"
-                placeholder="mm:ss (contoh 50:00)"
-                value={offsetP2Input}
-                onChange={(e) => setOffsetP2Input(e.target.value)}
-                onBlur={handleOffsetP2Blur}
-                className="flex-1 px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
-              />
-              {videoSrc && (
-                <button
-                  type="button"
-                  onClick={handleUseCurrentTimeForP2}
-                  title="Gunakan waktu video saat ini sebagai offset Babak 2"
-                  className="min-h-[44px] sm:min-h-0 px-2.5 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-xs text-1 whitespace-nowrap cursor-pointer transition-colors"
-                >
-                  Set saat ini
-                </button>
-              )}
+          {/* Period 2 Offset & Match Clock Start */}
+          <div className="p-2.5 rounded-control bg-app border border-line space-y-2.5">
+            <div className="space-y-1.5">
+              <label
+                htmlFor={`video-offset-p2-${matchId}`}
+                className="block text-xs font-medium text-1"
+              >
+                Babak 2 mulai di menit video…
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id={`video-offset-p2-${matchId}`}
+                  type="text"
+                  placeholder="mm:ss (contoh 50:00)"
+                  value={offsetP2Input}
+                  onChange={(e) => setOffsetP2Input(e.target.value)}
+                  onBlur={handleOffsetP2Blur}
+                  className="flex-1 px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
+                />
+                {videoSrc && (
+                  <button
+                    type="button"
+                    onClick={handleUseCurrentTimeForP2}
+                    title="Gunakan waktu video saat ini sebagai offset Babak 2"
+                    className="min-h-[44px] sm:min-h-0 px-2.5 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-xs text-1 whitespace-nowrap cursor-pointer transition-colors"
+                  >
+                    Set saat ini
+                  </button>
+                )}
+              </div>
             </div>
+
+            <div className="space-y-1">
+              <label
+                htmlFor={`video-p2-start-min-${matchId}`}
+                className="block text-xs font-medium text-1"
+              >
+                Menit pertandingan saat Babak 2 mulai
+              </label>
+              <input
+                id={`video-p2-start-min-${matchId}`}
+                type="number"
+                min="1"
+                max="130"
+                step="any"
+                placeholder="Contoh: 45 untuk 2x45'; 35 untuk 2x35'"
+                value={p2StartMinInput}
+                onChange={(e) => setP2StartMinInput(e.target.value)}
+                onBlur={handleP2StartMinBlur}
+                className="w-full px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
+              />
+              <p className="text-xs text-2">
+                Contoh: 45 untuk dua babak 45 menit; 35 untuk 2x35.
+              </p>
+            </div>
+
+            {offsetP2Secs != null && p2StartMinVal == null && (
+              <div className="p-2 rounded-control bg-warning/10 border border-warning/30 text-warning text-xs">
+                Belum lengkap: pencatatan Babak 2 memakai stopwatch
+              </div>
+            )}
           </div>
         </div>
 
         <p className="text-xs text-2 leading-relaxed">
-          {activeOffsetSecs != null
-            ? `Formula Babak ${period}: menit laga = (waktu video - ${formatSecondsToTime(activeOffsetSecs)}) / 60.`
-            : 'Belum ada offset: penandaan kejadian tetap menggunakan menit stopwatch pencatat.'}
+          {period === 1 && offsetP1Secs != null
+            ? `Formula Babak 1: menit laga = max(0, (waktu video - ${formatSecondsToTime(offsetP1Secs)}) / 60).`
+            : period === 2 && offsetP2Secs != null && p2StartMinVal != null
+            ? `Formula Babak 2: menit laga = ${p2StartMinVal} + max(0, (waktu video - ${formatSecondsToTime(offsetP2Secs)}) / 60).`
+            : 'Belum ada offset lengkap untuk babak ini: penandaan kejadian memakai stopwatch pencatat.'}
         </p>
       </div>
     </div>

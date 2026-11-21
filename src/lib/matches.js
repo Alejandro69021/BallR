@@ -235,6 +235,7 @@ function createInitialDemoState() {
     status: 'final',
     video_offset_s: null,
     video_offset_p2_s: null,
+    video_p2_start_min: null,
     created_by: 'demo-coach-01',
     created_at: '2026-10-18T08:00:00Z',
     updated_at: '2026-10-18T10:00:00Z'
@@ -296,6 +297,7 @@ function createInitialDemoState() {
     status: 'draft',
     video_offset_s: null,
     video_offset_p2_s: null,
+    video_p2_start_min: null,
     created_by: 'demo-coach-01',
     created_at: '2026-10-20T08:00:00Z',
     updated_at: '2026-10-20T08:00:00Z'
@@ -868,10 +870,10 @@ export async function listParticipants(matchId) {
 }
 
 /**
- * Get video sync offsets for a match (period 1 and period 2).
+ * Get video sync offsets for a match (period 1 and period 2 with p2StartMin).
  */
 export function getMatchVideoOffsets(matchId) {
-  if (!matchId) return { p1: null, p2: null };
+  if (!matchId) return { p1: null, p2: null, p2StartMin: null };
   if (typeof window !== 'undefined' && window.localStorage) {
     try {
       const raw = window.localStorage.getItem(`ballr_video_offset_${matchId}`);
@@ -879,7 +881,14 @@ export function getMatchVideoOffsets(matchId) {
         const parsed = JSON.parse(raw);
         return {
           p1: parsed.p1 != null ? Number(parsed.p1) : null,
-          p2: parsed.p2 != null ? Number(parsed.p2) : null
+          p2: parsed.p2 != null ? Number(parsed.p2) : null,
+          p2StartMin:
+            parsed.p2StartMin != null &&
+            !isNaN(parsed.p2StartMin) &&
+            Number(parsed.p2StartMin) > 0 &&
+            Number(parsed.p2StartMin) <= 130
+              ? Number(parsed.p2StartMin)
+              : null
         };
       }
     } catch {}
@@ -891,28 +900,44 @@ export function getMatchVideoOffsets(matchId) {
     if (match) {
       return {
         p1: match.video_offset_s != null ? Number(match.video_offset_s) : null,
-        p2: match.video_offset_p2_s != null ? Number(match.video_offset_p2_s) : null
+        p2: match.video_offset_p2_s != null ? Number(match.video_offset_p2_s) : null,
+        p2StartMin:
+          match.video_p2_start_min != null &&
+          !isNaN(match.video_p2_start_min) &&
+          Number(match.video_p2_start_min) > 0 &&
+          Number(match.video_p2_start_min) <= 130
+            ? Number(match.video_p2_start_min)
+            : null
       };
     }
   }
 
-  return { p1: null, p2: null };
+  return { p1: null, p2: null, p2StartMin: null };
 }
 
 /**
  * Update video sync offsets for a match.
  */
-export async function updateMatchVideoOffsets(matchId, { offsetP1, offsetP2 }) {
+export async function updateMatchVideoOffsets(matchId, { offsetP1, offsetP2, p2StartMin }) {
   if (!matchId) return;
 
   const p1Val = offsetP1 !== null && offsetP1 !== undefined && offsetP1 !== '' ? Number(offsetP1) : null;
   const p2Val = offsetP2 !== null && offsetP2 !== undefined && offsetP2 !== '' ? Number(offsetP2) : null;
+  const p2StartVal =
+    p2StartMin !== null &&
+    p2StartMin !== undefined &&
+    p2StartMin !== '' &&
+    !isNaN(Number(p2StartMin)) &&
+    Number(p2StartMin) > 0 &&
+    Number(p2StartMin) <= 130
+      ? Number(p2StartMin)
+      : null;
 
   if (typeof window !== 'undefined' && window.localStorage) {
     try {
       window.localStorage.setItem(
         `ballr_video_offset_${matchId}`,
-        JSON.stringify({ p1: p1Val, p2: p2Val })
+        JSON.stringify({ p1: p1Val, p2: p2Val, p2StartMin: p2StartVal })
       );
     } catch (e) {
       console.warn('Gagal menyimpan offset video di localStorage:', e);
@@ -925,6 +950,7 @@ export async function updateMatchVideoOffsets(matchId, { offsetP1, offsetP2 }) {
     if (match) {
       match.video_offset_s = p1Val;
       match.video_offset_p2_s = p2Val;
+      match.video_p2_start_min = p2StartVal;
       saveDemoStore(store);
     }
   }
