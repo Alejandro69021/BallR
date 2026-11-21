@@ -31,8 +31,7 @@ import {
   verifyReport,
   formatReportError,
   listReviewerCandidates,
-  reconstructReportFromSnapshot,
-  isDemoModeActive
+  reconstructReportFromSnapshot
 } from '../lib/report';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';

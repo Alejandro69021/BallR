@@ -1,5 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
+import PlayerTabs from '../components/PlayerTabs';
 import PlayerHeader from '../components/PlayerHeader';
 import PerformanceRadar from '../components/PerformanceRadar';
 import FitnessStrip from '../components/FitnessStrip';
@@ -9,7 +10,7 @@ import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/ui/EmptyState';
 import { usePlayers } from '../hooks/usePlayers';
 
-export default function PassportPage({ onOpenShare, onToast }) {
+export default function PassportPage({ userRole = 'public', onOpenShare, onToast }) {
   const { publicId } = useParams();
   const { players, loading } = usePlayers();
 
@@ -28,6 +29,13 @@ export default function PassportPage({ onOpenShare, onToast }) {
 
   return (
     <div className="space-y-8 divide-y divide-line text-1">
+      {/* Shared Player Header & Navigation Tabs */}
+      <PlayerTabs
+        player={player}
+        activeTab="passport"
+        userRole={userRole}
+      />
+
       {/* 1. Identity Block and 5-Line Technical Summary */}
       <PlayerHeader
         player={player}

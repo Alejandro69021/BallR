@@ -5,11 +5,11 @@ import {
   LogOut,
   Users,
   User,
-  Timer,
   ClipboardEdit,
   TrendingUp,
   Trophy,
-  Compass
+  Compass,
+  HelpCircle
 } from 'lucide-react';
 import Badge from './ui/Badge';
 import Button from './ui/Button';
@@ -29,19 +29,18 @@ export default function TopNav({
   const isParent = userRole === 'parent';
   const isAuthenticated = isCoach || isParent;
 
-  const navItems = [
-    { id: 'passport', label: 'Paspor', shortLabel: 'Paspor', icon: <User className="w-4 h-4 shrink-0" /> },
-    { id: 'growth', label: 'Pertumbuhan', shortLabel: 'Tumbuh', icon: <TrendingUp className="w-4 h-4 shrink-0" /> },
-    { id: 'roster', label: 'Skuad', shortLabel: 'Skuad', icon: <Users className="w-4 h-4 shrink-0" /> },
-    ...(isCoach
-      ? [
+  const navItems = isCoach
+    ? [
+        { id: 'roster', label: 'Skuad', shortLabel: 'Skuad', icon: <Users className="w-4 h-4 shrink-0" /> },
         { id: 'matches', label: 'Laga', shortLabel: 'Laga', icon: <Trophy className="w-4 h-4 shrink-0" /> },
         { id: 'tactics', label: 'Taktik', shortLabel: 'Taktik', icon: <Compass className="w-4 h-4 shrink-0" /> },
-        { id: 'logger', label: 'Logger', shortLabel: 'Logger', icon: <Timer className="w-4 h-4 shrink-0" /> },
         { id: 'assessment', label: 'Evaluasi', shortLabel: 'Evaluasi', icon: <ClipboardEdit className="w-4 h-4 shrink-0" /> }
       ]
-      : [])
-  ];
+    : [
+        { id: 'passport', label: 'Paspor', shortLabel: 'Paspor', icon: <User className="w-4 h-4 shrink-0" /> },
+        { id: 'growth', label: 'Pertumbuhan', shortLabel: 'Tumbuh', icon: <TrendingUp className="w-4 h-4 shrink-0" /> },
+        { id: 'roster', label: 'Skuad', shortLabel: 'Skuad', icon: <Users className="w-4 h-4 shrink-0" /> }
+      ];
 
   return (
     <>
@@ -116,6 +115,16 @@ export default function TopNav({
 
           {/* Right: Auth & Share Actions */}
           <div className="flex items-center gap-2 shrink-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={<HelpCircle className="w-3.5 h-3.5" />}
+              onClick={() => onSwitchView?.('help')}
+              className="min-h-[44px] min-w-[44px] text-xs px-2.5 sm:px-3 text-2 hover:text-1"
+            >
+              Bantuan
+            </Button>
+
             {!isAuthenticated ? (
               <Button
                 variant="secondary"

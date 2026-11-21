@@ -33,10 +33,16 @@ describe('Navigation (TopNav Desktop & Mobile Tab Bar)', () => {
     const skuadButton = within(desktopNav).getByRole('button', { name: /Skuad/i });
     expect(skuadButton).toBeInTheDocument();
 
-    // Click navigation item
-    const growthButton = within(desktopNav).getByRole('button', { name: /Pertumbuhan/i });
-    fireEvent.click(growthButton);
-    expect(handleSwitch).toHaveBeenCalledWith('growth');
+    // Click coach navigation item (e.g. Laga)
+    const lagaButton = within(desktopNav).getByRole('button', { name: /Laga/i });
+    fireEvent.click(lagaButton);
+    expect(handleSwitch).toHaveBeenCalledWith('matches');
+
+    // Verify visible "Bantuan" button exists in header and calls help
+    const bantuanButton = screen.getByRole('button', { name: /Bantuan/i });
+    expect(bantuanButton).toBeInTheDocument();
+    fireEvent.click(bantuanButton);
+    expect(handleSwitch).toHaveBeenCalledWith('help');
   });
 
   it('renders mobile bottom tab bar with concise labels (nothing truncated)', () => {

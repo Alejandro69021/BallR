@@ -25,9 +25,14 @@ import MatchDetailPage from './pages/MatchDetailPage';
 import TacticsPage from './pages/TacticsPage';
 import TacticsDetailPage from './pages/TacticsDetailPage';
 import MatchReportPage from './pages/MatchReportPage';
+import GuidePage from './pages/GuidePage';
 
 function HomeRedirect({ userRole }) {
   const { players, loading, error, isDemoMode } = usePlayers();
+
+  if (userRole === 'coach' || userRole === 'admin') {
+    return <Navigate to="/skuad" replace />;
+  }
 
   if (loading) return <LoadingSkeleton />;
 
@@ -49,10 +54,6 @@ function HomeRedirect({ userRole }) {
         <p className="text-sm">Tidak ada data pemain yang ditemukan.</p>
       </div>
     );
-  }
-
-  if (userRole === 'coach' || userRole === 'admin') {
-    return <Navigate to="/skuad" replace />;
   }
 
   const defaultPlayer = players.find(
@@ -165,8 +166,9 @@ function MainApp() {
     if (p.startsWith('/skuad')) return 'roster';
     if (p.startsWith('/laga')) return 'matches';
     if (p.startsWith('/taktik')) return 'tactics';
-    if (p.startsWith('/pencatatan')) return 'logger';
+    if (p.startsWith('/pencatatan')) return 'matches';
     if (p.startsWith('/penilaian')) return 'assessment';
+    if (p === '/bantuan') return 'help';
     return (userRole === 'coach' || userRole === 'admin') ? 'roster' : 'passport';
   }, [location.pathname, userRole]);
 
@@ -251,6 +253,9 @@ function MainApp() {
       case 'logger':
         navigate('/laga');
         break;
+      case 'help':
+        navigate('/bantuan');
+        break;
       case 'assessment':
         navigate(`/penilaian/${activePlayer.player_id || currentId}`);
         break;
@@ -303,6 +308,7 @@ function MainApp() {
             path="/pemain/:publicId"
             element={
               <PassportPage
+                userRole={userRole}
                 onOpenShare={() => setIsStoryCardOpen(true)}
                 onToast={(t) => setToastInfo(t)}
               />
@@ -314,6 +320,7 @@ function MainApp() {
             path="/pemain/:publicId/pertumbuhan"
             element={
               <GrowthPage
+                userRole={userRole}
                 onOpenShare={() => setIsStoryCardOpen(true)}
                 onToast={(t) => setToastInfo(t)}
               />
@@ -338,6 +345,7 @@ function MainApp() {
               />
             }
           />
+          <Route path="/pencatatan" element={<Navigate to="/laga" replace />} />
           <Route
             path="/pencatatan/:matchId"
             element={
@@ -403,6 +411,7 @@ function MainApp() {
             element={<VerificationView players={players} />}
           />
           <Route path="/rujukan" element={<ReferencesPage />} />
+          <Route path="/bantuan" element={<GuidePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

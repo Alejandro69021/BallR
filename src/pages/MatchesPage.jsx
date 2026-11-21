@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trophy } from 'lucide-react';
+import { Plus, Trophy, Timer } from 'lucide-react';
 import { usePlayers } from '../hooks/usePlayers';
 import {
   listMatches,
@@ -27,6 +27,10 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
   const [loading, setLoading] = useState(true);
   const [sortKey, setSortKey] = useState('match_date');
   const [sortDirection, setSortDirection] = useState('desc');
+
+  const draftMatch = useMemo(() => {
+    return matches?.find((m) => m.status === 'draft') || null;
+  }, [matches]);
 
   // Create match modal state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -334,6 +338,29 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
           Laga baru
         </Button>
       </div>
+
+      {/* Draft match banner if at least one match is in draft status */}
+      {draftMatch && (
+        <div
+          data-testid="draft-match-banner"
+          className="p-3.5 sm:p-4 rounded-panel bg-brand/10 border border-brand/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-1"
+        >
+          <div className="flex items-center gap-2">
+            <Timer className="w-4 h-4 text-brand shrink-0" strokeWidth={1.5} />
+            <span className="text-xs sm:text-sm font-medium text-1">
+              Laga draft: {draftMatch.opponent_name} — Lanjut mencatat
+            </span>
+          </div>
+          <Button
+            variant="brand"
+            size="sm"
+            className="min-h-[44px] shrink-0"
+            onClick={() => navigate(`/pencatatan/${draftMatch.id}`)}
+          >
+            Lanjut mencatat
+          </Button>
+        </div>
+      )}
 
       {/* Main Table / Responsive Cards */}
       {loading ? (
