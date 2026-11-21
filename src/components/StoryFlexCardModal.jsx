@@ -119,7 +119,7 @@ export default function StoryFlexCardModal({
       isOpen={isOpen}
       onClose={onClose}
       title="Kartu Perkembangan"
-      description="Ringkasan data terverifikasi atlet untuk pemantauan perkembangan."
+      description="Ringkasan data atlet dari catatan akademi untuk pemantauan perkembangan."
       className="max-w-md"
       footer={
         <div className="flex flex-col sm:flex-row gap-2 w-full justify-end">
@@ -183,7 +183,7 @@ export default function StoryFlexCardModal({
           </div>
         )}
 
-        <div className="max-h-[50vh] sm:max-h-[55vh] overflow-y-auto rounded-control flex justify-center">
+        <div className="flex justify-center">
           <StoryCardCanvas
             cardRef={cardRef}
             player={player}

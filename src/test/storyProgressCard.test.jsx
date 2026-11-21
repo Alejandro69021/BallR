@@ -1,4 +1,6 @@
 import React from 'react';
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import StoryFlexCardModal from '../components/StoryFlexCardModal';
@@ -556,5 +558,47 @@ describe('5. Demo Mode Consent Store', () => {
     // Assert demo_consents was never requested from localStorage
     const demoConsentReads = getItemSpy.mock.calls.filter(([key]) => key === 'demo_consents');
     expect(demoConsentReads).toHaveLength(0);
+  });
+});
+
+describe('6. StoryFlexCardModal Layout Contract & Description', () => {
+  it('renders honest description subtitle', () => {
+    render(
+      <StoryFlexCardModal
+        isOpen={true}
+        player={mockPlayer}
+        onClose={() => {}}
+      />
+    );
+
+    expect(
+      screen.getByText('Ringkasan data atlet dari catatan akademi untuk pemantauan perkembangan.')
+    ).toBeInTheDocument();
+  });
+
+  it('(a) wrapper around data-testid="progress-card-canvas" has no overflow-y-auto and no max-h-[ class', () => {
+    render(
+      <StoryFlexCardModal
+        isOpen={true}
+        player={mockPlayer}
+        onClose={() => {}}
+      />
+    );
+
+    const canvas = screen.getByTestId('progress-card-canvas');
+    const wrapper = canvas.parentElement;
+    expect(wrapper).not.toBeNull();
+    expect(wrapper.className).not.toContain('overflow-y-auto');
+    expect(wrapper.className).not.toContain('max-h-[');
+    expect(wrapper.className).toContain('flex');
+    expect(wrapper.className).toContain('justify-center');
+  });
+
+  it('(b) source scan: StoryFlexCardModal.jsx contains neither overflow-y-auto nor max-h-[', () => {
+    const modalPath = path.resolve(process.cwd(), 'src/components/StoryFlexCardModal.jsx');
+    const source = fs.readFileSync(modalPath, 'utf8');
+
+    expect(source).not.toContain('overflow-y-auto');
+    expect(source).not.toContain('max-h-[');
   });
 });
