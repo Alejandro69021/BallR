@@ -6,7 +6,6 @@ import {
   Eye,
   Edit3
 } from 'lucide-react';
-import Table from './ui/Table';
 import ResponsiveList from './ui/ResponsiveList';
 import Badge from './ui/Badge';
 import Button from './ui/Button';
@@ -164,8 +163,8 @@ export default function SquadHubView({
       render: (_, row) => (
         <button
           type="button"
-          onClick={() => onViewPassport(row.player_id)}
-          className="text-left font-medium text-1 hover:text-brand hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded max-w-[150px] whitespace-normal break-words"
+          onClick={() => onViewPassport?.(row.player_id)}
+          className="text-left font-medium text-1 hover:text-brand hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded max-w-[150px] whitespace-normal break-words cursor-pointer"
         >
           <div className="font-semibold text-xs text-1 break-words">
             {row.personal_info?.full_name || 'Atlet'}
@@ -231,7 +230,7 @@ export default function SquadHubView({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => onViewPassport(row.player_id)}
+            onClick={() => onViewPassport?.(row.player_id)}
             icon={<Eye className="w-3.5 h-3.5" strokeWidth={1.5} />}
             className="whitespace-nowrap"
           >
@@ -243,7 +242,7 @@ export default function SquadHubView({
               type="button"
               variant="secondary"
               size="sm"
-              onClick={() => onEvaluatePlayer(row.player_id)}
+              onClick={() => onEvaluatePlayer?.(row.player_id)}
               icon={<Edit3 className="w-3.5 h-3.5" strokeWidth={1.5} />}
               className="whitespace-nowrap"
             >
@@ -257,183 +256,183 @@ export default function SquadHubView({
 
   return (
     <div className="space-y-6 animate-fadeIn pb-16 text-1">
-      {/* 1. Directory Header */}
-      <section className="rounded-panel border border-line bg-panel p-4 sm:p-6 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Badge variant="brand">Akademi U-13</Badge>
-              <span className="text-xs text-2">Basis Data Pembinaan</span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-semibold text-1">
-              Direktori Skuad
-            </h1>
-            <p className="text-xs text-2 mt-1 max-w-xl">
-              Basis data resmi rekam jejak atlet binaan, status asesmen berkala, dan rekam kebugaran fisik.
-            </p>
-          </div>
+            {/* 1. Directory Header */}
+            <section className="rounded-panel border border-line bg-panel p-4 sm:p-6 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge variant="brand">Akademi U-13</Badge>
+                    <span className="text-xs text-2">Basis Data Pembinaan</span>
+                  </div>
+                  <h1 className="text-xl sm:text-2xl font-semibold text-1">
+                    Direktori Skuad
+                  </h1>
+                  <p className="text-xs text-2 mt-1 max-w-xl">
+                    Basis data resmi rekam jejak atlet binaan, status asesmen berkala, dan rekam kebugaran fisik.
+                  </p>
+                </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            {/* View Mode Toggle */}
-            <div className="inline-flex rounded-control border border-control bg-raised p-0.5 gap-2">
-              <button
-                type="button"
-                onClick={() => setViewMode('table')}
-                aria-pressed={viewMode === 'table'}
-                className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'table'
-                  ? 'bg-panel text-1 shadow-sm font-semibold'
-                  : 'text-2 hover:text-1'
-                  }`}
-              >
-                <LayoutList className="w-4 h-4" strokeWidth={1.5} />
-                <span>Tabel</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('cards')}
-                aria-pressed={viewMode === 'cards'}
-                className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'cards'
-                  ? 'bg-panel text-1 shadow-sm font-semibold'
-                  : 'text-2 hover:text-1'
-                  }`}
-              >
-                <LayoutGrid className="w-4 h-4" strokeWidth={1.5} />
-                <span>Kartu</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Roster Summary Strip */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-          <div className="p-3 rounded-control border border-line bg-raised flex items-center justify-between">
-            <div>
-              <p className="text-xs text-2">Total Atlet Terdaftar</p>
-              <p className="text-xl font-semibold font-mono tabular-nums text-1 mt-0.5">
-                {totalCount} <span className="text-xs font-normal text-2">pemain</span>
-              </p>
-            </div>
-            <Users className="w-5 h-5 text-2" strokeWidth={1.5} />
-          </div>
-
-          <div className="p-3 rounded-control border border-line bg-raised flex items-center justify-between">
-            <div>
-              <p className="text-xs text-2">Status Asesmen Bulanan</p>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant="success">{publishedCount} Diterbitkan</Badge>
-                <Badge variant="warning">{pendingCount} Draf</Badge>
+                <div className="flex items-center gap-2 self-start sm:self-auto">
+                  {/* View Mode Toggle */}
+                  <div className="inline-flex rounded-control border border-control bg-raised p-0.5 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setViewMode('table')}
+                      aria-pressed={viewMode === 'table'}
+                      className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'table'
+                        ? 'bg-panel text-1 shadow-sm font-semibold'
+                        : 'text-2 hover:text-1'
+                        }`}
+                    >
+                      <LayoutList className="w-4 h-4" strokeWidth={1.5} />
+                      <span>Tabel</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setViewMode('cards')}
+                      aria-pressed={viewMode === 'cards'}
+                      className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'cards'
+                        ? 'bg-panel text-1 shadow-sm font-semibold'
+                        : 'text-2 hover:text-1'
+                        }`}
+                    >
+                      <LayoutGrid className="w-4 h-4" strokeWidth={1.5} />
+                      <span>Kartu</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* 2. Search, Filter & Sort Controls */}
-      <section className="rounded-panel border border-line bg-panel p-3.5 sm:p-4 space-y-3">
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-          <div className="flex-1">
-            <Field
-              type="search"
-              placeholder="Cari atlet berdasarkan nama atau nomor punggung..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-xs sm:text-sm"
-            />
-          </div>
+              {/* Roster Summary Strip */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="p-3 rounded-control border border-line bg-raised flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-2">Total Atlet Terdaftar</p>
+                    <p className="text-xl font-semibold font-mono tabular-nums text-1 mt-0.5">
+                      {totalCount} <span className="text-xs font-normal text-2">pemain</span>
+                    </p>
+                  </div>
+                  <Users className="w-5 h-5 text-2" strokeWidth={1.5} />
+                </div>
 
-          <div className="flex items-center gap-2 self-start md:self-auto">
-            <span className="text-xs text-2 whitespace-nowrap">Urutkan:</span>
-            <Select
-              value={sortKey}
-              onChange={(e) => setSortKey(e.target.value)}
-              className="text-xs min-h-[44px]"
-            >
-              <option value="name">Nama (A-Z)</option>
-              <option value="jersey">Nomor Punggung</option>
-              <option value="position">Posisi</option>
-              <option value="assessment_date">Tanggal Asesmen</option>
-            </Select>
-          </div>
-        </div>
+                <div className="p-3 rounded-control border border-line bg-raised flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-2">Status Asesmen Bulanan</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant="success">{publishedCount} Diterbitkan</Badge>
+                      <Badge variant="warning">{pendingCount} Draf</Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
 
-        {/* Position Filter Chips */}
-        <div className="flex items-center gap-2 pt-2 border-t border-line overflow-x-auto scrollbar-none">
-          <span className="text-xs font-medium text-2 mr-1 shrink-0">
-            Posisi:
-          </span>
-          {positionFilters.map((pos) => (
-            <button
-              key={pos.id}
-              type="button"
-              onClick={() => setSelectedPosition(pos.id)}
-              className={`px-3 py-1.5 rounded-control text-xs font-medium transition-colors cursor-pointer shrink-0 min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${selectedPosition === pos.id
-                ? 'bg-brand text-app font-semibold'
-                : 'bg-raised text-2 hover:text-1 border border-line'
-                }`}
-            >
-              {pos.label}
-            </button>
-          ))}
-          <span className="text-xs font-mono text-2 ml-auto shrink-0 hidden sm:inline">
-            Menampilkan {filteredPlayers.length} dari {totalCount}
-          </span>
-        </div>
-      </section>
+            {/* 2. Search, Filter & Sort Controls */}
+            <section className="rounded-panel border border-line bg-panel p-3.5 sm:p-4 space-y-3">
+              <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                <div className="flex-1">
+                  <Field
+                    type="search"
+                    placeholder="Cari atlet berdasarkan nama atau nomor punggung..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full text-xs sm:text-sm"
+                  />
+                </div>
 
-      {/* 3. Main Roster Content: Table (Default) or Compact Cards */}
-      {filteredPlayers.length === 0 ? (
-        <div className="p-10 border border-line rounded-panel bg-panel text-center">
-          <EmptyState
-            title="Tidak ada pemain ditemukan"
-            description={searchQuery ? `Tidak ada data yang cocok dengan "${searchQuery}".` : 'Daftar pemain kosong.'}
-            action={
-              (searchQuery || selectedPosition !== 'ALL') ? (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedPosition('ALL');
-                  }}
-                >
-                  Reset Filter
-                </Button>
-              ) : undefined
-            }
-          />
-        </div>
-      ) : viewMode === 'table' ? (
-        <ResponsiveList
-          columns={columns}
-          data={filteredPlayers}
-          sortKey={sortKey}
-          sortDirection={sortDirection}
-          onSort={handleSort}
-          stickyHeader={true}
-          emptyMessage="Belum ada data pemain"
-          renderCard={(player) => (
-            <SquadPlayerCard
-              player={player}
-              userRole={userRole}
-              onViewPassport={onViewPassport}
-              onEvaluatePlayer={onEvaluatePlayer}
-            />
-          )}
-        />
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
-          {filteredPlayers.map((player) => (
-            <SquadPlayerCard
-              key={player.player_id}
-              player={player}
-              userRole={userRole}
-              onViewPassport={onViewPassport}
-              onEvaluatePlayer={onEvaluatePlayer}
-            />
-          ))}
-        </div>
-      )}
+                <div className="flex items-center gap-2 self-start md:self-auto">
+                  <span className="text-xs text-2 whitespace-nowrap">Urutkan:</span>
+                  <Select
+                    value={sortKey}
+                    onChange={(e) => setSortKey(e.target.value)}
+                    className="text-xs min-h-[44px]"
+                  >
+                    <option value="name">Nama (A-Z)</option>
+                    <option value="jersey">Nomor Punggung</option>
+                    <option value="position">Posisi</option>
+                    <option value="assessment_date">Tanggal Asesmen</option>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Position Filter Chips */}
+              <div className="flex items-center gap-2 pt-2 border-t border-line overflow-x-auto scrollbar-none">
+                <span className="text-xs font-medium text-2 mr-1 shrink-0">
+                  Posisi:
+                </span>
+                {positionFilters.map((pos) => (
+                  <button
+                    key={pos.id}
+                    type="button"
+                    onClick={() => setSelectedPosition(pos.id)}
+                    className={`px-3 py-1.5 rounded-control text-xs font-medium transition-colors cursor-pointer shrink-0 min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${selectedPosition === pos.id
+                      ? 'bg-brand text-app font-semibold'
+                      : 'bg-raised text-2 hover:text-1 border border-line'
+                      }`}
+                  >
+                    {pos.label}
+                  </button>
+                ))}
+                <span className="text-xs font-mono text-2 ml-auto shrink-0 hidden sm:inline">
+                  Menampilkan {filteredPlayers.length} dari {totalCount}
+                </span>
+              </div>
+            </section>
+
+            {/* 3. Main Roster Content: Table (Default) or Compact Cards */}
+            {filteredPlayers.length === 0 ? (
+              <div className="p-10 border border-line rounded-panel bg-panel text-center">
+                <EmptyState
+                  title="Tidak ada pemain ditemukan"
+                  description={searchQuery ? `Tidak ada data yang cocok dengan "${searchQuery}".` : 'Daftar pemain kosong.'}
+                  action={
+                    (searchQuery || selectedPosition !== 'ALL') ? (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          setSearchQuery('');
+                          setSelectedPosition('ALL');
+                        }}
+                      >
+                        Reset Filter
+                      </Button>
+                    ) : undefined
+                  }
+                />
+              </div>
+            ) : viewMode === 'table' ? (
+              <ResponsiveList
+                columns={columns}
+                data={filteredPlayers}
+                sortKey={sortKey}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+                stickyHeader={true}
+                emptyMessage="Belum ada data pemain"
+                renderCard={(player) => (
+                  <SquadPlayerCard
+                    player={player}
+                    userRole={userRole}
+                    onViewPassport={onViewPassport}
+                    onEvaluatePlayer={onEvaluatePlayer}
+                  />
+                )}
+              />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+                {filteredPlayers.map((player) => (
+                  <SquadPlayerCard
+                    key={player.player_id}
+                    player={player}
+                    userRole={userRole}
+                    onViewPassport={onViewPassport}
+                    onEvaluatePlayer={onEvaluatePlayer}
+                  />
+                ))}
+              </div>
+            )}
     </div>
   );
 }

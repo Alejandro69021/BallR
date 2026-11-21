@@ -39,8 +39,11 @@ export default function NarrativeNotesForm({
           value={formData.rawNotes}
           onChange={(e) => setFormData((prev) => ({ ...prev, rawNotes: e.target.value }))}
           className="w-full p-3 rounded-control bg-app border border-control text-xs sm:text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors min-h-[88px]"
-          placeholder="Contoh: Sentuhan pertama konsisten rapi, tetapi perlu meningkatkan kecepatan transisi bertahan saat tim kehilangan penguasaan bola."
+          placeholder="Tuliskan catatan observasi teknis pelatih..."
         />
+        <p className="text-xs text-2 italic mt-1">
+          Contoh: Sentuhan pertama konsisten rapi, tetapi perlu meningkatkan kecepatan transisi bertahan saat tim kehilangan penguasaan bola.
+        </p>
       </Field>
 
       {/* Action Button: Generate Technical Narrative */}

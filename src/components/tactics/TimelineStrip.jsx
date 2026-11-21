@@ -165,16 +165,21 @@ export default function TimelineStrip({
             Catatan pelatih untuk bingkai {activeFrameIndex + 1}:
           </label>
           {isEditing ? (
-            <textarea
-              id="frame-note-input"
-              rows={2}
-              value={currentFrame.note || ''}
-              onChange={(e) =>
-                onUpdateFrameMeta?.(activeFrameIndex, { note: e.target.value })
-              }
-              placeholder="Contoh: Melebarkan jarak bek luar dan pivot turun menjemput bola."
-              className="w-full px-3 py-2 text-xs rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-            />
+            <div className="space-y-1">
+              <textarea
+                id="frame-note-input"
+                rows={2}
+                value={currentFrame.note || ''}
+                onChange={(e) =>
+                  onUpdateFrameMeta?.(activeFrameIndex, { note: e.target.value })
+                }
+                placeholder="Tuliskan catatan khusus untuk bingkai ini..."
+                className="w-full px-3 py-2 text-xs rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              />
+              <p className="text-xs text-2 italic">
+                Contoh: Melebarkan jarak bek luar dan pivot turun menjemput bola.
+              </p>
+            </div>
           ) : (
             <p className="text-xs text-2 p-2 rounded-control bg-app border border-line italic">
               {currentFrame.note || 'Tidak ada catatan khusus untuk bingkai ini.'}

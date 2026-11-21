@@ -153,9 +153,12 @@ export default function ReferencesPanel({
                       onChange={(e) =>
                         onUpdateReferenceNote?.(r.reference_id, e.target.value)
                       }
-                      placeholder="Contoh: Dasar fase progresi spiral bertahap."
+                      placeholder="Tulis catatan relevansi pelatih..."
                       className="w-full px-2.5 py-1 text-xs rounded-control bg-panel border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
                     />
+                    <span className="text-xs text-2 block mt-0.5 italic">
+                      Contoh: Dasar fase progresi spiral bertahap.
+                    </span>
                   </div>
                 ) : (
                   r.note && (

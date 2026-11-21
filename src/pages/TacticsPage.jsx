@@ -37,8 +37,8 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
   const [newPhase, setNewPhase] = useState('build_up');
   const [newFormat, setNewFormat] = useState('11v11');
   const [newFormation, setNewFormation] = useState('4-3-3');
-  const [newPitchLength, setNewPitchLength] = useState(90);
-  const [newPitchWidth, setNewPitchWidth] = useState(60);
+  const [newPitchLength, setNewPitchLength] = useState('90');
+  const [newPitchWidth, setNewPitchWidth] = useState('60');
   const [newDescription, setNewDescription] = useState('');
   const [newCoachingPoints, setNewCoachingPoints] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -47,8 +47,8 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
   // Available formations for the selected format
   const availableFormations = useMemo(() => {
     const templates = formationTemplates(newFormat, {
-      pitch_length_m: newPitchLength,
-      pitch_width_m: newPitchWidth
+      pitch_length_m: Number(newPitchLength) || 90,
+      pitch_width_m: Number(newPitchWidth) || 60
     });
     return Object.keys(templates).map((key) => ({
       value: key,
@@ -71,8 +71,8 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
       len = 75;
       wid = 50;
     }
-    setNewPitchLength(len);
-    setNewPitchWidth(wid);
+    setNewPitchLength(String(len));
+    setNewPitchWidth(String(wid));
 
     const tmps = formationTemplates(fmt, { pitch_length_m: len, pitch_width_m: wid });
     const firstKey = Object.keys(tmps)[0] || '';
@@ -462,9 +462,12 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
               required
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="Contoh: Build-up 3-2-4-1 menghadapi blok dua penyerang"
+              placeholder="Tulis judul skema taktik..."
               className="w-full px-3 py-2 text-xs rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
             />
+            <p className="text-xs text-2 italic">
+              Contoh: Build-up 3-2-4-1 menghadapi blok dua penyerang
+            </p>
           </div>
 
           {/* Fase & Format */}
@@ -524,7 +527,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                   min="30"
                   max="120"
                   value={newPitchLength}
-                  onChange={(e) => setNewPitchLength(Number(e.target.value))}
+                  onChange={(e) => setNewPitchLength(e.target.value)}
                   className="w-full px-3 py-2 text-xs font-mono rounded-control bg-app border border-control text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
                 />
               </div>
@@ -539,7 +542,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                   min="20"
                   max="90"
                   value={newPitchWidth}
-                  onChange={(e) => setNewPitchWidth(Number(e.target.value))}
+                  onChange={(e) => setNewPitchWidth(e.target.value)}
                   className="w-full px-3 py-2 text-xs font-mono rounded-control bg-app border border-control text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
                 />
               </div>
@@ -559,7 +562,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
               rows={2}
               value={newDescription}
               onChange={(e) => setNewDescription(e.target.value)}
-              placeholder="Jelaskan tujuan dan konteks skema pergerakan ini..."
+              placeholder="Tuliskan tujuan dan konteks skema pergerakan ini..."
               className="w-full px-3 py-2 text-xs rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             />
           </div>
@@ -573,9 +576,12 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
               rows={2}
               value={newCoachingPoints}
               onChange={(e) => setNewCoachingPoints(e.target.value)}
-              placeholder="Contoh: 1. Sentuhan pertama membuka ruang. 2. Komunikasi vokal."
+              placeholder="Tuliskan poin pembinaan atau instruksi utama..."
               className="w-full px-3 py-2 text-xs rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             />
+            <p className="text-xs text-2 italic">
+              Contoh: 1. Sentuhan pertama membuka ruang. 2. Komunikasi vokal.
+            </p>
           </div>
 
           <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
