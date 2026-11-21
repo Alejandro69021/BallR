@@ -121,7 +121,8 @@ describe('Dialog layout & overflow contract', () => {
       </Dialog>
     );
 
-    const dialogPanel = screen.getByRole('dialog');
+    const dialogPanel = screen.getByRole('dialog').querySelector('.relative.w-full');
+    expect(dialogPanel).not.toBeNull();
     expect(dialogPanel.className).toMatch(/max-h-\[calc\(100vh-1rem\)\]/);
     expect(dialogPanel.className).toMatch(/max-h-\[calc\(100dvh-1rem\)\]/);
     expect(dialogPanel.className).toMatch(/sm:max-h-\[calc\(100dvh-2rem\)\]/);
