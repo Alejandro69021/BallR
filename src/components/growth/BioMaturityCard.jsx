@@ -1,15 +1,11 @@
 import React from 'react';
-import { Ruler, TrendingUp, Activity } from 'lucide-react';
+import { Ruler, Activity } from 'lucide-react';
 import Badge from '../ui/Badge';
 import RefChip from '../ui/RefChip';
-import SourceNote from '../ui/SourceNote';
 import EmptyState from '../ui/EmptyState';
 
 export default function BioMaturityCard({ bioSpecs }) {
-  const hasAdultHeightPrediction =
-    Boolean(bioSpecs?.predictedAdultHeight || bioSpecs?.adultHeightPct);
-
-  if (!bioSpecs || !hasAdultHeightPrediction || bioSpecs.inputsMissing) {
+  if (!bioSpecs || bioSpecs.inputsMissing) {
     return (
       <section className="rounded-panel bg-panel border border-line p-5 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 pb-3 border-b border-line">
@@ -53,7 +49,7 @@ export default function BioMaturityCard({ bioSpecs }) {
           </div>
           <h3 className="text-base font-semibold text-1 flex items-center gap-2">
             <Activity className="w-4 h-4 text-brand" strokeWidth={1.5} />
-            <span>Estimasi kematangan biologis & prediksi tinggi dewasa</span>
+            <span>Estimasi kematangan biologis</span>
           </h3>
           <p className="text-xs text-2 mt-0.5">
             Menilai estimasi maturitas fisik atlet muda guna merancang beban latihan yang proporsional.
@@ -70,7 +66,7 @@ export default function BioMaturityCard({ bioSpecs }) {
         {/* Current Stature & Mass */}
         <div className="p-4 rounded-panel bg-raised border border-line flex flex-col justify-between">
           <div className="flex items-center justify-between text-2 text-xs mb-2">
-            <span className="font-semibold text-xs">Stature & massa saat ini</span>
+            <span className="font-semibold text-xs text-1">Stature & massa saat ini</span>
             <Ruler className="w-4 h-4 text-brand" strokeWidth={1.5} />
           </div>
           <div>
@@ -99,53 +95,19 @@ export default function BioMaturityCard({ bioSpecs }) {
           </div>
         </div>
 
-        {/* Predicted Adult Height */}
-        <div className="p-4 rounded-panel bg-raised border border-line flex flex-col justify-between">
-          <div className="flex items-center justify-between text-2 text-xs mb-2">
-            <span className="font-semibold text-xs">Prediksi tinggi dewasa</span>
-            <TrendingUp className="w-4 h-4 text-brand" strokeWidth={1.5} />
+        {/* Prediction Status: Honest, No Fabricated Numbers */}
+        <div className="p-4 rounded-panel bg-raised border border-line flex flex-col justify-between sm:col-span-2 space-y-3">
+          <div className="flex items-center justify-between text-2 text-xs">
+            <span className="font-semibold text-xs text-1">Prediksi tinggi dewasa</span>
+            <RefChip id="khamis-roche-1994" />
           </div>
-          <div>
-            <div className="font-mono text-2xl font-semibold text-brand tabular-nums">
-              ~{bioSpecs.predictedAdultHeight} <span className="text-xs text-2 font-normal">cm</span>
-            </div>
-            <div className="text-xs text-2 mt-1">
-              Metode {methodName}
-            </div>
-          </div>
-          <div className="mt-3 pt-2 border-t border-line text-xs font-mono text-2">
-            Berdasarkan data tinggi badan & orang tua
+          <p className="text-xs text-2 leading-relaxed">
+            Prediksi tinggi dewasa belum tersedia: butuh tabel koefisien Khamis-Roche dari sumber primer dan tinggi kedua orang tua.
+          </p>
+          <div className="pt-2 border-t border-line text-xs font-mono text-2">
+            Estimasi, bukan diagnosis; galat umum beberapa cm.
           </div>
         </div>
-
-        {/* Adult Height Percentage */}
-        <div className="p-4 rounded-panel bg-raised border border-line flex flex-col justify-between">
-          <div className="flex items-center justify-between text-2 text-xs mb-2">
-            <span className="font-semibold text-xs">% Tinggi dewasa tercapai</span>
-            <Activity className="w-4 h-4 text-brand" strokeWidth={1.5} />
-          </div>
-          <div>
-            <div className="font-mono text-2xl font-semibold text-1 tabular-nums">
-              {bioSpecs.adultHeightPct}%
-            </div>
-            <div className="w-full h-2 rounded-full bg-panel border border-line mt-2 overflow-hidden">
-              <div
-                className="h-full bg-brand rounded-full transition-all duration-150"
-                style={{ width: `${Math.min(100, Math.max(0, bioSpecs.adultHeightPct || 0))}%` }}
-              />
-            </div>
-          </div>
-          <div className="mt-3 pt-2 border-t border-line text-xs font-mono text-2">
-            Parameter pemantauan laju pertumbuhan
-          </div>
-        </div>
-      </div>
-
-      {/* Mandatory scientific disclaimer */}
-      <div className="pt-2 border-t border-line">
-        <p className="text-xs font-mono text-2">
-          Estimasi, bukan diagnosis; galat umum beberapa cm.
-        </p>
       </div>
     </section>
   );

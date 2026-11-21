@@ -388,9 +388,9 @@ export function getInitialDemoConsents() {
       granted_at: '2026-10-10T10:00:00.000Z',
       revoked_at: '2026-10-15T12:00:00.000Z',
       purposes: {
-        public_profile: true,
-        training_analysis: true,
-        share_with_scouts: true
+        training_analysis: false,
+        public_profile: false,
+        share_with_scouts: false
       }
     }
   ];

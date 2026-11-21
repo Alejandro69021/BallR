@@ -21,14 +21,22 @@ export default function MatchRecapModal({
 
   // Finalise sub-dialog state
   const [isFinaliseOpen, setIsFinaliseOpen] = useState(false);
-  const [ownScoreInput, setOwnScoreInput] = useState(
-    match?.own_score != null ? String(match.own_score) : '0'
-  );
-  const [oppScoreInput, setOppScoreInput] = useState(
-    match?.opponent_score != null ? String(match.opponent_score) : '0'
-  );
+  const [ownScoreInput, setOwnScoreInput] = useState('');
+  const [oppScoreInput, setOppScoreInput] = useState('');
   const [finalising, setFinalising] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+
+  const loggedGoals = useMemo(() => {
+    let own = 0;
+    let opp = 0;
+    allEvents.forEach((e) => {
+      if (e.event_type === 'goal') {
+        if (e.team === 'own') own++;
+        else if (e.team === 'opponent') opp++;
+      }
+    });
+    return { own, opp };
+  }, [allEvents]);
 
   // Group counts per event type
   const eventCountsByType = useMemo(() => {
@@ -160,7 +168,7 @@ export default function MatchRecapModal({
             <div className="p-3 rounded-control bg-raised border border-line flex items-center justify-between text-xs">
               <span className="text-2">Status sinkronisasi server:</span>
               <Badge variant="brand" size="sm">
-                Semua {events.length} kejadian tersimpan di server
+                Semua {events.length} kejadian tersimpan di {import.meta.env?.VITE_DEMO_MODE === 'true' ? 'perangkat (mode demo)' : 'server'}
               </Badge>
             </div>
           )}
@@ -256,6 +264,23 @@ export default function MatchRecapModal({
             </Field>
           </div>
 
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-control bg-raised border border-line text-xs">
+            <span className="text-2 font-mono">
+              Gol tercatat: {loggedGoals.own} / {loggedGoals.opp} (mungkin belum lengkap)
+            </span>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                setOwnScoreInput(String(loggedGoals.own));
+                setOppScoreInput(String(loggedGoals.opp));
+              }}
+            >
+              Pakai angka ini
+            </Button>
+          </div>
+
           <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
             <Button
               type="button"
@@ -270,7 +295,7 @@ export default function MatchRecapModal({
               variant="brand"
               size="sm"
               loading={finalising}
-              disabled={hasPendingOutbox}
+              disabled={hasPendingOutbox || ownScoreInput === '' || oppScoreInput === ''}
             >
               Simpan & finalkan
             </Button>

@@ -8,6 +8,7 @@ import MatchRecapModal from '../components/logger/MatchRecapModal';
 describe('B3 Coach Workspace Components Behaviour Tests', () => {
   beforeEach(() => {
     localStorage.clear();
+    delete import.meta.env.VITE_DEMO_MODE;
     vi.restoreAllMocks();
   });
 
@@ -151,7 +152,7 @@ describe('B3 Coach Workspace Components Behaviour Tests', () => {
       // Verify event is registered in outbox and stream
       await waitFor(() => {
         expect(screen.getByText(/Menunggu sinkron: 1/i)).toBeInTheDocument();
-        expect(screen.getByText('pass (sukses)')).toBeInTheDocument();
+        expect(screen.getByText('Sukses')).toBeInTheDocument();
       });
     });
 
@@ -226,7 +227,7 @@ describe('B3 Coach Workspace Components Behaviour Tests', () => {
       expect(screen.getByText(/Bina Putra FC/i)).toBeInTheDocument();
 
       // Check honest distribution text
-      expect(screen.getByText('Semua 2 kejadian tersimpan di server')).toBeInTheDocument();
+      expect(screen.getByText(/Semua 2 kejadian tersimpan di/i)).toBeInTheDocument();
 
       // Finalise button should be enabled when outbox is empty
       const finaliseBtn = screen.getByRole('button', { name: /Selesaikan laga/i });

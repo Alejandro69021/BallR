@@ -1,6 +1,7 @@
 export const playersRoster = [
   {
     "player_id": "WK-2026-0042",
+    "visibility_tier": "public",
     "personal_info": {
       "full_name": "Dimas Arya Pratama",
       "nickname": "Arya",
@@ -38,6 +39,12 @@ export const playersRoster = [
       "prev_sprint_sec": 3.50,
       "prev_shuttle_sec": 11.45
     },
+    "anthropometry_records": [
+      { "date": "2026-05-15", "period": "15 Mei 2026", "height_cm": 154.0, "weight_kg": 43.0, "sitting_height_cm": 82.0, "sprint_20m_sec": 3.65, "vertical_jump_cm": 38.0, "note": "Pengukuran awal musim" },
+      { "date": "2026-07-20", "period": "20 Jul 2026", "height_cm": 155.5, "weight_kg": 44.0, "sitting_height_cm": 83.0, "sprint_20m_sec": 3.58, "vertical_jump_cm": 40.5, "note": "Monitoring pertengahan siklus" },
+      { "date": "2026-08-30", "period": "30 Agu 2026", "height_cm": 157.0, "weight_kg": 45.0, "sitting_height_cm": 83.5, "sprint_20m_sec": 3.50, "vertical_jump_cm": 42.0, "note": "Peningkatan tinggi 1.5 cm" },
+      { "date": "2026-10-15", "period": "15 Okt 2026", "height_cm": 158.0, "weight_kg": 46.0, "sitting_height_cm": 84.0, "sprint_20m_sec": 3.42, "vertical_jump_cm": 44.5, "note": "Evaluasi berkala semester 1" }
+    ],
     "ai_coach_evaluation": {
       "period": "Oktober 2026",
       "coach_name": "Coach Hendro (Lisensi B AFC)",
@@ -57,31 +64,11 @@ export const playersRoster = [
         "category": "Ball Mastery"
       }
     },
-    "verified_moments": [
-      {
-        "id": "clip-01",
-        "title": "Assist Terobosan Melengkung",
-        "match": "vs Sleman United U-13",
-        "minute": "24'",
-        "category": "Vision / Key Pass",
-        "video_aspect": "9:16",
-        "video_url": "",
-        "thumbnail": ""
-      },
-      {
-        "id": "clip-02",
-        "title": "Penyelesaian Akhir Kaki Kiri",
-        "match": "vs HW Jogja U-13",
-        "minute": "52'",
-        "category": "Goal / Finishing",
-        "video_aspect": "9:16",
-        "video_url": "",
-        "thumbnail": ""
-      }
-    ]
+    "verified_moments": []
   },
   {
     "player_id": "WK-2026-0043",
+    "visibility_tier": "parent_only",
     "personal_info": {
       "full_name": "Kevin Maulana",
       "nickname": "Kevin",
@@ -119,6 +106,11 @@ export const playersRoster = [
       "prev_sprint_sec": 3.38,
       "prev_shuttle_sec": 11.25
     },
+    "anthropometry_records": [
+      { "date": "2026-05-10", "period": "10 Mei 2026", "height_cm": 151.0, "weight_kg": 40.0, "sitting_height_cm": 80.0, "sprint_20m_sec": 3.48, "vertical_jump_cm": 38.5, "note": "Baseline awal musim" },
+      { "date": "2026-08-15", "period": "15 Agu 2026", "height_cm": 153.0, "weight_kg": 42.0, "sitting_height_cm": 81.0, "sprint_20m_sec": 3.40, "vertical_jump_cm": 39.5, "note": "Monitoring fase percepatan" },
+      { "date": "2026-10-20", "period": "20 Okt 2026", "height_cm": 155.0, "weight_kg": 44.0, "sitting_height_cm": 82.5, "sprint_20m_sec": 3.31, "vertical_jump_cm": 41.0, "note": "Evaluasi berkala kedua" }
+    ],
     "ai_coach_evaluation": {
       "period": "Oktober 2026",
       "coach_name": "Coach Hendro (Lisensi B AFC)",
@@ -138,21 +130,11 @@ export const playersRoster = [
         "category": "Crossing & Delivery"
       }
     },
-    "verified_moments": [
-      {
-        "id": "clip-03",
-        "title": "Akselerasi Sayap & Crossing",
-        "match": "vs Solo Elite U-13",
-        "minute": "18'",
-        "category": "Pace / Crossing",
-        "video_aspect": "9:16",
-        "video_url": "",
-        "thumbnail": ""
-      }
-    ]
+    "verified_moments": []
   },
   {
     "player_id": "WK-2026-0044",
+    "visibility_tier": "private",
     "personal_info": {
       "full_name": "Rizky Alamsyah",
       "nickname": "Rizky",
@@ -190,6 +172,10 @@ export const playersRoster = [
       "prev_sprint_sec": 3.52,
       "prev_shuttle_sec": 11.50
     },
+    "anthropometry_records": [
+      { "date": "2026-05-15", "period": "15 Mei 2026", "height_cm": 158.0, "weight_kg": 47.0, "sitting_height_cm": 83.0, "sprint_20m_sec": 3.55, "vertical_jump_cm": 44.0, "note": "Awal musim" },
+      { "date": "2026-10-15", "period": "15 Okt 2026", "height_cm": 162.0, "weight_kg": 50.0, "sitting_height_cm": 85.0, "sprint_20m_sec": 3.48, "vertical_jump_cm": 46.2, "note": "Evaluasi semester 1" }
+    ],
     "ai_coach_evaluation": {
       "period": "Oktober 2026",
       "coach_name": "Coach Hendro (Lisensi B AFC)",
@@ -209,21 +195,11 @@ export const playersRoster = [
         "category": "Striker Finishing"
       }
     },
-    "verified_moments": [
-      {
-        "id": "clip-04",
-        "title": "Gol Keras Kaki Kiri",
-        "match": "vs Bantul FC U-13",
-        "minute": "33'",
-        "category": "Goal / Power Shot",
-        "video_aspect": "9:16",
-        "video_url": "",
-        "thumbnail": ""
-      }
-    ]
+    "verified_moments": []
   },
   {
     "player_id": "WK-2026-0045",
+    "visibility_tier": "private",
     "personal_info": {
       "full_name": "Bagas Ramadhan",
       "nickname": "Bagas",
@@ -261,6 +237,10 @@ export const playersRoster = [
       "prev_sprint_sec": 3.60,
       "prev_shuttle_sec": 11.75
     },
+    "anthropometry_records": [
+      { "date": "2026-05-15", "period": "15 Mei 2026", "height_cm": 163.0, "weight_kg": 51.0, "sitting_height_cm": 85.0, "sprint_20m_sec": 3.62, "vertical_jump_cm": 46.0, "note": "Awal musim" },
+      { "date": "2026-10-15", "period": "15 Okt 2026", "height_cm": 166.0, "weight_kg": 54.0, "sitting_height_cm": 86.5, "sprint_20m_sec": 3.55, "vertical_jump_cm": 48.0, "note": "Evaluasi semester 1" }
+    ],
     "ai_coach_evaluation": {
       "period": "Oktober 2026",
       "coach_name": "Coach Hendro (Lisensi B AFC)",
@@ -280,21 +260,11 @@ export const playersRoster = [
         "category": "Defending & Heading"
       }
     },
-    "verified_moments": [
-      {
-        "id": "clip-05",
-        "title": "Tekel Bersih Kotak Penalti",
-        "match": "vs Sleman United U-13",
-        "minute": "41'",
-        "category": "Defending / Tackle",
-        "video_aspect": "9:16",
-        "video_url": "",
-        "thumbnail": ""
-      }
-    ]
+    "verified_moments": []
   },
   {
     "player_id": "WK-2026-0046",
+    "visibility_tier": "private",
     "personal_info": {
       "full_name": "Muhammad Rafli",
       "nickname": "Rafli",
@@ -332,6 +302,10 @@ export const playersRoster = [
       "prev_sprint_sec": 3.65,
       "prev_shuttle_sec": 11.60
     },
+    "anthropometry_records": [
+      { "date": "2026-05-15", "period": "15 Mei 2026", "height_cm": 167.0, "weight_kg": 55.0, "sitting_height_cm": 88.0, "sprint_20m_sec": 3.68, "vertical_jump_cm": 49.0, "note": "Awal musim" },
+      { "date": "2026-10-15", "period": "15 Okt 2026", "height_cm": 170.0, "weight_kg": 58.0, "sitting_height_cm": 90.0, "sprint_20m_sec": 3.60, "vertical_jump_cm": 52.0, "note": "Evaluasi semester 1" }
+    ],
     "ai_coach_evaluation": {
       "period": "Oktober 2026",
       "coach_name": "Coach Hendro (Lisensi B AFC)",
@@ -351,21 +325,11 @@ export const playersRoster = [
         "category": "Goalkeeping Reflexes"
       }
     },
-    "verified_moments": [
-      {
-        "id": "clip-06",
-        "title": "Penyelamatan Refleks 1v1",
-        "match": "vs Solo Elite Cup",
-        "minute": "58'",
-        "category": "GK / Save",
-        "video_aspect": "9:16",
-        "video_url": "",
-        "thumbnail": ""
-      }
-    ]
+    "verified_moments": []
   },
   {
     "player_id": "WK-2026-0047",
+    "visibility_tier": "private",
     "personal_info": {
       "full_name": "Fajar Pratama",
       "nickname": "Fajar",
@@ -403,6 +367,10 @@ export const playersRoster = [
       "prev_sprint_sec": 3.55,
       "prev_shuttle_sec": 11.45
     },
+    "anthropometry_records": [
+      { "date": "2026-05-15", "period": "15 Mei 2026", "height_cm": 157.0, "weight_kg": 46.0, "sitting_height_cm": 83.0, "sprint_20m_sec": 3.58, "vertical_jump_cm": 41.5, "note": "Awal musim" },
+      { "date": "2026-10-15", "period": "15 Okt 2026", "height_cm": 160.0, "weight_kg": 49.0, "sitting_height_cm": 85.0, "sprint_20m_sec": 3.49, "vertical_jump_cm": 43.5, "note": "Evaluasi semester 1" }
+    ],
     "ai_coach_evaluation": {
       "period": "Oktober 2026",
       "coach_name": "Coach Hendro (Lisensi B AFC)",
@@ -422,21 +390,11 @@ export const playersRoster = [
         "category": "Midfield Anchoring"
       }
     },
-    "verified_moments": [
-      {
-        "id": "clip-07",
-        "title": "Intersep Transisi & Umpan Kunci",
-        "match": "vs Bantul FC U-13",
-        "minute": "19'",
-        "category": "Interception / Transition",
-        "video_aspect": "9:16",
-        "video_url": "",
-        "thumbnail": ""
-      }
-    ]
+    "verified_moments": []
   },
   {
     "player_id": "WK-2026-0048",
+    "visibility_tier": "private",
     "personal_info": {
       "full_name": "Ilham Satria",
       "nickname": "Ilham",
@@ -474,6 +432,9 @@ export const playersRoster = [
       "prev_sprint_sec": 3.48,
       "prev_shuttle_sec": 11.35
     },
+    "anthropometry_records": [
+      { "date": "2026-10-15", "period": "15 Okt 2026", "height_cm": 157.0, "weight_kg": 47.0, "sitting_height_cm": 84.0, "sprint_20m_sec": 3.44, "vertical_jump_cm": 42.0, "note": "Pemeriksaan perdana" }
+    ],
     "ai_coach_evaluation": {
       "period": "Oktober 2026",
       "coach_name": "Coach Hendro (Lisensi B AFC)",
@@ -493,18 +454,7 @@ export const playersRoster = [
         "category": "Fullback Support"
       }
     },
-    "verified_moments": [
-      {
-        "id": "clip-08",
-        "title": "Overlap Cepat & Tekel Bersih",
-        "match": "vs Sleman United U-13",
-        "minute": "48'",
-        "category": "Defense / Overlap",
-        "video_aspect": "9:16",
-        "video_url": "",
-        "thumbnail": ""
-      }
-    ]
+    "verified_moments": []
   }
 ];
 

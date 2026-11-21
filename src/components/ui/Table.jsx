@@ -42,21 +42,21 @@ export default function Table({
                 col.align === 'right'
                   ? 'text-right'
                   : col.align === 'center'
-                  ? 'text-center'
-                  : 'text-left';
+                    ? 'text-center'
+                    : 'text-left';
 
               return (
                 <th
                   key={col.key}
                   scope="col"
                   aria-sort={isSorted ? (sortDirection === 'asc' ? 'ascending' : 'descending') : undefined}
-                  className={`font-semibold select-none ${col.sortable && onSort ? 'p-0' : 'py-2 px-2.5 sm:px-3'} ${alignClass}`}
+                  className={`font-semibold select-none ${col.sortable && onSort ? 'p-0' : 'py-2 px-2 sm:px-2.5'} ${alignClass}`}
                 >
                   {col.sortable && onSort ? (
                     <button
                       type="button"
                       onClick={() => onSort(col.key)}
-                      className={`group inline-flex items-center gap-1.5 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 py-2.5 px-2.5 sm:py-2 sm:px-3 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded cursor-pointer ${
+                      className={`group inline-flex items-center gap-1.5 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 py-2.5 px-2 sm:py-2 sm:px-2.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded cursor-pointer ${
                         col.align === 'right' ? 'justify-end' : col.align === 'center' ? 'justify-center' : 'justify-start'
                       }`}
                     >
@@ -82,13 +82,13 @@ export default function Table({
                   col.align === 'right'
                     ? 'text-right'
                     : col.align === 'center'
-                    ? 'text-center'
-                    : 'text-left';
+                      ? 'text-center'
+                      : 'text-left';
                 const tabularClass = col.tabular ? 'font-mono tabular-nums' : '';
                 const cellVal = row[col.key];
 
                 return (
-                  <td key={col.key} className={`py-2 px-2.5 sm:px-3 ${alignClass} ${tabularClass}`}>
+                  <td key={col.key} className={`py-2 px-2 sm:px-2.5 ${alignClass} ${tabularClass}`}>
                     {col.render ? col.render(cellVal, row) : (cellVal ?? '-')}
                   </td>
                 );

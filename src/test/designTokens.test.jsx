@@ -200,7 +200,6 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
       path.resolve(__dirname, '../components/FitnessStrip.jsx'),
       path.resolve(__dirname, '../components/PerformanceRadar.jsx'),
       path.resolve(__dirname, '../components/AICoachCard.jsx'),
-      path.resolve(__dirname, '../components/MatchMoments.jsx'),
       path.resolve(__dirname, '../components/OfficialDossierFooter.jsx'),
       path.resolve(__dirname, '../pages/GrowthPage.jsx'),
       path.resolve(__dirname, '../components/GrowthBioBandingTab.jsx'),

@@ -161,9 +161,21 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   }, [events, playerMap]);
 
   // Finalise flow
+  const loggedGoals = useMemo(() => {
+    let own = 0;
+    let opp = 0;
+    (events || []).forEach((e) => {
+      if (e.event_type === 'goal') {
+        if (e.team === 'own') own++;
+        else if (e.team === 'opponent') opp++;
+      }
+    });
+    return { own, opp };
+  }, [events]);
+
   const handleOpenFinalise = () => {
-    setOwnScoreInput(match?.own_score != null ? String(match.own_score) : '0');
-    setOppScoreInput(match?.opponent_score != null ? String(match.opponent_score) : '0');
+    setOwnScoreInput('');
+    setOppScoreInput('');
     setFinaliseError(null);
     setIsFinaliseOpen(true);
   };
@@ -636,6 +648,23 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
             </Field>
           </div>
 
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-control bg-raised border border-line text-xs">
+            <span className="text-2 font-mono">
+              Gol tercatat: {loggedGoals.own} / {loggedGoals.opp} (mungkin belum lengkap)
+            </span>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                setOwnScoreInput(String(loggedGoals.own));
+                setOppScoreInput(String(loggedGoals.opp));
+              }}
+            >
+              Pakai angka ini
+            </Button>
+          </div>
+
           <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
             <Button
               type="button"
@@ -650,6 +679,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               variant="brand"
               size="sm"
               loading={finalising}
+              disabled={ownScoreInput === '' || oppScoreInput === ''}
             >
               Simpan & finalkan
             </Button>

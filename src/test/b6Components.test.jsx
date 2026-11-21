@@ -120,12 +120,10 @@ describe('B6: Growth Screen & Cleanups Tests', () => {
       expect(screen.getByText(/Data pengukuran belum lengkap/i)).toBeInTheDocument();
     });
 
-    it('renders honest values and mandatory caveat sentence when predicted height is stored', () => {
+    it('renders honest stature values and adult height unavailable notice without fabricated numbers', () => {
       const populatedSpecs = {
         currentHeight: 158.0,
         currentWeight: 46.0,
-        predictedAdultHeight: 174.5,
-        adultHeightPct: 68.2,
         chronologicalAge: 13,
         methodName: 'Khamis-Roche (1994)',
         date: '15 Okt 2026'
@@ -133,8 +131,11 @@ describe('B6: Growth Screen & Cleanups Tests', () => {
 
       render(<BioMaturityCard bioSpecs={populatedSpecs} />);
 
-      expect(screen.getByText(/~174.5/)).toBeInTheDocument();
-      expect(screen.getByText(/68.2%/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Prediksi tinggi dewasa belum tersedia: butuh tabel koefisien Khamis-Roche dari sumber primer dan tinggi kedua orang tua\./i)
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/174\.5/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/68\.2/)).not.toBeInTheDocument();
       expect(screen.getByText(/158/)).toBeInTheDocument();
       expect(screen.getByText(/46 kg/)).toBeInTheDocument();
       expect(

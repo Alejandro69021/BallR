@@ -11,7 +11,8 @@ export default function EventStreamLog({
   onUndo,
   onFlush,
   isFlushing = false,
-  isReadOnly = false
+  isReadOnly = false,
+  isDemoMode = import.meta.env?.VITE_DEMO_MODE === 'true'
 }) {
   // Combine all active events (server events + outbox pending)
   const allEvents = [...events, ...outbox];
@@ -121,7 +122,7 @@ export default function EventStreamLog({
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-medium text-1">Status Sinkronisasi:</span>
           <span className="font-mono tabular-nums text-2">
-            Tersimpan di server: {serverCount} · Menunggu sinkron: {outboxCount}
+            {isDemoMode ? 'Tersimpan di perangkat (mode demo)' : 'Tersimpan di server'}: {serverCount} · Menunggu sinkron: {outboxCount}
           </span>
           {outboxCount > 0 && (
             <Badge variant="warning" size="sm">

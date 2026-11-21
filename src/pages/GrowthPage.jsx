@@ -19,7 +19,7 @@ export default function GrowthPage({ onOpenShare, onToast }) {
 
   return (
     <div className="space-y-6 pt-4">
-      <PlayerHeader personalInfo={player.personal_info} onOpenStoryCard={onOpenShare} />
+      <PlayerHeader player={player} personalInfo={player.personal_info} onOpenStoryCard={onOpenShare} />
       <GrowthBioBandingTab player={player} onToast={onToast} />
       <OfficialDossierFooter player={player} onOpenStoryCard={onOpenShare} onToast={onToast} />
     </div>

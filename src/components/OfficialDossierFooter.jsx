@@ -186,17 +186,6 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
             Salin Rangkuman
           </Button>
         </div>
-
-        {onOpenStoryCard && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onOpenStoryCard}
-          >
-            Story Card (9:16)
-          </Button>
-        )}
       </div>
 
       {/* Paged Media Footer (Visible during print) */}

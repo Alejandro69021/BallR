@@ -165,9 +165,9 @@ export default function SquadHubView({
         <button
           type="button"
           onClick={() => onViewPassport(row.player_id)}
-          className="text-left font-medium text-1 hover:text-brand hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded"
+          className="text-left font-medium text-1 hover:text-brand hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded max-w-[150px] whitespace-normal break-words"
         >
-          <div className="font-semibold text-xs text-1">
+          <div className="font-semibold text-xs text-1 break-words">
             {row.personal_info?.full_name || 'Atlet'}
           </div>
           {row.personal_info?.nickname && (
@@ -183,7 +183,7 @@ export default function SquadHubView({
       header: 'Posisi',
       sortable: true,
       render: (_, row) => (
-        <span className="text-xs text-2 whitespace-nowrap">
+        <span className="text-xs text-2 whitespace-normal break-words max-w-[130px] inline-block">
           {formatPositionLabel(row.personal_info?.position)}
         </span>
       )
@@ -280,11 +280,10 @@ export default function SquadHubView({
                 type="button"
                 onClick={() => setViewMode('table')}
                 aria-pressed={viewMode === 'table'}
-                className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${
-                  viewMode === 'table'
-                    ? 'bg-panel text-1 shadow-sm font-semibold'
-                    : 'text-2 hover:text-1'
-                }`}
+                className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'table'
+                  ? 'bg-panel text-1 shadow-sm font-semibold'
+                  : 'text-2 hover:text-1'
+                  }`}
               >
                 <LayoutList className="w-4 h-4" strokeWidth={1.5} />
                 <span>Tabel</span>
@@ -293,11 +292,10 @@ export default function SquadHubView({
                 type="button"
                 onClick={() => setViewMode('cards')}
                 aria-pressed={viewMode === 'cards'}
-                className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${
-                  viewMode === 'cards'
-                    ? 'bg-panel text-1 shadow-sm font-semibold'
-                    : 'text-2 hover:text-1'
-                }`}
+                className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'cards'
+                  ? 'bg-panel text-1 shadow-sm font-semibold'
+                  : 'text-2 hover:text-1'
+                  }`}
               >
                 <LayoutGrid className="w-4 h-4" strokeWidth={1.5} />
                 <span>Kartu</span>
@@ -368,11 +366,10 @@ export default function SquadHubView({
               key={pos.id}
               type="button"
               onClick={() => setSelectedPosition(pos.id)}
-              className={`px-3 py-1.5 rounded-control text-xs font-medium transition-colors cursor-pointer shrink-0 min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${
-                selectedPosition === pos.id
-                  ? 'bg-brand text-app font-semibold'
-                  : 'bg-raised text-2 hover:text-1 border border-line'
-              }`}
+              className={`px-3 py-1.5 rounded-control text-xs font-medium transition-colors cursor-pointer shrink-0 min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${selectedPosition === pos.id
+                ? 'bg-brand text-app font-semibold'
+                : 'bg-raised text-2 hover:text-1 border border-line'
+                }`}
             >
               {pos.label}
             </button>

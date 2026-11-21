@@ -57,6 +57,8 @@ export const PITCH_DEFAULTS_BY_FORMAT = {
   '11v11': { pitch_length_m: 90, pitch_width_m: 60 }
 };
 
+export const DEMO_STORE_VERSION = 'v11.0';
+
 export function isDemoModeActive() {
   return import.meta.env?.VITE_DEMO_MODE === 'true';
 }
@@ -300,6 +302,7 @@ function createInitialDemoState() {
   ];
 
   return {
+    version: DEMO_STORE_VERSION,
     matches: [initialMatch, draftMatch],
     participants: {
       [matchId]: initialParticipants,
@@ -312,7 +315,7 @@ function createInitialDemoState() {
   };
 }
 
-function getDemoStore() {
+export function getDemoStore() {
   if (typeof window === 'undefined' || !window.localStorage) {
     return createInitialDemoState();
   }
@@ -324,13 +327,7 @@ function getDemoStore() {
       return initial;
     }
     const parsed = JSON.parse(raw);
-    // Auto-migrate legacy demo stores (e.g. if opponent has old 'vs' prefix or PLAYER-01)
-    const hasOldOpponent = parsed.matches?.some((m) => m.opponent_name?.includes('Contoh: vs'));
-    const hasOldPlayer = Object.values(parsed.participants || {}).some((list) =>
-      list?.some((p) => String(p.player_id).startsWith('PLAYER-'))
-    );
-    const hasDraft = parsed.matches?.some((m) => m.status === 'draft');
-    if (hasOldOpponent || hasOldPlayer || !hasDraft) {
+    if (!parsed || parsed.version !== DEMO_STORE_VERSION) {
       const fresh = createInitialDemoState();
       window.localStorage.setItem(DEMO_STORE_KEY, JSON.stringify(fresh));
       return fresh;

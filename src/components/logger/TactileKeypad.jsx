@@ -314,7 +314,7 @@ export default function TactileKeypad({
             <Check className="w-4 h-4" strokeWidth={1.5} />
             <span>Umpan akurat</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">pass (sukses)</span>
+          <span className="text-xs text-2 mt-0.5">Berhasil</span>
         </button>
 
         {/* Pass Misplaced */}
@@ -332,7 +332,7 @@ export default function TactileKeypad({
             <X className="w-4 h-4" strokeWidth={1.5} />
             <span>Umpan meleset</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">pass (gagal)</span>
+          <span className="text-xs text-2 mt-0.5">Meleset</span>
         </button>
 
         {/* Key Pass */}
@@ -350,7 +350,7 @@ export default function TactileKeypad({
             <Target className="w-4 h-4" strokeWidth={1.5} />
             <span>Umpan kunci</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">key_pass</span>
+          <span className="text-xs text-2 mt-0.5">Peluang</span>
         </button>
 
         {/* Goal */}
@@ -368,7 +368,7 @@ export default function TactileKeypad({
             <Target className="w-4 h-4" strokeWidth={1.5} />
             <span>Gol</span>
           </div>
-          <span className="text-xs font-mono mt-0.5">goal (sukses)</span>
+          <span className="text-xs mt-0.5">Masuk</span>
         </button>
 
         {/* Shot On Target */}
@@ -384,9 +384,9 @@ export default function TactileKeypad({
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-1">
             <Target className="w-4 h-4 text-2" strokeWidth={1.5} />
-            <span>On target</span>
+            <span>Tepat sasaran</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">shot_on_target</span>
+          <span className="text-xs text-2 mt-0.5">Ke gawang</span>
         </button>
 
         {/* Shot Off Target */}
@@ -402,9 +402,9 @@ export default function TactileKeypad({
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-danger">
             <X className="w-4 h-4" strokeWidth={1.5} />
-            <span>Off target</span>
+            <span>Tembakan meleset</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">shot (gagal)</span>
+          <span className="text-xs text-2 mt-0.5">Meleset</span>
         </button>
 
         {/* Tackle Won */}
@@ -422,7 +422,7 @@ export default function TactileKeypad({
             <Shield className="w-4 h-4" strokeWidth={1.5} />
             <span>Tekel berhasil</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">tackle (sukses)</span>
+          <span className="text-xs text-2 mt-0.5">Berhasil</span>
         </button>
 
         {/* Tackle Lost */}
@@ -440,7 +440,7 @@ export default function TactileKeypad({
             <Shield className="w-4 h-4" strokeWidth={1.5} />
             <span>Tekel gagal</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">tackle (gagal)</span>
+          <span className="text-xs text-2 mt-0.5">Gagal</span>
         </button>
 
         {/* Interception */}
@@ -458,7 +458,7 @@ export default function TactileKeypad({
             <Shield className="w-4 h-4 text-brand" strokeWidth={1.5} />
             <span>Intersepsi</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">interception</span>
+          <span className="text-xs text-2 mt-0.5">Potong umpan</span>
         </button>
 
         {/* Clearance */}
@@ -476,7 +476,7 @@ export default function TactileKeypad({
             <Shield className="w-4 h-4 text-2" strokeWidth={1.5} />
             <span>Sapuan</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">clearance</span>
+          <span className="text-xs text-2 mt-0.5">Buang bola</span>
         </button>
 
         {/* Ball Recovery */}
@@ -494,7 +494,7 @@ export default function TactileKeypad({
             <Check className="w-4 h-4" strokeWidth={1.5} />
             <span>Rebut bola</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">ball_recovery</span>
+          <span className="text-xs text-2 mt-0.5">Penguasaan bola</span>
         </button>
 
         {/* Ball Loss */}
@@ -512,7 +512,7 @@ export default function TactileKeypad({
             <X className="w-4 h-4" strokeWidth={1.5} />
             <span>Kehilangan bola</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">ball_loss</span>
+          <span className="text-xs text-2 mt-0.5">Terlepas</span>
         </button>
 
         {/* Foul Won */}
@@ -528,9 +528,9 @@ export default function TactileKeypad({
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-1">
             <Check className="w-4 h-4 text-brand" strokeWidth={1.5} />
-            <span>Foul didapat</span>
+            <span>Pelanggaran didapat</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">foul_won</span>
+          <span className="text-xs text-2 mt-0.5">Ditekel lawan</span>
         </button>
 
         {/* Foul Committed */}
@@ -546,9 +546,9 @@ export default function TactileKeypad({
         >
           <div className="flex items-center gap-1.5 font-semibold text-xs text-danger">
             <X className="w-4 h-4" strokeWidth={1.5} />
-            <span>Foul dibuat</span>
+            <span>Pelanggaran dibuat</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">foul_committed</span>
+          <span className="text-xs text-2 mt-0.5">Melanggar lawan</span>
         </button>
 
         {/* Save */}
@@ -566,7 +566,7 @@ export default function TactileKeypad({
             <Shield className="w-4 h-4" strokeWidth={1.5} />
             <span>Penyelamatan</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">save</span>
+          <span className="text-xs text-2 mt-0.5">Blok kiper</span>
         </button>
 
         {/* Corner */}
@@ -584,7 +584,7 @@ export default function TactileKeypad({
             <Target className="w-4 h-4 text-2" strokeWidth={1.5} />
             <span>Sepak pojok</span>
           </div>
-          <span className="text-xs text-2 font-mono mt-0.5">corner</span>
+          <span className="text-xs text-2 mt-0.5">Tendangan sudut</span>
         </button>
       </div>
     </section>

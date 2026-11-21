@@ -4,7 +4,6 @@ import PlayerHeader from '../components/PlayerHeader';
 import PerformanceRadar from '../components/PerformanceRadar';
 import FitnessStrip from '../components/FitnessStrip';
 import AICoachCard from '../components/AICoachCard';
-import MatchMoments from '../components/MatchMoments';
 import OfficialDossierFooter from '../components/OfficialDossierFooter';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/ui/EmptyState';
@@ -26,10 +25,6 @@ export default function PassportPage({ onOpenShare, onToast }) {
   const player = players.find(
     (p) => p.public_id === publicId || p.player_id === publicId
   ) || players[0];
-
-  const hasRealClips =
-    Array.isArray(player.verified_moments) &&
-    player.verified_moments.some((c) => c && (c.video_url || c.title));
 
   return (
     <div className="space-y-8 divide-y divide-line text-1">
@@ -59,14 +54,7 @@ export default function PassportPage({ onOpenShare, onToast }) {
         <FitnessStrip benchmarks={player.fitness_benchmarks} />
       </div>
 
-      {/* 5. Momen Pertandingan (only if real clips exist) */}
-      {hasRealClips && (
-        <div className="pt-8">
-          <MatchMoments moments={player.verified_moments} />
-        </div>
-      )}
-
-      {/* 6. Verifikasi Integritas Dokumen & Footer */}
+      {/* 5. Verifikasi Integritas Dokumen & Footer */}
       <div className="pt-8">
         <OfficialDossierFooter
           player={player}

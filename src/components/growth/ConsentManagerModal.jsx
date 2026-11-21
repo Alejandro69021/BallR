@@ -65,7 +65,11 @@ export default function ConsentManagerModal({
         checked: false
       };
     }
-    const isGranted = Boolean(activeConsent?.purposes?.[purposeKey]);
+    const isGranted = Boolean(
+      activeConsent?.purposes?.[purposeKey] ||
+      (purposeKey === 'training_analysis' && activeConsent?.purposes?.internal_analytics) ||
+      (purposeKey === 'internal_analytics' && activeConsent?.purposes?.training_analysis)
+    );
     if (isGranted) {
       return {
         badge: 'Diizinkan',
@@ -107,8 +111,8 @@ export default function ConsentManagerModal({
 
   const purposeList = [
     {
-      key: 'internal_analytics',
-      id: 'consent-purpose-internal-analytics',
+      key: 'training_analysis',
+      id: 'consent-purpose-training-analysis',
       title: '1. Analisis latihan & taktis internal',
       description: 'Pemrosesan performa untuk evaluasi latihan dan taktis akademi.'
     },
@@ -152,7 +156,7 @@ export default function ConsentManagerModal({
         </div>
       </div>
 
-      {/* Purpose Checklist - Read Only */}
+      {/* Purpose Status Rows - Read Only (No Clickable Controls) */}
       <div className="space-y-2">
         <span className="text-xs font-semibold text-1 block">
           Cakupan izin pemrosesan:
@@ -166,23 +170,9 @@ export default function ConsentManagerModal({
                 data-testid={`purpose-row-${item.key}`}
                 className="p-3 rounded-control bg-panel border border-line flex items-start justify-between gap-3"
               >
-                <div className="flex items-start gap-2.5">
-                  <input
-                    id={item.id}
-                    type="checkbox"
-                    checked={status.checked}
-                    disabled
-                    readOnly
-                    aria-readonly="true"
-                    tabIndex={-1}
-                    className="mt-0.5 h-4 w-4 rounded-control border border-control text-brand disabled:opacity-60 cursor-default"
-                  />
-                  <div>
-                    <label htmlFor={item.id} className="cursor-default select-none block">
-                      <span className="font-semibold text-1 block">{item.title}</span>
-                      <span className="text-xs text-2 block mt-0.5">{item.description}</span>
-                    </label>
-                  </div>
+                <div>
+                  <span className="font-semibold text-1 block">{item.title}</span>
+                  <span className="text-xs text-2 block mt-0.5">{item.description}</span>
                 </div>
                 <Badge variant={status.variant} size="sm" className="shrink-0">
                   {status.badge}
@@ -190,6 +180,9 @@ export default function ConsentManagerModal({
               </div>
             );
           })}
+        </div>
+        <div className="text-xs text-2 pt-2 border-t border-line">
+          Pencatatan persetujuan oleh wali belum tersedia di versi ini
         </div>
       </div>
 

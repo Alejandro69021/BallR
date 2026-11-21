@@ -1,114 +1,138 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ShieldCheck } from 'lucide-react';
 import BioMaturityCard from './growth/BioMaturityCard';
 import AthleticProgressChart from './growth/AthleticProgressChart';
 import AnthropometryLogTable from './growth/AnthropometryLogTable';
 import ConsentManagerModal from './growth/ConsentManagerModal';
 import Button from './ui/Button';
+import EmptyState from './ui/EmptyState';
 
 export default function GrowthBioBandingTab({ player, onToast }) {
   const [activeMetric, setActiveMetric] = useState('height');
-  const [selectedPointIndex, setSelectedPointIndex] = useState(3);
+  const [selectedPointIndex, setSelectedPointIndex] = useState(0);
   const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
 
   const { personal_info = {} } = player || {};
 
-  const bioSpecs = {
-    currentHeight: personal_info.height_cm || null,
-    currentWeight: personal_info.weight_kg || null,
-    predictedAdultHeight: 174.5,
-    adultHeightPct: 68.2,
-    chronologicalAge: personal_info.age || null,
-    methodName: 'Khamis-Roche (1994)',
-    date: '15 Okt 2026',
-    referenceIds: ['khamis-roche-1994']
-  };
+  // Read player's own measurement records
+  const rawRecords = useMemo(() => {
+    return player?.anthropometry_records || player?.anthropometry || [];
+  }, [player]);
 
-  const metricsData = {
-    height: {
-      name: 'Tinggi badan (cm)',
-      unit: 'cm',
-      markerShape: 'circle',
-      seriesColor: 'var(--series-1)',
-      points: [
-        { date: '2026-05-15', month: '15 Mei 2026', displayDate: '15 Mei', value: 154.0, note: 'Pengukuran awal musim' },
-        { date: '2026-07-20', month: '20 Jul 2026', displayDate: '20 Jul', value: 155.5, note: 'Monitoring pertengahan siklus' },
-        { date: '2026-08-30', month: '30 Agu 2026', displayDate: '30 Agu', value: 157.0, note: 'Peningkatan tinggi 1.5 cm' },
-        { date: '2026-10-15', month: '15 Okt 2026', displayDate: '15 Okt', value: 158.0, note: 'Evaluasi berkala semester 1' }
-      ],
-      minVal: 153.0,
-      maxVal: 159.0,
-      step: 1.0,
-      invertY: false
-    },
-    sprint: {
-      name: 'Sprint 20m (detik)',
-      unit: 'detik',
-      markerShape: 'square',
-      seriesColor: 'var(--series-2)',
-      points: [
-        { date: '2026-05-15', month: '15 Mei 2026', displayDate: '15 Mei', value: 3.65, note: 'Tes baseline awal musim' },
-        { date: '2026-07-20', month: '20 Jul 2026', displayDate: '20 Jul', value: 3.58, note: 'Evaluasi fase dorongan langkah' },
-        { date: '2026-08-30', month: '30 Agu 2026', displayDate: '30 Agu', value: 3.50, note: 'Perbaikan frekuensi langkah' },
-        { date: '2026-10-15', month: '15 Okt 2026', displayDate: '15 Okt', value: 3.42, note: 'Catatan waktu tes berkala kedua' }
-      ],
-      minVal: 3.3,
-      maxVal: 3.7,
-      step: 0.1,
-      invertY: true
-    },
-    jump: {
-      name: 'Vertical Jump (cm)',
-      unit: 'cm',
-      markerShape: 'triangle',
-      seriesColor: 'var(--series-3)',
-      points: [
-        { date: '2026-05-15', month: '15 Mei 2026', displayDate: '15 Mei', value: 38.0, note: 'Baseline pra-fase neuromuskular' },
-        { date: '2026-07-20', month: '20 Jul 2026', displayDate: '20 Jul', value: 40.5, note: 'Adaptasi latihan stabilitas engkel' },
-        { date: '2026-08-30', month: '30 Agu 2026', displayDate: '30 Agu', value: 42.0, note: 'Waktu kontak tanah lebih singkat' },
-        { date: '2026-10-15', month: '15 Okt 2026', displayDate: '15 Okt', value: 44.5, note: 'Pengukuran berkala kedua' }
-      ],
-      minVal: 36.0,
-      maxVal: 46.0,
-      step: 2.0,
-      invertY: false
-    }
-  };
+  // Sort chronological (oldest to newest) for chart progression
+  const sortedRecords = useMemo(() => {
+    return [...rawRecords].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+  }, [rawRecords]);
 
-  const anthropometryLogs = [
-    {
-      date: '2026-10-15',
-      period: '15 Okt 2026',
-      height: 158.0,
-      weight: 46.0,
-      sitting_height: 84.0,
-      isLatest: true
-    },
-    {
-      date: '2026-08-30',
-      period: '30 Agu 2026',
-      height: 157.0,
-      weight: 45.0,
-      sitting_height: 83.5,
-      isLatest: false
-    },
-    {
-      date: '2026-07-20',
-      period: '20 Jul 2026',
-      height: 155.5,
-      weight: 44.0,
-      sitting_height: 83.0,
-      isLatest: false
-    },
-    {
-      date: '2026-05-15',
-      period: '15 Mei 2026',
-      height: 154.0,
-      weight: 43.0,
-      sitting_height: 82.0,
-      isLatest: false
-    }
-  ];
+  const hasEnoughMeasurements = sortedRecords.length >= 2;
+
+  const latestRecord = sortedRecords[sortedRecords.length - 1];
+
+  const bioSpecs = useMemo(() => {
+    return {
+      currentHeight: latestRecord?.height_cm ?? latestRecord?.height ?? personal_info.height_cm ?? null,
+      currentWeight: latestRecord?.weight_kg ?? latestRecord?.weight ?? personal_info.weight_kg ?? null,
+      chronologicalAge: personal_info.age || null,
+      methodName: 'Khamis-Roche (1994)',
+      date: latestRecord?.period || latestRecord?.date || 'Pengukuran terakhir',
+      referenceIds: ['khamis-roche-1994']
+    };
+  }, [latestRecord, personal_info]);
+
+  // Dynamic metrics data built from player's own records
+  const metricsData = useMemo(() => {
+    if (!hasEnoughMeasurements) return null;
+
+    const heightPts = sortedRecords
+      .filter((r) => r.height_cm != null || r.height != null)
+      .map((r) => ({
+        date: r.date,
+        month: r.period || r.date,
+        displayDate: r.period ? r.period.split(' ').slice(0, 2).join(' ') : r.date,
+        value: Number(r.height_cm ?? r.height),
+        note: r.note || 'Pengukuran berkala'
+      }));
+
+    const sprintPts = sortedRecords
+      .filter((r) => r.sprint_20m_sec != null)
+      .map((r) => ({
+        date: r.date,
+        month: r.period || r.date,
+        displayDate: r.period ? r.period.split(' ').slice(0, 2).join(' ') : r.date,
+        value: Number(r.sprint_20m_sec),
+        note: r.note || 'Tes sprint 20m'
+      }));
+
+    const jumpPts = sortedRecords
+      .filter((r) => r.vertical_jump_cm != null)
+      .map((r) => ({
+        date: r.date,
+        month: r.period || r.date,
+        displayDate: r.period ? r.period.split(' ').slice(0, 2).join(' ') : r.date,
+        value: Number(r.vertical_jump_cm),
+        note: r.note || 'Tes vertical jump'
+      }));
+
+    const calcBounds = (pts, step) => {
+      if (pts.length === 0) return { minVal: 0, maxVal: 100, step };
+      const vals = pts.map((p) => p.value);
+      const min = Math.min(...vals);
+      const max = Math.max(...vals);
+      return {
+        minVal: Math.floor(min - step),
+        maxVal: Math.ceil(max + step),
+        step
+      };
+    };
+
+    const hBounds = calcBounds(heightPts, 1);
+    const sBounds = calcBounds(sprintPts, 0.1);
+    const jBounds = calcBounds(jumpPts, 2);
+
+    return {
+      height: {
+        name: 'Tinggi badan (cm)',
+        unit: 'cm',
+        markerShape: 'circle',
+        seriesColor: 'var(--series-1)',
+        points: heightPts,
+        ...hBounds,
+        invertY: false
+      },
+      sprint: {
+        name: 'Sprint 20m (detik)',
+        unit: 'detik',
+        markerShape: 'square',
+        seriesColor: 'var(--series-2)',
+        points: sprintPts,
+        ...sBounds,
+        invertY: true
+      },
+      jump: {
+        name: 'Vertical Jump (cm)',
+        unit: 'cm',
+        markerShape: 'triangle',
+        seriesColor: 'var(--series-3)',
+        points: jumpPts,
+        ...jBounds,
+        invertY: false
+      }
+    };
+  }, [sortedRecords, hasEnoughMeasurements]);
+
+  // Log table rows (latest first)
+  const anthropometryLogs = useMemo(() => {
+    return [...sortedRecords].reverse().map((r, idx) => ({
+      date: r.date,
+      period: r.period || r.date,
+      height: r.height_cm ?? r.height,
+      weight: r.weight_kg ?? r.weight,
+      sitting_height: r.sitting_height_cm ?? r.sitting_height,
+      isLatest: idx === 0
+    }));
+  }, [sortedRecords]);
 
   return (
     <div className="space-y-6 pb-12 text-1">
@@ -132,13 +156,22 @@ export default function GrowthBioBandingTab({ player, onToast }) {
 
       <BioMaturityCard bioSpecs={bioSpecs} />
 
-      <AthleticProgressChart
-        activeMetric={activeMetric}
-        setActiveMetric={setActiveMetric}
-        selectedPointIndex={selectedPointIndex}
-        setSelectedPointIndex={setSelectedPointIndex}
-        metricsData={metricsData}
-      />
+      {hasEnoughMeasurements && metricsData ? (
+        <AthleticProgressChart
+          activeMetric={activeMetric}
+          setActiveMetric={setActiveMetric}
+          selectedPointIndex={selectedPointIndex}
+          setSelectedPointIndex={setSelectedPointIndex}
+          metricsData={metricsData}
+        />
+      ) : (
+        <div className="p-6 rounded-panel bg-panel border border-line">
+          <EmptyState
+            title="Belum ada data"
+            description="Butuh minimal 2 sesi pengukuran berkala untuk menampilkan kurva perkembangan pertumbuhan."
+          />
+        </div>
+      )}
 
       <AnthropometryLogTable
         anthropometryLogs={anthropometryLogs}

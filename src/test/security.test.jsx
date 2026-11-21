@@ -9,7 +9,6 @@ import { fetchPublicPlayersFromViews, fetchLiveRosterFromSupabase, fetchPassport
 import FitnessStrip from '../components/FitnessStrip';
 import PlayerHeader from '../components/PlayerHeader';
 import BioMaturityCard from '../components/growth/BioMaturityCard';
-import MatchMoments from '../components/MatchMoments';
 import TopNav from '../components/TopNav';
 
 describe('Security Hardening & Privacy Tests', () => {
@@ -190,12 +189,6 @@ describe('Security Hardening & Privacy Tests', () => {
       const emptyLabels = screen.getAllByText('Belum ada data');
       expect(emptyLabels.length).toBeGreaterThanOrEqual(2);
       expect(screen.queryByText(/158 cm/)).not.toBeInTheDocument();
-    });
-
-    it('renders honest empty state in MatchMoments when no clips exist', () => {
-      render(<MatchMoments moments={[]} onSelectClip={() => {}} />);
-
-      expect(screen.getByText(/Belum ada data cuplikan pertandingan/i)).toBeInTheDocument();
     });
   });
 

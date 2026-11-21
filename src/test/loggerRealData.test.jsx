@@ -32,6 +32,7 @@ describe('Phase 5b: Real Match Logger & Data Integrity', () => {
 
   beforeEach(() => {
     localStorage.clear();
+    delete import.meta.env.VITE_DEMO_MODE;
     vi.restoreAllMocks();
   });
 
