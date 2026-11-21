@@ -1,4 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, afterAll, vi } from 'vitest';
+
+vi.hoisted(() => {
+  vi.stubEnv('VITE_DEMO_MODE', 'true');
+});
 import {
   listScenarios,
   getScenario,
@@ -28,8 +32,12 @@ vi.mock('../lib/supabase', async (importOriginal) => {
 describe('scenarios.js data layer (demo mode & error translations)', () => {
   beforeEach(() => {
     localStorage.clear();
-    import.meta.env.VITE_DEMO_MODE = 'true';
+    vi.stubEnv('VITE_DEMO_MODE', 'true');
     vi.restoreAllMocks();
+  });
+
+  afterAll(() => {
+    vi.unstubAllEnvs();
   });
 
   describe('Initial Demo Store Seeding', () => {
@@ -309,7 +317,7 @@ describe('scenarios.js data layer (demo mode & error translations)', () => {
     let upsertMock;
 
     beforeEach(() => {
-      import.meta.env.VITE_DEMO_MODE = 'false';
+      vi.stubEnv('VITE_DEMO_MODE', 'false');
 
       deleteGteMock = vi.fn();
       deleteEqMock = vi.fn(() => ({ gte: deleteGteMock }));
@@ -330,7 +338,7 @@ describe('scenarios.js data layer (demo mode & error translations)', () => {
     });
 
     afterEach(() => {
-      import.meta.env.VITE_DEMO_MODE = 'true';
+      vi.stubEnv('VITE_DEMO_MODE', 'true');
     });
 
     it('when upsert rejects, delete is NEVER called and the error is thrown', async () => {

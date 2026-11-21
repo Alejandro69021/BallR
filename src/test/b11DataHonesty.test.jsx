@@ -1,5 +1,11 @@
+import { vi } from 'vitest';
+
+vi.hoisted(() => {
+  vi.stubEnv('VITE_DEMO_MODE', 'true');
+});
+
 import React from 'react';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import fs from 'fs';
@@ -28,20 +34,12 @@ import {
 import { getInitialDemoConsents } from '../lib/supabase';
 
 describe('Phase B11: Data Honesty, Demo Store Reset, & Consent Seeds', () => {
-  const origDemoMode = import.meta.env.VITE_DEMO_MODE;
-
   beforeEach(() => {
     localStorage.clear();
-    import.meta.env.VITE_DEMO_MODE = 'true';
   });
 
-  afterEach(() => {
-    localStorage.clear();
-    if (origDemoMode === undefined) {
-      delete import.meta.env.VITE_DEMO_MODE;
-    } else {
-      import.meta.env.VITE_DEMO_MODE = origDemoMode;
-    }
+  afterAll(() => {
+    vi.unstubAllEnvs();
   });
 
   describe('1. Fabricated Growth Data (Blocker)', () => {

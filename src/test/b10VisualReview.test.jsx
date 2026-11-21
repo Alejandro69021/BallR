@@ -1,5 +1,11 @@
+import { vi } from 'vitest';
+
+vi.hoisted(() => {
+  vi.stubEnv('VITE_DEMO_MODE', 'true');
+});
+
 import React from 'react';
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { PlayersProvider } from '../context/PlayersContext';
@@ -12,20 +18,12 @@ import { playersRoster } from '../data/mockData';
 import { passStats, SMALL_SAMPLE_N } from '../lib/analysis/events';
 
 describe('Phase B10: Visual Review & Demo Data Consistency', () => {
-  const origDemoMode = import.meta.env.VITE_DEMO_MODE;
-
   beforeEach(() => {
     localStorage.clear();
-    import.meta.env.VITE_DEMO_MODE = 'true';
   });
 
-  afterEach(() => {
-    localStorage.clear();
-    if (origDemoMode === undefined) {
-      delete import.meta.env.VITE_DEMO_MODE;
-    } else {
-      import.meta.env.VITE_DEMO_MODE = origDemoMode;
-    }
+  afterAll(() => {
+    vi.unstubAllEnvs();
   });
 
   describe('A. Report Page & Small Samples (A4, A4b)', () => {

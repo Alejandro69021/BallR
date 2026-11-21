@@ -1,4 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
+
+vi.hoisted(() => {
+  vi.stubEnv('VITE_DEMO_MODE', 'true');
+});
 import {
   ALLOWED_EVENT_TYPES,
   PITCH_DEFAULTS_BY_FORMAT,
@@ -18,8 +22,12 @@ import * as supabaseModule from '../lib/supabase';
 describe('Matches Data Layer (src/lib/matches.js)', () => {
   beforeEach(() => {
     localStorage.clear();
-    import.meta.env.VITE_DEMO_MODE = 'true';
+    vi.stubEnv('VITE_DEMO_MODE', 'true');
     vi.restoreAllMocks();
+  });
+
+  afterAll(() => {
+    vi.unstubAllEnvs();
   });
 
   describe('1. Client Validation (validateEvent)', () => {
@@ -284,7 +292,7 @@ describe('Matches Data Layer (src/lib/matches.js)', () => {
       expect(reopened.status).toBe('draft');
     });
     it('never mixes demo data into real mode when Supabase is unconfigured', async () => {
-      import.meta.env.VITE_DEMO_MODE = 'false';
+      vi.stubEnv('VITE_DEMO_MODE', 'false');
       vi.spyOn(supabaseModule, 'supabase', 'get').mockReturnValue(null);
 
       await expect(listMatches()).rejects.toThrow(/Koneksi Supabase belum dikonfigurasi/);
@@ -294,9 +302,7 @@ describe('Matches Data Layer (src/lib/matches.js)', () => {
 
   describe('3. Supabase Mocked Calls & Payload Shapes (Real Mode)', () => {
     it('executes upsert with onConflict match_id,client_event_id and ignoreDuplicates: true', async () => {
-      // Temporarily mock isDemoModeActive to false
-      const origEnv = import.meta.env.VITE_DEMO_MODE;
-      import.meta.env.VITE_DEMO_MODE = 'false';
+      vi.stubEnv('VITE_DEMO_MODE', 'false');
 
       try {
         const mockUpsert = vi.fn().mockReturnValue({
@@ -367,7 +373,7 @@ describe('Matches Data Layer (src/lib/matches.js)', () => {
         );
         expect(res).toEqual([{ id: 'evt-db-1', client_event_id: 'c-1' }]);
       } finally {
-        import.meta.env.VITE_DEMO_MODE = origEnv;
+        vi.stubEnv('VITE_DEMO_MODE', 'true');
       }
     });
   });

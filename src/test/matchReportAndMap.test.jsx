@@ -1,5 +1,11 @@
+import { vi } from 'vitest';
+
+vi.hoisted(() => {
+  vi.stubEnv('VITE_DEMO_MODE', 'true');
+});
+
 import React from 'react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import fs from 'node:fs';
@@ -31,8 +37,6 @@ vi.mock('../lib/supabase', async (importOriginal) => {
   };
 });
 
-import.meta.env.VITE_DEMO_MODE = 'true';
-
 describe('Match Report & Event Map System (Phase 5d)', () => {
   const dummyMatch = {
     id: 'm-100',
@@ -61,8 +65,12 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
 
   beforeEach(() => {
     localStorage.clear();
-    import.meta.env.VITE_DEMO_MODE = 'true';
+    vi.stubEnv('VITE_DEMO_MODE', 'true');
     vi.restoreAllMocks();
+  });
+
+  afterAll(() => {
+    vi.unstubAllEnvs();
   });
 
   describe('1. Deterministic Cryptographic Hashes', () => {
@@ -205,7 +213,7 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
     });
 
     it('listReviewerCandidates in demo mode returns candidates and excludes demo creator', async () => {
-      import.meta.env.VITE_DEMO_MODE = 'true';
+      vi.stubEnv('VITE_DEMO_MODE', 'true');
       const candidates = await listReviewerCandidates('11111111-0000-4000-8000-000000000001');
       expect(candidates.length).toBeGreaterThan(0);
       expect(candidates.some((c) => c.id === 'demo-coach-creator')).toBe(false);
@@ -213,7 +221,7 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
     });
 
     it('listReviewerCandidates in real mode filters by coach+academy or admin and excludes current user', async () => {
-      import.meta.env.VITE_DEMO_MODE = 'false';
+      vi.stubEnv('VITE_DEMO_MODE', 'false');
 
       const mockProfiles = [
         { id: 'coach-01', full_name: 'Coach Budi', role: 'coach' },
@@ -243,7 +251,7 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
       const solo = await listReviewerCandidates('acad-999');
       expect(solo.map((c) => c.id)).toEqual(['coach-creator-id']);
 
-      import.meta.env.VITE_DEMO_MODE = 'true';
+      vi.stubEnv('VITE_DEMO_MODE', 'true');
     });
   });
 

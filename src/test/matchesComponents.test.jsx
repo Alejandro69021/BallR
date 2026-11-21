@@ -1,5 +1,11 @@
+import { vi } from 'vitest';
+
+vi.hoisted(() => {
+  vi.stubEnv('VITE_DEMO_MODE', 'true');
+});
+
 import React from 'react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import TopNav from '../components/TopNav';
@@ -49,8 +55,11 @@ describe('Matches Components & Integration (MatchesPage, MatchDetailPage, TopNav
 
   beforeEach(() => {
     localStorage.clear();
-    import.meta.env.VITE_DEMO_MODE = 'true';
     vi.restoreAllMocks();
+  });
+
+  afterAll(() => {
+    vi.unstubAllEnvs();
   });
 
   describe('1. Navigation Role Gating', () => {

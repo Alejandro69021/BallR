@@ -512,19 +512,17 @@ describe('4. Card Content Honest Metrics', () => {
 });
 
 describe('5. Demo Mode Consent Store', () => {
-  const origDemoMode = import.meta.env.VITE_DEMO_MODE;
-
   beforeEach(() => {
     vi.restoreAllMocks();
     localStorage.clear();
   });
 
   afterEach(() => {
-    import.meta.env.VITE_DEMO_MODE = origDemoMode;
+    vi.unstubAllEnvs();
   });
 
   it('seeds and returns 3 distinct states in demo mode (VITE_DEMO_MODE=true)', async () => {
-    import.meta.env.VITE_DEMO_MODE = 'true';
+    vi.stubEnv('VITE_DEMO_MODE', 'true');
 
     // Player 1: public_profile granted
     const p1Consents = await supabaseLib.fetchPlayerConsents('WK-2026-0042');
@@ -548,7 +546,7 @@ describe('5. Demo Mode Consent Store', () => {
   });
 
   it('never reads demo_consents from localStorage in real mode (VITE_DEMO_MODE=false)', async () => {
-    import.meta.env.VITE_DEMO_MODE = 'false';
+    vi.stubEnv('VITE_DEMO_MODE', 'false');
     const getItemSpy = vi.spyOn(Storage.prototype, 'getItem');
 
     // In real mode with no supabase credentials, returns [] without reading demo_consents

@@ -1,5 +1,11 @@
+import { vi } from 'vitest';
+
+vi.hoisted(() => {
+  vi.stubEnv('VITE_DEMO_MODE', 'true');
+});
+
 import React from 'react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import fs from 'node:fs';
@@ -16,13 +22,14 @@ import TacticsDetailPage from '../pages/TacticsDetailPage';
 import * as scenariosLib from '../lib/scenarios';
 import { BOARD_DISCLAIMER } from '../lib/board';
 
-import.meta.env.VITE_DEMO_MODE = 'true';
-
 describe('Tactical Board & Scenarios Components (Phase 5c)', () => {
   beforeEach(() => {
     localStorage.clear();
-    import.meta.env.VITE_DEMO_MODE = 'true';
     vi.restoreAllMocks();
+  });
+
+  afterAll(() => {
+    vi.unstubAllEnvs();
   });
 
   describe('1. Role Gating & Navigation', () => {
