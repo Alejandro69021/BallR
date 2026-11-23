@@ -17,11 +17,14 @@ export default function Button({
 
   const sizeClasses = {
     sm: 'min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-8 px-2.5 text-sm gap-1.5',
-    md: 'min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-[38px] px-3.5 text-sm gap-2'
+    md: 'min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-[38px] px-3.5 text-sm gap-2',
+    lg: 'min-h-[56px] min-w-[56px] px-5 py-3 text-lg font-bold gap-2.5'
   };
 
   const variantClasses = {
     primary:
+      'bg-brand text-app border-transparent hover:opacity-90 active:opacity-95 focus-visible:ring-brand',
+    brand:
       'bg-brand text-app border-transparent hover:opacity-90 active:opacity-95 focus-visible:ring-brand',
     secondary:
       'bg-panel text-1 border-control hover:bg-raised focus-visible:ring-brand',

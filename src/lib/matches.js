@@ -57,6 +57,13 @@ export const PITCH_DEFAULTS_BY_FORMAT = {
   '11v11': { pitch_length_m: 90, pitch_width_m: 60 }
 };
 
+export const MATCH_STAGES = [
+  { id: 'create', label: 'Laga dibuat' },
+  { id: 'record', label: 'Catat kejadian' },
+  { id: 'finish', label: 'Selesaikan laga' },
+  { id: 'report', label: 'Laporan' }
+];
+
 export const DEMO_STORE_VERSION = 'v11.0';
 
 export function isDemoModeActive() {

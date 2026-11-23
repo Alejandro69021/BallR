@@ -3,6 +3,7 @@ import {
   Share2,
   Lock,
   LogOut,
+  Home,
   Users,
   User,
   ClipboardEdit,
@@ -35,6 +36,7 @@ export default function TopNav({
 
   const navItems = isCoach
     ? [
+        { id: 'home', label: 'Beranda', shortLabel: 'Beranda', icon: <Home className="w-4 h-4 shrink-0" /> },
         { id: 'roster', label: 'Skuad', shortLabel: 'Skuad', icon: <Users className="w-4 h-4 shrink-0" /> },
         { id: 'matches', label: 'Laga', shortLabel: 'Laga', icon: <Trophy className="w-4 h-4 shrink-0" /> },
         { id: 'tactics', label: 'Taktik', shortLabel: 'Taktik', icon: <Compass className="w-4 h-4 shrink-0" /> },
@@ -58,7 +60,7 @@ export default function TopNav({
               type="button"
               aria-label="Navigasi beranda akademi"
               className="min-h-[44px] min-w-[44px] flex items-center justify-center -ml-1 sm:ml-0 sm:min-h-0 sm:min-w-0 cursor-pointer bg-transparent border-none p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-control"
-              onClick={() => onSwitchView?.(isCoach ? 'roster' : 'passport')}
+              onClick={() => onSwitchView?.(isCoach ? 'home' : 'passport')}
             >
               <div className="w-7 h-7 rounded-control bg-raised border border-line flex items-center justify-center overflow-hidden shrink-0">
                 {academy?.logo_url ? (
@@ -77,12 +79,12 @@ export default function TopNav({
             </button>
 
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-sm font-semibold text-1 truncate max-w-[140px] sm:max-w-none">
+              <span className="text-sm font-semibold text-1 truncate max-w-[70px] xs:max-w-[100px] sm:max-w-none">
                 {academy?.name || 'Akademi Sepakbola'}
               </span>
-              <Badge variant="neutral" size="sm">U-13</Badge>
+              <Badge variant="neutral" size="sm" className="shrink-0">U-13</Badge>
               {isDemoMode && (
-                <Badge variant="warning" size="sm">Data contoh</Badge>
+                <Badge variant="warning" size="sm" className="hidden sm:inline-flex shrink-0">Data contoh</Badge>
               )}
             </div>
           </div>
@@ -90,7 +92,7 @@ export default function TopNav({
           {/* Center: Desktop Navigation Bar (>= 768px) */}
           <nav
             aria-label="Navigasi utama desktop"
-            className="hidden md:flex items-center gap-1 h-full"
+            className="hidden md:flex items-center gap-0.5 lg:gap-1 h-full"
           >
             {navItems.map((item) => {
               const isActive = currentView === item.id;
@@ -99,7 +101,7 @@ export default function TopNav({
                   key={item.id}
                   type="button"
                   onClick={() => onSwitchView?.(item.id)}
-                  className={`relative flex items-center gap-1.5 px-3 h-full text-sm transition-colors duration-150 ease-out select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isActive
+                  className={`relative flex items-center gap-1.5 px-2 lg:px-3 h-full text-sm transition-colors duration-150 ease-out select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isActive
                     ? 'text-1 font-semibold'
                     : 'text-2 hover:text-1'
                     }`}
@@ -128,7 +130,7 @@ export default function TopNav({
               <button
                 type="button"
                 onClick={() => onToggleSurface?.('paper')}
-                className={`inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-control text-sm font-medium transition-colors cursor-pointer min-h-[44px] sm:min-h-0 ${
+                className={`inline-flex items-center justify-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-control text-sm font-medium transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 ${
                   surface === 'paper'
                     ? 'bg-panel text-1 shadow-xs font-semibold'
                     : 'text-2 hover:text-1'
@@ -137,12 +139,12 @@ export default function TopNav({
                 data-testid="theme-toggle-light"
               >
                 <Sun className="w-3.5 h-3.5 text-warning shrink-0" />
-                <span>Terang</span>
+                <span className="hidden lg:inline">Terang</span>
               </button>
               <button
                 type="button"
                 onClick={() => onToggleSurface?.('dark')}
-                className={`inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-control text-sm font-medium transition-colors cursor-pointer min-h-[44px] sm:min-h-0 ${
+                className={`inline-flex items-center justify-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-control text-sm font-medium transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 ${
                   surface === 'dark'
                     ? 'bg-panel text-1 shadow-xs font-semibold'
                     : 'text-2 hover:text-1'
@@ -151,19 +153,21 @@ export default function TopNav({
                 data-testid="theme-toggle-dark"
               >
                 <Moon className="w-3.5 h-3.5 text-brand shrink-0" />
-                <span>Gelap</span>
+                <span className="hidden lg:inline">Gelap</span>
               </button>
             </div>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={<HelpCircle className="w-3.5 h-3.5" />}
-              onClick={() => onSwitchView?.('help')}
-              className="hidden sm:inline-flex min-h-[44px] min-w-[44px] text-sm px-2.5 sm:px-3 text-2 hover:text-1"
-            >
-              Bantuan
-            </Button>
+            <div className="hidden lg:inline-flex">
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={<HelpCircle className="w-3.5 h-3.5" />}
+                onClick={() => onSwitchView?.('help')}
+                className="min-h-[44px] min-w-[44px] text-sm px-2.5 sm:px-3 text-2 hover:text-1"
+              >
+                Bantuan
+              </Button>
+            </div>
 
             {!isAuthenticated ? (
               <Button
@@ -175,13 +179,15 @@ export default function TopNav({
                 Masuk
               </Button>
             ) : (
-              <div className="flex items-center gap-2">
-                {isDemoMode && (
-                  <Badge variant="warning" size="sm" className="hidden sm:inline-flex">Mode demo</Badge>
-                )}
-                <span className="hidden sm:inline-block text-sm font-medium text-brand">
-                  {isCoach ? 'Pelatih' : isParent ? 'Wali' : 'Admin'}
-                </span>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="hidden lg:flex items-center gap-2">
+                  {isDemoMode && (
+                    <Badge variant="warning" size="sm">Mode demo</Badge>
+                  )}
+                  <span className="text-sm font-medium text-brand">
+                    {isCoach ? 'Pelatih' : isParent ? 'Wali' : 'Admin'}
+                  </span>
+                </div>
                 <IconButton
                   icon={<LogOut className="w-3.5 h-3.5" />}
                   label="Keluar sesi"
@@ -207,7 +213,7 @@ export default function TopNav({
       {/* Mobile Bottom Tab Bar (< 768px) */}
       <nav
         aria-label="Navigasi bawah seluler"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 h-14 bg-panel border-t border-line flex items-center justify-around px-1 select-none"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 h-14 min-h-[56px] bg-panel border-t border-line flex items-center justify-around px-1 select-none"
       >
         {navItems.map((item) => {
           const isActive = currentView === item.id;
@@ -216,7 +222,7 @@ export default function TopNav({
               key={item.id}
               type="button"
               onClick={() => onSwitchView?.(item.id)}
-              className={`relative flex-1 flex flex-col items-center justify-center h-full py-1 gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand cursor-pointer ${isActive
+              className={`relative flex-1 flex flex-col items-center justify-center h-full min-h-[56px] py-1 gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand cursor-pointer ${isActive
                 ? 'text-brand font-semibold'
                 : 'text-2 hover:text-1'
                 }`}

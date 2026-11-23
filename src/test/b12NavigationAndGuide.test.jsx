@@ -36,7 +36,7 @@ const mockPlayer = {
 
 describe('Phase B12: Simplified Navigation & In-App Guide', () => {
   describe('1. TopNav Navigation Items per Role', () => {
-    it('coach has exactly 4 items in exact order: Skuad, Laga, Taktik, Evaluasi', () => {
+    it('coach has exactly 5 items in exact order: Beranda, Skuad, Laga, Taktik, Evaluasi', () => {
       render(
         <TopNav
           userRole="coach"
@@ -47,11 +47,12 @@ describe('Phase B12: Simplified Navigation & In-App Guide', () => {
       const desktopNav = screen.getByRole('navigation', { name: 'Navigasi utama desktop' });
       const buttons = within(desktopNav).getAllByRole('button');
 
-      expect(buttons).toHaveLength(4);
-      expect(buttons[0]).toHaveTextContent(/Skuad/i);
-      expect(buttons[1]).toHaveTextContent(/Laga/i);
-      expect(buttons[2]).toHaveTextContent(/Taktik/i);
-      expect(buttons[3]).toHaveTextContent(/Evaluasi/i);
+      expect(buttons).toHaveLength(5);
+      expect(buttons[0]).toHaveTextContent(/Beranda/i);
+      expect(buttons[1]).toHaveTextContent(/Skuad/i);
+      expect(buttons[2]).toHaveTextContent(/Laga/i);
+      expect(buttons[3]).toHaveTextContent(/Taktik/i);
+      expect(buttons[4]).toHaveTextContent(/Evaluasi/i);
 
       // Verify removed items are NOT present in coach nav
       expect(within(desktopNav).queryByRole('button', { name: /^Paspor$/i })).not.toBeInTheDocument();
@@ -59,7 +60,7 @@ describe('Phase B12: Simplified Navigation & In-App Guide', () => {
       expect(within(desktopNav).queryByRole('button', { name: /^Logger$/i })).not.toBeInTheDocument();
     });
 
-    it('admin has exactly 4 items in exact order: Skuad, Laga, Taktik, Evaluasi', () => {
+    it('admin has exactly 5 items in exact order: Beranda, Skuad, Laga, Taktik, Evaluasi', () => {
       render(
         <TopNav
           userRole="admin"
@@ -70,11 +71,12 @@ describe('Phase B12: Simplified Navigation & In-App Guide', () => {
       const desktopNav = screen.getByRole('navigation', { name: 'Navigasi utama desktop' });
       const buttons = within(desktopNav).getAllByRole('button');
 
-      expect(buttons).toHaveLength(4);
-      expect(buttons[0]).toHaveTextContent(/Skuad/i);
-      expect(buttons[1]).toHaveTextContent(/Laga/i);
-      expect(buttons[2]).toHaveTextContent(/Taktik/i);
-      expect(buttons[3]).toHaveTextContent(/Evaluasi/i);
+      expect(buttons).toHaveLength(5);
+      expect(buttons[0]).toHaveTextContent(/Beranda/i);
+      expect(buttons[1]).toHaveTextContent(/Skuad/i);
+      expect(buttons[2]).toHaveTextContent(/Laga/i);
+      expect(buttons[3]).toHaveTextContent(/Taktik/i);
+      expect(buttons[4]).toHaveTextContent(/Evaluasi/i);
     });
 
     it('public role has exactly 3 items unchanged: Paspor, Pertumbuhan, Skuad', () => {
@@ -116,7 +118,7 @@ describe('Phase B12: Simplified Navigation & In-App Guide', () => {
       expect(buttons[2]).toHaveTextContent(/Skuad/i);
     });
 
-    it('mobile bottom bar has exactly 4 items for coach', () => {
+    it('mobile bottom bar has exactly 5 items for coach', () => {
       render(
         <TopNav
           userRole="coach"
@@ -127,11 +129,12 @@ describe('Phase B12: Simplified Navigation & In-App Guide', () => {
       const mobileNav = screen.getByRole('navigation', { name: 'Navigasi bawah seluler' });
       const buttons = within(mobileNav).getAllByRole('button');
 
-      expect(buttons).toHaveLength(4);
-      expect(buttons[0]).toHaveTextContent(/Skuad/i);
-      expect(buttons[1]).toHaveTextContent(/Laga/i);
-      expect(buttons[2]).toHaveTextContent(/Taktik/i);
-      expect(buttons[3]).toHaveTextContent(/Evaluasi/i);
+      expect(buttons).toHaveLength(5);
+      expect(buttons[0]).toHaveTextContent(/Beranda/i);
+      expect(buttons[1]).toHaveTextContent(/Skuad/i);
+      expect(buttons[2]).toHaveTextContent(/Laga/i);
+      expect(buttons[3]).toHaveTextContent(/Taktik/i);
+      expect(buttons[4]).toHaveTextContent(/Evaluasi/i);
     });
 
     it('mobile bottom bar has exactly 3 items for public', () => {
@@ -345,7 +348,7 @@ describe('Phase B12: Simplified Navigation & In-App Guide', () => {
       expect(actionBtn.className).toMatch(/min-h-\[44px\]/);
     });
 
-    it('redirects "/" to "/skuad" for coach role', async () => {
+    it('renders Home at "/" for coach role', async () => {
       const App = (await import('../App')).default;
       render(
         <MemoryRouter initialEntries={['/']}>
@@ -353,8 +356,9 @@ describe('Phase B12: Simplified Navigation & In-App Guide', () => {
         </MemoryRouter>
       );
 
-      // In demo mode, coach redirects to Skuad page
-      expect(await screen.findByText('Direktori Skuad')).toBeInTheDocument();
+      // In demo mode, coach lands on Home (Beranda)
+      expect(await screen.findByRole('heading', { name: /Beranda/i })).toBeInTheDocument();
+      expect(screen.getByText(/Apa yang mau kamu kerjakan hari ini\?/i)).toBeInTheDocument();
     });
 
     it('redirects "/pencatatan" to "/laga"', async () => {

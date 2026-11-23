@@ -16,6 +16,7 @@ import MatchesPage from '../pages/MatchesPage';
 import MatchDetailPage from '../pages/MatchDetailPage';
 import MatchReportPage from '../pages/MatchReportPage';
 import TacticsPage from '../pages/TacticsPage';
+import HomePage from '../pages/HomePage';
 import FastPitchLogger from '../components/FastPitchLogger';
 import Dialog from '../components/ui/Dialog';
 
@@ -119,6 +120,19 @@ describe('Layout & Viewport Responsiveness Post-Migration (Task UX-1)', () => {
       describe(`Viewport ${name}`, () => {
         beforeEach(() => {
           setViewport(width, height);
+        });
+
+        it('renders / (Beranda) without layout breakage or horizontal overflow', async () => {
+          const { container } = renderWithProviders(
+            <Routes>
+              <Route path="/" element={<HomePage userRole="coach" isDemoMode={true} />} />
+            </Routes>,
+            '/'
+          );
+
+          expect(await screen.findByRole('heading', { name: /Beranda/i })).toBeInTheDocument();
+          const main = container.querySelector('main') || container.firstElementChild;
+          expect(main).not.toBeNull();
         });
 
         it('renders /skuad without horizontal overflow or breakage', async () => {

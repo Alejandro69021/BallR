@@ -26,12 +26,19 @@ import TacticsPage from './pages/TacticsPage';
 import TacticsDetailPage from './pages/TacticsDetailPage';
 import MatchReportPage from './pages/MatchReportPage';
 import GuidePage from './pages/GuidePage';
+import HomePage from './pages/HomePage';
 
-function HomeRedirect({ userRole }) {
+function HomeRedirect({ userRole, onOpenAuthModal, onToast }) {
   const { players, loading, error, isDemoMode } = usePlayers();
 
   if (userRole === 'coach' || userRole === 'admin') {
-    return <Navigate to="/skuad" replace />;
+    return (
+      <HomePage
+        userRole={userRole}
+        onOpenAuthModal={onOpenAuthModal}
+        onToast={onToast}
+      />
+    );
   }
 
   if (loading) return <LoadingSkeleton />;
@@ -187,6 +194,7 @@ function MainApp() {
   // Derive currentView from location pathname for TopNav active tab highlight
   const currentView = useMemo(() => {
     const p = location.pathname;
+    if (p === '/') return (userRole === 'coach' || userRole === 'admin') ? 'home' : 'passport';
     if (p.startsWith('/pemain/') && p.includes('/laga')) return 'match';
     if (p.startsWith('/pemain/') && p.includes('/pertumbuhan')) return 'growth';
     if (p.startsWith('/pemain/')) return 'passport';
@@ -196,7 +204,7 @@ function MainApp() {
     if (p.startsWith('/pencatatan')) return 'matches';
     if (p.startsWith('/penilaian')) return 'assessment';
     if (p === '/bantuan') return 'help';
-    return (userRole === 'coach' || userRole === 'admin') ? 'roster' : 'passport';
+    return (userRole === 'coach' || userRole === 'admin') ? 'home' : 'passport';
   }, [location.pathname, userRole]);
 
   const handleOpenAuthModal = (target = 'assessment') => {
@@ -259,6 +267,9 @@ function MainApp() {
     }
 
     switch (view) {
+      case 'home':
+        navigate('/');
+        break;
       case 'passport':
         navigate(`/pemain/${currentId}`);
         break;
@@ -332,7 +343,16 @@ function MainApp() {
 
       <main className="w-full max-w-md sm:max-w-2xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl px-3.5 sm:px-6 pt-4 sm:pt-6 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6 space-y-4 sm:space-y-6">
         <Routes>
-          <Route path="/" element={<HomeRedirect userRole={userRole} />} />
+          <Route
+            path="/"
+            element={
+              <HomeRedirect
+                userRole={userRole}
+                onOpenAuthModal={handleOpenAuthModal}
+                onToast={(t) => setToastInfo(t)}
+              />
+            }
+          />
           <Route
             path="/pemain/:publicId"
             element={
