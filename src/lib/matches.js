@@ -802,6 +802,42 @@ export async function deleteEvent(id, matchId) {
 }
 
 /**
+ * Delete a draft match and its associated events and participants.
+ */
+export async function deleteDraftMatch(matchId) {
+  if (!matchId) throw new Error('ID pertandingan wajib diisi');
+
+  if (isDemoModeActive()) {
+    const store = getDemoStore();
+    const idx = store.matches.findIndex((m) => m.id === matchId);
+    if (idx !== -1) {
+      if (store.matches[idx].status === 'final') {
+        throw new Error('Pertandingan sudah final; hanya laga draf yang dapat dihapus');
+      }
+      store.matches.splice(idx, 1);
+      delete store.events[matchId];
+      delete store.participants[matchId];
+      saveDemoStore(store);
+      return true;
+    }
+    return false;
+  }
+
+  if (!supabase) {
+    throw new Error('Koneksi Supabase belum dikonfigurasi.');
+  }
+
+  const { error } = await supabase
+    .from('matches')
+    .delete()
+    .eq('id', matchId)
+    .eq('status', 'draft');
+
+  if (error) throw error;
+  return true;
+}
+
+/**
  * Set roster participants for a match.
  */
 export async function setParticipants(matchId, rows = []) {

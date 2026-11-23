@@ -270,12 +270,21 @@ describe('Matches Components & Integration (MatchesPage, MatchDetailPage, TopNav
     });
 
     it('finalise flow: opens dialog, submits scores, and updates match to final', async () => {
-      // First create a draft match
+      // First create a draft match with an event so state is "Selesaikan laga"
       const draftMatch = await matchesLib.createMatch({
         opponent_name: 'Diklat Mataram',
         match_date: '2026-11-20',
         format: '11v11'
       });
+      await matchesLib.addEvents(draftMatch.id, [
+        {
+          period: 1,
+          minute: 10,
+          team: 'own',
+          event_type: 'pass',
+          outcome: 'success'
+        }
+      ]);
 
       const toastMock = vi.fn();
       render(
@@ -304,7 +313,7 @@ describe('Matches Components & Integration (MatchesPage, MatchDetailPage, TopNav
 
       // Open finalise modal
       fireEvent.click(finaliseBtn);
-      expect(screen.getByRole('heading', { name: /Selesaikan laga/i })).toBeInTheDocument();
+      expect(screen.getAllByRole('heading', { name: /Selesaikan laga/i }).length).toBeGreaterThanOrEqual(1);
 
       // Fill scores
       const ownScoreInput = screen.getByLabelText(/Skor tim sendiri/i);

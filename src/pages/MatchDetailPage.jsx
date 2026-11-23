@@ -4,7 +4,17 @@ import {
   ArrowLeft,
   CheckCircle2,
   RotateCcw,
-  FileText
+  FileText,
+  Play,
+  Plus,
+  Printer,
+  Trash2,
+  Edit3,
+  Video,
+  BarChart3,
+  MapPin,
+  ListOrdered,
+  Users
 } from 'lucide-react';
 import { usePlayers } from '../hooks/usePlayers';
 import {
@@ -14,9 +24,14 @@ import {
   finaliseMatch,
   reopenMatch,
   deleteEvent,
+  deleteDraftMatch,
+  updateMatch,
+  MATCH_STAGES,
   EVENT_TYPE_LABELS,
   formatMatchError
 } from '../lib/matches';
+import { getLatestSnapshot } from '../lib/report';
+import { SMALL_SAMPLE_N } from '../lib/analysis/events';
 import Table from '../components/ui/Table';
 import Dialog from '../components/ui/Dialog';
 import Field from '../components/ui/Field';
@@ -25,6 +40,8 @@ import Badge from '../components/ui/Badge';
 import EmptyState from '../components/ui/EmptyState';
 import EventMap from '../components/match/EventMap';
 import LocalVideoPanel, { hasStoredVideoMeta } from '../components/video/LocalVideoPanel';
+import StageStepper from '../components/ux/StageStepper';
+import NextStepPanel from '../components/ux/NextStepPanel';
 
 export default function MatchDetailPage({ userRole = 'public', onToast }) {
   const { matchId } = useParams();
@@ -37,7 +54,11 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   const [match, setMatch] = useState(null);
   const [events, setEvents] = useState([]);
   const [participants, setParticipants] = useState([]);
+  const [snapshot, setSnapshot] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Active Tab: 'summary' | 'map' | 'events' | 'players'
+  const [activeTab, setActiveTab] = useState('summary');
 
   // Finalise modal state
   const [isFinaliseOpen, setIsFinaliseOpen] = useState(false);
@@ -46,24 +67,33 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   const [finalising, setFinalising] = useState(false);
   const [finaliseError, setFinaliseError] = useState(null);
 
+  // Edit match modal state
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editOpponent, setEditOpponent] = useState('');
+  const [editDate, setEditDate] = useState('');
+  const [editCompetition, setEditCompetition] = useState('');
+  const [editFormat, setEditFormat] = useState('11v11');
+  const [editLength, setEditLength] = useState(90);
+  const [editWidth, setEditWidth] = useState(60);
+
+  // Delete draft modal state
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deletingMatch, setDeletingMatch] = useState(false);
+
   // Reopen loading state
   const [reopening, setReopening] = useState(false);
 
   // Deleting event state
   const [deletingEvtId, setDeletingEvtId] = useState(null);
 
-  // Local Video Panel state (auto-opens if match has stored video metadata, never auto-plays)
+  // Local Video Panel state
   const videoPanelRef = useRef(null);
   const [hasVideo, setHasVideo] = useState(false);
-  const [isVideoPanelOpen, setIsVideoPanelOpen] = useState(() => hasStoredVideoMeta(matchId));
-
-  useEffect(() => {
-    if (matchId && hasStoredVideoMeta(matchId)) {
-      setIsVideoPanelOpen(true);
-    }
-  }, [matchId]);
+  const [isVideoPanelOpen, setIsVideoPanelOpen] = useState(() => Boolean(matchId && hasStoredVideoMeta(matchId)));
 
   const handlePlayClip = (videoTimeS) => {
+    setActiveTab('summary');
     setIsVideoPanelOpen(true);
     if (!hasVideo) {
       onToast?.({
@@ -125,12 +155,14 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       }
       setMatch(matchData);
 
-      const [eventsData, participantsData] = await Promise.all([
+      const [eventsData, participantsData, latestSnap] = await Promise.all([
         listEvents(matchId),
-        listParticipants(matchId)
+        listParticipants(matchId),
+        getLatestSnapshot(matchId).catch(() => null)
       ]);
       setEvents(eventsData || []);
       setParticipants(participantsData || []);
+      setSnapshot(latestSnap);
     } catch (err) {
       console.warn('Gagal memuat detail laga:', err);
       onToast?.({
@@ -144,7 +176,9 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   }, [matchId, onToast]);
 
   useEffect(() => {
-    loadMatchData();
+    (async () => {
+      await loadMatchData();
+    })();
   }, [loadMatchData]);
 
   // Statistics computations
@@ -235,6 +269,8 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         subtext: `Skor akhir ${updated.own_score} - ${updated.opponent_score} telah disimpan.`,
         variant: 'success'
       });
+      // Refresh snapshot
+      getLatestSnapshot(matchId).then(setSnapshot).catch(() => {});
     } catch (err) {
       console.warn('Gagal memfinalkan laga:', err);
       const indonesianError = formatMatchError(err);
@@ -264,6 +300,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
     try {
       const updated = await reopenMatch(matchId);
       setMatch(updated);
+      setSnapshot(null);
       onToast?.({
         title: 'Laga Dibuka Kembali',
         subtext: 'Status pertandingan kembali ke draf. Kejadian dapat diubah.',
@@ -278,6 +315,78 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       });
     } finally {
       setReopening(false);
+    }
+  };
+
+  // Edit match modal flow
+  const handleOpenEdit = () => {
+    if (!match) return;
+    setEditOpponent(match.opponent_name || '');
+    setEditDate(match.match_date || '');
+    setEditCompetition(match.competition || '');
+    setEditFormat(match.format || '11v11');
+    setEditLength(match.pitch_length_m || 90);
+    setEditWidth(match.pitch_width_m || 60);
+    setIsEditOpen(true);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editOpponent.trim()) {
+      onToast?.({ title: 'Validasi Gagal', subtext: 'Nama lawan wajib diisi', variant: 'warning' });
+      return;
+    }
+    setSavingEdit(true);
+    try {
+      const updated = await updateMatch(match.id, {
+        opponent_name: editOpponent.trim(),
+        match_date: editDate,
+        competition: editCompetition.trim() || null,
+        format: editFormat,
+        pitch_length_m: Number(editLength) || 90,
+        pitch_width_m: Number(editWidth) || 60
+      });
+      setMatch(updated);
+      setIsEditOpen(false);
+      onToast?.({
+        title: 'Data Laga Diperbarui',
+        subtext: 'Perubahan informasi pertandingan berhasil disimpan.',
+        variant: 'success'
+      });
+    } catch (err) {
+      console.warn('Gagal memperbarui data laga:', err);
+      onToast?.({
+        title: 'Gagal Memperbarui Laga',
+        subtext: formatMatchError(err),
+        variant: 'error'
+      });
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  // Delete draft flow
+  const handleDeleteDraft = async () => {
+    if (!match || match.status === 'final') return;
+    setDeletingMatch(true);
+    try {
+      await deleteDraftMatch(match.id);
+      setIsDeleteOpen(false);
+      onToast?.({
+        title: 'Draf Laga Dihapus',
+        subtext: `Pertandingan draf vs ${match.opponent_name} telah dihapus.`,
+        variant: 'info'
+      });
+      navigate('/laga');
+    } catch (err) {
+      console.warn('Gagal menghapus draf laga:', err);
+      onToast?.({
+        title: 'Gagal Menghapus Draf',
+        subtext: formatMatchError(err),
+        variant: 'error'
+      });
+    } finally {
+      setDeletingMatch(false);
     }
   };
 
@@ -465,11 +574,156 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   }
 
   const isFinal = match.status === 'final';
+  const isReportFrozen = isFinal && Boolean(snapshot);
+
+  // Stepper current step index (1-indexed: 1 = Laga dibuat, 2 = Catat kejadian, 3 = Selesaikan laga, 4 = Laporan)
+  let currentStep = 2;
+  if (!isFinal) {
+    currentStep = totalEvents === 0 ? 2 : 3;
+  } else {
+    currentStep = 4;
+  }
+
+  // NextStepPanel action calculations driven by state
+  let nextStepTitle = '';
+  let nextStepDescription = '';
+  let primaryAction = null;
+  let secondaryAction = null;
+
+  if (!isFinal) {
+    if (totalEvents === 0) {
+      nextStepTitle = 'Catat kejadian';
+      nextStepDescription = 'Mulai mencatat dari pencatat laga. Bisa sambil memutar video.';
+      primaryAction = {
+        label: 'Catat kejadian',
+        onClick: () => navigate(`/pencatatan/${match.id}`),
+        icon: <Play className="w-5 h-5 fill-current" />
+      };
+      secondaryAction = null;
+    } else {
+      nextStepTitle = 'Selesaikan laga';
+      nextStepDescription =
+        'Masukkan skor akhir. Setelah laga final, catatan terkunci supaya laporan bisa dipercaya. Sebelum itu kamu masih boleh menambah kejadian.';
+      primaryAction = {
+        label: 'Selesaikan laga',
+        onClick: handleOpenFinalise,
+        icon: <CheckCircle2 className="w-5 h-5" />
+      };
+      secondaryAction = {
+        label: 'Tambah kejadian',
+        onClick: () => navigate(`/pencatatan/${match.id}`),
+        icon: <Plus className="w-4 h-4" />
+      };
+    }
+  } else {
+    if (!isReportFrozen) {
+      nextStepTitle = 'Buat laporan';
+      nextStepDescription = 'Laporan dibuat dari catatan yang sudah terkunci.';
+      primaryAction = {
+        label: 'Buat laporan',
+        onClick: () => navigate(`/laga/${match.id}/laporan`),
+        icon: <FileText className="w-5 h-5" />
+      };
+      secondaryAction = isAdmin
+        ? {
+            label: 'Buka kembali',
+            onClick: handleReopen,
+            loading: reopening,
+            icon: <RotateCcw className="w-4 h-4" />
+          }
+        : null;
+    } else {
+      nextStepTitle = 'Bagikan atau cetak laporan';
+      nextStepDescription = 'Laporan pertandingan telah dibekukan dan siap dibagikan atau dicetak.';
+      primaryAction = {
+        label: 'Bagikan atau cetak laporan',
+        onClick: () => navigate(`/laga/${match.id}/laporan`),
+        icon: <FileText className="w-5 h-5" />
+      };
+      secondaryAction = isAdmin
+        ? {
+            label: 'Buka kembali',
+            onClick: handleReopen,
+            loading: reopening,
+            icon: <RotateCcw className="w-4 h-4" />
+          }
+        : null;
+    }
+  }
+
+  // Menu items for MenuButton "Lainnya"
+  const menuItems = !isFinal
+    ? [
+        {
+          id: 'edit',
+          label: 'Ubah data laga',
+          icon: <Edit3 className="w-4 h-4" />,
+          onClick: handleOpenEdit
+        },
+        {
+          id: 'video',
+          label: 'Pilih video laga',
+          icon: <Video className="w-4 h-4" />,
+          onClick: () => {
+            setActiveTab('summary');
+            setIsVideoPanelOpen(true);
+            videoPanelRef.current?.openFilePicker?.();
+          }
+        },
+        {
+          id: 'print-draft',
+          label: 'Cetak catatan sementara',
+          icon: <Printer className="w-4 h-4" />,
+          onClick: () => window.print()
+        },
+        {
+          id: 'delete-draft',
+          label: 'Hapus draf',
+          variant: 'danger',
+          icon: <Trash2 className="w-4 h-4" />,
+          onClick: () => setIsDeleteOpen(true)
+        }
+      ]
+    : [
+        {
+          id: 'video',
+          label: 'Pilih video laga',
+          icon: <Video className="w-4 h-4" />,
+          onClick: () => {
+            setActiveTab('summary');
+            setIsVideoPanelOpen(true);
+            videoPanelRef.current?.openFilePicker?.();
+          }
+        },
+        {
+          id: 'print-summary',
+          label: 'Cetak ringkasan',
+          icon: <Printer className="w-4 h-4" />,
+          onClick: () => window.print()
+        },
+        ...(isAdmin
+          ? [
+              {
+                id: 'reopen',
+                label: 'Buka kembali laga',
+                icon: <RotateCcw className="w-4 h-4" />,
+                onClick: handleReopen
+              }
+            ]
+          : [])
+      ];
+
+  const tabs = [
+    { id: 'summary', label: 'Ringkasan', icon: <BarChart3 className="w-4 h-4" /> },
+    { id: 'map', label: 'Peta lapangan', icon: <MapPin className="w-4 h-4" /> },
+    { id: 'events', label: 'Daftar kejadian', icon: <ListOrdered className="w-4 h-4" /> },
+    { id: 'players', label: 'Pemain', icon: <Users className="w-4 h-4" /> }
+  ];
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-6">
-      {/* Header back & actions bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Top back navigation */}
+      <div>
         <Button
           variant="secondary"
           size="sm"
@@ -478,52 +732,6 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         >
           Kembali ke daftar laga
         </Button>
-
-        <div className="flex items-center gap-2">
-          {!isFinal && isCoach && (
-            <Button
-              variant="brand"
-              size="sm"
-              icon={<CheckCircle2 className="w-3.5 h-3.5" />}
-              onClick={handleOpenFinalise}
-            >
-              Selesaikan laga
-            </Button>
-          )}
-
-          {isFinal && isAdmin && (
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<RotateCcw className="w-3.5 h-3.5" />}
-              loading={reopening}
-              onClick={handleReopen}
-            >
-              Buka kembali
-            </Button>
-          )}
-
-          {isCoach && (
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<FileText className="w-3.5 h-3.5" />}
-              onClick={() => navigate(`/laga/${match.id}/laporan`)}
-            >
-              Laporan
-            </Button>
-          )}
-
-          {isCoach && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => navigate(`/pencatatan/${match.id}`)}
-            >
-              {isFinal ? 'Lihat rekaman' : 'Catat kejadian'}
-            </Button>
-          )}
-        </div>
       </div>
 
       {/* Match Header Card */}
@@ -569,9 +777,72 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         </div>
       </div>
 
-      {/* Summary Cards: Event Breakdown & Player Engagement */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Event Type Counts */}
+      {/* Stage Stepper */}
+      <div className="p-4 border border-line rounded-panel bg-panel">
+        <StageStepper steps={MATCH_STAGES} currentStep={currentStep} />
+      </div>
+
+      {/* Next Step Panel (max 3 visible actions: Primary + Optional Secondary + MenuButton) */}
+      {isCoach && (
+        <NextStepPanel
+          title={nextStepTitle}
+          description={nextStepDescription}
+          primaryAction={primaryAction}
+          secondaryAction={secondaryAction}
+          menuItems={menuItems}
+        />
+      )}
+
+      {/* Tabs Bar */}
+      <div
+        role="tablist"
+        aria-label="Bagian detail laga"
+        className="flex items-center gap-2 border-b border-line overflow-x-auto"
+      >
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              role="tab"
+              id={`tab-${tab.id}`}
+              aria-selected={isActive}
+              aria-controls={`tabpanel-${tab.id}`}
+              onClick={() => setActiveTab(tab.id)}
+              className={`min-h-[44px] px-4 py-2.5 text-sm flex items-center gap-2 font-medium border-b-2 transition-colors cursor-pointer select-none -mb-px whitespace-nowrap ${
+                isActive
+                  ? 'border-brand text-brand font-semibold bg-accent-soft/20 rounded-t-control'
+                  : 'border-transparent text-2 hover:text-1 hover:border-line'
+              }`}
+            >
+              {tab.icon}
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Tab 1: Ringkasan */}
+      <div
+        role="tabpanel"
+        id="tabpanel-summary"
+        aria-labelledby="tab-summary"
+        className={activeTab === 'summary' ? 'space-y-4' : 'hidden'}
+      >
+        {/* Small Sample Note Banner */}
+        <div className="p-3.5 bg-panel border border-line rounded-panel text-sm text-2 leading-relaxed">
+          {totalEvents < SMALL_SAMPLE_N ? (
+            <span>
+              Data pencatatan manual · n = {totalEvents} kejadian. Baru sedikit, jadi yang tampil hanya jumlah mentah. Persentase muncul setelah minimal {SMALL_SAMPLE_N} kejadian.
+            </span>
+          ) : (
+            <span>
+              Data pencatatan manual · n = {totalEvents} kejadian.
+            </span>
+          )}
+        </div>
+
+        {/* Event Breakdown */}
         <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-line">
             <h2 className="text-sm font-semibold text-1">Distribusi Kejadian</h2>
@@ -597,7 +868,92 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
           )}
         </div>
 
-        {/* Player Counts */}
+        {/* Local Video Card ("Video laga") */}
+        <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-line">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-semibold text-1">Video laga</h2>
+                {hasVideo && <Badge variant="brand" size="sm">Video Terhubung</Badge>}
+              </div>
+              <p className="text-sm text-2">
+                Video tersimpan di perangkat ini dan tidak diunggah ke server.
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsVideoPanelOpen((prev) => !prev)}
+              className="min-h-[44px] sm:min-h-0 text-sm self-start sm:self-auto"
+            >
+              {isVideoPanelOpen ? 'Sembunyikan Panel Video' : 'Buka Panel Video'}
+            </Button>
+          </div>
+
+          <div className={isVideoPanelOpen ? 'block' : 'hidden'}>
+            <LocalVideoPanel
+              ref={videoPanelRef}
+              matchId={matchId}
+              period={1}
+              onVideoLoadedChange={setHasVideo}
+              onToast={onToast}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Tab 2: Peta lapangan */}
+      <div
+        role="tabpanel"
+        id="tabpanel-map"
+        aria-labelledby="tab-map"
+        className={activeTab === 'map' ? 'space-y-4' : 'hidden'}
+      >
+        <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-line">
+            <h2 className="text-sm font-semibold text-1">Peta Sebaran Kejadian</h2>
+            <span className="text-sm text-2 font-mono tabular-nums">{events.length} kejadian</span>
+          </div>
+          <EventMap
+            events={events}
+            pitchLengthM={match.pitch_length_m || 90}
+            pitchWidthM={match.pitch_width_m || 60}
+            participants={participants}
+            playerMap={playerMap}
+          />
+        </div>
+      </div>
+
+      {/* Tab 3: Daftar kejadian */}
+      <div
+        role="tabpanel"
+        id="tabpanel-events"
+        aria-labelledby="tab-events"
+        className={activeTab === 'events' ? 'space-y-4' : 'hidden'}
+      >
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-1">Daftar Kejadian Pertandingan</h2>
+            <span className="text-sm text-2 font-mono tabular-nums">
+              {events.length} kejadian
+            </span>
+          </div>
+
+          <Table
+            columns={columns}
+            data={events}
+            emptyMessage="Belum ada kejadian yang dicatat untuk laga ini"
+          />
+        </div>
+      </div>
+
+      {/* Tab 4: Pemain */}
+      <div
+        role="tabpanel"
+        id="tabpanel-players"
+        aria-labelledby="tab-players"
+        className={activeTab === 'players' ? 'space-y-4' : 'hidden'}
+      >
         <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-line">
             <h2 className="text-sm font-semibold text-1">Keterlibatan Pemain</h2>
@@ -625,61 +981,6 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
             </div>
           )}
         </div>
-      </div>
-
-      {/* Local Video Panel Section */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-1">Rekaman Video Pertandingan</h2>
-            {hasVideo && <Badge variant="brand" size="sm">Video Terhubung</Badge>}
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsVideoPanelOpen((prev) => !prev)}
-            className="min-h-[44px] sm:min-h-0 text-sm"
-          >
-            {isVideoPanelOpen ? 'Sembunyikan Panel Video' : 'Buka Panel Video'}
-          </Button>
-        </div>
-
-        <div className={isVideoPanelOpen ? 'block' : 'hidden'}>
-          <LocalVideoPanel
-            ref={videoPanelRef}
-            matchId={matchId}
-            period={1}
-            onVideoLoadedChange={setHasVideo}
-            onToast={onToast}
-          />
-        </div>
-      </section>
-
-      {/* Event Map Section */}
-      <div className="space-y-3 pt-2">
-        <EventMap
-          events={events}
-          pitchLengthM={match.pitch_length_m || 90}
-          pitchWidthM={match.pitch_width_m || 60}
-          participants={participants}
-          playerMap={playerMap}
-        />
-      </div>
-
-      {/* Events Stream Table */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-1">Daftar Kejadian Pertandingan</h2>
-          <span className="text-sm text-2 font-mono tabular-nums">
-            {events.length} kejadian
-          </span>
-        </div>
-
-        <Table
-          columns={columns}
-          data={events}
-          emptyMessage="Belum ada kejadian yang dicatat untuk laga ini"
-        />
       </div>
 
       {/* Finalise Match Dialog */}
@@ -755,6 +1056,143 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
             </Button>
           </div>
         </div>
+      </Dialog>
+
+      {/* Edit Match Data Dialog */}
+      <Dialog
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        title="Ubah data laga"
+        description="Perbarui informasi dasar pertandingan ini."
+        onSubmit={handleEditSubmit}
+        footer={
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsEditOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              type="submit"
+              variant="brand"
+              size="sm"
+              loading={savingEdit}
+            >
+              Simpan perubahan
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <Field label="Nama lawan" id="edit-opponent" required>
+            <input
+              id="edit-opponent"
+              type="text"
+              required
+              value={editOpponent}
+              onChange={(e) => setEditOpponent(e.target.value)}
+              className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+            />
+          </Field>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Field label="Tanggal laga" id="edit-date" required>
+              <input
+                id="edit-date"
+                type="date"
+                required
+                value={editDate}
+                onChange={(e) => setEditDate(e.target.value)}
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+              />
+            </Field>
+            <Field label="Format permainan" id="edit-format">
+              <select
+                id="edit-format"
+                value={editFormat}
+                onChange={(e) => setEditFormat(e.target.value)}
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+              >
+                <option value="11v11">11v11</option>
+                <option value="9v9">9v9</option>
+                <option value="7v7">7v7</option>
+                <option value="5v5">5v5</option>
+              </select>
+            </Field>
+          </div>
+          <Field label="Kompetisi / Turnamen" id="edit-competition">
+            <input
+              id="edit-competition"
+              type="text"
+              placeholder="Contoh: Piala Suratin 2026"
+              value={editCompetition}
+              onChange={(e) => setEditCompetition(e.target.value)}
+              className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+            />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Panjang (m)" id="edit-len">
+              <input
+                id="edit-len"
+                type="number"
+                min="30"
+                max="130"
+                value={editLength}
+                onChange={(e) => setEditLength(Number(e.target.value))}
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm font-mono text-1"
+              />
+            </Field>
+            <Field label="Lebar (m)" id="edit-wid">
+              <input
+                id="edit-wid"
+                type="number"
+                min="20"
+                max="100"
+                value={editWidth}
+                onChange={(e) => setEditWidth(Number(e.target.value))}
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm font-mono text-1"
+              />
+            </Field>
+          </div>
+        </div>
+      </Dialog>
+
+      {/* Delete Draft Match Confirmation Dialog */}
+      <Dialog
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        title="Hapus draf laga"
+        description={`Apakah Anda yakin ingin menghapus pertandingan draf melawan "${match.opponent_name}"? Tindakan ini akan menghapus semua catatan kejadian terkait dan tidak dapat dibatalkan.`}
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleDeleteDraft();
+        }}
+        footer={
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsDeleteOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              type="submit"
+              variant="danger"
+              size="sm"
+              loading={deletingMatch}
+            >
+              Hapus draf
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm text-danger font-medium">
+          Perhatian: Hanya laga draf yang dapat dihapus. Pertandingan yang sudah final tetap dilindungi.
+        </p>
       </Dialog>
     </div>
   );

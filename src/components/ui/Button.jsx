@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Loader2 } from 'lucide-react';
 
-export default function Button({
+const Button = forwardRef(function Button({
   variant = 'primary',
   size = 'md',
   disabled = false,
@@ -11,7 +11,7 @@ export default function Button({
   className = '',
   type = 'button',
   ...props
-}) {
+}, ref) {
   const baseClasses =
     'inline-flex items-center justify-center font-medium rounded-control border transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer select-none';
 
@@ -36,6 +36,7 @@ export default function Button({
 
   return (
     <button
+      ref={ref}
       type={type}
       disabled={disabled || loading}
       className={`${baseClasses} ${sizeClasses[size] || sizeClasses.md} ${variantClasses[variant] || variantClasses.primary} ${className}`}
@@ -49,4 +50,6 @@ export default function Button({
       {children}
     </button>
   );
-}
+});
+
+export default Button;
