@@ -467,7 +467,10 @@ export default function FastPitchLogger({
           />
         </div>
 
-        <div className={isVideoPanelOpen ? 'lg:col-span-6 xl:col-span-7' : 'lg:col-span-12'}>
+        <div
+          data-tour="record-events"
+          className={isVideoPanelOpen ? 'lg:col-span-6 xl:col-span-7' : 'lg:col-span-12'}
+        >
           <TactileKeypad
             match={match}
             participants={participants}

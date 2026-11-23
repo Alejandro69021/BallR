@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Users,
   Plus,
@@ -16,6 +16,7 @@ import { usePlayers } from '../hooks/usePlayers';
 import { listMatches, listEvents, formatMatchError } from '../lib/matches';
 import StageStepper from '../components/ux/StageStepper';
 import EmptyState from '../components/ux/EmptyState';
+import WelcomeTour from '../components/ux/WelcomeTour';
 import CreateMatchDialog from '../components/matches/CreateMatchDialog';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -29,6 +30,8 @@ export default function HomePage({
   onToast
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const startTour = Boolean(location?.state?.startTour);
   const { players, isDemoMode } = usePlayers();
 
   const [matches, setMatches] = useState([]);
@@ -172,11 +175,15 @@ export default function HomePage({
             icon={<Plus className="w-4 h-4" />}
             onClick={() => setIsCreateOpen(true)}
             className="min-h-[44px]"
+            data-tour="new-match"
           >
             Laga Baru
           </Button>
         </div>
       </header>
+
+      {/* First-Run Welcome Tour Banner & CoachMark */}
+      <WelcomeTour forceStart={startTour} />
 
       {/* Primary Section: Active Task Card or Empty State */}
       {loading ? (
@@ -272,6 +279,7 @@ export default function HomePage({
                   onClick={() => navigate(`/pencatatan/${featuredMatch.id}`)}
                   className="flex-1 min-h-[56px] text-lg font-bold"
                   data-testid="primary-continue-action"
+                  data-tour="record-events"
                 >
                   Lanjut mencatat
                 </Button>
@@ -283,6 +291,7 @@ export default function HomePage({
                   onClick={() => navigate(`/laga/${featuredMatch.id}/laporan`)}
                   className="flex-1 min-h-[56px] text-lg font-bold"
                   data-testid="primary-continue-action"
+                  data-tour="match-report"
                 >
                   Buka laporan
                 </Button>
@@ -317,6 +326,7 @@ export default function HomePage({
               icon={<Plus className="w-4 h-4" />}
               onClick={() => setIsCreateOpen(true)}
               className="w-full justify-center min-h-[44px]"
+              data-tour="new-match"
             >
               Buat laga baru
             </Button>
@@ -356,6 +366,7 @@ export default function HomePage({
           {/* 2. Buat laga */}
           <button
             type="button"
+            data-tour="new-match"
             onClick={() => setIsCreateOpen(true)}
             className="p-4 rounded-panel border border-line bg-panel hover:bg-raised/40 transition-colors duration-150 flex flex-col justify-between gap-3 text-left min-h-[44px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
           >
@@ -378,6 +389,7 @@ export default function HomePage({
           {/* 3. Catat kejadian */}
           <button
             type="button"
+            data-tour="record-events"
             onClick={() => {
               if (latestDraftMatch?.id) {
                 navigate(`/pencatatan/${latestDraftMatch.id}`);
@@ -406,6 +418,7 @@ export default function HomePage({
           {/* 4. Selesaikan laga */}
           <button
             type="button"
+            data-tour="finish-match"
             onClick={() => {
               if (latestDraftMatch?.id) {
                 navigate(`/laga/${latestDraftMatch.id}`);
@@ -434,6 +447,7 @@ export default function HomePage({
           {/* 5. Laporan dan bagikan */}
           <button
             type="button"
+            data-tour="match-report"
             onClick={() => {
               if (latestFinalMatch?.id) {
                 navigate(`/laga/${latestFinalMatch.id}/laporan`);

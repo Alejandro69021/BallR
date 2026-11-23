@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   BookOpen,
   Calendar,
@@ -8,11 +8,20 @@ import {
   Compass,
   ClipboardEdit,
   ShieldCheck,
-  Users
+  Users,
+  RotateCcw
 } from 'lucide-react';
 import Surface from '../components/ui/Surface';
+import Button from '../components/ui/Button';
+import { resetTourDone } from '../lib/tourStorage';
 
 export default function GuidePage() {
+  const navigate = useNavigate();
+
+  const handleResetTour = () => {
+    resetTourDone();
+    navigate('/', { state: { startTour: true } });
+  };
   const sections = [
     {
       id: 'sebelum-laga',
@@ -92,6 +101,29 @@ export default function GuidePage() {
         <p className="text-sm text-2 leading-relaxed">
           Panduan praktis penggunaan aplikasi pembinaan sepak bola usia muda BallR. Hanya memuat alur kerja dan fungsi yang tersedia secara nyata.
         </p>
+      </section>
+
+      {/* First-Run Tour Reset Card */}
+      <section
+        data-testid="guide-tour-section"
+        className="p-5 rounded-panel border border-line bg-panel flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs"
+      >
+        <div className="space-y-1">
+          <h2 className="text-base font-semibold text-1">Tur Pengenalan Aplikasi</h2>
+          <p className="text-sm text-2 leading-relaxed max-w-xl">
+            Ikuti kembali tur pengenalan 4 langkah di beranda untuk memahami alur kerja pelatih dari awal.
+          </p>
+        </div>
+        <Button
+          variant="secondary"
+          size="md"
+          icon={<RotateCcw className="w-4 h-4" />}
+          onClick={handleResetTour}
+          className="min-h-[44px] shrink-0 font-medium"
+          data-testid="reset-tour-btn"
+        >
+          Ulangi tur
+        </Button>
       </section>
 
       {/* Sections List */}

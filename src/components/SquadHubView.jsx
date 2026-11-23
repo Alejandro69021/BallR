@@ -11,7 +11,7 @@ import Badge from './ui/Badge';
 import Button from './ui/Button';
 import Field from './ui/Field';
 import Select from './ui/Select';
-import EmptyState from './ui/EmptyState';
+import EmptyState from './ux/EmptyState';
 import SquadPlayerCard from './squad/SquadPlayerCard';
 import { formatPositionLabel } from '../lib/displayLabels';
 
@@ -19,7 +19,8 @@ export default function SquadHubView({
   players = [],
   userRole = 'public',
   onViewPassport,
-  onEvaluatePlayer
+  onEvaluatePlayer,
+  onAddPlayer
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPosition, setSelectedPosition] = useState('ALL');
@@ -380,7 +381,17 @@ export default function SquadHubView({
             </section>
 
             {/* 3. Main Roster Content: Table (Default) or Compact Cards */}
-            {filteredPlayers.length === 0 ? (
+            {totalCount === 0 ? (
+              <div className="p-8 border border-line rounded-panel bg-panel">
+                <EmptyState
+                  icon={<Users className="w-6 h-6 text-brand" strokeWidth={1.75} />}
+                  title="Belum ada pemain"
+                  description="Tambahkan pemain ke skuad untuk mencatat kehadiran, menit bermain, dan perkembangan mereka."
+                  actionLabel="Tambah pemain pertama"
+                  onAction={onAddPlayer || (() => {})}
+                />
+              </div>
+            ) : filteredPlayers.length === 0 ? (
               <div className="p-10 border border-line rounded-panel bg-panel text-center">
                 <EmptyState
                   title="Tidak ada pemain ditemukan"

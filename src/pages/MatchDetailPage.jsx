@@ -597,7 +597,8 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       primaryAction = {
         label: 'Catat kejadian',
         onClick: () => navigate(`/pencatatan/${match.id}`),
-        icon: <Play className="w-5 h-5 fill-current" />
+        icon: <Play className="w-5 h-5 fill-current" />,
+        dataTour: 'record-events'
       };
       secondaryAction = null;
     } else {
@@ -607,12 +608,14 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       primaryAction = {
         label: 'Selesaikan laga',
         onClick: handleOpenFinalise,
-        icon: <CheckCircle2 className="w-5 h-5" />
+        icon: <CheckCircle2 className="w-5 h-5" />,
+        dataTour: 'finish-match'
       };
       secondaryAction = {
         label: 'Tambah kejadian',
         onClick: () => navigate(`/pencatatan/${match.id}`),
-        icon: <Plus className="w-4 h-4" />
+        icon: <Plus className="w-4 h-4" />,
+        dataTour: 'record-events'
       };
     }
   } else {
@@ -622,7 +625,8 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       primaryAction = {
         label: 'Buat laporan',
         onClick: () => navigate(`/laga/${match.id}/laporan`),
-        icon: <FileText className="w-5 h-5" />
+        icon: <FileText className="w-5 h-5" />,
+        dataTour: 'match-report'
       };
       secondaryAction = isAdmin
         ? {
@@ -638,7 +642,8 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       primaryAction = {
         label: 'Bagikan atau cetak laporan',
         onClick: () => navigate(`/laga/${match.id}/laporan`),
-        icon: <FileText className="w-5 h-5" />
+        icon: <FileText className="w-5 h-5" />,
+        dataTour: 'match-report'
       };
       secondaryAction = isAdmin
         ? {

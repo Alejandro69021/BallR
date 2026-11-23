@@ -11,14 +11,13 @@ import {
   formatScenarioError
 } from '../lib/scenarios';
 import { formationTemplates, TEMPLATE_DISCLAIMER } from '../lib/board';
-import Table from '../components/ui/Table';
 import ResponsiveList from '../components/ui/ResponsiveList';
 import Dialog from '../components/ui/Dialog';
 import Field from '../components/ui/Field';
 import Select from '../components/ui/Select';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
-import EmptyState from '../components/ui/EmptyState';
+import EmptyState from '../components/ux/EmptyState';
 
 export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthModal }) {
   const navigate = useNavigate();
@@ -99,7 +98,9 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
 
   useEffect(() => {
     if (isCoachOrAdmin) {
-      loadScenariosList();
+      (async () => {
+        await loadScenariosList();
+      })();
     }
   }, [isCoachOrAdmin, loadScenariosList]);
 
@@ -250,26 +251,36 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
         <div className="p-8 text-center text-sm text-2 font-mono">
           Memuat daftar skema taktik...
         </div>
+      ) : scenarios.length === 0 ? (
+        <div className="p-8 border border-line rounded-panel bg-panel">
+          <EmptyState
+            icon={<Compass className="w-6 h-6 text-brand" strokeWidth={1.75} />}
+            title="Belum ada taktik"
+            description="Buat formasi atau skenario taktik untuk panduan bermain dan analisis posisi tim."
+            actionLabel="Buat taktik pertama"
+            onAction={() => setIsCreateOpen(true)}
+          />
+        </div>
       ) : sortedScenarios.length === 0 ? (
-        <EmptyState
-          icon={<Compass className="w-10 h-10 text-2 mx-auto" strokeWidth={1.5} />}
-          title="Belum ada skema taktik"
-          description={
-            searchQuery || selectedPhaseFilter !== 'all'
-              ? 'Tidak ada skema yang cocok dengan filter pencarian.'
-              : 'Mulai rancang skema pergerakan taktik pertama untuk tim Anda.'
-          }
-          action={
-            <Button
-              variant="primary"
-              size="sm"
-              icon={<Plus className="w-4 h-4" strokeWidth={1.5} />}
-              onClick={() => setIsCreateOpen(true)}
-            >
-              Buat skema baru
-            </Button>
-          }
-        />
+        <div className="p-8 border border-line rounded-panel bg-panel">
+          <EmptyState
+            icon={<Compass className="w-6 h-6 text-2" strokeWidth={1.75} />}
+            title="Tidak ada skema yang cocok"
+            description="Tidak ada skema taktik yang cocok dengan filter pencarian."
+            action={
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedPhaseFilter('all');
+                }}
+              >
+                Reset filter
+              </Button>
+            }
+          />
+        </div>
       ) : (
         <div className="space-y-3">
           {/* Mobile Sort Control */}

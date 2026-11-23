@@ -59,6 +59,7 @@ export default function NextStepPanel({
             onClick={primaryAction.onClick}
             className="min-h-[56px] text-lg font-bold"
             data-testid="primary-next-step-action"
+            data-tour={primaryAction['data-tour'] || primaryAction.dataTour}
           >
             {primaryAction.label}
           </Button>
@@ -73,6 +74,7 @@ export default function NextStepPanel({
             onClick={secondaryAction.onClick}
             className="min-h-[44px]"
             data-testid="secondary-next-step-action"
+            data-tour={secondaryAction['data-tour'] || secondaryAction.dataTour}
           >
             {secondaryAction.label}
           </Button>

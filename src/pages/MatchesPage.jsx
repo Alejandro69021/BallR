@@ -8,14 +8,14 @@ import {
   PITCH_DEFAULTS_BY_FORMAT,
   formatMatchError
 } from '../lib/matches';
-import Table from '../components/ui/Table';
 import ResponsiveList from '../components/ui/ResponsiveList';
 import Dialog from '../components/ui/Dialog';
 import Field from '../components/ui/Field';
 import Select from '../components/ui/Select';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
-import EmptyState from '../components/ui/EmptyState';
+import EmptyState from '../components/ux/EmptyState';
+import WelcomeTour from '../components/ux/WelcomeTour';
 
 export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthModal }) {
   const navigate = useNavigate();
@@ -63,7 +63,9 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
   }, [onToast]);
 
   useEffect(() => {
-    loadMatchesList();
+    (async () => {
+      await loadMatchesList();
+    })();
   }, [loadMatchesList]);
 
   // When format changes, update pitch defaults
@@ -334,10 +336,14 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
           size="md"
           icon={<Plus className="w-4 h-4" strokeWidth={1.5} />}
           onClick={handleOpenCreateModal}
+          data-tour="new-match"
         >
           Laga baru
         </Button>
       </div>
+
+      {/* First-Run Welcome Tour Banner & CoachMark */}
+      <WelcomeTour />
 
       {/* Draft match banner if at least one match is in draft status */}
       {draftMatch && (
@@ -370,9 +376,10 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
       ) : matches.length === 0 ? (
         <div className="p-8 border border-line rounded-panel bg-panel">
           <EmptyState
-            title="Belum ada data laga"
-            description="Mulai dengan mencatat pertandingan pertama akademi Anda."
-            actionLabel="Buat laga baru"
+            icon={<Trophy className="w-6 h-6" strokeWidth={1.75} />}
+            title="Belum ada laga"
+            description="Mulailah dengan membuat laga pertama. Kamu hanya perlu nama lawan dan tanggal. Ukuran lapangan sudah terisi otomatis, bisa kamu ubah."
+            actionLabel="Buat laga pertama"
             onAction={handleOpenCreateModal}
           />
         </div>
