@@ -17,7 +17,7 @@ export default function NarrativeNotesForm({
           <h3 className="text-sm font-semibold text-1">
             Perumusan narasi evaluasi teknis
           </h3>
-          <p className="text-xs text-2">
+          <p className="text-sm text-2">
             Rumuskan catatan observasi pelatih menjadi laporan evaluasi terstruktur
           </p>
         </div>
@@ -38,10 +38,10 @@ export default function NarrativeNotesForm({
           rows="3"
           value={formData.rawNotes}
           onChange={(e) => setFormData((prev) => ({ ...prev, rawNotes: e.target.value }))}
-          className="w-full p-3 rounded-control bg-app border border-control text-xs sm:text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors min-h-[88px]"
+          className="w-full p-3 rounded-control bg-app border border-control text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors min-h-[88px]"
           placeholder="Tuliskan catatan observasi teknis pelatih..."
         />
-        <p className="text-xs text-2 italic mt-1">
+        <p className="text-sm text-2 italic mt-1">
           Contoh: Sentuhan pertama konsisten rapi, tetapi perlu meningkatkan kecepatan transisi bertahan saat tim kehilangan penguasaan bola.
         </p>
       </Field>
@@ -63,15 +63,15 @@ export default function NarrativeNotesForm({
       {/* Populated Result Card */}
       <div className="p-4 rounded-control bg-panel border border-line space-y-4">
         <div>
-          <span className="text-xs font-semibold text-2 block mb-1">
+          <span className="text-sm font-semibold text-2 block mb-1">
             Narasi evaluasi teknis:
           </span>
           {formData.narrative ? (
-            <p className="text-xs sm:text-sm text-1 leading-relaxed bg-app p-3 rounded-control border border-line">
+            <p className="text-sm text-1 leading-relaxed bg-app p-3 rounded-control border border-line">
               {formData.narrative}
             </p>
           ) : (
-            <p className="text-xs text-2 italic bg-app p-3 rounded-control border border-line">
+            <p className="text-sm text-2 italic bg-app p-3 rounded-control border border-line">
               Belum ada data narasi evaluasi. Masukkan catatan dan klik tombol rumuskan.
             </p>
           )}
@@ -79,7 +79,7 @@ export default function NarrativeNotesForm({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
           <div>
-            <span className="text-xs font-semibold text-2 block mb-1.5">
+            <span className="text-sm font-semibold text-2 block mb-1.5">
               Keunggulan utama:
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -90,13 +90,13 @@ export default function NarrativeNotesForm({
                   </Badge>
                 ))
               ) : (
-                <span className="text-xs text-2">Belum ada data</span>
+                <span className="text-sm text-2">Belum ada data</span>
               )}
             </div>
           </div>
 
           <div>
-            <span className="text-xs font-semibold text-2 block mb-1.5">
+            <span className="text-sm font-semibold text-2 block mb-1.5">
               Area fokus pengembangan:
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -107,7 +107,7 @@ export default function NarrativeNotesForm({
                   </Badge>
                 ))
               ) : (
-                <span className="text-xs text-2">Belum ada data</span>
+                <span className="text-sm text-2">Belum ada data</span>
               )}
             </div>
           </div>
@@ -117,10 +117,10 @@ export default function NarrativeNotesForm({
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-2" strokeWidth={1.5} />
             <div>
-              <span className="text-xs text-2 block">
+              <span className="text-sm text-2 block">
                 Rekomendasi materi latihan mandiri:
               </span>
-              <span className="text-xs font-semibold text-1">
+              <span className="text-sm font-semibold text-1">
                 {formData.drillTitle || 'Belum ada data'}
               </span>
             </div>

@@ -90,7 +90,7 @@ export default function InstallAppBanner() {
             <Badge variant="brand" size="sm">
               Aplikasi lapangan
             </Badge>
-            <span className="text-xs font-mono text-2">PWA</span>
+            <span className="text-sm font-mono text-2">PWA</span>
           </div>
 
           <button
@@ -107,7 +107,7 @@ export default function InstallAppBanner() {
           <h3 className="text-sm font-semibold text-1">
             Pasang aplikasi ProspekBola
           </h3>
-          <p className="text-xs text-2 leading-relaxed mt-0.5">
+          <p className="text-sm text-2 leading-relaxed mt-0.5">
             Pasang di layar utama perangkat untuk akses rekam jejak cepat di sisi lapangan.
           </p>
         </div>
@@ -137,12 +137,12 @@ export default function InstallAppBanner() {
 
         {/* iOS Step-by-Step Tooltip */}
         {showIOSTip && (
-          <div className="p-3 rounded-control bg-raised border border-line text-xs space-y-1.5">
+          <div className="p-3 rounded-control bg-raised border border-line text-sm space-y-1.5">
             <div className="flex items-center gap-1.5 font-medium text-1">
               <Share className="w-4 h-4 text-2" strokeWidth={1.5} />
               <span>Petunjuk pemasangan di Safari iOS</span>
             </div>
-            <ol className="text-xs text-2 space-y-1 list-decimal list-inside leading-relaxed">
+            <ol className="text-sm text-2 space-y-1 list-decimal list-inside leading-relaxed">
               <li>Ketuk tombol Bagikan di bilah bawah browser Safari.</li>
               <li>Pilih menu Tambahkan ke Layar Utama.</li>
               <li>Ketuk Tambah di pojok kanan atas.</li>

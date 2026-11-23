@@ -27,7 +27,7 @@ export default function QuickShotModal({
             <div className="font-semibold text-brand text-sm">
               Gol tercipta
             </div>
-            <div className="text-xs text-2">
+            <div className="text-sm text-2">
               +1 Gol & +1 tembakan tepat sasaran
             </div>
           </div>
@@ -43,7 +43,7 @@ export default function QuickShotModal({
             <div className="font-semibold text-1 text-sm">
               Tembakan tepat sasaran
             </div>
-            <div className="text-xs text-2">
+            <div className="text-sm text-2">
               +1 tembakan tepat sasaran (ditepis / tiang)
             </div>
           </div>
@@ -53,7 +53,7 @@ export default function QuickShotModal({
         <button
           type="button"
           onClick={() => onSelectShot('shot_off_target')}
-          className="p-3 rounded-control bg-app hover:bg-raised border border-line text-left text-2 hover:text-1 transition-colors duration-150 cursor-pointer text-xs min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          className="p-3 rounded-control bg-app hover:bg-raised border border-line text-left text-2 hover:text-1 transition-colors duration-150 cursor-pointer text-sm min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
         >
           Tembakan meleset (melebar / terblok bek)
         </button>

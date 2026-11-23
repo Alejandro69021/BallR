@@ -136,7 +136,7 @@ export default function AthleticProgressChart({
             <TrendingUp className="w-4 h-4 text-brand" strokeWidth={1.5} />
             <span>Grafik perkembangan fisik longitudinal</span>
           </h3>
-          <p className="text-xs text-2 mt-0.5">
+          <p className="text-sm text-2 mt-0.5">
             Pencatatan runut waktu metrik fisik terstandar berdasarkan tanggal pengukuran berkala.
           </p>
         </div>
@@ -150,7 +150,7 @@ export default function AthleticProgressChart({
                 setActiveMetric('height');
                 setSelectedPointIndex(metricsData.height.points.length - 1);
               }}
-              className={`px-2.5 py-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 rounded-control text-xs font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
+              className={`px-2.5 py-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 rounded-control text-sm font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                 activeMetric === 'height'
                   ? 'bg-panel text-1 border border-line shadow-xs'
                   : 'text-2 hover:text-1'
@@ -168,7 +168,7 @@ export default function AthleticProgressChart({
                 setActiveMetric('sprint');
                 setSelectedPointIndex(metricsData.sprint.points.length - 1);
               }}
-              className={`px-2.5 py-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 rounded-control text-xs font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
+              className={`px-2.5 py-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 rounded-control text-sm font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                 activeMetric === 'sprint'
                   ? 'bg-panel text-1 border border-line shadow-xs'
                   : 'text-2 hover:text-1'
@@ -186,7 +186,7 @@ export default function AthleticProgressChart({
                 setActiveMetric('jump');
                 setSelectedPointIndex(metricsData.jump.points.length - 1);
               }}
-              className={`px-2.5 py-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 rounded-control text-xs font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
+              className={`px-2.5 py-1 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 rounded-control text-sm font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                 activeMetric === 'jump'
                   ? 'bg-panel text-1 border border-line shadow-xs'
                   : 'text-2 hover:text-1'
@@ -201,7 +201,7 @@ export default function AthleticProgressChart({
 
       {/* Subtitle note for inverted sprint axis or standard metric */}
       {currentDataset.invertY && (
-        <p className="text-xs text-2">
+        <p className="text-sm text-2">
           Sumbu Y dibalik: waktu lebih rendah = lebih cepat
         </p>
       )}
@@ -343,7 +343,7 @@ export default function AthleticProgressChart({
         <div className="p-3.5 rounded-control bg-raised border border-line flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-1">
+              <span className="text-sm font-semibold text-1">
                 {selectedPt.pt.month || selectedPt.pt.date}
               </span>
               <Badge variant="neutral">
@@ -351,7 +351,7 @@ export default function AthleticProgressChart({
               </Badge>
             </div>
             {selectedPt.pt.note && (
-              <p className="text-xs text-2">
+              <p className="text-sm text-2">
                 {selectedPt.pt.note}
               </p>
             )}

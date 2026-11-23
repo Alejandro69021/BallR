@@ -410,19 +410,19 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
       <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-line">
         <div className="flex items-center gap-1.5 shrink-0">
           <Film className="w-4 h-4 text-brand shrink-0" />
-          <h3 className="text-xs sm:text-sm font-semibold text-1">Video Laga Lokal</h3>
+          <h3 className="text-sm font-semibold text-1">Video Laga Lokal</h3>
           <Badge variant="neutral" size="sm">
             Fase A
           </Badge>
         </div>
-        <p className="text-xs text-2 font-mono truncate max-w-[220px] sm:max-w-none text-right">
+        <p className="text-sm text-2 font-mono truncate max-w-[220px] sm:max-w-none text-right">
           Video diputar dari perangkat ini dan tidak diunggah.
         </p>
       </div>
 
       {/* Warning for size/duration mismatch */}
       {sizeWarning && (
-        <div className="p-3 rounded-control bg-warning/10 border border-warning/30 text-warning text-xs flex items-start gap-2">
+        <div className="p-3 rounded-control bg-warning/10 border border-warning/30 text-warning text-sm flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
           <span>{sizeWarning}</span>
         </div>
@@ -430,7 +430,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
 
       {/* Codec Error Notice */}
       {codecError && (
-        <div className="p-3 rounded-control bg-danger/10 border border-danger/30 text-danger text-xs flex items-start gap-2">
+        <div className="p-3 rounded-control bg-danger/10 border border-danger/30 text-danger text-sm flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
           <span>Format video tidak didukung browser. Coba MP4 (H.264)</span>
         </div>
@@ -442,15 +442,15 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
           data-testid="mini-player"
           className="sticky top-14 z-20 lg:static bg-panel space-y-1.5"
         >
-          <div className="flex items-center justify-between pb-0.5 text-xs">
+          <div className="flex items-center justify-between pb-0.5 text-sm">
             <div className="flex items-center gap-2 min-w-0">
-              <span className="text-xs text-2 font-mono truncate max-w-[140px] sm:max-w-[200px]">
+              <span className="text-sm text-2 font-mono truncate max-w-[140px] sm:max-w-[200px]">
                 {savedMeta?.name || 'Video terpasang'}
               </span>
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="min-h-[44px] sm:min-h-0 text-xs text-brand hover:underline font-medium inline-flex items-center shrink-0 cursor-pointer"
+                className="min-h-[44px] sm:min-h-0 text-sm text-brand hover:underline font-medium inline-flex items-center shrink-0 cursor-pointer"
               >
                 Ganti berkas
               </button>
@@ -459,7 +459,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
               type="button"
               onClick={() => setIsMini((prev) => !prev)}
               aria-label={isMini ? 'Perbesar video' : 'Kecilkan video'}
-              className="min-h-[44px] sm:min-h-0 text-xs px-2.5 py-1 rounded-control bg-raised border border-line hover:border-brand text-2 hover:text-1 inline-flex items-center gap-1 cursor-pointer transition-colors shrink-0"
+              className="min-h-[44px] sm:min-h-0 text-sm px-2.5 py-1 rounded-control bg-raised border border-line hover:border-brand text-2 hover:text-1 inline-flex items-center gap-1 cursor-pointer transition-colors shrink-0"
             >
               {isMini ? (
                 <>
@@ -507,7 +507,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 className="w-full h-1.5 cursor-pointer accent-brand bg-raised rounded-lg min-h-[44px] sm:min-h-0"
               />
             </div>
-            <div className="flex items-center justify-between text-xs font-mono tabular-nums text-2">
+            <div className="flex items-center justify-between text-sm font-mono tabular-nums text-2">
               <span>{formatSecondsToTime(currentTime)}</span>
               <span>{formatSecondsToTime(duration)}</span>
             </div>
@@ -521,7 +521,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 type="button"
                 onClick={togglePlay}
                 aria-label={isPlaying ? 'Jeda video' : 'Putar video'}
-                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-fit px-2 sm:px-2.5 py-1 rounded-control bg-brand text-slate-950 hover:bg-brand/90 font-medium inline-flex items-center justify-center gap-1 text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-fit px-2 sm:px-2.5 py-1 rounded-control bg-brand text-slate-950 hover:bg-brand/90 font-medium inline-flex items-center justify-center gap-1 text-sm transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
                 <span>{isPlaying ? 'Jeda' : 'Putar'}</span>
@@ -531,7 +531,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 type="button"
                 onClick={() => jumpTime(-5)}
                 aria-label="Mundur 5 detik"
-                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-8 px-1.5 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand text-xs inline-flex items-center justify-center gap-0.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-8 px-1.5 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand text-sm inline-flex items-center justify-center gap-0.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <Rewind className="w-3 h-3" />
                 <span>-5s</span>
@@ -541,7 +541,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 type="button"
                 onClick={() => jumpTime(-1)}
                 aria-label="Mundur 1 detik"
-                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-7 px-1 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand text-xs inline-flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-7 px-1 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand text-sm inline-flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 -1s
               </button>
@@ -550,7 +550,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 type="button"
                 onClick={() => jumpTime(1)}
                 aria-label="Maju 1 detik"
-                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-7 px-1 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand text-xs inline-flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-7 px-1 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand text-sm inline-flex items-center justify-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 +1s
               </button>
@@ -559,7 +559,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 type="button"
                 onClick={() => jumpTime(5)}
                 aria-label="Maju 5 detik"
-                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-8 px-1.5 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand text-xs inline-flex items-center justify-center gap-0.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-8 px-1.5 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand text-sm inline-flex items-center justify-center gap-0.5 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <span>+5s</span>
                 <FastForward className="w-3 h-3" />
@@ -573,7 +573,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                   key={sp}
                   type="button"
                   onClick={() => changeSpeed(sp)}
-                  className={`min-h-[44px] min-w-[44px] sm:min-h-7 sm:min-w-7 px-1.5 py-0.5 rounded-control text-xs font-mono font-medium transition-colors cursor-pointer ${
+                  className={`min-h-[44px] min-w-[44px] sm:min-h-7 sm:min-w-7 px-1.5 py-0.5 rounded-control text-sm font-mono font-medium transition-colors cursor-pointer ${
                     playbackSpeed === sp
                       ? 'bg-raised border border-brand text-brand'
                       : 'bg-app border border-line text-2 hover:text-1'
@@ -589,19 +589,19 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
         <div className="p-4 sm:p-5 rounded-control bg-app border border-dashed border-line text-center space-y-2.5">
           <Video className="w-6 h-6 text-2 mx-auto" />
           <div className="space-y-0.5">
-            <p className="text-xs font-medium text-1">
+            <p className="text-sm font-medium text-1">
               {savedMeta
                 ? `Pilih ulang file: ${savedMeta.name}`
                 : 'Belum ada video pertandingan yang dimuat'}
             </p>
-            <p className="text-xs text-2 max-w-sm mx-auto">
+            <p className="text-sm text-2 max-w-sm mx-auto">
               Pilih berkas video dari komputer Anda untuk memutar dan menyinkronkan penandaan kejadian.
             </p>
           </div>
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="min-h-[44px] px-3.5 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-xs font-semibold text-1 inline-flex items-center gap-2 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+            className="min-h-[44px] px-3.5 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-sm font-semibold text-1 inline-flex items-center gap-2 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
           >
             <Video className="w-4 h-4 text-brand" />
             <span>Pilih video laga dari perangkat</span>
@@ -624,11 +624,11 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5 text-2" />
-            <h4 className="text-xs font-semibold text-1">
+            <h4 className="text-sm font-semibold text-1">
               Sinkronisasi Offset
             </h4>
           </div>
-          <span className="text-xs text-2 font-mono tabular-nums">
+          <span className="text-sm text-2 font-mono tabular-nums">
             {activeOffsetSecs != null
               ? `Offset B${period}: ${formatSecondsToTime(activeOffsetSecs)}`
               : 'Belum diatur'}
@@ -638,18 +638,18 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
         {isOffsetCollapsed ? (
           <div
             data-testid="offset-summary"
-            className="flex items-center justify-between gap-2 p-2 rounded-control bg-app border border-line text-xs"
+            className="flex items-center justify-between gap-2 p-2 rounded-control bg-app border border-line text-sm"
           >
             <div className="flex items-center gap-1.5 min-w-0">
               <CheckCircle2 className="w-3.5 h-3.5 text-brand shrink-0" />
-              <span className="font-mono text-1 text-xs truncate">
+              <span className="font-mono text-1 text-sm truncate">
                 {getOffsetSummaryText()}
               </span>
             </div>
             <button
               type="button"
               onClick={() => setUserExpanded(true)}
-              className="min-h-[44px] sm:min-h-7 px-2.5 py-0.5 rounded-control bg-raised border border-line hover:border-brand text-xs font-medium text-brand shrink-0 cursor-pointer transition-colors"
+              className="min-h-[44px] sm:min-h-7 px-2.5 py-0.5 rounded-control bg-raised border border-line hover:border-brand text-sm font-medium text-brand shrink-0 cursor-pointer transition-colors"
             >
               Ubah
             </button>
@@ -661,7 +661,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 <button
                   type="button"
                   onClick={() => setUserExpanded(false)}
-                  className="min-h-[44px] sm:min-h-0 text-xs text-brand hover:underline font-medium cursor-pointer"
+                  className="min-h-[44px] sm:min-h-0 text-sm text-brand hover:underline font-medium cursor-pointer"
                 >
                   Selesai mengubah
                 </button>
@@ -678,14 +678,14 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
             >
               <div className="flex items-center justify-between gap-2 mb-1.5">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-semibold text-1">Babak 1</span>
+                  <span className="text-sm font-semibold text-1">Babak 1</span>
                   {period === 1 && (
                     <Badge variant="brand" size="sm">
                       Aktif
                     </Badge>
                   )}
                 </div>
-                <span className="text-xs text-2 font-mono tabular-nums">
+                <span className="text-sm text-2 font-mono tabular-nums">
                   {offsetP1Secs != null
                     ? `Peluit: ${formatSecondsToTime(offsetP1Secs)}`
                     : 'Belum diatur'}
@@ -703,14 +703,14 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                   value={offsetP1Input}
                   onChange={(e) => setOffsetP1Input(e.target.value)}
                   onBlur={handleOffsetP1Blur}
-                  className="flex-1 px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
+                  className="flex-1 px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
                 />
                 {videoSrc && (
                   <button
                     type="button"
                     onClick={handleUseCurrentTimeForP1}
                     title="Gunakan waktu video saat ini sebagai offset Babak 1"
-                    className="min-h-[44px] sm:min-h-0 px-2.5 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-xs text-1 whitespace-nowrap cursor-pointer transition-colors"
+                    className="min-h-[44px] sm:min-h-0 px-2.5 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-sm text-1 whitespace-nowrap cursor-pointer transition-colors"
                   >
                     Set saat ini
                   </button>
@@ -728,14 +728,14 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
             >
               <div className="flex items-center justify-between gap-2 mb-1.5">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-semibold text-1">Babak 2</span>
+                  <span className="text-sm font-semibold text-1">Babak 2</span>
                   {period === 2 && (
                     <Badge variant="brand" size="sm">
                       Aktif
                     </Badge>
                   )}
                 </div>
-                <span className="text-xs text-2 font-mono tabular-nums truncate">
+                <span className="text-sm text-2 font-mono tabular-nums truncate">
                   {offsetP2Secs != null
                     ? `Peluit: ${formatSecondsToTime(offsetP2Secs)}`
                     : 'Belum diatur'}
@@ -755,14 +755,14 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                     value={offsetP2Input}
                     onChange={(e) => setOffsetP2Input(e.target.value)}
                     onBlur={handleOffsetP2Blur}
-                    className="flex-1 px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
+                    className="flex-1 px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                   {videoSrc && (
                     <button
                       type="button"
                       onClick={handleUseCurrentTimeForP2}
                       title="Gunakan waktu video saat ini sebagai offset Babak 2"
-                      className="min-h-[44px] sm:min-h-0 px-2 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-xs text-1 whitespace-nowrap cursor-pointer transition-colors"
+                      className="min-h-[44px] sm:min-h-0 px-2 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-sm text-1 whitespace-nowrap cursor-pointer transition-colors"
                     >
                       Set saat ini
                     </button>
@@ -783,19 +783,19 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                     value={p2StartMinInput}
                     onChange={(e) => setP2StartMinInput(e.target.value)}
                     onBlur={handleP2StartMinBlur}
-                    className="w-full px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
+                    className="w-full px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-control bg-panel border border-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                 </div>
               </div>
 
               {offsetP2Secs != null && p2StartMinVal == null && (
-                <div className="mt-2 p-1.5 rounded-control bg-warning/10 border border-warning/30 text-warning text-xs">
+                <div className="mt-2 p-1.5 rounded-control bg-warning/10 border border-warning/30 text-warning text-sm">
                   Belum lengkap: pencatatan Babak 2 memakai stopwatch
                 </div>
               )}
             </div>
 
-            <p className="text-xs text-2 leading-relaxed">
+            <p className="text-sm text-2 leading-relaxed">
               {period === 1 && offsetP1Secs != null
                 ? `Formula Babak 1: menit laga = max(0, (waktu video - ${formatSecondsToTime(offsetP1Secs)}) / 60).`
                 : period === 2 && offsetP2Secs != null && p2StartMinVal != null

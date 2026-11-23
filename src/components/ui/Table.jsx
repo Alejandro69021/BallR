@@ -33,7 +33,7 @@ export default function Table({
 
   return (
     <div className={`w-full overflow-x-auto border border-line rounded-panel bg-panel ${className}`}>
-      <table className="w-full text-left text-xs border-collapse">
+      <table className="w-full text-left text-sm border-collapse">
         <thead className={`border-b border-line bg-raised text-2 ${stickyHeader ? 'sticky top-0 z-10' : ''}`}>
           <tr>
             {columns.map((col) => {

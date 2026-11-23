@@ -61,7 +61,7 @@ export default function AuthModal({
       className="max-w-sm"
     >
       {/* Mode toggle */}
-      <div className="grid grid-cols-2 gap-2 p-0.5 bg-app border border-line rounded-control text-xs font-medium">
+      <div className="grid grid-cols-2 gap-2 p-0.5 bg-app border border-line rounded-control text-sm font-medium">
         <button
           type="button"
           onClick={() => {
@@ -95,7 +95,7 @@ export default function AuthModal({
       {errorMsg && (
         <div
           role="alert"
-          className="p-2.5 rounded-control bg-danger/10 border border-danger/30 text-danger text-xs flex items-start gap-2"
+          className="p-2.5 rounded-control bg-danger/10 border border-danger/30 text-danger text-sm flex items-start gap-2"
         >
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" strokeWidth={1.5} />
           <p className="leading-snug">{errorMsg}</p>
@@ -103,7 +103,7 @@ export default function AuthModal({
       )}
 
       {magicLinkSent ? (
-        <div className="p-4 rounded-panel bg-panel border border-line text-xs space-y-2 text-center">
+        <div className="p-4 rounded-panel bg-panel border border-line text-sm space-y-2 text-center">
           <CheckCircle2 className="w-5 h-5 mx-auto text-brand" strokeWidth={1.5} />
           <p className="font-semibold text-1 text-sm">Tautan masuk terkirim</p>
           <p className="text-2 leading-relaxed">
@@ -114,7 +114,7 @@ export default function AuthModal({
             variant="ghost"
             size="sm"
             onClick={() => setMagicLinkSent(false)}
-            className="mt-2 text-xs text-2 hover:text-1"
+            className="mt-2 text-sm text-2 hover:text-1"
           >
             Kirim ulang atau gunakan cara lain
           </Button>
@@ -131,7 +131,7 @@ export default function AuthModal({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="pelatih@akademi.id"
-                className="w-full pl-9 pr-3 h-8 bg-app border border-control rounded-control text-xs text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full pl-9 pr-3 h-8 bg-app border border-control rounded-control text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </div>
           </Field>
@@ -147,7 +147,7 @@ export default function AuthModal({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-9 pr-3 h-8 bg-app border border-control rounded-control text-xs text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                  className="w-full pl-9 pr-3 h-8 bg-app border border-control rounded-control text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
                 />
               </div>
             </Field>
@@ -170,7 +170,7 @@ export default function AuthModal({
       {/* Demo mode quick switcher */}
       {isDemoMode && (
         <div className="pt-3 border-t border-line space-y-2">
-          <div className="flex items-center justify-between text-xs text-2">
+          <div className="flex items-center justify-between text-sm text-2">
             <Badge variant="warning" size="sm">Mode demo</Badge>
             <span>Simulasi peran</span>
           </div>
@@ -180,7 +180,7 @@ export default function AuthModal({
               variant="secondary"
               size="sm"
               onClick={() => handleDemoLogin('coach')}
-              className="w-full text-xs"
+              className="w-full text-sm"
             >
               Masuk pelatih (Mode demo)
             </Button>
@@ -189,7 +189,7 @@ export default function AuthModal({
               variant="secondary"
               size="sm"
               onClick={() => handleDemoLogin('parent')}
-              className="w-full text-xs"
+              className="w-full text-sm"
             >
               Masuk orang tua (Mode demo)
             </Button>

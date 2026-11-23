@@ -14,7 +14,7 @@ export default function Stat({
   return (
     <div className={`p-3 rounded-panel border border-line bg-panel text-left space-y-1.5 ${className}`}>
       {label && (
-        <p className="text-xs font-medium text-2 truncate">
+        <p className="text-sm font-medium text-2 truncate">
           {label}
         </p>
       )}
@@ -26,25 +26,25 @@ export default function Stat({
               {value}
             </span>
             {unit && (
-              <span className="text-xs font-normal text-2">
+              <span className="text-sm font-normal text-2">
                 {unit}
               </span>
             )}
           </>
         ) : (
-          <span className="text-xs text-2 italic">
+          <span className="text-sm text-2 italic">
             Belum ada data
           </span>
         )}
       </div>
 
       {(date || typeof n === 'number' || trend) && (
-        <div className="pt-1 border-t border-line flex items-center justify-between text-xs font-mono text-2">
+        <div className="pt-1 border-t border-line flex items-center justify-between text-sm font-mono text-2">
           <div className="flex items-center gap-2 truncate">
             {date && <span>{date}</span>}
             {typeof n === 'number' && <span>n={n}</span>}
           </div>
-          {trend && <span className="font-sans text-xs">{trend}</span>}
+          {trend && <span className="font-sans text-sm">{trend}</span>}
         </div>
       )}
     </div>

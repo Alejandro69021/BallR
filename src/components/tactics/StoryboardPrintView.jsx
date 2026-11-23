@@ -29,7 +29,7 @@ export default function StoryboardPrintView({
       <div className="border-b border-line pb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-mono uppercase tracking-wider text-2">
+            <span className="text-sm font-mono uppercase tracking-wider text-2">
               Papan Taktik Pelatih
             </span>
             <Badge variant={scenario?.status === 'published' ? 'success' : 'neutral'} size="sm">
@@ -39,13 +39,13 @@ export default function StoryboardPrintView({
           <h1 className="text-2xl font-bold tracking-tight text-1">
             {scenario?.title || 'Skema Taktik'}
           </h1>
-          <p className="text-xs text-2 font-mono mt-1">
+          <p className="text-sm text-2 font-mono mt-1">
             Fase: {phaseLabel} • Format: {scenario?.format || '11v11'} • Ukuran Lapangan: {pitchLength} &times; {pitchWidth} m
           </p>
         </div>
 
         {/* Provenance & Reviewer Metadata */}
-        <div className="text-left sm:text-right text-xs text-2 font-mono space-y-0.5">
+        <div className="text-left sm:text-right text-sm text-2 font-mono space-y-0.5">
           {scenario?.reviewed_by && (
             <div>
               Ditinjau oleh: <span className="text-1 font-semibold">{scenario.reviewed_by}</span>
@@ -63,14 +63,14 @@ export default function StoryboardPrintView({
       </div>
 
       {/* Mandatory Coaching Disclaimer */}
-      <div className="p-3 rounded-control bg-raised border border-line text-xs font-mono text-2 flex items-center justify-between">
+      <div className="p-3 rounded-control bg-raised border border-line text-sm font-mono text-2 flex items-center justify-between">
         <span>{BOARD_DISCLAIMER}</span>
         <span className="hidden sm:inline">BallR Academy System</span>
       </div>
 
       {/* Description & Coaching Points if present */}
       {(scenario?.description || scenario?.coaching_points) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-panel bg-panel border border-line text-xs">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-panel bg-panel border border-line text-sm">
           {scenario?.description && (
             <div>
               <span className="font-semibold text-1 block mb-1">Deskripsi Skema:</span>
@@ -103,7 +103,7 @@ export default function StoryboardPrintView({
                 key={`print-frame-${idx}`}
                 className="p-3 rounded-panel bg-panel border border-line space-y-2 break-inside-avoid"
               >
-                <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center justify-between text-sm">
                   <span className="font-bold font-mono text-1">
                     Bingkai {idx + 1}
                   </span>
@@ -269,7 +269,7 @@ export default function StoryboardPrintView({
                 </div>
 
                 {/* Coach Note for this frame */}
-                <p className="text-xs text-2 italic leading-relaxed min-h-[32px]">
+                <p className="text-sm text-2 italic leading-relaxed min-h-[32px]">
                   {frame.note || 'Posisi pergerakan pemain.'}
                 </p>
               </div>
@@ -280,13 +280,13 @@ export default function StoryboardPrintView({
 
       {/* Attached References Section */}
       <div className="space-y-2 pt-4 border-t border-line break-inside-avoid">
-        <h3 className="text-xs font-semibold text-1 uppercase tracking-wider font-mono">
+        <h3 className="text-sm font-semibold text-1 uppercase tracking-wider font-mono">
           Rujukan Metodologi Terlampir ({references.length})
         </h3>
         {references.length === 0 ? (
-          <p className="text-xs text-2 italic">Tidak ada rujukan terlampir.</p>
+          <p className="text-sm text-2 italic">Tidak ada rujukan terlampir.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             {references.map((r, rIdx) => (
               <div
                 key={`ref-print-${rIdx}`}

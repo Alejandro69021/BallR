@@ -412,4 +412,115 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
       expect(violations, `Found size="sm" interactive elements with substandard min-height override:\n${violations.join('\n')}`).toEqual([]);
     });
   });
+
+  describe('7. Typography Scale Verification (docs/UX_SPEC.md & src/index.css)', () => {
+    const themeMatch = cssContent.match(/@theme\s*\{([^}]+)\}/m);
+    const themeBlock = themeMatch ? themeMatch[1] : '';
+
+    const expectedTokens = {
+      '--text-caption': '14px',
+      '--text-body': '16px',
+      '--text-title': '18px',
+      '--text-section': '20px',
+      '--text-page': '28px',
+      '--text-sm': '14px',
+      '--text-base': '16px',
+      '--text-lg': '18px',
+      '--text-xl': '20px',
+      '--text-2xl': '28px'
+    };
+
+    Object.entries(expectedTokens).forEach(([token, value]) => {
+      it(`verifies token ${token} is configured to ${value} in @theme`, () => {
+        const regex = new RegExp(`${token}\\s*:\\s*([^;]+);`);
+        const match = themeBlock.match(regex);
+        expect(match, `Token ${token} not found in @theme`).not.toBeNull();
+        expect(match[1].trim()).toBe(value);
+      });
+    });
+  });
+
+  describe('8. Scan Test: Zero text-xs in Readable Text Outside Allowed Exceptions', () => {
+    function walkDir(dir) {
+      let results = [];
+      const list = fs.readdirSync(dir);
+      list.forEach((file) => {
+        const fullPath = path.join(dir, file);
+        const stat = fs.statSync(fullPath);
+        if (stat && stat.isDirectory()) {
+          results = results.concat(walkDir(fullPath));
+        } else if (file.endsWith('.jsx') || file.endsWith('.js')) {
+          results.push(fullPath);
+        }
+      });
+      return results;
+    }
+
+    const scanDirs = [
+      path.resolve(__dirname, '../components'),
+      path.resolve(__dirname, '../pages')
+    ];
+
+    const allFiles = scanDirs.flatMap((d) => walkDir(d));
+
+    const isAllowedException = (filePath, line) => {
+      const relPath = path.relative(path.resolve(__dirname, '..'), filePath).replace(/\\/g, '/');
+
+      // 1. SVG chart/pitch axis labels
+      if (relPath === 'components/growth/AthleticProgressChart.jsx') {
+        if (line.includes('<text') || line.includes('className="text-xs font-mono"')) return true;
+      }
+      if (relPath === 'components/PerformanceRadar.jsx') {
+        if (line.includes('radar-label') && line.includes('text-xs')) return true;
+      }
+      if (relPath === 'components/match/EventMap.jsx') {
+        if (line.includes('<text') && line.includes('fill-1 font-mono text-xs select-none')) return true;
+      }
+
+      // 2. Print-only footer
+      if (relPath === 'components/OfficialDossierFooter.jsx') {
+        if (line.includes('print:flex') && line.includes('text-xs')) return true;
+      }
+      if (relPath === 'pages/MatchReportPage.jsx') {
+        if (line.includes('print-footer') && line.includes('text-xs')) return true;
+      }
+      if (relPath === 'components/tactics/StoryboardPrintView.jsx') {
+        if (line.includes('border-t') && line.includes('flex items-center justify-between text-xs text-2 font-mono')) return true;
+      }
+
+      // 3. Reference micro-badges (contrast >= 4.5:1)
+      if (relPath === 'components/ui/Badge.jsx') {
+        if (line.includes("micro: 'text-xs")) return true;
+      }
+      if (relPath === 'components/ui/RefChip.jsx') {
+        if (line.includes('{ref.status') && line.includes('text-xs')) return true;
+      }
+
+      return false;
+    };
+
+    it('verifies readable text classes never use text-xs outside documented exceptions', () => {
+      const violations = [];
+
+      allFiles.forEach((file) => {
+        const content = fs.readFileSync(file, 'utf-8');
+        const lines = content.split('\n');
+
+        lines.forEach((line, idx) => {
+          if (/\btext-xs\b/.test(line)) {
+            if (!isAllowedException(file, line)) {
+              violations.push(
+                `${path.relative(path.resolve(__dirname, '..'), file)}:${idx + 1}: ${line.trim()}`
+              );
+            }
+          }
+        });
+      });
+
+      expect(
+        violations,
+        `Found text-xs outside allowed exceptions in:\n${violations.join('\n')}`
+      ).toEqual([]);
+    });
+  });
 });

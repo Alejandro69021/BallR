@@ -9,7 +9,9 @@ import {
   TrendingUp,
   Trophy,
   Compass,
-  HelpCircle
+  HelpCircle,
+  Sun,
+  Moon
 } from 'lucide-react';
 import Badge from './ui/Badge';
 import Button from './ui/Button';
@@ -20,6 +22,8 @@ export default function TopNav({
   currentView,
   userRole = 'public',
   isDemoMode = false,
+  surface = 'paper',
+  onToggleSurface,
   onSwitchView,
   onOpenAuthModal,
   onLogout,
@@ -67,13 +71,13 @@ export default function TopNav({
                     }}
                   />
                 ) : (
-                  <span className="text-xs font-mono font-bold text-2">FA</span>
+                  <span className="text-sm font-mono font-bold text-2">FA</span>
                 )}
               </div>
             </button>
 
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-xs font-semibold text-1 truncate max-w-[140px] sm:max-w-none">
+              <span className="text-sm font-semibold text-1 truncate max-w-[140px] sm:max-w-none">
                 {academy?.name || 'Akademi Sepakbola'}
               </span>
               <Badge variant="neutral" size="sm">U-13</Badge>
@@ -95,7 +99,7 @@ export default function TopNav({
                   key={item.id}
                   type="button"
                   onClick={() => onSwitchView?.(item.id)}
-                  className={`relative flex items-center gap-1.5 px-3 h-full text-xs transition-colors duration-150 ease-out select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isActive
+                  className={`relative flex items-center gap-1.5 px-3 h-full text-sm transition-colors duration-150 ease-out select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isActive
                     ? 'text-1 font-semibold'
                     : 'text-2 hover:text-1'
                     }`}
@@ -113,14 +117,50 @@ export default function TopNav({
             })}
           </nav>
 
-          {/* Right: Auth & Share Actions */}
-          <div className="flex items-center gap-2 shrink-0">
+          {/* Right: Theme Toggle, Auth & Share Actions */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Theme Toggle (Terang / Gelap) */}
+            <div
+              className="inline-flex items-center rounded-control border border-line bg-raised p-0.5"
+              role="group"
+              aria-label="Pilihan tema tampilan"
+            >
+              <button
+                type="button"
+                onClick={() => onToggleSurface?.('paper')}
+                className={`inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-control text-sm font-medium transition-colors cursor-pointer min-h-[44px] sm:min-h-0 ${
+                  surface === 'paper'
+                    ? 'bg-panel text-1 shadow-xs font-semibold'
+                    : 'text-2 hover:text-1'
+                }`}
+                aria-pressed={surface === 'paper'}
+                data-testid="theme-toggle-light"
+              >
+                <Sun className="w-3.5 h-3.5 text-warning shrink-0" />
+                <span>Terang</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onToggleSurface?.('dark')}
+                className={`inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-control text-sm font-medium transition-colors cursor-pointer min-h-[44px] sm:min-h-0 ${
+                  surface === 'dark'
+                    ? 'bg-panel text-1 shadow-xs font-semibold'
+                    : 'text-2 hover:text-1'
+                }`}
+                aria-pressed={surface === 'dark'}
+                data-testid="theme-toggle-dark"
+              >
+                <Moon className="w-3.5 h-3.5 text-brand shrink-0" />
+                <span>Gelap</span>
+              </button>
+            </div>
+
             <Button
               variant="ghost"
               size="sm"
               icon={<HelpCircle className="w-3.5 h-3.5" />}
               onClick={() => onSwitchView?.('help')}
-              className="min-h-[44px] min-w-[44px] text-xs px-2.5 sm:px-3 text-2 hover:text-1"
+              className="hidden sm:inline-flex min-h-[44px] min-w-[44px] text-sm px-2.5 sm:px-3 text-2 hover:text-1"
             >
               Bantuan
             </Button>
@@ -139,7 +179,7 @@ export default function TopNav({
                 {isDemoMode && (
                   <Badge variant="warning" size="sm" className="hidden sm:inline-flex">Mode demo</Badge>
                 )}
-                <span className="hidden sm:inline-block text-xs font-medium text-brand">
+                <span className="hidden sm:inline-block text-sm font-medium text-brand">
                   {isCoach ? 'Pelatih' : isParent ? 'Wali' : 'Admin'}
                 </span>
                 <IconButton
@@ -182,7 +222,7 @@ export default function TopNav({
                 }`}
             >
               {item.icon}
-              <span className="text-xs leading-none tracking-tight">
+              <span className="text-sm leading-none tracking-tight">
                 {item.shortLabel}
               </span>
               {isActive && (

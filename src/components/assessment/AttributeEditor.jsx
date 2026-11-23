@@ -38,7 +38,7 @@ export default function AttributeEditor({
             <h3 className="text-sm sm:text-base font-semibold text-1">
               {activePlayer.personal_info.full_name}
             </h3>
-            <p className="text-xs text-2">
+            <p className="text-sm text-2">
               #{activePlayer.personal_info.jersey_number} · {activePlayer.personal_info.position}
             </p>
           </div>
@@ -64,7 +64,7 @@ export default function AttributeEditor({
             <h3 className="text-sm font-semibold text-1">
               Scoring atribut kunci sepak bola
             </h3>
-            <p className="text-xs text-2">
+            <p className="text-sm text-2">
               Gunakan tombol stepper (- / +) atau slider sentuh (skala 0-100)
             </p>
           </div>
@@ -82,7 +82,7 @@ export default function AttributeEditor({
                     <span className="text-sm font-semibold text-1 block">
                       {attr.attribute}
                     </span>
-                    <span className="text-xs text-2 block mt-0.5 leading-snug">
+                    <span className="text-sm text-2 block mt-0.5 leading-snug">
                       {getAttributeDesc(attr.attribute)}
                     </span>
                   </div>
@@ -91,7 +91,7 @@ export default function AttributeEditor({
                     <span className="font-mono tabular-nums text-sm font-semibold text-1">
                       {attr.value}
                     </span>
-                    <span className="text-xs font-mono text-2 ml-1">
+                    <span className="text-sm font-mono text-2 ml-1">
                       / 100
                     </span>
                   </div>

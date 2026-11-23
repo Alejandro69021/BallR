@@ -130,10 +130,10 @@ export default function SquadHubView({
     }
 
     return (
-      <span className="font-mono tabular-nums text-xs text-1 space-x-1.5 whitespace-nowrap">
+      <span className="font-mono tabular-nums text-sm text-1 space-x-1.5 whitespace-nowrap">
         {parts.map((p, idx) => (
           <span key={p.code}>
-            <span className="text-2 text-xs font-sans mr-0.5">{p.code}</span>
+            <span className="text-2 text-sm font-sans mr-0.5">{p.code}</span>
             <span className="font-semibold">{p.val ?? '-'}</span>
             {idx < parts.length - 1 && <span className="text-line ml-1.5">·</span>}
           </span>
@@ -151,7 +151,7 @@ export default function SquadHubView({
       tabular: true,
       align: 'center',
       render: (_, row) => (
-        <span className="font-mono font-semibold text-xs text-1">
+        <span className="font-mono font-semibold text-sm text-1">
           #{row.personal_info?.jersey_number ?? '-'}
         </span>
       )
@@ -166,11 +166,11 @@ export default function SquadHubView({
           onClick={() => onViewPassport?.(row.player_id)}
           className="text-left font-medium text-1 hover:text-brand hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded max-w-[150px] whitespace-normal break-words cursor-pointer"
         >
-          <div className="font-semibold text-xs text-1 break-words">
+          <div className="font-semibold text-sm text-1 break-words">
             {row.personal_info?.full_name || 'Atlet'}
           </div>
           {row.personal_info?.nickname && (
-            <div className="text-xs text-2 font-mono">
+            <div className="text-sm text-2 font-mono">
               "{row.personal_info.nickname}"
             </div>
           )}
@@ -182,7 +182,7 @@ export default function SquadHubView({
       header: 'Posisi',
       sortable: true,
       render: (_, row) => (
-        <span className="text-xs text-2 whitespace-normal break-words max-w-[130px] inline-block">
+        <span className="text-sm text-2 whitespace-normal break-words max-w-[130px] inline-block">
           {formatPositionLabel(row.personal_info?.position)}
         </span>
       )
@@ -194,9 +194,9 @@ export default function SquadHubView({
       render: (_, row) => {
         const period = row.ai_coach_evaluation?.period || row.fitness_benchmarks?.test_date;
         return period ? (
-          <span className="font-mono text-xs text-1">{period}</span>
+          <span className="font-mono text-sm text-1">{period}</span>
         ) : (
-          <span className="text-xs text-2 italic">Belum ada data</span>
+          <span className="text-sm text-2 italic">Belum ada data</span>
         );
       }
     },
@@ -262,12 +262,12 @@ export default function SquadHubView({
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Badge variant="brand">Akademi U-13</Badge>
-                    <span className="text-xs text-2">Basis Data Pembinaan</span>
+                    <span className="text-sm text-2">Basis Data Pembinaan</span>
                   </div>
                   <h1 className="text-xl sm:text-2xl font-semibold text-1">
                     Direktori Skuad
                   </h1>
-                  <p className="text-xs text-2 mt-1 max-w-xl">
+                  <p className="text-sm text-2 mt-1 max-w-xl">
                     Basis data resmi rekam jejak atlet binaan, status asesmen berkala, dan rekam kebugaran fisik.
                   </p>
                 </div>
@@ -279,7 +279,7 @@ export default function SquadHubView({
                       type="button"
                       onClick={() => setViewMode('table')}
                       aria-pressed={viewMode === 'table'}
-                      className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'table'
+                      className={`px-3 py-1.5 rounded text-sm font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'table'
                         ? 'bg-panel text-1 shadow-sm font-semibold'
                         : 'text-2 hover:text-1'
                         }`}
@@ -291,7 +291,7 @@ export default function SquadHubView({
                       type="button"
                       onClick={() => setViewMode('cards')}
                       aria-pressed={viewMode === 'cards'}
-                      className={`px-3 py-1.5 rounded text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'cards'
+                      className={`px-3 py-1.5 rounded text-sm font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'cards'
                         ? 'bg-panel text-1 shadow-sm font-semibold'
                         : 'text-2 hover:text-1'
                         }`}
@@ -307,9 +307,9 @@ export default function SquadHubView({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                 <div className="p-3 rounded-control border border-line bg-raised flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-2">Total Atlet Terdaftar</p>
+                    <p className="text-sm text-2">Total Atlet Terdaftar</p>
                     <p className="text-xl font-semibold font-mono tabular-nums text-1 mt-0.5">
-                      {totalCount} <span className="text-xs font-normal text-2">pemain</span>
+                      {totalCount} <span className="text-sm font-normal text-2">pemain</span>
                     </p>
                   </div>
                   <Users className="w-5 h-5 text-2" strokeWidth={1.5} />
@@ -317,7 +317,7 @@ export default function SquadHubView({
 
                 <div className="p-3 rounded-control border border-line bg-raised flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-2">Status Asesmen Bulanan</p>
+                    <p className="text-sm text-2">Status Asesmen Bulanan</p>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge variant="success">{publishedCount} Diterbitkan</Badge>
                       <Badge variant="warning">{pendingCount} Draf</Badge>
@@ -336,16 +336,16 @@ export default function SquadHubView({
                     placeholder="Cari atlet berdasarkan nama atau nomor punggung..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full text-xs sm:text-sm"
+                    className="w-full text-sm"
                   />
                 </div>
 
                 <div className="flex items-center gap-2 self-start md:self-auto">
-                  <span className="text-xs text-2 whitespace-nowrap">Urutkan:</span>
+                  <span className="text-sm text-2 whitespace-nowrap">Urutkan:</span>
                   <Select
                     value={sortKey}
                     onChange={(e) => setSortKey(e.target.value)}
-                    className="text-xs min-h-[44px]"
+                    className="text-sm min-h-[44px]"
                   >
                     <option value="name">Nama (A-Z)</option>
                     <option value="jersey">Nomor Punggung</option>
@@ -357,7 +357,7 @@ export default function SquadHubView({
 
               {/* Position Filter Chips */}
               <div className="flex items-center gap-2 pt-2 border-t border-line overflow-x-auto scrollbar-none">
-                <span className="text-xs font-medium text-2 mr-1 shrink-0">
+                <span className="text-sm font-medium text-2 mr-1 shrink-0">
                   Posisi:
                 </span>
                 {positionFilters.map((pos) => (
@@ -365,7 +365,7 @@ export default function SquadHubView({
                     key={pos.id}
                     type="button"
                     onClick={() => setSelectedPosition(pos.id)}
-                    className={`px-3 py-1.5 rounded-control text-xs font-medium transition-colors cursor-pointer shrink-0 min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${selectedPosition === pos.id
+                    className={`px-3 py-1.5 rounded-control text-sm font-medium transition-colors cursor-pointer shrink-0 min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${selectedPosition === pos.id
                       ? 'bg-brand text-app font-semibold'
                       : 'bg-raised text-2 hover:text-1 border border-line'
                       }`}
@@ -373,7 +373,7 @@ export default function SquadHubView({
                     {pos.label}
                   </button>
                 ))}
-                <span className="text-xs font-mono text-2 ml-auto shrink-0 hidden sm:inline">
+                <span className="text-sm font-mono text-2 ml-auto shrink-0 hidden sm:inline">
                   Menampilkan {filteredPlayers.length} dari {totalCount}
                 </span>
               </div>

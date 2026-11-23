@@ -19,7 +19,7 @@ export default function EmptyState({
       </p>
 
       {description && (
-        <p className="text-xs text-2 max-w-sm leading-relaxed">
+        <p className="text-sm text-2 max-w-sm leading-relaxed">
           {description}
         </p>
       )}

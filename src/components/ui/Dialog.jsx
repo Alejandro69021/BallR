@@ -137,7 +137,7 @@ export default function Dialog({
                 )
               )}
               {description && (
-                <p id="dialog-desc" className="text-xs text-2 mt-0.5">
+                <p id="dialog-desc" className="text-sm text-2 mt-0.5">
                   {description}
                 </p>
               )}

@@ -52,10 +52,10 @@ export default function PlaybackBar({
         aria-label="Kontrol navigasi bingkai aksesibilitas gerak berkurang"
       >
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-1">
+          <span className="text-sm font-semibold text-1">
             Navigasi bertahap (gerak berkurang)
           </span>
-          <span className="text-xs font-mono text-2 px-2 py-0.5 rounded-control bg-raised border border-line">
+          <span className="text-sm font-mono text-2 px-2 py-0.5 rounded-control bg-raised border border-line">
             Bingkai {activeFrameIndex + 1} / {totalFrames}
           </span>
         </div>
@@ -106,7 +106,7 @@ export default function PlaybackBar({
           className="w-full accent-brand cursor-pointer h-2 bg-raised rounded-control"
           aria-label="Posisi garis waktu animasi"
         />
-        <span className="text-xs font-mono text-2 min-w-[40px] text-right">
+        <span className="text-sm font-mono text-2 min-w-[40px] text-right">
           {Math.round(currentProgress * 100)}%
         </span>
       </div>
@@ -144,7 +144,7 @@ export default function PlaybackBar({
         <div className="flex items-center gap-3">
           {/* Speed picker */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-2 mr-1 flex items-center gap-1">
+            <span className="text-sm text-2 mr-1 flex items-center gap-1">
               <Gauge className="w-3.5 h-3.5" strokeWidth={1.5} />
               Kecepatan:
             </span>
@@ -153,7 +153,7 @@ export default function PlaybackBar({
                 key={`speed-${s}`}
                 type="button"
                 onClick={() => onChangeSpeed?.(s)}
-                className={`px-2 py-1 rounded-control text-xs font-mono min-h-[44px] min-w-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer flex items-center justify-center ${
+                className={`px-2 py-1 rounded-control text-sm font-mono min-h-[44px] min-w-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer flex items-center justify-center ${
                   playbackSpeed === s
                     ? 'bg-raised border border-brand text-brand font-bold'
                     : 'bg-app border border-line text-2 hover:text-1'
@@ -169,7 +169,7 @@ export default function PlaybackBar({
           <button
             type="button"
             onClick={onToggleLoop}
-            className={`px-2.5 py-1 rounded-control text-xs min-h-[44px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
+            className={`px-2.5 py-1 rounded-control text-sm min-h-[44px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
               isLooping
                 ? 'bg-raised border-brand text-brand font-medium'
                 : 'bg-app border-line text-2 hover:text-1'

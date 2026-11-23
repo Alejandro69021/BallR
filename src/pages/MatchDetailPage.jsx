@@ -436,7 +436,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   if (loading) {
     return (
       <div className="w-full max-w-5xl mx-auto p-8 border border-line rounded-panel bg-panel text-center">
-        <p className="text-xs text-2">Memuat detail pertandingan...</p>
+        <p className="text-sm text-2">Memuat detail pertandingan...</p>
       </div>
     );
   }
@@ -531,7 +531,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-2">vs</span>
+              <span className="text-sm text-2">vs</span>
               <h1 className="text-xl font-semibold text-1">{match.opponent_name}</h1>
               <Badge variant={isFinal ? 'brand' : 'neutral'} size="sm">
                 {isFinal ? 'Final' : 'Draf'}
@@ -539,7 +539,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               <Badge variant="neutral" size="sm">{match.format}</Badge>
             </div>
 
-            <div className="flex items-center gap-4 text-xs text-2 flex-wrap pt-1">
+            <div className="flex items-center gap-4 text-sm text-2 flex-wrap pt-1">
               {match.competition && (
                 <span>{match.competition}</span>
               )}
@@ -557,13 +557,13 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
 
           {/* Score display */}
           <div className="border border-line rounded-control bg-app px-4 py-2.5 text-center shrink-0 min-w-[120px]">
-            <span className="block text-xs text-2 uppercase tracking-wider font-medium">Skor Akhir</span>
+            <span className="block text-sm text-2 uppercase tracking-wider font-medium">Skor Akhir</span>
             {isFinal ? (
               <span className="text-xl font-mono tabular-nums font-bold text-1">
                 {match.own_score} - {match.opponent_score}
               </span>
             ) : (
-              <span className="text-xs text-2 italic">Draf (belum selesai)</span>
+              <span className="text-sm text-2 italic">Draf (belum selesai)</span>
             )}
           </div>
         </div>
@@ -575,19 +575,19 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-line">
             <h2 className="text-sm font-semibold text-1">Distribusi Kejadian</h2>
-            <span className="text-xs text-2 font-mono tabular-nums">
+            <span className="text-sm text-2 font-mono tabular-nums">
               Total n = {totalEvents}
             </span>
           </div>
 
           {eventCountsByType.length === 0 ? (
-            <p className="text-xs text-2 py-2">Belum ada kejadian tercatat.</p>
+            <p className="text-sm text-2 py-2">Belum ada kejadian tercatat.</p>
           ) : (
             <div className="flex flex-wrap gap-1.5">
               {eventCountsByType.map(([type, count]) => (
                 <div
                   key={type}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control bg-raised border border-line text-xs"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control bg-raised border border-line text-sm"
                 >
                   <span className="text-1 font-medium">{EVENT_TYPE_LABELS[type] || type}</span>
                   <span className="font-mono tabular-nums text-2">n = {count}</span>
@@ -601,19 +601,19 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-line">
             <h2 className="text-sm font-semibold text-1">Keterlibatan Pemain</h2>
-            <span className="text-xs text-2 font-mono tabular-nums">
+            <span className="text-sm text-2 font-mono tabular-nums">
               Lawan n = {eventCountsByPlayer.opponentEvents}
             </span>
           </div>
 
           {eventCountsByPlayer.ownList.length === 0 ? (
-            <p className="text-xs text-2 py-2">Belum ada pemain terlibat dalam kejadian.</p>
+            <p className="text-sm text-2 py-2">Belum ada pemain terlibat dalam kejadian.</p>
           ) : (
             <div className="flex flex-wrap gap-1.5">
               {eventCountsByPlayer.ownList.map((p) => (
                 <div
                   key={p.id}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control bg-raised border border-line text-xs"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control bg-raised border border-line text-sm"
                 >
                   <span className="font-mono text-2">
                     {p.number != null ? `#${p.number}` : 'Tanpa nomor'}
@@ -638,7 +638,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
             variant="ghost"
             size="sm"
             onClick={() => setIsVideoPanelOpen((prev) => !prev)}
-            className="min-h-[44px] sm:min-h-0 text-xs"
+            className="min-h-[44px] sm:min-h-0 text-sm"
           >
             {isVideoPanelOpen ? 'Sembunyikan Panel Video' : 'Buka Panel Video'}
           </Button>
@@ -670,7 +670,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-1">Daftar Kejadian Pertandingan</h2>
-          <span className="text-xs text-2 font-mono tabular-nums">
+          <span className="text-sm text-2 font-mono tabular-nums">
             {events.length} kejadian
           </span>
         </div>
@@ -721,7 +721,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                 required
                 value={ownScoreInput}
                 onChange={(e) => setOwnScoreInput(e.target.value)}
-                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
 
@@ -733,12 +733,12 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                 required
                 value={oppScoreInput}
                 onChange={(e) => setOppScoreInput(e.target.value)}
-                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-control bg-raised border border-line text-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-control bg-raised border border-line text-sm">
             <span className="text-2 font-mono">
               Gol tercatat: {loggedGoals.own} / {loggedGoals.opp} (mungkin belum lengkap)
             </span>

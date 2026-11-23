@@ -137,7 +137,7 @@ export default function GrowthBioBandingTab({ player, onToast }) {
   return (
     <div className="space-y-6 pb-12 text-1">
       {/* Privacy Governance Strip */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-panel bg-panel border border-line text-xs">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-panel bg-panel border border-line text-sm">
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-brand shrink-0" strokeWidth={1.5} />
           <span className="text-1">

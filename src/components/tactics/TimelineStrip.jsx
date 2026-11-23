@@ -26,7 +26,7 @@ export default function TimelineStrip({
     <div className={`space-y-3 p-3 rounded-panel bg-panel border border-line ${className}`}>
       {/* Thumbnail row: Frames horizontal strip */}
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-semibold text-1">
+        <span className="text-sm font-semibold text-1">
           Rangkaian bingkai ({totalFrames})
         </span>
 
@@ -72,7 +72,7 @@ export default function TimelineStrip({
               key={`frame-pill-${idx}`}
               type="button"
               onClick={() => onSelectFrame?.(idx)}
-              className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-control border text-xs min-h-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${isActive
+              className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-control border text-sm min-h-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${isActive
                   ? 'bg-raised border-brand text-1 font-semibold'
                   : 'bg-app border-line text-2 hover:text-1'
                 }`}
@@ -80,14 +80,14 @@ export default function TimelineStrip({
               aria-current={isActive ? 'step' : undefined}
             >
               <span
-                className={`w-5 h-5 rounded-full flex items-center justify-center font-mono text-xs font-bold ${isActive ? 'bg-brand text-app' : 'bg-raised text-2'
+                className={`w-5 h-5 rounded-full flex items-center justify-center font-mono text-sm font-bold ${isActive ? 'bg-brand text-app' : 'bg-raised text-2'
                   }`}
               >
                 {idx + 1}
               </span>
               <div className="text-left">
                 <div className="leading-tight">Bingkai {idx + 1}</div>
-                <div className="text-2 font-mono text-xs">{f.t_ms || 2000} ms</div>
+                <div className="text-2 font-mono text-sm">{f.t_ms || 2000} ms</div>
               </div>
             </button>
           );
@@ -98,7 +98,7 @@ export default function TimelineStrip({
       <div className="pt-2 border-t border-line space-y-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-2">Urutan bingkai:</span>
+            <span className="text-sm text-2">Urutan bingkai:</span>
             {isEditing ? (
               <div className="flex items-center gap-2">
                 <IconButton
@@ -109,7 +109,7 @@ export default function TimelineStrip({
                   disabled={activeFrameIndex <= 0}
                   onClick={() => onMoveFrame?.(activeFrameIndex, activeFrameIndex - 1)}
                 />
-                <span className="text-xs font-mono text-1 px-1">
+                <span className="text-sm font-mono text-1 px-1">
                   {activeFrameIndex + 1} / {totalFrames}
                 </span>
                 <IconButton
@@ -122,7 +122,7 @@ export default function TimelineStrip({
                 />
               </div>
             ) : (
-              <span className="text-xs font-mono text-1">
+              <span className="text-sm font-mono text-1">
                 {activeFrameIndex + 1} dari {totalFrames}
               </span>
             )}
@@ -130,7 +130,7 @@ export default function TimelineStrip({
 
           {/* Duration setting */}
           <div className="flex items-center gap-2">
-            <label htmlFor="frame-duration-input" className="text-xs text-2">
+            <label htmlFor="frame-duration-input" className="text-sm text-2">
               Durasi transisi:
             </label>
             {isEditing ? (
@@ -147,12 +147,12 @@ export default function TimelineStrip({
                       t_ms: Math.max(500, Math.min(10000, Number(e.target.value) || 2000))
                     })
                   }
-                  className="w-20 px-2 py-1 text-xs font-mono rounded-control bg-app border border-control text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
+                  className="w-20 px-2 py-1 text-sm font-mono rounded-control bg-app border border-control text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
                 />
-                <span className="text-xs text-2">ms</span>
+                <span className="text-sm text-2">ms</span>
               </div>
             ) : (
-              <span className="text-xs font-mono text-1">
+              <span className="text-sm font-mono text-1">
                 {currentFrame.t_ms ?? 2000} ms
               </span>
             )}
@@ -161,7 +161,7 @@ export default function TimelineStrip({
 
         {/* Coach note for this frame */}
         <div className="space-y-1">
-          <label htmlFor="frame-note-input" className="text-xs font-medium text-1">
+          <label htmlFor="frame-note-input" className="text-sm font-medium text-1">
             Catatan pelatih untuk bingkai {activeFrameIndex + 1}:
           </label>
           {isEditing ? (
@@ -174,14 +174,14 @@ export default function TimelineStrip({
                   onUpdateFrameMeta?.(activeFrameIndex, { note: e.target.value })
                 }
                 placeholder="Tuliskan catatan khusus untuk bingkai ini..."
-                className="w-full px-3 py-2 text-xs rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="w-full px-3 py-2 text-sm rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               />
-              <p className="text-xs text-2 italic">
+              <p className="text-sm text-2 italic">
                 Contoh: Melebarkan jarak bek luar dan pivot turun menjemput bola.
               </p>
             </div>
           ) : (
-            <p className="text-xs text-2 p-2 rounded-control bg-app border border-line italic">
+            <p className="text-sm text-2 p-2 rounded-control bg-app border border-line italic">
               {currentFrame.note || 'Tidak ada catatan khusus untuk bingkai ini.'}
             </p>
           )}

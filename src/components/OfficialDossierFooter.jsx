@@ -103,7 +103,7 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
             <ShieldCheck className="w-4 h-4 text-brand" strokeWidth={1.5} />
             <span>Verifikasi integritas dokumen</span>
           </h2>
-          <p className="text-xs text-2">
+          <p className="text-sm text-2">
             Jaminan kriptografis bahwa catatan profil, riwayat fisik, dan evaluasi pelatih belum dimodifikasi.
           </p>
         </div>
@@ -120,38 +120,38 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
 
       {/* Cryptographic Hash Details Card */}
       <div className="rounded-panel border border-line bg-panel p-4 space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
           <div>
-            <span className="text-xs font-mono text-2 block">ID publik atlet</span>
+            <span className="text-sm font-mono text-2 block">ID publik atlet</span>
             <span className="font-mono font-semibold text-1">{pId}</span>
           </div>
 
           <div>
-            <span className="text-xs font-mono text-2 block">Akademi penerbit</span>
+            <span className="text-sm font-mono text-2 block">Akademi penerbit</span>
             <span className="text-1 font-medium">{academy?.name || 'Belum ada data'}</span>
           </div>
 
           {regText && (
             <div>
-              <span className="text-xs font-mono text-2 block">Status registrasi</span>
+              <span className="text-sm font-mono text-2 block">Status registrasi</span>
               <span className="text-1 font-mono">{regText}</span>
             </div>
           )}
         </div>
 
         <div className="pt-2 border-t border-line space-y-1">
-          <span className="text-xs font-mono text-2 flex items-center gap-1">
+          <span className="text-sm font-mono text-2 flex items-center gap-1">
             <Hash className="w-3.5 h-3.5" strokeWidth={1.5} />
             <span>SHA-256 Canonical Snapshot Hash:</span>
           </span>
-          <div className="p-2.5 rounded-control bg-raised border border-line font-mono text-xs text-1 break-all select-all">
+          <div className="p-2.5 rounded-control bg-raised border border-line font-mono text-sm text-1 break-all select-all">
             {loadingHash ? 'Menghitung hash kriptografis...' : computedHash}
           </div>
         </div>
 
         {/* Verification Link */}
         {computedHash && (
-          <div className="pt-1 flex items-center justify-between text-xs">
+          <div className="pt-1 flex items-center justify-between text-sm">
             <Link
               to={`/verifikasi/${computedHash}`}
               className="text-brand hover:underline font-mono inline-flex items-center gap-1"

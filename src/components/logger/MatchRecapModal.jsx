@@ -143,7 +143,7 @@ export default function MatchRecapModal({
           {hasPendingOutbox ? (
             <div className="p-3.5 rounded-control bg-warning/10 border border-warning/30 flex items-start gap-3">
               <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
-              <div className="space-y-1 text-xs">
+              <div className="space-y-1 text-sm">
                 <p className="font-semibold text-warning">
                   Menunggu sinkronisasi: {outbox.length} kejadian
                 </p>
@@ -165,7 +165,7 @@ export default function MatchRecapModal({
               </div>
             </div>
           ) : (
-            <div className="p-3 rounded-control bg-raised border border-line flex items-center justify-between text-xs">
+            <div className="p-3 rounded-control bg-raised border border-line flex items-center justify-between text-sm">
               <span className="text-2">Status sinkronisasi server:</span>
               <Badge variant="brand" size="sm">
                 Semua {events.length} kejadian tersimpan di {import.meta.env?.VITE_DEMO_MODE === 'true' ? 'perangkat (mode demo)' : 'server'}
@@ -175,17 +175,17 @@ export default function MatchRecapModal({
 
           {/* Event Distribution per Type */}
           <div className="p-3.5 rounded-control bg-panel border border-line space-y-2">
-            <h4 className="text-xs font-semibold text-1">
+            <h4 className="text-sm font-semibold text-1">
               Distribusi per jenis kejadian
             </h4>
             {eventCountsByType.length === 0 ? (
-              <p className="text-xs text-2">Belum ada kejadian tercatat.</p>
+              <p className="text-sm text-2">Belum ada kejadian tercatat.</p>
             ) : (
               <div className="flex flex-wrap gap-1.5">
                 {eventCountsByType.map(([type, count]) => (
                   <div
                     key={type}
-                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-control bg-raised border border-line text-xs"
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-control bg-raised border border-line text-sm"
                   >
                     <span className="text-1 font-medium">
                       {EVENT_TYPE_LABELS[type] || type}
@@ -200,22 +200,22 @@ export default function MatchRecapModal({
           {/* Player Engagement Breakdown */}
           <div className="p-3.5 rounded-control bg-panel border border-line space-y-2">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-semibold text-1">
+              <h4 className="text-sm font-semibold text-1">
                 Keterlibatan per pemain
               </h4>
-              <span className="text-xs font-mono tabular-nums text-2">
+              <span className="text-sm font-mono tabular-nums text-2">
                 Lawan n = {eventCountsByPlayer.opponentEvents}
               </span>
             </div>
 
             {eventCountsByPlayer.ownList.length === 0 ? (
-              <p className="text-xs text-2">Belum ada pemain terlibat.</p>
+              <p className="text-sm text-2">Belum ada pemain terlibat.</p>
             ) : (
               <div className="flex flex-wrap gap-1.5">
                 {eventCountsByPlayer.ownList.map((p) => (
                   <div
                     key={p.id}
-                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-control bg-raised border border-line text-xs"
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-control bg-raised border border-line text-sm"
                   >
                     <span className="font-mono text-2">#{p.number}</span>
                     <span className="text-1 font-medium">{p.name}</span>
@@ -269,7 +269,7 @@ export default function MatchRecapModal({
                 required
                 value={ownScoreInput}
                 onChange={(e) => setOwnScoreInput(e.target.value)}
-                className="w-full px-3 h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 h-8 bg-app border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
 
@@ -281,12 +281,12 @@ export default function MatchRecapModal({
                 required
                 value={oppScoreInput}
                 onChange={(e) => setOppScoreInput(e.target.value)}
-                className="w-full px-3 h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 h-8 bg-app border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-control bg-raised border border-line text-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-control bg-raised border border-line text-sm">
             <span className="text-2 font-mono">
               Gol tercatat: {loggedGoals.own} / {loggedGoals.opp} (mungkin belum lengkap)
             </span>

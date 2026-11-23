@@ -68,5 +68,45 @@ describe('Navigation (TopNav Desktop & Mobile Tab Bar)', () => {
     expect(within(mobileNav).getByRole('button', { name: /Tumbuh/i })).toBeInTheDocument();
     expect(within(mobileNav).getByRole('button', { name: /Skuad/i })).toBeInTheDocument();
   });
+
+  it('renders visible theme toggle (Terang/Gelap) and triggers onToggleSurface', () => {
+    const handleToggle = vi.fn();
+    const { rerender } = render(
+      <TopNav
+        academy={mockAcademy}
+        currentView="roster"
+        userRole="coach"
+        surface="paper"
+        onToggleSurface={handleToggle}
+      />
+    );
+
+    const lightBtn = screen.getByTestId('theme-toggle-light');
+    const darkBtn = screen.getByTestId('theme-toggle-dark');
+
+    expect(lightBtn).toHaveTextContent('Terang');
+    expect(darkBtn).toHaveTextContent('Gelap');
+    expect(lightBtn).toHaveAttribute('aria-pressed', 'true');
+    expect(darkBtn).toHaveAttribute('aria-pressed', 'false');
+
+    fireEvent.click(darkBtn);
+    expect(handleToggle).toHaveBeenCalledWith('dark');
+
+    rerender(
+      <TopNav
+        academy={mockAcademy}
+        currentView="roster"
+        userRole="coach"
+        surface="dark"
+        onToggleSurface={handleToggle}
+      />
+    );
+
+    expect(lightBtn).toHaveAttribute('aria-pressed', 'false');
+    expect(darkBtn).toHaveAttribute('aria-pressed', 'true');
+
+    fireEvent.click(lightBtn);
+    expect(handleToggle).toHaveBeenCalledWith('paper');
+  });
 });
 

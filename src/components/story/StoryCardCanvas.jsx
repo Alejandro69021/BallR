@@ -84,7 +84,7 @@ export default function StoryCardCanvas({
         {/* Header - No internal player id in shareable card */}
         <div className="pb-3 border-b border-line flex items-center justify-between gap-2">
           <div>
-            <div className="text-xs uppercase tracking-wider text-2 font-medium">
+            <div className="text-sm uppercase tracking-wider text-2 font-medium">
               Kartu Perkembangan
             </div>
             <div className="text-sm font-semibold text-1 truncate">
@@ -92,7 +92,7 @@ export default function StoryCardCanvas({
             </div>
           </div>
           <div className="text-right">
-            <span className="inline-block px-2 py-0.5 rounded text-xs border border-line bg-raised text-2 font-mono">
+            <span className="inline-block px-2 py-0.5 rounded text-sm border border-line bg-raised text-2 font-mono">
               {personalInfo.jersey_number != null ? `#${personalInfo.jersey_number}` : ageGroupDisplay}
             </span>
           </div>
@@ -103,7 +103,7 @@ export default function StoryCardCanvas({
           <div className="text-lg font-bold text-1 tracking-tight">
             {nameDisplay}
           </div>
-          <div className="text-xs text-2 flex flex-wrap items-center gap-1.5">
+          <div className="text-sm text-2 flex flex-wrap items-center gap-1.5">
             <span className="text-brand font-medium">{positionDisplay}</span>
             <span>•</span>
             <span>{ageGroupDisplay}</span>
@@ -118,10 +118,10 @@ export default function StoryCardCanvas({
 
         {/* Antropometri */}
         <div className="p-3 rounded-control bg-raised border border-line space-y-2">
-          <div className="text-xs font-semibold text-2 uppercase tracking-wider">
+          <div className="text-sm font-semibold text-2 uppercase tracking-wider">
             Antropometri
           </div>
-          <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="grid grid-cols-2 gap-2 text-sm">
             <div>
               <span className="text-2 block">Tinggi Badan</span>
               <span className="font-semibold text-1">{heightDisplay}</span>
@@ -131,17 +131,17 @@ export default function StoryCardCanvas({
               <span className="font-semibold text-1">{weightDisplay}</span>
             </div>
           </div>
-          <div className="text-xs text-2 pt-1 border-t border-line">
+          <div className="text-sm text-2 pt-1 border-t border-line">
             Sumber: Pengukuran Staf Akademi
           </div>
         </div>
 
         {/* Parameter Kebugaran Fisik */}
         <div className="p-3 rounded-control bg-raised border border-line space-y-2">
-          <div className="text-xs font-semibold text-2 uppercase tracking-wider">
+          <div className="text-sm font-semibold text-2 uppercase tracking-wider">
             Kebugaran Fisik
           </div>
-          <div className="grid grid-cols-3 gap-2 text-xs">
+          <div className="grid grid-cols-3 gap-2 text-sm">
             <div>
               <span className="text-2 block">Lompatan</span>
               <span className="font-semibold text-1">{jumpDisplay}</span>
@@ -155,26 +155,26 @@ export default function StoryCardCanvas({
               <span className="font-semibold text-1">{shuttleDisplay}</span>
             </div>
           </div>
-          <div className="text-xs text-2 pt-1 border-t border-line">
+          <div className="text-sm text-2 pt-1 border-t border-line">
             Tanggal: {fitnessDate} • Sumber: Tes Fisik Berkala
           </div>
         </div>
 
         {/* Catatan Evaluasi Pelatih */}
         <div className="p-3 rounded-control bg-raised border border-line space-y-2">
-          <div className="text-xs font-semibold text-2 uppercase tracking-wider">
+          <div className="text-sm font-semibold text-2 uppercase tracking-wider">
             Evaluasi Pelatih
           </div>
-          <p className="text-xs text-1 italic leading-relaxed">
+          <p className="text-sm text-1 italic leading-relaxed">
             "{coachNote}"
           </p>
-          <div className="text-xs text-2 pt-1 border-t border-line">
+          <div className="text-sm text-2 pt-1 border-t border-line">
             Periode: {coachDisplay} • Sumber: Catatan Resmi Pelatih
           </div>
         </div>
 
         {/* Footer - derived factual line, no "Data Terverifikasi" */}
-        <div className="pt-2 border-t border-line space-y-1 text-xs text-2">
+        <div className="pt-2 border-t border-line space-y-1 text-sm text-2">
           <div className="flex items-center justify-between">
             <span>Paspor Atlet BallR</span>
             <span>
@@ -183,7 +183,7 @@ export default function StoryCardCanvas({
                 : 'Asesmen belum diterbitkan'}
             </span>
           </div>
-          <div className="text-xs opacity-80 text-right">
+          <div className="text-sm opacity-80 text-right">
             Sumber: catatan akademi
           </div>
         </div>

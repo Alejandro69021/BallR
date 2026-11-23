@@ -52,7 +52,7 @@ export default function ReferencesPanel({
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <BookOpen className="w-4 h-4 text-brand shrink-0" strokeWidth={1.5} />
-          <h3 className="text-xs font-semibold text-1">
+          <h3 className="text-sm font-semibold text-1">
             Rujukan metodologi ({references.length})
           </h3>
         </div>
@@ -74,7 +74,7 @@ export default function ReferencesPanel({
       {allUnverified && (
         <div
           role="alert"
-          className="p-2.5 rounded-control bg-amber-500/10 border border-amber-500/20 text-warning text-xs flex items-start gap-2"
+          className="p-2.5 rounded-control bg-amber-500/10 border border-amber-500/20 text-warning text-sm flex items-start gap-2"
         >
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" strokeWidth={1.5} />
           <div>
@@ -88,7 +88,7 @@ export default function ReferencesPanel({
 
       {/* List of attached references */}
       {references.length === 0 ? (
-        <div className="p-4 rounded-control bg-app border border-line text-center text-xs text-2 space-y-1">
+        <div className="p-4 rounded-control bg-app border border-line text-center text-sm text-2 space-y-1">
           <p className="font-medium text-1">Belum ada rujukan terlampir</p>
           <p>
             {isEditing
@@ -113,15 +113,15 @@ export default function ReferencesPanel({
                       <RefChip referenceId={r.reference_id} />
                       <Badge
                         variant={status === 'verified' ? 'success' : 'neutral'}
-                        size="sm"
+                        size="micro"
                       >
                         {status === 'verified' ? 'Terverifikasi' : 'Belum diverifikasi'}
                       </Badge>
                     </div>
-                    <p className="text-xs text-1 font-medium truncate">
+                    <p className="text-sm text-1 font-medium truncate">
                       {entry?.title || r.reference_id}
                     </p>
-                    <p className="text-xs text-2 font-mono">
+                    <p className="text-sm text-2 font-mono">
                       {entry?.publisher ? `${entry.publisher} • ` : ''}
                       {entry?.year || ''}
                     </p>
@@ -143,7 +143,7 @@ export default function ReferencesPanel({
                   <div className="mt-1">
                     <label
                       htmlFor={`note-${r.reference_id}`}
-                      className="text-xs text-2 block mb-1"
+                      className="text-sm text-2 block mb-1"
                     >
                       Catatan relevansi pelatih:
                     </label>
@@ -155,15 +155,15 @@ export default function ReferencesPanel({
                         onUpdateReferenceNote?.(r.reference_id, e.target.value)
                       }
                       placeholder="Tulis catatan relevansi pelatih..."
-                      className="w-full px-2.5 py-1 text-xs rounded-control bg-panel border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
+                      className="w-full px-2.5 py-1 text-sm rounded-control bg-panel border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
                     />
-                    <span className="text-xs text-2 block mt-0.5 italic">
+                    <span className="text-sm text-2 block mt-0.5 italic">
                       Contoh: Dasar fase progresi spiral bertahap.
                     </span>
                   </div>
                 ) : (
                   r.note && (
-                    <p className="text-xs text-2 italic pt-1 border-t border-line">
+                    <p className="text-sm text-2 italic pt-1 border-t border-line">
                       &ldquo;{r.note}&rdquo;
                     </p>
                   )
@@ -210,7 +210,7 @@ export default function ReferencesPanel({
                 key={entry.id}
                 type="button"
                 onClick={() => setSelectedRefId(entry.id)}
-                className={`w-full text-left p-3 rounded-control border text-xs transition-colors flex items-start justify-between gap-3 min-h-[44px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                className={`w-full text-left p-3 rounded-control border text-sm transition-colors flex items-start justify-between gap-3 min-h-[44px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
                   isSelected
                     ? 'bg-raised border-brand text-1'
                     : 'bg-app border-line text-2 hover:text-1'
@@ -223,16 +223,16 @@ export default function ReferencesPanel({
                     </span>
                     <Badge
                       variant={entry.status === 'verified' ? 'success' : 'neutral'}
-                      size="sm"
+                      size="micro"
                     >
                       {entry.status === 'verified' ? 'Terverifikasi' : 'Belum diverifikasi'}
                     </Badge>
                   </div>
-                  <p className="text-2 text-xs">
+                  <p className="text-2 text-sm">
                     {entry.publisher} ({entry.year})
                   </p>
                   {entry.notes && (
-                    <p className="text-2 text-xs line-clamp-2 italic">
+                    <p className="text-2 text-sm line-clamp-2 italic">
                       {entry.notes}
                     </p>
                   )}
@@ -247,7 +247,7 @@ export default function ReferencesPanel({
 
         {selectedRefId && (
           <div className="space-y-1 pt-2 border-t border-line">
-            <label htmlFor="picker-note-input" className="text-xs font-medium text-1">
+            <label htmlFor="picker-note-input" className="text-sm font-medium text-1">
               Catatan relevansi (opsional):
             </label>
             <input
@@ -256,7 +256,7 @@ export default function ReferencesPanel({
               value={refNote}
               onChange={(e) => setRefNote(e.target.value)}
               placeholder="Contoh: Bab 4 - Penataan zona sirkulasi bola."
-              className="w-full px-3 py-2 text-xs rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
+              className="w-full px-3 py-2 text-sm rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
             />
           </div>
         )}

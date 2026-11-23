@@ -38,7 +38,7 @@ export default function AnthropometryLogTable({ anthropometryLogs = [], birthDat
               <Scale className="w-4 h-4 text-brand" strokeWidth={1.5} />
               <span>Log pengukuran antropometri berkala</span>
             </h3>
-            <p className="text-xs text-2 mt-0.5">
+            <p className="text-sm text-2 mt-0.5">
               Pencatatan resmi tinggi badan dan massa tubuh berkala akademi.
             </p>
           </div>
@@ -140,7 +140,7 @@ export default function AnthropometryLogTable({ anthropometryLogs = [], birthDat
         row.isLatest ? (
           <Badge variant="brand">Terbaru</Badge>
         ) : (
-          <span className="text-xs text-2 font-mono">-</span>
+          <span className="text-sm text-2 font-mono">-</span>
         )
     }
   ];
@@ -153,12 +153,12 @@ export default function AnthropometryLogTable({ anthropometryLogs = [], birthDat
             <Scale className="w-4 h-4 text-brand" strokeWidth={1.5} />
             <span>Log pengukuran antropometri berkala</span>
           </h3>
-          <p className="text-xs text-2 mt-0.5">
+          <p className="text-sm text-2 mt-0.5">
             Pencatatan resmi tinggi badan dan massa tubuh berkala akademi.
           </p>
         </div>
 
-        <span className="text-xs font-mono text-2">
+        <span className="text-sm font-mono text-2">
           {anthropometryLogs.length} sesi terdata
         </span>
       </div>

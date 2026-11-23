@@ -254,7 +254,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         <Lock className="w-10 h-10 text-2 mx-auto" strokeWidth={1.5} />
         <div className="space-y-1">
           <h2 className="text-sm font-semibold text-1">Akses Terbatas: Staf Akademi</h2>
-          <p className="text-xs text-2 leading-relaxed">
+          <p className="text-sm text-2 leading-relaxed">
             Laporan pertandingan internal akademi hanya dapat diakses oleh staf pelatih dan admin resmi.
           </p>
         </div>
@@ -267,7 +267,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
   if (loading) {
     return (
-      <div className="p-12 text-center text-xs text-2 font-mono" data-surface="paper">
+      <div className="p-12 text-center text-sm text-2 font-mono" data-surface="paper">
         Memuat berkas laporan pertandingan...
       </div>
     );
@@ -334,7 +334,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           {match.status === 'final' && (
             <div className="flex items-center gap-2">
               {reviewerCandidates.length === 0 && (
-                <span className="text-xs text-warning font-mono">
+                <span className="text-sm text-warning font-mono">
                   Belum ada pelatih lain atau admin yang bisa meninjau
                 </span>
               )}
@@ -363,7 +363,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
       {/* Frozen Version Banner */}
       {isViewingFrozen && latestSnapshot && (
-        <div className="no-print p-3 rounded-control bg-raised border border-brand text-xs flex items-center justify-between">
+        <div className="no-print p-3 rounded-control bg-raised border border-brand text-sm flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Lock className="w-4 h-4 text-brand shrink-0" strokeWidth={1.5} />
             <span className="font-semibold text-1">
@@ -377,7 +377,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       {/* Verification Banner if checked */}
       {verificationResult && (
         <div
-          className={`no-print p-3 rounded-control border text-xs flex items-center justify-between ${
+          className={`no-print p-3 rounded-control border text-sm flex items-center justify-between ${
             verificationResult.ok
               ? 'bg-raised border-brand text-brand'
               : 'bg-raised border-warning text-warning'
@@ -394,7 +394,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               <strong className="font-semibold">{verificationResult.message}</strong>
             </span>
           </div>
-          <span className="font-mono text-xs text-2">
+          <span className="font-mono text-sm text-2">
             Hash snapshot: {verificationResult.snapshot?.snapshot_hash?.slice(0, 16)}...
           </span>
         </div>
@@ -404,13 +404,13 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       <section className="space-y-3 pb-6 border-b border-line">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div>
-            <span className="text-xs font-mono uppercase tracking-wider text-2">
+            <span className="text-sm font-mono uppercase tracking-wider text-2">
               Bagian 1 • Dokumen Resmi Pertandingan
             </span>
             <h1 className="text-2xl font-bold tracking-tight text-1 mt-0.5">
               Laporan Pertandingan: {activeMatch.opponent_name ? activeMatch.opponent_name.replace(/^(?:contoh:\s*)?(?:vs\.?\s*)?/i, '').trim() : ''}
             </h1>
-            <p className="text-xs text-2 font-mono mt-1">
+            <p className="text-sm text-2 font-mono mt-1">
               Tanggal: {activeMatch.match_date || '-'} • Format: {activeMatch.format || '11v11'} • Lapangan: {activeMatch.pitch_length_m}&times;{activeMatch.pitch_width_m}m
             </p>
           </div>
@@ -420,12 +420,12 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                 ? `${activeMatch.own_score ?? 0} - ${activeMatch.opponent_score ?? 0}`
                 : 'Belum final'}
             </div>
-            <span className="text-xs text-2 font-mono whitespace-nowrap">Skor Akhir</span>
+            <span className="text-sm text-2 font-mono whitespace-nowrap">Skor Akhir</span>
           </div>
         </div>
 
         {activeMatch.notes && (
-          <div className="p-3 rounded-control bg-raised border border-line text-xs text-2 leading-relaxed">
+          <div className="p-3 rounded-control bg-raised border border-line text-sm text-2 leading-relaxed">
             <span className="font-semibold text-1 block mb-0.5">Catatan Umum Pertandingan:</span>
             {activeMatch.notes}
           </div>
@@ -435,18 +435,18 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       {/* SECTION 2: KUALITAS DATA (MANDATORY) */}
       <section className="space-y-3 pb-6 border-b border-line">
         <div>
-          <span className="text-xs font-mono uppercase tracking-wider text-2">
+          <span className="text-sm font-mono uppercase tracking-wider text-2">
             Bagian 2 • Integritas &amp; Cakupan Pencatatan (Wajib)
           </span>
           <h2 className="text-xl font-bold text-1">Kualitas Data</h2>
         </div>
 
         {/* Mandatory honesty statement */}
-        <div className="p-3 rounded-control bg-raised border border-line text-xs text-2 italic">
+        <div className="p-3 rounded-control bg-raised border border-line text-sm text-2 italic">
           {activeDq.statement}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm font-mono">
           <div className="p-3 rounded-control bg-raised border border-line">
             <span className="text-2 block">Total Kejadian:</span>
             <span className="text-base font-bold text-1">{activeDq.total_events.value}</span>
@@ -476,7 +476,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </div>
         </div>
 
-        <div className="text-xs text-2 font-mono flex items-center justify-between">
+        <div className="text-sm text-2 font-mono flex items-center justify-between">
           <span>
             Sebaran per babak:{' '}
             {Object.entries(activeDq.events_per_period)
@@ -490,13 +490,13 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       {/* SECTION 3: TIM KITA */}
       <section className="space-y-4 pb-6 border-b border-line">
         <div>
-          <span className="text-xs font-mono uppercase tracking-wider text-2">
+          <span className="text-sm font-mono uppercase tracking-wider text-2">
             Bagian 3 • Kinerja Kolektif
           </span>
           <h2 className="text-xl font-bold text-1">Tim Kita</h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
           {/* Umpan */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-1.5">
             <div className="flex items-center justify-between gap-1">
@@ -509,7 +509,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               {activeOwnPass.total.value > 0 ? (
                 <>
                   <span>{activeOwnPass.successful.value} dari {activeOwnPass.total.value} umpan</span>
-                  <span className="text-xs text-2 font-normal font-sans ml-1.5">
+                  <span className="text-sm text-2 font-normal font-sans ml-1.5">
                     ({activeOwnPass.value !== null ? `${activeOwnPass.value}%` : '0%'})
                   </span>
                 </>
@@ -517,7 +517,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                 'Belum ada data'
               )}
             </div>
-            <div className="text-2 font-mono text-xs space-y-0.5">
+            <div className="text-2 font-mono text-sm space-y-0.5">
               <div>Sukses: {activeOwnPass.successful.value} umpan</div>
               <div>Gagal: {activeOwnPass.failed.value} umpan</div>
               <div>Total penyebut: {activeOwnPass.total.value} umpan (n={activeOwnPass.n})</div>
@@ -535,7 +535,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             <div className="text-sm font-bold font-mono text-1">
               {activeOwnShots.goals.value} gol dari {activeOwnShots.on_target.value} tembakan tepat sasaran; {activeOwnShots.off_target.value} meleset
             </div>
-            <div className="text-2 font-mono text-xs space-y-0.5">
+            <div className="text-2 font-mono text-sm space-y-0.5">
               <div>Akurasi tepat sasaran: {activeOwnShots.accuracy_pct.value ?? 0}% (dari {activeOwnShots.total.value} tembakan)</div>
               <div>Total tembakan dicatat: n={activeOwnShots.n}</div>
             </div>
@@ -552,7 +552,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             <div className="text-xl font-bold font-mono text-1">
               {activePpdaMetric.value !== null ? activePpdaMetric.value : '-'}
             </div>
-            <div className="text-2 font-mono text-xs space-y-0.5">
+            <div className="text-2 font-mono text-sm space-y-0.5">
               {activePpdaMetric.reason ? (
                 <div className="text-warning italic">{activePpdaMetric.reason}</div>
               ) : (
@@ -566,29 +566,29 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         {/* Sepertiga Lapangan */}
         <div className="p-3 rounded-control bg-raised border border-line space-y-2">
           <div className="flex items-center justify-between">
-            <span className="font-semibold text-1 text-xs block">Distribusi Sepertiga Lapangan (Arah Serang Kiri ke Kanan)</span>
+            <span className="font-semibold text-1 text-sm block">Distribusi Sepertiga Lapangan (Arah Serang Kiri ke Kanan)</span>
             {activeOwnThirds.n < SMALL_SAMPLE_N && (
               <Badge variant="warning" size="sm">sampel kecil</Badge>
             )}
           </div>
-          <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
+          <div className="grid grid-cols-3 gap-2 text-center text-sm font-mono">
             <div className="p-2 rounded bg-app border border-line">
               <span className="text-2 block">Pertahanan (x &lt; 1/3)</span>
               <span className="text-sm font-bold text-1">{activeOwnThirds.defensive.count} dari {activeOwnThirds.n} aksi</span>
-              <span className="text-2 block text-xs mt-0.5">({activeOwnThirds.defensive.value ?? 0}%)</span>
+              <span className="text-2 block text-sm mt-0.5">({activeOwnThirds.defensive.value ?? 0}%)</span>
             </div>
             <div className="p-2 rounded bg-app border border-line">
               <span className="text-2 block">Tengah (1/3 &le; x &lt; 2/3)</span>
               <span className="text-sm font-bold text-1">{activeOwnThirds.middle.count} dari {activeOwnThirds.n} aksi</span>
-              <span className="text-2 block text-xs mt-0.5">({activeOwnThirds.middle.value ?? 0}%)</span>
+              <span className="text-2 block text-sm mt-0.5">({activeOwnThirds.middle.value ?? 0}%)</span>
             </div>
             <div className="p-2 rounded bg-app border border-line">
               <span className="text-2 block">Akhir (x &ge; 2/3)</span>
               <span className="text-sm font-bold text-1">{activeOwnThirds.final.count} dari {activeOwnThirds.n} aksi</span>
-              <span className="text-2 block text-xs mt-0.5">({activeOwnThirds.final.value ?? 0}%)</span>
+              <span className="text-2 block text-sm mt-0.5">({activeOwnThirds.final.value ?? 0}%)</span>
             </div>
           </div>
-          <div className="text-2 text-xs font-mono text-right">
+          <div className="text-2 text-sm font-mono text-right">
             Total aksi berkoordinat: n={activeOwnThirds.n} • Tanpa koordinat: {activeOwnThirds.without_coords.count}
           </div>
         </div>
@@ -598,7 +598,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       <section className="space-y-3 pb-6 border-b border-line">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-xs font-mono uppercase tracking-wider text-2">
+            <span className="text-sm font-mono uppercase tracking-wider text-2">
               Bagian 4 • Analisis Lawan
             </span>
             <h2 className="text-xl font-bold text-1">
@@ -610,11 +610,11 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </Badge>
         </div>
 
-        <p className="text-xs text-2 italic">
+        <p className="text-sm text-2 italic">
           Pengamatan satu laga: data lawan dicatat secara terbatas dari sudut pandang pelatih tim kita di pinggir lapangan.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
           <div className="p-3 rounded-control bg-raised border border-line space-y-1">
             <div className="flex items-center justify-between gap-1">
               <span className="font-semibold text-1 block">Aksi Umpan Lawan</span>
@@ -626,7 +626,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               {activeOppPass.total.value > 0 ? (
                 <>
                   <span>{activeOppPass.successful.value} dari {activeOppPass.total.value} umpan</span>
-                  <span className="text-xs text-2 font-normal font-sans ml-1.5">
+                  <span className="text-sm text-2 font-normal font-sans ml-1.5">
                     ({activeOppPass.value !== null ? `${activeOppPass.value}%` : '0%'})
                   </span>
                 </>
@@ -634,7 +634,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                 '-'
               )}
             </div>
-            <div className="text-2 font-mono text-xs">
+            <div className="text-2 font-mono text-sm">
               Sukses {activeOppPass.successful.value} • Gagal {activeOppPass.failed.value} (penyebut n={activeOppPass.n})
             </div>
           </div>
@@ -649,7 +649,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             <div className="text-sm font-bold font-mono text-1">
               {activeOppShots.goals.value} gol dari {activeOppShots.on_target.value} tepat sasaran; {activeOppShots.off_target.value} meleset
             </div>
-            <div className="text-2 font-mono text-xs">
+            <div className="text-2 font-mono text-sm">
               Tepat sasaran {activeOppShots.on_target.value} dari total {activeOppShots.total.value} (n={activeOppShots.n})
             </div>
           </div>
@@ -661,7 +661,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                 <Badge variant="warning" size="sm">sampel kecil</Badge>
               )}
             </div>
-            <div className="text-xs font-mono space-y-0.5 mt-1 text-2">
+            <div className="text-sm font-mono space-y-0.5 mt-1 text-2">
               <div>Pertahanan: {activeOppThirds.defensive.count} dari {activeOppThirds.n} ({activeOppThirds.defensive.value ?? 0}%)</div>
               <div>Tengah: {activeOppThirds.middle.count} dari {activeOppThirds.n} ({activeOppThirds.middle.value ?? 0}%)</div>
               <div>Akhir: {activeOppThirds.final.count} dari {activeOppThirds.n} ({activeOppThirds.final.value ?? 0}%)</div>
@@ -673,13 +673,13 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       {/* SECTION 5: INDIVIDU (TABLE SORTED BY JERSEY NUMBER) */}
       <section className="space-y-3 pb-6 border-b border-line">
         <div>
-          <span className="text-xs font-mono uppercase tracking-wider text-2">
+          <span className="text-sm font-mono uppercase tracking-wider text-2">
             Bagian 5 • Kontribusi Individu
           </span>
           <h2 className="text-xl font-bold text-1">Individu</h2>
         </div>
 
-        <p className="text-xs text-2">
+        <p className="text-sm text-2">
           Daftar pemain diurutkan berdasarkan nomor punggung. Tidak memuat peringkat atau skor komposit keseluruhan.
         </p>
 
@@ -689,7 +689,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               key: 'jersey_number',
               header: 'No.',
               render: (_val, row) => (
-                <span className="font-mono text-xs font-bold text-1">
+                <span className="font-mono text-sm font-bold text-1">
                   {row.jersey_number != null && row.jersey_number !== '-' && row.jersey_number !== ''
                     ? `#${row.jersey_number}`
                     : 'Tanpa nomor'}
@@ -707,7 +707,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                 return (
                   <div>
                     <span className="font-semibold text-1 block">{name}</span>
-                    <span className="text-xs text-2 font-mono">
+                    <span className="text-sm text-2 font-mono">
                       {formatPositionLabel(row.position)} • {row.is_starter ? 'Starter' : 'Cadangan'}
                     </span>
                   </div>
@@ -718,7 +718,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               key: 'minutes_played',
               header: 'Menit',
               render: (_val, row) => (
-                <span className="font-mono text-xs text-2">{row.minutes_played}'</span>
+                <span className="font-mono text-sm text-2">{row.minutes_played}'</span>
               )
             },
             {
@@ -726,11 +726,11 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               header: 'Rincian Aksi Tercatat',
               render: (_val, row) => {
                 const entries = Object.entries(row.counts_by_type || {}).filter(([, c]) => c > 0);
-                if (entries.length === 0) return <span className="text-xs text-2 italic">Tidak ada catatan aksi</span>;
+                if (entries.length === 0) return <span className="text-sm text-2 italic">Tidak ada catatan aksi</span>;
                 return (
                   <div className="flex flex-wrap gap-1">
                     {entries.map(([type, count]) => (
-                      <span key={type} className="inline-block px-1.5 py-0.5 rounded bg-app border border-line text-xs font-mono">
+                      <span key={type} className="inline-block px-1.5 py-0.5 rounded bg-app border border-line text-sm font-mono">
                         {type}: {count}
                       </span>
                     ))}
@@ -743,9 +743,9 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               header: 'Total (n)',
               render: (_val, row) => (
                 <div className="text-right">
-                  <span className="font-mono text-xs font-bold text-1">{row.n}</span>
+                  <span className="font-mono text-sm font-bold text-1">{row.n}</span>
                   {row.small_sample && (
-                    <span className="block text-warning font-mono text-xs">sampel kecil</span>
+                    <span className="block text-warning font-mono text-sm">sampel kecil</span>
                   )}
                 </div>
               )
@@ -759,11 +759,11 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       {/* SECTION 6: PETA KEJADIAN (SVG FIGURES) */}
       <section className="space-y-4 pb-6 border-b border-line">
         <div>
-          <span className="text-xs font-mono uppercase tracking-wider text-2">
+          <span className="text-sm font-mono uppercase tracking-wider text-2">
             Bagian 6 • Distribusi Spasial
           </span>
           <h2 className="text-xl font-bold text-1">Peta Kejadian</h2>
-          <p className="text-xs text-2 font-mono mt-0.5">
+          <p className="text-sm text-2 font-mono mt-0.5">
             Data pencatatan manual; bukan pelacakan otomatis.
           </p>
         </div>
@@ -771,7 +771,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Figure A: Aksi Tim Kita */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-2">
-            <span className="font-semibold text-1 text-xs block">
+            <span className="font-semibold text-1 text-sm block">
               Gambar A: Sebaran Titik Aksi Tim Kita (n={activeEvents.filter((e) => e.team === 'own' && e.x_m != null).length})
             </span>
             <PitchSvg
@@ -797,14 +797,14 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                   />
                 ))}
             </PitchSvg>
-            <div className="text-2 text-xs font-mono text-center">
+            <div className="text-2 text-sm font-mono text-center">
               Arah serang: Kiri &rarr; Kanan
             </div>
           </div>
 
           {/* Figure B: Aliran Umpan dengan Titik Akhir */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-2">
-            <span className="font-semibold text-1 text-xs block">
+            <span className="font-semibold text-1 text-sm block">
               Gambar B: Aliran Umpan Tim Kita Berkoordinat Akhir
             </span>
             <PitchSvg
@@ -834,7 +834,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                   />
                 ))}
             </PitchSvg>
-            <div className="text-2 text-xs font-mono text-center">
+            <div className="text-2 text-sm font-mono text-center">
               Solid: Sukses • Putus-putus: Gagal
             </div>
           </div>
@@ -844,14 +844,14 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       {/* SECTION 7: SKEMA TAKTIK TERKAIT */}
       <section className="space-y-3 pb-6 border-b border-line">
         <div>
-          <span className="text-xs font-mono uppercase tracking-wider text-2">
+          <span className="text-sm font-mono uppercase tracking-wider text-2">
             Bagian 7 • Konteks Kurikulum
           </span>
           <h2 className="text-xl font-bold text-1">Skema Taktik Terkait</h2>
         </div>
 
         {activePublishedScenarios.length === 0 ? (
-          <div className="p-4 rounded-control bg-raised border border-line text-xs text-2 text-center font-mono">
+          <div className="p-4 rounded-control bg-raised border border-line text-sm text-2 text-center font-mono">
             Tidak ada skema terbit terkait
           </div>
         ) : (
@@ -859,7 +859,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             {activePublishedScenarios.map((scen) => (
               <div
                 key={scen.id}
-                className="p-3 rounded-control bg-raised border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
+                className="p-3 rounded-control bg-raised border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm"
               >
                 <div>
                   <h3 className="font-semibold text-1">{scen.title}</h3>
@@ -881,27 +881,27 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       {/* SECTION 8: LAMPIRAN METODE */}
       <section className="space-y-3 pb-6 border-b border-line">
         <div>
-          <span className="text-xs font-mono uppercase tracking-wider text-2">
+          <span className="text-sm font-mono uppercase tracking-wider text-2">
             Bagian 8 • Transparansi Metodologi
           </span>
           <h2 className="text-xl font-bold text-1">Lampiran Metode</h2>
-          <p className="text-xs text-2">
+          <p className="text-sm text-2">
             Setiap rumus, batasan, dan rujukan dokumen terverifikasi yang mendasari analisis ini.
           </p>
         </div>
 
         <div className="space-y-3">
           {METRIC_DEFINITIONS.map((m) => (
-            <div key={m.id} className="p-3 rounded-control bg-raised border border-line text-xs space-y-1.5">
+            <div key={m.id} className="p-3 rounded-control bg-raised border border-line text-sm space-y-1.5">
               <div className="flex items-center justify-between gap-2">
                 <span className="font-semibold text-1 text-sm">{m.name}</span>
                 <span className="font-mono text-2">Satuan: {m.unit}</span>
               </div>
               <p className="text-2 leading-relaxed">{m.definition}</p>
-              <div className="font-mono text-xs bg-app p-2 rounded border border-line text-1">
+              <div className="font-mono text-sm bg-app p-2 rounded border border-line text-1">
                 Rumus: {m.formula}
               </div>
-              <p className="text-xs text-2 italic">
+              <p className="text-sm text-2 italic">
                 Batasan: {m.limitations}
               </p>
               {m.reference_ids && m.reference_ids.length > 0 && (
@@ -920,13 +920,13 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       {/* SECTION 9: INTEGRITAS */}
       <section className="space-y-3 pb-6 border-b border-line">
         <div>
-          <span className="text-xs font-mono uppercase tracking-wider text-2">
+          <span className="text-sm font-mono uppercase tracking-wider text-2">
             Bagian 9 • Kriptografi &amp; Keaslian
           </span>
           <h2 className="text-xl font-bold text-1">Integritas Dokumen</h2>
         </div>
 
-        <div className="p-3 rounded-control bg-raised border border-line space-y-2 text-xs font-mono">
+        <div className="p-3 rounded-control bg-raised border border-line space-y-2 text-sm font-mono">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <div>
               <span className="text-2 block">Versi Payload:</span>
@@ -1013,7 +1013,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </>
         }
       >
-        <div className="space-y-4 text-xs">
+        <div className="space-y-4 text-sm">
           <p className="text-2 leading-relaxed">
             Membekukan laporan akan membuat snapshot kriptografis yang bersifat tetap (immutable). Setelah dibekukan, data laporan tidak dapat diubah atau dihapus.
           </p>
@@ -1028,7 +1028,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               Pilih Peninjau (Pelatih lain atau Admin):
             </label>
             {reviewerCandidates.length === 0 ? (
-              <div className="p-3 rounded-control bg-raised border border-warning text-warning text-xs">
+              <div className="p-3 rounded-control bg-raised border border-warning text-warning text-sm">
                 Belum ada pelatih lain atau admin yang bisa meninjau
               </div>
             ) : (
@@ -1046,7 +1046,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                     </option>
                   ))}
                 </select>
-                <p className="text-2 text-xs mt-1">
+                <p className="text-2 text-sm mt-1">
                   Peninjau harus pelatih lain dari akademi yang sama atau admin, bukan pembuat laporan.
                 </p>
               </>

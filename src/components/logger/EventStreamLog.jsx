@@ -56,15 +56,15 @@ export default function EventStreamLog({
       <section className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         {/* Pass Stats */}
         <div className="p-3 rounded-control bg-panel border border-line flex flex-col justify-between">
-          <div className="flex items-center justify-between text-2 text-xs font-medium">
+          <div className="flex items-center justify-between text-2 text-sm font-medium">
             <span>Umpan</span>
             <Target className="w-4 h-4 text-2" strokeWidth={1.5} />
           </div>
           <div className="mt-2">
             <div className="font-mono text-xl tabular-nums font-semibold text-1">
-              {passesSuccess} <span className="text-xs text-2 font-normal">/ {passesTotal}</span>
+              {passesSuccess} <span className="text-sm text-2 font-normal">/ {passesTotal}</span>
             </div>
-            <div className="text-xs text-2 mt-0.5">
+            <div className="text-sm text-2 mt-0.5">
               Umpan berhasil (n = {passesTotal})
             </div>
           </div>
@@ -72,15 +72,15 @@ export default function EventStreamLog({
 
         {/* Tackles */}
         <div className="p-3 rounded-control bg-panel border border-line flex flex-col justify-between">
-          <div className="flex items-center justify-between text-2 text-xs font-medium">
+          <div className="flex items-center justify-between text-2 text-sm font-medium">
             <span>Tekel</span>
             <Shield className="w-4 h-4 text-2" strokeWidth={1.5} />
           </div>
           <div className="mt-2">
             <div className="font-mono text-xl tabular-nums font-semibold text-1">
-              {tacklesSuccess} <span className="text-xs text-2 font-normal">/ {tacklesTotal}</span>
+              {tacklesSuccess} <span className="text-sm text-2 font-normal">/ {tacklesTotal}</span>
             </div>
-            <div className="text-xs text-2 mt-0.5">
+            <div className="text-sm text-2 mt-0.5">
               Tekel berhasil (n = {tacklesTotal})
             </div>
           </div>
@@ -88,15 +88,15 @@ export default function EventStreamLog({
 
         {/* Shots & Goals */}
         <div className="p-3 rounded-control bg-panel border border-line flex flex-col justify-between">
-          <div className="flex items-center justify-between text-2 text-xs font-medium">
+          <div className="flex items-center justify-between text-2 text-sm font-medium">
             <span>Tembakan & gol</span>
             <Flame className="w-4 h-4 text-2" strokeWidth={1.5} />
           </div>
           <div className="mt-2">
             <div className="font-mono text-xl tabular-nums font-semibold text-1">
-              {shotsOnTarget} <span className="text-xs text-2 font-normal">/ {shotsTotal}</span>
+              {shotsOnTarget} <span className="text-sm text-2 font-normal">/ {shotsTotal}</span>
             </div>
-            <div className="text-xs text-2 mt-0.5">
+            <div className="text-sm text-2 mt-0.5">
               Tepat sasaran ({goalsTotal} gol)
             </div>
           </div>
@@ -104,15 +104,15 @@ export default function EventStreamLog({
 
         {/* Interceptions & Clearances */}
         <div className="p-3 rounded-control bg-panel border border-line flex flex-col justify-between">
-          <div className="flex items-center justify-between text-2 text-xs font-medium">
+          <div className="flex items-center justify-between text-2 text-sm font-medium">
             <span>Intersepsi & sapuan</span>
             <Shield className="w-4 h-4 text-brand" strokeWidth={1.5} />
           </div>
           <div className="mt-2">
             <div className="font-mono text-xl tabular-nums font-semibold text-1">
-              {interceptionsTotal} <span className="text-xs text-2 font-normal">/ {clearancesTotal}</span>
+              {interceptionsTotal} <span className="text-sm text-2 font-normal">/ {clearancesTotal}</span>
             </div>
-            <div className="text-xs text-2 mt-0.5">
+            <div className="text-sm text-2 mt-0.5">
               {interceptionsTotal} int · {clearancesTotal} sapuan
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function EventStreamLog({
       </section>
 
       {/* 2. Outbox & Sync Status Line */}
-      <section className="p-3.5 rounded-panel bg-panel border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+      <section className="p-3.5 rounded-panel bg-panel border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-medium text-1">Status Sinkronisasi:</span>
           <span className="font-mono tabular-nums text-2">
@@ -167,17 +167,17 @@ export default function EventStreamLog({
         <div className="flex items-center justify-between pb-2 border-b border-line">
           <div className="flex items-center gap-2">
             <Activity className="w-4 h-4 text-brand" strokeWidth={1.5} />
-            <h3 className="text-xs font-semibold text-1">
+            <h3 className="text-sm font-semibold text-1">
               Log kejadian terkini
             </h3>
           </div>
-          <span className="text-xs font-mono tabular-nums text-2">
+          <span className="text-sm font-mono tabular-nums text-2">
             Total {allEvents.length} kejadian
           </span>
         </div>
 
         {sortedStream.length === 0 ? (
-          <p className="text-xs text-2 py-3 text-center">
+          <p className="text-sm text-2 py-3 text-center">
             Belum ada kejadian tercatat. Gunakan tombol aksi cepat di atas untuk mencatat.
           </p>
         ) : (
@@ -191,7 +191,7 @@ export default function EventStreamLog({
               return (
                 <div
                   key={evt.client_event_id || evt.id}
-                  className="py-2 flex items-center justify-between gap-3 text-xs"
+                  className="py-2 flex items-center justify-between gap-3 text-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="font-mono text-2 tabular-nums shrink-0">
@@ -225,7 +225,7 @@ export default function EventStreamLog({
                     )}
 
                     {evt.x_m !== null && evt.y_m !== null && (
-                      <span className="font-mono text-2 text-xs hidden sm:inline">
+                      <span className="font-mono text-2 text-sm hidden sm:inline">
                         ({evt.x_m}, {evt.y_m} m)
                       </span>
                     )}
@@ -234,7 +234,7 @@ export default function EventStreamLog({
                       <button
                         type="button"
                         onClick={() => onPlayClip(evt.video_time_s)}
-                        className="font-mono text-brand hover:underline cursor-pointer text-xs"
+                        className="font-mono text-brand hover:underline cursor-pointer text-sm"
                         title="Putar video kejadian"
                       >
                         [▶ {formatSecondsToTime(evt.video_time_s)}]

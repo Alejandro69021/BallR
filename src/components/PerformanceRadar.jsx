@@ -63,12 +63,12 @@ export default function PerformanceRadar({
           <h2 className="text-base font-semibold text-1">
             Penilaian Atribut Lapangan
           </h2>
-          <p className="text-xs text-2">
+          <p className="text-sm text-2">
             Enam pilar teknis kelompok usia binaan (skala 0-100).
           </p>
         </div>
         {period && (
-          <span className="text-xs font-mono text-2">
+          <span className="text-sm font-mono text-2">
             Periode: {period}
           </span>
         )}
@@ -193,7 +193,7 @@ export default function PerformanceRadar({
         {/* Accompanying Numeric Table of the Six Values */}
         <div className="md:col-span-7">
           <div className="overflow-x-auto border border-line rounded-panel bg-panel">
-            <table className="w-full text-left text-xs border-collapse">
+            <table className="w-full text-left text-sm border-collapse">
               <thead className="border-b border-line bg-raised text-2">
                 <tr>
                   <th scope="col" className="py-2.5 px-3 font-semibold">Atribut</th>
@@ -205,7 +205,7 @@ export default function PerformanceRadar({
                 {canonicalAttributes.map((attr) => (
                   <tr key={attr.key} className="hover:bg-raised/40 transition-colors">
                     <td className="py-2 px-3 font-medium">
-                      {attr.label} <span className="text-2 font-mono text-xs">({attr.code})</span>
+                      {attr.label} <span className="text-2 font-mono text-sm">({attr.code})</span>
                     </td>
                     <td className="py-2 px-3 text-right font-mono tabular-nums font-semibold">
                       {attr.value !== null ? attr.value : <span className="text-2 font-normal italic">Belum ada data</span>}

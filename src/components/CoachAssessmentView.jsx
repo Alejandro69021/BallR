@@ -55,7 +55,7 @@ export default function CoachAssessmentView({
 
   if (!activePlayer) {
     return (
-      <div className="p-8 text-center text-xs text-2">
+      <div className="p-8 text-center text-sm text-2">
         Belum ada data pemain yang dipilih.
       </div>
     );
@@ -178,11 +178,11 @@ export default function CoachAssessmentView({
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
               <UserCheck className="w-4 h-4 text-brand" strokeWidth={1.5} />
-              <span className="text-xs font-semibold text-1">
+              <span className="text-sm font-semibold text-1">
                 Pilih pemain yang dievaluasi
               </span>
             </div>
-            <span className="text-xs font-mono text-2">
+            <span className="text-sm font-mono text-2">
               {players.length} pemain di skuad
             </span>
           </div>
@@ -201,15 +201,15 @@ export default function CoachAssessmentView({
                       : 'bg-panel border-line text-2 hover:text-1 hover:bg-raised'
                   }`}
                 >
-                  <div className="w-8 h-8 rounded-control bg-panel border border-line flex items-center justify-center font-mono text-xs font-semibold shrink-0">
+                  <div className="w-8 h-8 rounded-control bg-panel border border-line flex items-center justify-center font-mono text-sm font-semibold shrink-0">
                     #{p.personal_info.jersey_number}
                   </div>
 
                   <div>
-                    <div className="text-xs font-semibold text-1">
+                    <div className="text-sm font-semibold text-1">
                       {p.personal_info.nickname || p.personal_info.full_name}
                     </div>
-                    <div className="text-xs text-2 font-mono">
+                    <div className="text-sm text-2 font-mono">
                       {p.personal_info.position}
                     </div>
                   </div>
@@ -252,7 +252,7 @@ export default function CoachAssessmentView({
       <div className="fixed bottom-0 inset-x-0 z-40 bg-panel/95 backdrop-blur-xs border-t border-line p-3">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-2 font-medium hidden sm:inline">
+            <span className="text-sm text-2 font-medium hidden sm:inline">
               Evaluasi: <strong className="text-1">{activePlayer.personal_info.nickname || activePlayer.personal_info.full_name}</strong>
             </span>
             {hasDraftSaved && (

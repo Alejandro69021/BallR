@@ -23,7 +23,7 @@ export default function PlayerTabs({
           <button
             type="button"
             onClick={() => navigate('/skuad')}
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-2 hover:text-1 min-h-[44px] min-w-[44px] px-2 py-2 rounded-control transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-2 hover:text-1 min-h-[44px] min-w-[44px] px-2 py-2 rounded-control transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer"
             aria-label="Kembali ke skuad"
           >
             <ArrowLeft className="w-4 h-4 shrink-0" strokeWidth={1.5} />
@@ -39,7 +39,7 @@ export default function PlayerTabs({
             {fullName}
           </h2>
           {jerseyNumber != null && (
-            <span className="text-xs font-mono font-semibold text-2 bg-raised px-1.5 py-0.5 rounded border border-line shrink-0">
+            <span className="text-sm font-mono font-semibold text-2 bg-raised px-1.5 py-0.5 rounded border border-line shrink-0">
               #{jerseyNumber}
             </span>
           )}
@@ -55,7 +55,7 @@ export default function PlayerTabs({
             to={`/pemain/${playerId}`}
             role="tab"
             aria-selected={activeTab === 'passport'}
-            className={`min-h-[44px] min-w-[44px] px-3.5 py-2 text-xs font-medium rounded-control border inline-flex items-center justify-center gap-1.5 transition-colors select-none ${
+            className={`min-h-[44px] min-w-[44px] px-3.5 py-2 text-sm font-medium rounded-control border inline-flex items-center justify-center gap-1.5 transition-colors select-none ${
               activeTab === 'passport'
                 ? 'bg-brand/10 border-brand/40 text-brand font-semibold'
                 : 'bg-raised border-line text-2 hover:text-1'
@@ -69,7 +69,7 @@ export default function PlayerTabs({
             to={`/pemain/${playerId}/pertumbuhan`}
             role="tab"
             aria-selected={activeTab === 'growth'}
-            className={`min-h-[44px] min-w-[44px] px-3.5 py-2 text-xs font-medium rounded-control border inline-flex items-center justify-center gap-1.5 transition-colors select-none ${
+            className={`min-h-[44px] min-w-[44px] px-3.5 py-2 text-sm font-medium rounded-control border inline-flex items-center justify-center gap-1.5 transition-colors select-none ${
               activeTab === 'growth'
                 ? 'bg-brand/10 border-brand/40 text-brand font-semibold'
                 : 'bg-raised border-line text-2 hover:text-1'
@@ -84,7 +84,7 @@ export default function PlayerTabs({
               to={`/penilaian/${internalId}`}
               role="tab"
               aria-selected={activeTab === 'assessment'}
-              className={`min-h-[44px] min-w-[44px] px-3.5 py-2 text-xs font-medium rounded-control border inline-flex items-center justify-center gap-1.5 transition-colors select-none ${
+              className={`min-h-[44px] min-w-[44px] px-3.5 py-2 text-sm font-medium rounded-control border inline-flex items-center justify-center gap-1.5 transition-colors select-none ${
                 activeTab === 'assessment'
                   ? 'bg-brand/10 border-brand/40 text-brand font-semibold'
                   : 'bg-raised border-line text-2 hover:text-1'

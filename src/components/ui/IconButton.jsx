@@ -14,7 +14,7 @@ export default function IconButton({
     'inline-flex items-center justify-center rounded-control border transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer select-none';
 
   const sizeClasses = {
-    sm: 'w-[44px] h-[44px] min-h-[44px] min-w-[44px] sm:w-7 sm:h-7 sm:min-h-0 sm:min-w-0 text-xs',
+    sm: 'w-[44px] h-[44px] min-h-[44px] min-w-[44px] sm:w-7 sm:h-7 sm:min-h-0 sm:min-w-0 text-sm',
     md: 'w-[44px] h-[44px] min-h-[44px] min-w-[44px] sm:w-[34px] sm:h-[34px] sm:min-h-0 sm:min-w-0 text-sm'
   };
 

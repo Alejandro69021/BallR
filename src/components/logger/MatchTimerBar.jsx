@@ -40,11 +40,11 @@ export default function MatchTimerBar({
                 isRunning ? 'bg-brand animate-pulse' : 'bg-series-1'
               }`}
             />
-            <span className="text-xs font-mono uppercase tracking-wider text-2">
+            <span className="text-sm font-mono uppercase tracking-wider text-2">
               Pencatat laga
             </span>
             <span className="text-2">·</span>
-            <span className="text-xs font-semibold text-1">
+            <span className="text-sm font-semibold text-1">
               vs {match?.opponent_name || 'Lawan'}
             </span>
             <Badge variant="neutral" size="sm">
@@ -84,7 +84,7 @@ export default function MatchTimerBar({
               type="button"
               disabled={isReadOnly}
               onClick={() => onAdjustMinutes?.(-1)}
-              className="min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-control bg-raised hover:bg-panel text-2 hover:text-1 border border-control text-xs font-mono tabular-nums transition-colors cursor-pointer flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed"
+              className="min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-control bg-raised hover:bg-panel text-2 hover:text-1 border border-control text-sm font-mono tabular-nums transition-colors cursor-pointer flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed"
               title="Kurang 1 menit"
               aria-label="Kurang 1 menit"
             >
@@ -96,7 +96,7 @@ export default function MatchTimerBar({
               type="button"
               disabled={isReadOnly}
               onClick={() => onAdjustMinutes?.(1)}
-              className="min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-control bg-raised hover:bg-panel text-2 hover:text-1 border border-control text-xs font-mono tabular-nums transition-colors cursor-pointer flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed"
+              className="min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-control bg-raised hover:bg-panel text-2 hover:text-1 border border-control text-sm font-mono tabular-nums transition-colors cursor-pointer flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed"
               title="Tambah 1 menit"
               aria-label="Tambah 1 menit"
             >
@@ -110,7 +110,7 @@ export default function MatchTimerBar({
             type="button"
             disabled={isReadOnly}
             onClick={onToggleTimer}
-            className={`min-h-[44px] min-w-[44px] px-4 py-2 rounded-control border font-semibold text-xs transition-colors duration-150 cursor-pointer flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
+            className={`min-h-[44px] min-w-[44px] px-4 py-2 rounded-control border font-semibold text-sm transition-colors duration-150 cursor-pointer flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${
               isRunning
                 ? 'bg-warning/10 text-warning border-warning/30 hover:bg-warning/20'
                 : 'bg-brand text-app border-transparent hover:opacity-90'

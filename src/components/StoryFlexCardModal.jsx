@@ -152,7 +152,7 @@ export default function StoryFlexCardModal({
         {!loadingConsents && !canShare && (
           <div
             data-testid="consent-warning"
-            className="p-3 rounded-control border border-warning/40 bg-warning/10 text-warning text-xs flex items-start gap-2"
+            className="p-3 rounded-control border border-warning/40 bg-warning/10 text-warning text-sm flex items-start gap-2"
           >
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <div className="space-y-0.5">
@@ -178,7 +178,7 @@ export default function StoryFlexCardModal({
 
         {/* Staff identifier shown outside exported canvas */}
         {playerId && (
-          <div className="text-right text-xs text-2 font-mono">
+          <div className="text-right text-sm text-2 font-mono">
             ID Atlet: {playerId}
           </div>
         )}

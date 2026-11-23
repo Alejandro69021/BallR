@@ -23,14 +23,14 @@ export default function ReferencesPage() {
           <div className="p-1.5 rounded bg-raised text-brand">
             <BookOpen className="w-5 h-5" />
           </div>
-          <span className="text-xs font-mono uppercase tracking-wider text-2">
+          <span className="text-sm font-mono uppercase tracking-wider text-2">
             Katalog Kepustakaan Ilmiah
           </span>
         </div>
         <h1 className="text-xl font-semibold text-1">
           Daftar Rujukan Resmi & Dokumen Verifikasi
         </h1>
-        <p className="text-xs text-2 leading-relaxed max-w-2xl">
+        <p className="text-sm text-2 leading-relaxed max-w-2xl">
           Setiap indikator taktis, metode kematangan biologis, dan tolok ukur kebugaran di BallR wajib merujuk secara tertulis pada pustaka yang terdaftar di sini sesuai asas kejujuran data (*data honesty*).
         </p>
       </div>
@@ -44,11 +44,11 @@ export default function ReferencesPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari rujukan, penulis, atau kurikulum..."
-            className="w-full pl-9 pr-3 py-1.5 bg-app border border-line rounded text-xs text-1 placeholder-slate-500 focus:outline-none focus:border-brand"
+            className="w-full pl-9 pr-3 py-1.5 bg-app border border-line rounded text-sm text-1 placeholder-slate-500 focus:outline-none focus:border-brand"
           />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto text-xs">
+        <div className="flex items-center gap-2 overflow-x-auto text-sm">
           {[
             { id: 'all', label: 'Semua' },
             { id: 'curriculum', label: 'Kurikulum' },
@@ -61,7 +61,7 @@ export default function ReferencesPage() {
               key={cat.id}
               type="button"
               onClick={() => setFilterType(cat.id)}
-              className={`px-3 py-1.5 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:px-2.5 sm:py-1 rounded text-xs transition-colors whitespace-nowrap cursor-pointer inline-flex items-center justify-center ${
+              className={`px-3 py-1.5 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:px-2.5 sm:py-1 rounded text-sm transition-colors whitespace-nowrap cursor-pointer inline-flex items-center justify-center ${
                 filterType === cat.id
                   ? 'bg-raised text-1 font-medium border border-line'
                   : 'text-2 hover:text-1'
@@ -78,15 +78,15 @@ export default function ReferencesPage() {
         <div className="p-8 text-center rounded-lg bg-panel border border-line space-y-2 max-w-md mx-auto">
           <AlertCircle className="w-6 h-6 mx-auto text-2" />
           <h3 className="text-sm font-semibold text-1">Belum Ada Rujukan Terdaftar</h3>
-          <p className="text-xs text-2 leading-relaxed">
+          <p className="text-sm text-2 leading-relaxed">
             Sesuai aturan data honesty, entri rujukan hanya dimasukkan dari berkas resmi <code className="text-brand">docs/REFERENCES_SEED.md</code> dan tidak ditulis dari ingatan.
           </p>
         </div>
       ) : (
         <div className="rounded-lg bg-panel border border-line overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-raised text-2 uppercase font-mono text-xs border-b border-line">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-raised text-2 uppercase font-mono text-sm border-b border-line">
                 <tr>
                   <th className="py-2.5 px-3">Judul Rujukan</th>
                   <th className="py-2.5 px-3">Penerbit / Penulis</th>
@@ -101,7 +101,7 @@ export default function ReferencesPage() {
                   <tr key={ref.id} className="hover:bg-raised/50 transition-colors">
                     <td className="py-3 px-3">
                       <div className="font-semibold text-1">{ref.title}</div>
-                      <div className="text-xs font-mono text-2">{ref.id}</div>
+                      <div className="text-sm font-mono text-2">{ref.id}</div>
                     </td>
                     <td className="py-3 px-3 text-2">
                       {ref.publisher || 'Belum terkonfirmasi'} {ref.year ? `(${ref.year})` : ''}
@@ -111,10 +111,10 @@ export default function ReferencesPage() {
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="px-2 py-0.5 rounded text-xs font-mono bg-raised text-2">
+                        <span className="px-2 py-0.5 rounded text-sm font-mono bg-raised text-2">
                           {ref.type}
                         </span>
-                        <span className={`px-1.5 py-0.2 rounded text-xs font-mono uppercase border ${
+                        <span className={`px-1.5 py-0.2 rounded text-sm font-mono uppercase border ${
                           ref.status === 'located'
                             ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
                             : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
@@ -123,10 +123,10 @@ export default function ReferencesPage() {
                         </span>
                       </div>
                     </td>
-                    <td className="py-3 px-3 font-mono text-xs text-2">
+                    <td className="py-3 px-3 font-mono text-sm text-2">
                       <div>{ref.verified_on || 'Belum diverifikasi'}</div>
                       {ref.next_review_due && (
-                        <div className="text-xs text-warning">Jadwal: {ref.next_review_due}</div>
+                        <div className="text-sm text-warning">Jadwal: {ref.next_review_due}</div>
                       )}
                     </td>
                     <td className="py-3 px-3">
@@ -135,13 +135,13 @@ export default function ReferencesPage() {
                           href={ref.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-brand hover:underline inline-flex items-center gap-1 font-mono text-xs"
+                          className="text-brand hover:underline inline-flex items-center gap-1 font-mono text-sm"
                         >
                           <span>Buka</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       ) : (
-                        <span className="text-2 font-mono text-xs">-</span>
+                        <span className="text-2 font-mono text-sm">-</span>
                       )}
                     </td>
                   </tr>

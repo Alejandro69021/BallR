@@ -33,11 +33,11 @@ export default function Toast({
       {icons[variant] || icons.info}
 
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold leading-tight text-1">
+        <p className="text-sm font-semibold leading-tight text-1">
           {message}
         </p>
         {subtext && (
-          <p className="text-xs text-2 mt-0.5 leading-snug">
+          <p className="text-sm text-2 mt-0.5 leading-snug">
             {subtext}
           </p>
         )}

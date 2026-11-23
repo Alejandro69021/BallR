@@ -73,11 +73,11 @@ export default function PlayerHeader({ player, personalInfo: propPersonalInfo, o
 
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-mono text-xs text-2">
+              <span className="font-mono text-sm text-2">
                 ID: {publicId}
               </span>
               {jersey_number != null && (
-                <span className="font-mono text-xs font-semibold text-1 bg-raised px-1.5 py-0.5 rounded border border-line">
+                <span className="font-mono text-sm font-semibold text-1 bg-raised px-1.5 py-0.5 rounded border border-line">
                   #{jersey_number}
                 </span>
               )}
@@ -92,7 +92,7 @@ export default function PlayerHeader({ player, personalInfo: propPersonalInfo, o
               )}
             </h1>
 
-            <div className="text-xs text-2 space-y-0.5 pt-0.5">
+            <div className="text-sm text-2 space-y-0.5 pt-0.5">
               <p>
                 {academy?.name || 'Akademi Sepakbola'} {academy?.city ? `· ${academy.city}` : ''}
               </p>
@@ -119,11 +119,11 @@ export default function PlayerHeader({ player, personalInfo: propPersonalInfo, o
 
       {/* 5-Line Technical Summary */}
       <div className="rounded-panel border border-line bg-panel p-4 space-y-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-2 font-mono pb-1 border-b border-line">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-2 font-mono pb-1 border-b border-line">
           Ringkasan Paspor Atlet
         </h2>
 
-        <dl className="grid grid-cols-1 gap-1.5 text-xs">
+        <dl className="grid grid-cols-1 gap-1.5 text-sm">
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
             <dt className="text-2 w-48 shrink-0">1. Posisi:</dt>
             <dd className="text-1 font-medium">{positionDisplay}</dd>

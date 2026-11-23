@@ -12,12 +12,12 @@ export default function FitnessStrip({ benchmarks }) {
           <h2 className="text-base font-semibold text-1">
             Uji Kebugaran Fisik
           </h2>
-          <p className="text-xs text-2">
+          <p className="text-sm text-2">
             Parameter daya ledak, akselerasi kecepatan, kelincahan, dan kapasitas aerobik atlet.
           </p>
         </div>
         {testDate && (
-          <span className="text-xs font-mono text-2">
+          <span className="text-sm font-mono text-2">
             Tanggal tes: {testDate}
           </span>
         )}
@@ -53,7 +53,7 @@ export default function FitnessStrip({ benchmarks }) {
       </div>
 
       <div className="space-y-1 pt-1">
-        <p className="text-xs text-2 font-mono">
+        <p className="text-sm text-2 font-mono">
           * Catatan: Untuk parameter waktu sprint dan kelincahan (shuttle run), nilai lebih rendah = lebih cepat.
         </p>
         <SourceNote

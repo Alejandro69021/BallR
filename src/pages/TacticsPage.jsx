@@ -187,7 +187,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
         <Compass className="w-10 h-10 text-2 mx-auto" strokeWidth={1.5} />
         <div className="space-y-1">
           <h2 className="text-sm font-semibold text-1">Akses Terbatas: Pelatih &amp; Admin</h2>
-          <p className="text-xs text-2 leading-relaxed">
+          <p className="text-sm text-2 leading-relaxed">
             Papan taktik dan perancangan skema permainan hanya dapat diakses oleh pelatih atau pengurus akademi yang terotentikasi.
           </p>
         </div>
@@ -208,7 +208,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-1">Papan Taktik</h1>
-          <p className="text-xs text-2 mt-1">
+          <p className="text-sm text-2 mt-1">
             Rancang dan simulasikan pergerakan taktik lapangan berlandaskan rujukan kurikulum resmi.
           </p>
         </div>
@@ -247,7 +247,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
 
       {/* Scenarios Table */}
       {loading ? (
-        <div className="p-8 text-center text-xs text-2 font-mono">
+        <div className="p-8 text-center text-sm text-2 font-mono">
           Memuat daftar skema taktik...
         </div>
       ) : sortedScenarios.length === 0 ? (
@@ -274,7 +274,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
         <div className="space-y-3">
           {/* Mobile Sort Control */}
           <div className="flex sm:hidden items-center justify-between gap-2 p-2 rounded-control bg-raised border border-line">
-            <span className="text-xs text-2 whitespace-nowrap">Urutkan:</span>
+            <span className="text-sm text-2 whitespace-nowrap">Urutkan:</span>
             <Select
               value={sortKey}
               onChange={(e) => handleSort(e.target.value)}
@@ -283,7 +283,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 { value: 'title', label: 'Judul Skema' },
                 { value: 'phase', label: 'Fase Permainan' }
               ]}
-              className="text-xs min-h-[44px]"
+              className="text-sm min-h-[44px]"
             />
           </div>
 
@@ -299,7 +299,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                       {val || row.title}
                     </div>
                     {row.description && (
-                      <div className="text-2 text-xs truncate max-w-xs">
+                      <div className="text-2 text-sm truncate max-w-xs">
                         {row.description}
                       </div>
                     )}
@@ -311,7 +311,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 header: 'Fase',
                 sortable: true,
                 render: (val) => (
-                  <span className="text-xs text-1">
+                  <span className="text-sm text-1">
                     {SCENARIO_PHASE_LABELS[val] || val}
                   </span>
                 )
@@ -322,7 +322,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 sortable: true,
                 tabular: true,
                 render: (val) => (
-                  <span className="text-xs font-mono text-2">
+                  <span className="text-sm font-mono text-2">
                     {val || '11v11'}
                   </span>
                 )
@@ -347,7 +347,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 header: 'Bingkai',
                 tabular: true,
                 render: (val) => (
-                  <span className="text-xs font-mono tabular-nums text-1">
+                  <span className="text-sm font-mono tabular-nums text-1">
                     {val || 0}
                   </span>
                 )
@@ -357,7 +357,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 header: 'Rujukan',
                 tabular: true,
                 render: (val) => (
-                  <span className="text-xs font-mono tabular-nums text-1">
+                  <span className="text-sm font-mono tabular-nums text-1">
                     {val || 0}
                   </span>
                 )
@@ -368,7 +368,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 sortable: true,
                 tabular: true,
                 render: (val) => (
-                  <span className="text-xs font-mono text-2">
+                  <span className="text-sm font-mono text-2">
                     {val
                       ? new Date(val).toLocaleDateString('id-ID')
                       : '-'}
@@ -399,7 +399,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <h3 className="text-sm font-semibold text-1">{row.title}</h3>
-                    <div className="text-xs text-2 mt-0.5 space-x-1.5 font-mono">
+                    <div className="text-sm text-2 mt-0.5 space-x-1.5 font-mono">
                       <span>{SCENARIO_PHASE_LABELS[row.phase] || row.phase}</span>
                       <span>•</span>
                       <span>{row.format || '11v11'}</span>
@@ -414,10 +414,10 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 </div>
 
                 {row.description && (
-                  <p className="text-xs text-2 line-clamp-2">{row.description}</p>
+                  <p className="text-sm text-2 line-clamp-2">{row.description}</p>
                 )}
 
-                <div className="flex items-center justify-between text-xs py-1 border-t border-b border-line font-mono text-2">
+                <div className="flex items-center justify-between text-sm py-1 border-t border-b border-line font-mono text-2">
                   <span>{row.frames_count || 0} bingkai</span>
                   <span>{row.references_count || 0} rujukan</span>
                   <span>{row.updated_at ? new Date(row.updated_at).toLocaleDateString('id-ID') : '-'}</span>
@@ -466,14 +466,14 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
       >
         <div className="space-y-4">
           {createError && (
-            <div className="p-3 rounded-control bg-rose-500/10 border border-rose-500/20 text-danger text-xs leading-relaxed">
+            <div className="p-3 rounded-control bg-rose-500/10 border border-rose-500/20 text-danger text-sm leading-relaxed">
               {createError}
             </div>
           )}
 
           {/* Judul skema */}
           <div className="space-y-1">
-            <label htmlFor="create-title" className="text-xs font-medium text-1">
+            <label htmlFor="create-title" className="text-sm font-medium text-1">
               Judul skema <span className="text-danger">*</span>
             </label>
             <input
@@ -483,9 +483,9 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Tulis judul skema taktik..."
-              className="w-full px-3 py-2 text-xs rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
+              className="w-full px-3 py-2 text-sm rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
             />
-            <p className="text-xs text-2 italic">
+            <p className="text-sm text-2 italic">
               Contoh: Build-up 3-2-4-1 menghadapi blok dua penyerang
             </p>
           </div>
@@ -493,7 +493,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
           {/* Fase & Format */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label htmlFor="create-phase" className="text-xs font-medium text-1">
+              <label htmlFor="create-phase" className="text-sm font-medium text-1">
                 Fase permainan
               </label>
               <Select
@@ -505,7 +505,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="create-format" className="text-xs font-medium text-1">
+              <label htmlFor="create-format" className="text-sm font-medium text-1">
                 Format pertandingan
               </label>
               <Select
@@ -519,7 +519,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
 
           {/* Formation Template Select (Explicit label: "Template awal, bukan rekomendasi") */}
           <div className="space-y-1">
-            <label htmlFor="create-formation" className="text-xs font-medium text-1 flex items-center justify-between">
+            <label htmlFor="create-formation" className="text-sm font-medium text-1 flex items-center justify-between">
               <span>Formasi tim awal</span>
               <span className="text-2 font-mono">{TEMPLATE_DISCLAIMER}</span>
             </label>
@@ -533,12 +533,12 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
 
           {/* Pitch Dimensions with Mandatory Helper Text */}
           <div className="space-y-1">
-            <div className="text-xs font-medium text-1">
+            <div className="text-sm font-medium text-1">
               Dimensi lapangan (meter)
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="create-length" className="text-xs text-2 block mb-1">
+                <label htmlFor="create-length" className="text-sm text-2 block mb-1">
                   Panjang (m)
                 </label>
                 <input
@@ -548,12 +548,12 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                   max="120"
                   value={newPitchLength}
                   onChange={(e) => setNewPitchLength(e.target.value)}
-                  className="w-full px-3 py-2 text-xs font-mono rounded-control bg-app border border-control text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
+                  className="w-full px-3 py-2 text-sm font-mono rounded-control bg-app border border-control text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
                 />
               </div>
 
               <div>
-                <label htmlFor="create-width" className="text-xs text-2 block mb-1">
+                <label htmlFor="create-width" className="text-sm text-2 block mb-1">
                   Lebar (m)
                 </label>
                 <input
@@ -563,18 +563,18 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                   max="90"
                   value={newPitchWidth}
                   onChange={(e) => setNewPitchWidth(e.target.value)}
-                  className="w-full px-3 py-2 text-xs font-mono rounded-control bg-app border border-control text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
+                  className="w-full px-3 py-2 text-sm font-mono rounded-control bg-app border border-control text-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
                 />
               </div>
             </div>
-            <p className="text-xs text-2 italic pt-1">
+            <p className="text-sm text-2 italic pt-1">
               Ukuran awal hanya contoh; isi sesuai lapangan sebenarnya (meter).
             </p>
           </div>
 
           {/* Description & Coaching Points */}
           <div className="space-y-1">
-            <label htmlFor="create-desc" className="text-xs font-medium text-1">
+            <label htmlFor="create-desc" className="text-sm font-medium text-1">
               Deskripsi skema (opsional)
             </label>
             <textarea
@@ -583,12 +583,12 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
               value={newDescription}
               onChange={(e) => setNewDescription(e.target.value)}
               placeholder="Tuliskan tujuan dan konteks skema pergerakan ini..."
-              className="w-full px-3 py-2 text-xs rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="w-full px-3 py-2 text-sm rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             />
           </div>
 
           <div className="space-y-1">
-            <label htmlFor="create-coaching" className="text-xs font-medium text-1">
+            <label htmlFor="create-coaching" className="text-sm font-medium text-1">
               Poin pembinaan / Coaching points (opsional)
             </label>
             <textarea
@@ -597,9 +597,9 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
               value={newCoachingPoints}
               onChange={(e) => setNewCoachingPoints(e.target.value)}
               placeholder="Tuliskan poin pembinaan atau instruksi utama..."
-              className="w-full px-3 py-2 text-xs rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="w-full px-3 py-2 text-sm rounded-control bg-app border border-control text-1 placeholder:text-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             />
-            <p className="text-xs text-2 italic">
+            <p className="text-sm text-2 italic">
               Contoh: 1. Sentuhan pertama membuka ruang. 2. Komunikasi vokal.
             </p>
           </div>

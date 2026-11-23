@@ -299,7 +299,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
           <Trophy className="w-8 h-8 text-2 mx-auto" strokeWidth={1.5} />
           <div className="space-y-1">
             <h1 className="text-base font-semibold text-1">Rekaman Pertandingan Akademi</h1>
-            <p className="text-xs text-2 max-w-md mx-auto">
+            <p className="text-sm text-2 max-w-md mx-auto">
               Halaman manajemen laga hanya dapat diakses oleh staf pelatih dan admin akademi terdaftar.
             </p>
           </div>
@@ -324,7 +324,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
             <Trophy className="w-5 h-5 text-brand" strokeWidth={1.5} />
             <h1 className="text-xl font-semibold text-1">Rekaman Pertandingan</h1>
           </div>
-          <p className="text-xs text-2">
+          <p className="text-sm text-2">
             Daftar pertandingan resmi akademi, ukuran lapangan, dan catatan kejadian teknis.
           </p>
         </div>
@@ -347,7 +347,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
         >
           <div className="flex items-center gap-2">
             <Timer className="w-4 h-4 text-brand shrink-0" strokeWidth={1.5} />
-            <span className="text-xs sm:text-sm font-medium text-1">
+            <span className="text-sm font-medium text-1">
               Laga draft: {draftMatch.opponent_name} — Lanjut mencatat
             </span>
           </div>
@@ -365,7 +365,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
       {/* Main Table / Responsive Cards */}
       {loading ? (
         <div className="p-8 border border-line rounded-panel bg-panel text-center">
-          <p className="text-xs text-2">Memuat daftar pertandingan...</p>
+          <p className="text-sm text-2">Memuat daftar pertandingan...</p>
         </div>
       ) : matches.length === 0 ? (
         <div className="p-8 border border-line rounded-panel bg-panel">
@@ -380,7 +380,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
         <div className="space-y-3">
           {/* Mobile Sort Control */}
           <div className="flex md:hidden items-center justify-between gap-2 p-2 rounded-control bg-raised border border-line">
-            <span className="text-xs text-2 whitespace-nowrap">Urutkan:</span>
+            <span className="text-sm text-2 whitespace-nowrap">Urutkan:</span>
             <Select
               value={sortKey}
               onChange={(e) => handleSort(e.target.value)}
@@ -388,7 +388,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                 { value: 'match_date', label: 'Tanggal Laga' },
                 { value: 'opponent_name', label: 'Nama Lawan' }
               ]}
-              className="text-xs min-h-[44px]"
+              className="text-sm min-h-[44px]"
             />
           </div>
 
@@ -404,7 +404,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <h3 className="text-sm font-semibold text-1">{row.opponent_name}</h3>
-                    <div className="text-xs text-2 mt-0.5 space-x-1.5 font-mono">
+                    <div className="text-sm text-2 mt-0.5 space-x-1.5 font-mono">
                       <span>{row.match_date || '-'}</span>
                       <span>•</span>
                       <span>{row.format || '11v11'}</span>
@@ -421,7 +421,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                   </Badge>
                 </div>
 
-                <div className="flex items-center justify-between text-xs py-1 border-t border-b border-line">
+                <div className="flex items-center justify-between text-sm py-1 border-t border-b border-line">
                   <span className="text-2">Skor:</span>
                   <span className="font-mono font-bold text-1">
                     {row.status === 'final' && row.own_score != null
@@ -481,7 +481,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
               value={opponentName}
               onChange={(e) => setOpponentName(e.target.value)}
               placeholder="Contoh: SSB Bintang Muda"
-              className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+              className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
             />
           </Field>
 
@@ -493,7 +493,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                 required
                 value={matchDate}
                 onChange={(e) => setMatchDate(e.target.value)}
-                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
 
@@ -504,7 +504,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                 value={competition}
                 onChange={(e) => setCompetition(e.target.value)}
                 placeholder="Contoh: Liga Remaja U-13"
-                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
           </div>
@@ -534,7 +534,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                 required
                 value={pitchLength}
                 onChange={(e) => setPitchLength(e.target.value)}
-                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
 
@@ -548,20 +548,20 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                 required
                 value={pitchWidth}
                 onChange={(e) => setPitchWidth(e.target.value)}
-                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-xs font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
           </div>
 
-          <p className="text-xs text-2">
+          <p className="text-sm text-2">
             Ukuran awal hanya contoh; isi sesuai lapangan sebenarnya (meter).
           </p>
 
           {/* Participants picker from roster */}
           <div className="space-y-2 pt-2 border-t border-line">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-medium text-2">Pemain yang bertanding (skuad)</label>
-              <span className="text-xs text-2 font-mono">
+              <label className="text-sm font-medium text-2">Pemain yang bertanding (skuad)</label>
+              <span className="text-sm text-2 font-mono">
                 {Object.values(selectedParticipants).filter((v) => v?.selected).length} terpilih
               </span>
             </div>
@@ -578,7 +578,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                   return (
                     <div
                       key={pid}
-                      className="flex items-center justify-between py-1 px-1.5 hover:bg-raised/40 rounded transition-colors text-xs"
+                      className="flex items-center justify-between py-1 px-1.5 hover:bg-raised/40 rounded transition-colors text-sm"
                     >
                       <label className="flex items-center gap-2 cursor-pointer select-none min-w-0">
                         <input
@@ -607,7 +607,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                   );
                 })
               ) : (
-                <p className="text-xs text-2 py-2 text-center">Belum ada pemain di skuad</p>
+                <p className="text-sm text-2 py-2 text-center">Belum ada pemain di skuad</p>
               )}
             </div>
           </div>

@@ -138,7 +138,7 @@ export default function ConsentManagerModal({
       description="Persetujuan orang tua/wali (UU PDP No. 27/2022 Pasal 25)"
       className="max-w-md"
       footer={
-        <div className="w-full text-xs text-2 flex items-center justify-between">
+        <div className="w-full text-sm text-2 flex items-center justify-between">
           <span>UU PDP No. 27/2022 Pasal 25</span>
           <a
             href="docs/CONSENT_DRAFT.md"
@@ -152,14 +152,14 @@ export default function ConsentManagerModal({
         </div>
       }
     >
-      <div className="p-3 rounded-control bg-app border border-line text-xs space-y-2">
+      <div className="p-3 rounded-control bg-app border border-line text-sm space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-2">Nama atlet:</span>
           <span className="font-semibold text-1">{pName}</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-2">Tingkat visibilitas:</span>
-          <span className="font-mono text-1 px-2 py-0.5 rounded-control bg-panel border border-control text-xs">
+          <span className="font-mono text-1 px-2 py-0.5 rounded-control bg-panel border border-control text-sm">
             {isRevoked ? 'private (privat)' : (player?.visibility_tier || 'private')}
           </span>
         </div>
@@ -171,10 +171,10 @@ export default function ConsentManagerModal({
 
       {/* Purpose Status Rows - Read Only (No Clickable Controls) */}
       <div className="space-y-2">
-        <span className="text-xs font-semibold text-1 block">
+        <span className="text-sm font-semibold text-1 block">
           Cakupan izin pemrosesan:
         </span>
-        <div className="space-y-2 text-xs">
+        <div className="space-y-2 text-sm">
           {purposeList.map((item) => {
             const status = getPurposeStatus(item.key);
             return (
@@ -185,7 +185,7 @@ export default function ConsentManagerModal({
               >
                 <div>
                   <span className="font-semibold text-1 block">{item.title}</span>
-                  <span className="text-xs text-2 block mt-0.5">{item.description}</span>
+                  <span className="text-sm text-2 block mt-0.5">{item.description}</span>
                 </div>
                 <Badge variant={status.variant} size="sm" className="shrink-0">
                   {status.badge}
@@ -194,7 +194,7 @@ export default function ConsentManagerModal({
             );
           })}
         </div>
-        <div className="text-xs text-2 pt-2 border-t border-line">
+        <div className="text-sm text-2 pt-2 border-t border-line">
           Pencatatan persetujuan oleh wali belum tersedia di versi ini
         </div>
       </div>
@@ -208,13 +208,13 @@ export default function ConsentManagerModal({
               variant="danger"
               size="sm"
               onClick={() => setConfirmRevoke(true)}
-              className="w-full text-xs"
+              className="w-full text-sm"
               icon={<AlertTriangle className="w-4 h-4" strokeWidth={1.5} />}
             >
               Tarik persetujuan pemrosesan data
             </Button>
           ) : (
-            <div className="p-3 rounded-control bg-danger/10 border border-danger/30 space-y-2 text-xs">
+            <div className="p-3 rounded-control bg-danger/10 border border-danger/30 space-y-2 text-sm">
               <p className="font-semibold text-1">
                 Konfirmasi penarikan persetujuan:
               </p>
@@ -229,7 +229,7 @@ export default function ConsentManagerModal({
                   disabled={revoking}
                   loading={revoking}
                   onClick={handleExecuteRevocation}
-                  className="flex-1 text-xs"
+                  className="flex-1 text-sm"
                 >
                   {revoking ? 'Mencabut...' : 'Ya, tarik sekarang'}
                 </Button>
@@ -238,7 +238,7 @@ export default function ConsentManagerModal({
                   variant="secondary"
                   size="sm"
                   onClick={() => setConfirmRevoke(false)}
-                  className="text-xs"
+                  className="text-sm"
                 >
                   Batal
                 </Button>
@@ -247,7 +247,7 @@ export default function ConsentManagerModal({
           )}
         </div>
       ) : isRevoked ? (
-        <div className="p-3 rounded-control bg-warning/10 border border-warning/30 text-warning text-xs flex items-start gap-2">
+        <div className="p-3 rounded-control bg-warning/10 border border-warning/30 text-warning text-sm flex items-start gap-2">
           <Lock className="w-4 h-4 shrink-0 mt-0.5" strokeWidth={1.5} />
           <p className="leading-snug text-1">
             Persetujuan telah ditarik. Data atlet berstatus privat dan tidak dapat dibagikan keluar tanpa persetujuan baru dari orang tua/wali.

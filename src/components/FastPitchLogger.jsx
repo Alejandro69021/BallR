@@ -438,7 +438,7 @@ export default function FastPitchLogger({
             Sumber waktu: {isVideoSourceActive ? 'Video' : 'Stopwatch'}
           </Badge>
           {isVideoSourceActive && (
-            <span className="text-xs text-2 font-mono">
+            <span className="text-sm text-2 font-mono">
               (Waktu video aktif)
             </span>
           )}
@@ -448,7 +448,7 @@ export default function FastPitchLogger({
           variant="ghost"
           size="sm"
           onClick={() => setIsVideoPanelOpen((prev) => !prev)}
-          className="min-h-[44px] sm:min-h-0 text-xs"
+          className="min-h-[44px] sm:min-h-0 text-sm"
         >
           {isVideoPanelOpen ? 'Sembunyikan Video' : 'Tampilkan Video'}
         </Button>
@@ -498,7 +498,7 @@ export default function FastPitchLogger({
           variant="brand"
           size="md"
           onClick={() => setShowRecapModal(true)}
-          className="w-full h-12 text-xs font-semibold shadow-popover"
+          className="w-full h-12 text-sm font-semibold shadow-popover"
           icon={<Award className="w-4 h-4" strokeWidth={1.5} />}
         >
           Lihat ringkasan & selesaikan laga

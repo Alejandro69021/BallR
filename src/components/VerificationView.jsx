@@ -99,7 +99,7 @@ export default function VerificationView({ players = [] }) {
       <div>
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-xs text-2 hover:text-1 px-3 py-1.5 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:px-2.5 sm:py-1 rounded-control bg-panel border border-control transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          className="inline-flex items-center gap-1.5 text-sm text-2 hover:text-1 px-3 py-1.5 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:px-2.5 sm:py-1 rounded-control bg-panel border border-control transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
         >
           <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
           <span>Kembali ke beranda</span>
@@ -111,7 +111,7 @@ export default function VerificationView({ players = [] }) {
         {/* Certificate Header */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 pb-4 border-b border-line">
           <div>
-            <span className="text-xs font-mono text-2 uppercase tracking-wider block">
+            <span className="text-sm font-mono text-2 uppercase tracking-wider block">
               Pemeriksa kriptografi paspor
             </span>
             <h1 className="text-xl font-semibold text-1 mt-1">
@@ -135,7 +135,7 @@ export default function VerificationView({ players = [] }) {
 
         {/* Certificate Content */}
         {loading ? (
-          <div className="p-8 text-center text-xs text-2 font-mono">
+          <div className="p-8 text-center text-sm text-2 font-mono">
             Memeriksa hash kriptografis ke basis data snapshot...
           </div>
         ) : isValid && snapshotData ? (
@@ -143,21 +143,21 @@ export default function VerificationView({ players = [] }) {
             {/* Certificate Metadata Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="p-3 rounded-control bg-app border border-line space-y-1">
-                <span className="text-xs text-2 block">Akademi penerbit</span>
+                <span className="text-sm text-2 block">Akademi penerbit</span>
                 <p className="text-sm font-semibold text-1">
                   {snapshotData.academy_name}
                 </p>
               </div>
 
               <div className="p-3 rounded-control bg-app border border-line space-y-1">
-                <span className="text-xs text-2 block">ID publik atlet</span>
+                <span className="text-sm text-2 block">ID publik atlet</span>
                 <p className="text-sm font-mono font-semibold text-1">
                   {snapshotData.public_id}
                 </p>
               </div>
 
               <div className="p-3 rounded-control bg-app border border-line space-y-1">
-                <span className="text-xs text-2 block">Periode snapshot</span>
+                <span className="text-sm text-2 block">Periode snapshot</span>
                 <p className="text-sm font-semibold text-1">
                   {snapshotData.period}
                 </p>
@@ -167,20 +167,20 @@ export default function VerificationView({ players = [] }) {
             {/* SHA-256 Hash with Copy Button */}
             <div className="p-3 rounded-control bg-app border border-line space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono text-2 uppercase tracking-wide">
+                <span className="text-sm font-mono text-2 uppercase tracking-wide">
                   Hash SHA-256 kanonikal
                 </span>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleCopyHash}
-                  className="sm:h-7 px-2 text-xs text-2 hover:text-1"
+                  className="sm:h-7 px-2 text-sm text-2 hover:text-1"
                   icon={copied ? <Check className="w-4 h-4 text-brand" strokeWidth={1.5} /> : <Copy className="w-4 h-4" strokeWidth={1.5} />}
                 >
                   {copied ? 'Tersalin' : 'Salin hash'}
                 </Button>
               </div>
-              <p className="font-mono text-xs text-1 break-all select-all p-2 bg-panel rounded-control border border-line">
+              <p className="font-mono text-sm text-1 break-all select-all p-2 bg-panel rounded-control border border-line">
                 {hash}
               </p>
             </div>
@@ -197,14 +197,14 @@ export default function VerificationView({ players = [] }) {
               <button
                 type="button"
                 onClick={() => setShowPayload(!showPayload)}
-                className="w-full flex items-center justify-between p-3 text-xs text-2 hover:text-1 hover:bg-raised transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="w-full flex items-center justify-between p-3 text-sm text-2 hover:text-1 hover:bg-raised transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
-                <span className="font-mono text-xs">Inspeksi data kanonikal terenkripsi</span>
+                <span className="font-mono text-sm">Inspeksi data kanonikal terenkripsi</span>
                 {showPayload ? <ChevronUp className="w-4 h-4" strokeWidth={1.5} /> : <ChevronDown className="w-4 h-4" strokeWidth={1.5} />}
               </button>
               {showPayload && (
                 <div className="p-3 bg-app border-t border-line">
-                  <pre className="text-xs font-mono text-1 overflow-x-auto p-2 bg-panel rounded-control border border-line max-h-60">
+                  <pre className="text-sm font-mono text-1 overflow-x-auto p-2 bg-panel rounded-control border border-line max-h-60">
                     {JSON.stringify(snapshotData.payload, null, 2)}
                   </pre>
                 </div>
@@ -214,7 +214,7 @@ export default function VerificationView({ players = [] }) {
         ) : (
           /* Invalid / Not Found State */
           <div className="space-y-4">
-            <div className="p-4 rounded-control bg-danger/10 border border-danger/30 text-xs space-y-2">
+            <div className="p-4 rounded-control bg-danger/10 border border-danger/30 text-sm space-y-2">
               <p className="font-semibold text-sm text-1">Data Integritas Tidak Ditemukan</p>
               <p className="text-2 leading-relaxed">
                 Hash <span className="font-mono text-1 break-all">{hash}</span> tidak cocok dengan rekam jejak resmi manapun di basis data integritas. Kemungkinan dokumen belum diterbitkan atau berkas telah mengalami perubahan setelah penerbitan.
@@ -228,7 +228,7 @@ export default function VerificationView({ players = [] }) {
         )}
 
         {/* Certificate Guarantee Footer */}
-        <div className="pt-4 border-t border-line text-xs text-2 leading-relaxed">
+        <div className="pt-4 border-t border-line text-sm text-2 leading-relaxed">
           Sistem hashing kanonikal BallR menjamin setiap metrik kebugaran, usia, dan evaluasi performa terkunci secara kriptografis dan tidak dapat diubah tanpa merusak validitas berkas.
         </div>
       </div>

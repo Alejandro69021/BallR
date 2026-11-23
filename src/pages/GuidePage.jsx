@@ -89,7 +89,7 @@ export default function GuidePage() {
           <BookOpen className="w-6 h-6 text-brand" strokeWidth={1.5} />
           <h1 className="text-xl sm:text-2xl font-bold text-1">Panduan Singkat</h1>
         </div>
-        <p className="text-xs sm:text-sm text-2 leading-relaxed">
+        <p className="text-sm text-2 leading-relaxed">
           Panduan praktis penggunaan aplikasi pembinaan sepak bola usia muda BallR. Hanya memuat alur kerja dan fungsi yang tersedia secara nyata.
         </p>
       </section>
@@ -109,18 +109,18 @@ export default function GuidePage() {
               </div>
               <div className="space-y-1.5 flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-mono font-semibold text-brand">
+                  <span className="text-sm font-mono font-semibold text-brand">
                     Bagian {String.fromCharCode(97 + idx)}
                   </span>
                   <h2 className="text-sm sm:text-base font-semibold text-1 leading-snug">
                     {section.title}
                   </h2>
                 </div>
-                <p className="text-xs text-2 leading-relaxed">
+                <p className="text-sm text-2 leading-relaxed">
                   {section.description}
                 </p>
                 {section.note && (
-                  <p className="text-xs text-brand font-medium pt-1">
+                  <p className="text-sm text-brand font-medium pt-1">
                     {section.note}
                   </p>
                 )}
@@ -130,7 +130,7 @@ export default function GuidePage() {
             <div className="pt-2 flex justify-end">
               <Link
                 to={section.linkTo}
-                className="min-h-[44px] min-w-[44px] px-4 py-2 text-xs font-medium rounded-control border border-line bg-panel text-1 hover:border-brand/40 hover:text-brand inline-flex items-center justify-center transition-colors select-none"
+                className="min-h-[44px] min-w-[44px] px-4 py-2 text-sm font-medium rounded-control border border-line bg-panel text-1 hover:border-brand/40 hover:text-brand inline-flex items-center justify-center transition-colors select-none"
               >
                 {section.linkLabel}
               </Link>

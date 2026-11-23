@@ -40,8 +40,8 @@ function HomeRedirect({ userRole }) {
     return (
       <div className="p-8 text-center rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 space-y-2 max-w-lg mx-auto mt-8">
         <p className="text-sm font-semibold text-white">Koneksi Database Supabase Tidak Tersedia</p>
-        <p className="text-xs text-slate-300 leading-relaxed">{error}</p>
-        <p className="text-xs text-slate-400 pt-2 border-t border-rose-500/20">
+        <p className="text-sm text-slate-300 leading-relaxed">{error}</p>
+        <p className="text-sm text-slate-400 pt-2 border-t border-rose-500/20">
           Atur <code className="text-rose-200">VITE_SUPABASE_URL</code> dan <code className="text-rose-200">VITE_SUPABASE_ANON_KEY</code> di berkas <code className="text-rose-200">.env</code>, atau jalankan dengan <code className="text-rose-200">VITE_DEMO_MODE=true</code>.
         </p>
       </div>
@@ -113,18 +113,45 @@ function MainApp() {
   const [isStoryCardOpen, setIsStoryCardOpen] = useState(false);
   const [toastInfo, setToastInfo] = useState(null);
 
-  // Active player derived from URL or roster fallback
+  // Theme preference persisted in localStorage ('paper' | 'dark').
+  // Default is light "paper" surface for coach/admin and entire app per UX_SPEC.
+  const [themePreference, setThemePreference] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ballr_surface') || localStorage.getItem('ballr_theme');
+      if (saved === 'dark' || saved === 'paper') return saved;
+    } catch {
+      // ignore
+    }
+    return 'paper';
+  });
+
+  const handleToggleSurface = (nextSurface) => {
+    const target = nextSurface || (themePreference === 'paper' ? 'dark' : 'paper');
+    setThemePreference(target);
+    try {
+      localStorage.setItem('ballr_surface', target);
+      localStorage.setItem('ballr_theme', target);
+    } catch {
+      // ignore
+    }
+  };
+
+  // Surface derived from user preference, keeping mandatory paper for reports and verification
   const surface = useMemo(() => {
     const p = location.pathname;
+    // Report/print behaviour must not change: always paper
     if (p.startsWith('/verifikasi/')) return 'paper';
     if (p === '/rujukan') return 'paper';
     if (p.includes('/laporan')) return 'paper';
-    if (p.startsWith('/pemain/') && (p.includes('/laga') || p.includes('/pertumbuhan'))) {
-      return 'dark';
+
+    return themePreference;
+  }, [location.pathname, themePreference]);
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-surface', surface);
     }
-    if (p.startsWith('/pemain/')) return 'paper';
-    return 'dark';
-  }, [location.pathname]);
+  }, [surface]);
 
   const activePlayer = useMemo(() => {
     if (!players || players.length === 0) {
@@ -273,6 +300,8 @@ function MainApp() {
         currentView={currentView}
         userRole={userRole}
         isDemoMode={isDemoMode}
+        surface={surface}
+        onToggleSurface={handleToggleSurface}
         onSwitchView={handleSwitchView}
         onOpenAuthModal={handleOpenAuthModal}
         onLogout={handleLogout}
@@ -283,7 +312,7 @@ function MainApp() {
       {/* 3d. Visible "Data contoh" badge whenever demo mode is on */}
       {isDemoMode && (
         <div className="w-full bg-amber-500/10 border-b border-amber-500/20 py-1.5 px-4 text-center">
-          <span className="text-xs font-semibold text-amber-300 inline-flex items-center gap-1.5">
+          <span className="text-sm font-semibold text-amber-300 inline-flex items-center gap-1.5">
             <span className="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
             Data contoh — Mode demo aktif
           </span>
@@ -293,7 +322,7 @@ function MainApp() {
       {/* Global Error Banner when not in demo mode and Supabase fails */}
       {error && !isDemoMode && (
         <div className="w-full max-w-5xl px-3.5 sm:px-6 pt-4">
-          <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div>
               <strong className="font-semibold">Koneksi Supabase Gagal:</strong> {error}. Mode demo dimatikan; data mock tidak digunakan.
             </div>

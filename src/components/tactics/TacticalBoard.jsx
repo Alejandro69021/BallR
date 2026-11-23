@@ -182,7 +182,7 @@ export default function TacticalBoard({
   return (
     <div className={`space-y-2 select-none ${className}`}>
       {/* Status bar: Coordinates readout + disclaimer */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm">
         <div className="flex items-center gap-2">
           {selectedItemCoords ? (
             <span className="font-mono tabular-nums px-2 py-0.5 rounded-control bg-raised border border-line text-1">
@@ -198,14 +198,14 @@ export default function TacticalBoard({
             </span>
           )}
           {snapToGrid && (
-            <span className="font-mono text-2 px-1.5 py-0.5 rounded-control bg-panel border border-control text-xs">
+            <span className="font-mono text-2 px-1.5 py-0.5 rounded-control bg-panel border border-control text-sm">
               Grid 1m
             </span>
           )}
         </div>
 
         {/* Mandatory disclaimer */}
-        <div className="text-xs text-2 font-mono flex items-center gap-1.5">
+        <div className="text-sm text-2 font-mono flex items-center gap-1.5">
           <span>{BOARD_DISCLAIMER}</span>
         </div>
       </div>
@@ -492,11 +492,11 @@ export default function TacticalBoard({
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-2 rounded-control bg-panel border border-line text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-2 rounded-control bg-panel border border-line text-sm">
         <div className="flex items-center gap-3 flex-wrap">
           {/* Own Team */}
           <div className="flex items-center gap-1.5">
-            <span className="w-3.5 h-3.5 rounded-full bg-brand border border-panel flex items-center justify-center text-xs font-bold text-app font-mono">
+            <span className="w-3.5 h-3.5 rounded-full bg-brand border border-panel flex items-center justify-center text-sm font-bold text-app font-mono">
               1
             </span>
             <span className="text-1 font-medium">Tim Kita (Lingkaran)</span>
@@ -504,7 +504,7 @@ export default function TacticalBoard({
 
           {/* Opponent Team */}
           <div className="flex items-center gap-1.5">
-            <span className="w-3.5 h-3.5 rounded-[3px] bg-series-1 border border-panel flex items-center justify-center text-xs font-bold text-app font-mono">
+            <span className="w-3.5 h-3.5 rounded-[3px] bg-series-1 border border-panel flex items-center justify-center text-sm font-bold text-app font-mono">
               1
             </span>
             <span className="text-1 font-medium">Lawan (Kotak)</span>
@@ -520,7 +520,7 @@ export default function TacticalBoard({
         </div>
 
         {/* Arrow kinds */}
-        <div className="flex items-center gap-3 flex-wrap text-2 text-xs">
+        <div className="flex items-center gap-3 flex-wrap text-2 text-sm">
           <span className="flex items-center gap-1 text-brand">
             <span className="font-mono">---&gt;</span> Umpan
           </span>

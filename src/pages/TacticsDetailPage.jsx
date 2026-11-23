@@ -537,7 +537,7 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
 
   if (loading) {
     return (
-      <div className="p-12 text-center text-xs text-2 font-mono">
+      <div className="p-12 text-center text-sm text-2 font-mono">
         Memuat detail skema taktik...
       </div>
     );
@@ -549,7 +549,7 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
         <Compass className="w-10 h-10 text-2 mx-auto" strokeWidth={1.5} />
         <div className="space-y-1">
           <h2 className="text-sm font-semibold text-1">Akses Terbatas: Pelatih &amp; Admin</h2>
-          <p className="text-xs text-2 leading-relaxed">
+          <p className="text-sm text-2 leading-relaxed">
             Papan taktik dan perancangan skema permainan hanya dapat diakses oleh pelatih atau pengurus akademi yang terotentikasi.
           </p>
         </div>
@@ -642,15 +642,15 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
                   {SCENARIO_STATUS_LABELS[scenario.status] || scenario.status}
                 </Badge>
                 {isDirty && (
-                  <span className="text-xs text-warning font-mono">
+                  <span className="text-sm text-warning font-mono">
                     (Ada perubahan belum disimpan)
                   </span>
                 )}
               </div>
-              <p className="text-xs text-2 font-mono mt-0.5">
+              <p className="text-sm text-2 font-mono mt-0.5">
                 Fase: {SCENARIO_PHASE_LABELS[scenario.phase] || scenario.phase} • Format: {scenario.format} • Lapangan: {scenario.pitch_length_m}&times;{scenario.pitch_width_m}m
               </p>
-              <div className="text-xs text-2 font-mono space-y-0.5 mt-1">
+              <div className="text-sm text-2 font-mono space-y-0.5 mt-1">
                 {scenario.created_by && (
                   <div>Dibuat oleh: <span className="text-1">{scenario.created_by}</span></div>
                 )}
@@ -691,7 +691,7 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
                 >
                   Saya sudah meninjau skema ini
                 </Button>
-                <p className="text-xs text-2 mt-1">
+                <p className="text-sm text-2 mt-1">
                   Peninjau harus pelatih lain, bukan pembuat skema (kecuali akademi hanya memiliki satu staf).
                 </p>
               </>
@@ -744,14 +744,14 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
 
         {/* Missing criteria notice for publishing */}
         {publishMissingText && (scenario.status === 'reviewed' || isDraft) && (
-          <div className="text-xs text-2 italic bg-raised px-3 py-1.5 rounded-control border border-line">
+          <div className="text-sm text-2 italic bg-raised px-3 py-1.5 rounded-control border border-line">
             Catatan penerbitan: {publishMissingText}
           </div>
         )}
 
         {/* Read-only notice for published scenario */}
         {scenario.status === 'published' && (
-          <div className="p-3 rounded-control bg-raised border border-line text-xs flex items-center justify-between text-2">
+          <div className="p-3 rounded-control bg-raised border border-line text-sm flex items-center justify-between text-2">
             <span>
               Skema ini telah diterbitkan resmi dan konten dibekukan. Untuk mengubah posisi atau panah, kembalikan ke draf.
             </span>
@@ -768,7 +768,7 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
       <div className="space-y-3">
         {/* Editing Tools Bar (Draft mode only) */}
         {isEditing && (
-          <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-panel bg-panel border border-line text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-panel bg-panel border border-line text-sm">
             {/* Add Players / Ball buttons */}
             <div className="flex items-center gap-1.5 flex-wrap">
               <Button
@@ -817,7 +817,7 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
                     onClick={() =>
                       setDrawingArrowKind((prev) => (prev === arr.kind ? null : arr.kind))
                     }
-                    className={`px-2 py-1 rounded-control text-xs min-h-[44px] min-w-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
+                    className={`px-2 py-1 rounded-control text-sm min-h-[44px] min-w-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
                       isActive
                         ? 'bg-raised border border-brand text-brand font-bold'
                         : 'bg-app border border-line text-2 hover:text-1'
@@ -835,7 +835,7 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
               <button
                 type="button"
                 onClick={() => setSnapToGrid((prev) => !prev)}
-                className={`px-2 py-1 rounded-control text-xs min-h-[44px] min-w-[44px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
+                className={`px-2 py-1 rounded-control text-sm min-h-[44px] min-w-[44px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
                   snapToGrid
                     ? 'bg-raised border-brand text-brand font-medium'
                     : 'bg-app border-line text-2 hover:text-1'

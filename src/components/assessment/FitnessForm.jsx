@@ -52,7 +52,7 @@ export default function FitnessForm({
         <h3 className="text-sm font-semibold text-1">
           Log tolok ukur fisik lapangan
         </h3>
-        <p className="text-xs text-2">
+        <p className="text-sm text-2">
           Pencatatan hasil tes fisik lapangan secara manual.
         </p>
       </div>
@@ -72,7 +72,7 @@ export default function FitnessForm({
             />
           </Field>
 
-          <div className="text-xs text-2 flex items-center justify-between pt-1 border-t border-line">
+          <div className="text-sm text-2 flex items-center justify-between pt-1 border-t border-line">
             <span>
               {jumpPrev ? `Bulan lalu: ${jumpPrev} cm` : 'Bulan lalu: belum ada data'}
             </span>
@@ -99,7 +99,7 @@ export default function FitnessForm({
             />
           </Field>
 
-          <div className="text-xs text-2 flex items-center justify-between pt-1 border-t border-line">
+          <div className="text-sm text-2 flex items-center justify-between pt-1 border-t border-line">
             <span>
               {sprintPrev ? `Bulan lalu: ${sprintPrev} dtk` : 'Bulan lalu: belum ada data'}
             </span>
@@ -114,8 +114,8 @@ export default function FitnessForm({
           {/* Stopwatch Timing Helper */}
           <div className="pt-2 border-t border-line space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-2 font-medium">Pewaktu manual (stopwatch)</span>
-              <span className="font-mono text-xs tabular-nums text-1 font-semibold">
+              <span className="text-sm text-2 font-medium">Pewaktu manual (stopwatch)</span>
+              <span className="font-mono text-sm tabular-nums text-1 font-semibold">
                 {(stopwatchTime / 1000).toFixed(2)}s
               </span>
             </div>
@@ -153,7 +153,7 @@ export default function FitnessForm({
                 </Button>
               )}
             </div>
-            <p className="text-xs text-2 italic">
+            <p className="text-sm text-2 italic">
               Waktu manual; akurasi bergantung pada pewaktu. Catat metode di catatan.
             </p>
           </div>
@@ -173,7 +173,7 @@ export default function FitnessForm({
             />
           </Field>
 
-          <div className="text-xs text-2 flex items-center justify-between pt-1 border-t border-line">
+          <div className="text-sm text-2 flex items-center justify-between pt-1 border-t border-line">
             <span>
               {shuttlePrev ? `Bulan lalu: ${shuttlePrev} dtk` : 'Bulan lalu: belum ada data'}
             </span>

@@ -13,7 +13,7 @@ export default function Select({
   ...props
 }) {
   const baseClasses =
-    'w-full appearance-none min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-[38px] pl-3 pr-8 py-1.5 rounded-control text-xs transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-45 disabled:cursor-not-allowed bg-panel text-1';
+    'w-full appearance-none min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-[38px] pl-3 pr-8 py-1.5 rounded-control text-sm transition-colors duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-45 disabled:cursor-not-allowed bg-panel text-1';
 
   const borderClasses = error
     ? 'border border-danger focus:ring-danger'

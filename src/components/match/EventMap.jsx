@@ -99,7 +99,7 @@ export default function EventMap({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-panel bg-panel border border-line">
         <div>
           <h2 className="text-base font-semibold text-1">Peta Kejadian Pertandingan</h2>
-          <p className="text-xs text-2 font-mono mt-0.5">
+          <p className="text-sm text-2 font-mono mt-0.5">
             Data pencatatan manual; bukan pelacakan otomatis.
           </p>
         </div>
@@ -114,7 +114,7 @@ export default function EventMap({
       </div>
 
       {/* Mode Selector & Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-panel bg-panel border border-line text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-panel bg-panel border border-line text-sm">
         {/* Mode Toggle */}
         <div className="flex items-center gap-1.5" role="group" aria-label="Mode visualisasi peta">
           <button
@@ -173,7 +173,7 @@ export default function EventMap({
       </div>
 
       {/* Filter Bar (Keyboard Accessible) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 p-3 rounded-panel bg-panel border border-line text-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 p-3 rounded-panel bg-panel border border-line text-sm">
         {/* Team Filter */}
         <div>
           <label htmlFor="filter-team" className="block text-2 mb-1 font-medium">Tim:</label>
@@ -435,7 +435,7 @@ export default function EventMap({
                       x={cellX + cellW / 2}
                       y={cellY + cellH / 2 + 1}
                       textAnchor="middle"
-                      className="fill-1 font-mono text-xs select-none"
+                      className="fill-1 font-mono text-sm select-none"
                       style={{ fontSize: '3px' }}
                     >
                       {cell.count}
@@ -449,7 +449,7 @@ export default function EventMap({
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-panel bg-panel border border-line text-xs font-mono">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-panel bg-panel border border-line text-sm font-mono">
         <div className="flex items-center gap-3 flex-wrap text-2">
           <span className="font-semibold text-1">Keterangan:</span>
           {mode === 'markers' && (
@@ -493,7 +493,7 @@ export default function EventMap({
 
       {/* Text Alternative Accessible Table */}
       <div className="space-y-2">
-        <h3 className="text-xs font-semibold text-2 uppercase tracking-wider">
+        <h3 className="text-sm font-semibold text-2 uppercase tracking-wider">
           Daftar Rinci Kejadian Terpilih (Alternatif Teks Aksesibilitas)
         </h3>
         <Table
@@ -502,7 +502,7 @@ export default function EventMap({
               key: 'minute',
               header: 'Waktu',
               render: (_val, row) => (
-                <span className="font-mono text-xs">
+                <span className="font-mono text-sm">
                   B{row.period} • {Number(row.minute || 0).toFixed(1)}'
                 </span>
               )
@@ -521,11 +521,11 @@ export default function EventMap({
               header: 'Pemain',
               render: (_val, row) => {
                 if (row.team === 'opponent') {
-                  return <span className="font-mono text-xs">#{row.opponent_number || '-'} Lawan</span>;
+                  return <span className="font-mono text-sm">#{row.opponent_number || '-'} Lawan</span>;
                 }
                 const info = playerMap[row.player_id] || {};
                 return (
-                  <span className="font-mono text-xs">
+                  <span className="font-mono text-sm">
                     #{info.number || '-'} {info.name || row.player_id}
                   </span>
                 );
@@ -544,7 +544,7 @@ export default function EventMap({
               key: 'outcome',
               header: 'Hasil',
               render: (_val, row) => (
-                <span className="text-xs font-mono">
+                <span className="text-sm font-mono">
                   {row.outcome === 'success' ? 'Sukses' : row.outcome === 'fail' ? 'Gagal' : '-'}
                 </span>
               )
@@ -553,7 +553,7 @@ export default function EventMap({
               key: 'x_m',
               header: 'Koordinat',
               render: (_val, row) => (
-                <span className="font-mono text-xs text-2">
+                <span className="font-mono text-sm text-2">
                   {row.x_m != null ? `(${row.x_m}m, ${row.y_m}m)` : 'Tanpa koordinat'}
                 </span>
               )
@@ -563,7 +563,7 @@ export default function EventMap({
           emptyMessage="Tidak ada kejadian yang cocok dengan filter."
         />
         {filteredEvents.length > 50 && (
-          <p className="text-xs text-2 font-mono text-center">
+          <p className="text-sm text-2 font-mono text-center">
             Menampilkan 50 kejadian pertama dari total {filteredEvents.length} kejadian terpilih.
           </p>
         )}

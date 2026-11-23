@@ -48,14 +48,14 @@ export default function SquadPlayerCard({
               )}
             </div>
             {personal_info?.jersey_number != null && (
-              <span className="absolute -bottom-1 -left-1 px-1 py-0.2 rounded bg-panel border border-line text-xs font-mono font-semibold text-1">
+              <span className="absolute -bottom-1 -left-1 px-1 py-0.2 rounded bg-panel border border-line text-sm font-mono font-semibold text-1">
                 #{personal_info.jersey_number}
               </span>
             )}
           </div>
 
           <div className="flex flex-col items-end gap-1.5">
-            <span className="px-2 py-0.5 rounded-control bg-raised border border-line text-xs font-medium text-2">
+            <span className="px-2 py-0.5 rounded-control bg-raised border border-line text-sm font-medium text-2">
               {formatPositionLabel(personal_info?.position)}
             </span>
             <Badge variant={isPublished ? 'success' : 'warning'}>
@@ -73,13 +73,13 @@ export default function SquadPlayerCard({
             {personal_info?.full_name || 'Atlet'}
           </h3>
 
-          <div className="flex items-center gap-1.5 text-xs text-2">
+          <div className="flex items-center gap-1.5 text-sm text-2">
             <span className="truncate">{formatPositionLabel(personal_info?.position)}</span>
             <span>·</span>
             <span>{personal_info?.age ? `${personal_info.age} thn` : 'Belum ada data'}</span>
           </div>
 
-          <div className="text-xs text-2 flex items-center justify-between pt-1">
+          <div className="text-sm text-2 flex items-center justify-between pt-1">
             <span>Kaki: <span className="text-1 font-medium">{formatPreferredFoot(personal_info?.preferred_foot)}</span></span>
             <span>{personal_info?.height_cm ? `${personal_info.height_cm} cm` : 'Belum ada data'}</span>
           </div>
@@ -87,15 +87,15 @@ export default function SquadPlayerCard({
 
         {/* Mini Indicators */}
         <div className="mt-3 p-2.5 rounded-control bg-raised border border-line space-y-1.5">
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between text-sm">
             <span className="text-2">Kecepatan (Pace)</span>
             <span className="font-mono tabular-nums text-1 font-semibold">{pace != null ? pace : 'Belum ada data'}</span>
           </div>
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between text-sm">
             <span className="text-2">Operan (Passing)</span>
             <span className="font-mono tabular-nums text-1 font-semibold">{passing != null ? passing : 'Belum ada data'}</span>
           </div>
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between text-sm">
             <span className="text-2">Fisik (Physical)</span>
             <span className="font-mono tabular-nums text-1 font-semibold">{physical != null ? physical : 'Belum ada data'}</span>
           </div>

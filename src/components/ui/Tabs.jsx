@@ -51,7 +51,7 @@ export default function Tabs({
             tabIndex={isActive ? 0 : -1}
             onClick={() => onChange?.(tab.id)}
             onKeyDown={(e) => handleKeyDown(e, idx)}
-            className={`relative inline-flex items-center justify-center min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 py-2.5 px-3 text-xs md:text-sm font-medium transition-colors duration-150 ease-out whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-t-[4px] cursor-pointer ${
+            className={`relative inline-flex items-center justify-center min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 py-2.5 px-3 text-sm md:text-sm font-medium transition-colors duration-150 ease-out whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-t-[4px] cursor-pointer ${
               isActive
                 ? 'text-1 font-semibold'
                 : 'text-2 hover:text-1'
@@ -60,7 +60,7 @@ export default function Tabs({
             <span className="flex items-center gap-1.5">
               <span>{tab.label}</span>
               {typeof tab.count === 'number' && (
-                <span className="text-xs font-mono tabular-nums px-1.5 py-0.2 rounded-full bg-raised text-2">
+                <span className="text-sm font-mono tabular-nums px-1.5 py-0.2 rounded-full bg-raised text-2">
                   {tab.count}
                 </span>
               )}

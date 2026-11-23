@@ -55,7 +55,7 @@ export default function ResponsiveList({
     return (
       <div className={`w-full p-8 border border-line rounded-panel bg-panel text-center ${className}`}>
         {typeof emptyMessage === 'string' ? (
-          <p className="text-xs text-2">{emptyMessage}</p>
+          <p className="text-sm text-2">{emptyMessage}</p>
         ) : (
           emptyMessage
         )}

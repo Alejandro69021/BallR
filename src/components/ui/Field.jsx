@@ -36,7 +36,7 @@ export default function Field({
           id={id}
           className={`w-full ${icon ? 'pl-9' : 'px-3'} pr-3 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-[38px] bg-panel border ${
             error ? 'border-danger focus:ring-danger' : 'border-control focus:ring-brand'
-          } rounded-control text-xs text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-colors ${responsiveClass}`}
+          } rounded-control text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-offset-1 transition-colors ${responsiveClass}`}
           {...inputProps}
         />
       </div>
@@ -48,7 +48,7 @@ export default function Field({
       {label && (
         <label
           htmlFor={id}
-          className="block text-xs font-medium text-2"
+          className="block text-sm font-medium text-2"
         >
           {label}
           {required && <span className="text-danger ml-0.5">*</span>}
@@ -61,7 +61,7 @@ export default function Field({
         <p
           id={`${id}-error`}
           role="alert"
-          className="text-xs text-danger flex items-center gap-1 mt-1 leading-snug"
+          className="text-sm text-danger flex items-center gap-1 mt-1 leading-snug"
         >
           <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
           <span>{error}</span>
@@ -69,7 +69,7 @@ export default function Field({
       ) : helper ? (
         <p
           id={`${id}-helper`}
-          className="text-xs text-2 mt-1"
+          className="text-sm text-2 mt-1"
         >
           {helper}
         </p>

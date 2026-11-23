@@ -122,7 +122,7 @@ export default function LoggerPage({ userRole = 'public', onOpenAuthModal, onToa
       <div className="p-8 text-center rounded-panel bg-panel border border-line space-y-3 max-w-md mx-auto text-1">
         <Lock className="w-8 h-8 text-2 mx-auto" strokeWidth={1.5} />
         <h2 className="text-base font-semibold text-1">Akses Pitch Logger Terkunci</h2>
-        <p className="text-xs text-2">
+        <p className="text-sm text-2">
           Pencatatan kejadian laga hanya dapat diakses oleh staf pelatih dan admin terdaftar.
         </p>
         <Button
@@ -161,7 +161,7 @@ export default function LoggerPage({ userRole = 'public', onOpenAuthModal, onToa
 
       {/* Read-only banner if match is final */}
       {isReadOnly && (
-        <div className="p-3 rounded-panel bg-warning/10 border border-warning/30 text-xs text-warning flex items-center justify-between">
+        <div className="p-3 rounded-panel bg-warning/10 border border-warning/30 text-sm text-warning flex items-center justify-between">
           <span>Laga sudah final. Kejadian dan waktu pertandingan dikunci (mode hanya baca).</span>
           <Button
             variant="ghost"

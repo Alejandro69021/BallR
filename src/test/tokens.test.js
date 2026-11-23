@@ -37,12 +37,12 @@ describe('Design Token Accessibility Verification (WCAG AA >= 4.5:1)', () => {
   ];
 
   const paperPairs = [
-    { label: 'Paper bg & text-1', bg: '#F6F4EF', text: '#14181F' },
-    { label: 'Paper bg & text-2', bg: '#F6F4EF', text: '#4A5360' },
-    { label: 'Paper surface & text-1', bg: '#FFFFFF', text: '#14181F' },
-    { label: 'Paper surface & text-2', bg: '#FFFFFF', text: '#4A5360' },
-    { label: 'Paper bg & brand #2E7D5B', bg: '#F6F4EF', text: '#2E7D5B' },
-    { label: 'Paper surface & brand #2E7D5B', bg: '#FFFFFF', text: '#2E7D5B' }
+    { label: 'Paper bg & text-1', bg: '#F5F6F2', text: '#15211B' },
+    { label: 'Paper bg & text-2', bg: '#F5F6F2', text: '#4A5750' },
+    { label: 'Paper surface & text-1', bg: '#FFFFFF', text: '#15211B' },
+    { label: 'Paper surface & text-2', bg: '#FFFFFF', text: '#4A5750' },
+    { label: 'Paper bg & brand #17744A', bg: '#F5F6F2', text: '#17744A' },
+    { label: 'Paper surface & brand #17744A', bg: '#FFFFFF', text: '#17744A' }
   ];
 
   darkPairs.forEach(({ label, bg, text }) => {
