@@ -18,6 +18,7 @@ import Select from '../components/ui/Select';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import EmptyState from '../components/ux/EmptyState';
+import { PageHeader } from '../components/brand';
 
 export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthModal }) {
   const navigate = useNavigate();
@@ -206,22 +207,19 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-1">Papan Taktik</h1>
-          <p className="text-sm text-2 mt-1">
-            Rancang dan simulasikan pergerakan taktik lapangan berlandaskan rujukan kurikulum resmi.
-          </p>
-        </div>
-
-        <Button
-          variant="primary"
-          icon={<Plus className="w-4 h-4" strokeWidth={1.5} />}
-          onClick={() => setIsCreateOpen(true)}
-        >
-          Skema baru
-        </Button>
-      </div>
+      <PageHeader
+        kicker="Strategi & Formasi"
+        title="Papan Taktik"
+        actions={
+          <Button
+            variant="primary"
+            icon={<Plus className="w-4 h-4" strokeWidth={1.5} />}
+            onClick={() => setIsCreateOpen(true)}
+          >
+            Skema baru
+          </Button>
+        }
+      />
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">

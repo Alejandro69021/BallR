@@ -13,6 +13,7 @@ import Field from './ui/Field';
 import Select from './ui/Select';
 import EmptyState from './ux/EmptyState';
 import SquadPlayerCard from './squad/SquadPlayerCard';
+import { PageHeader } from './brand';
 import { formatPositionLabel } from '../lib/displayLabels';
 
 export default function SquadHubView({
@@ -258,50 +259,42 @@ export default function SquadHubView({
     <div className="space-y-6 animate-fadeIn pb-16 text-1">
             {/* 1. Directory Header */}
             <section className="rounded-panel border border-line bg-panel p-4 sm:p-6 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
+              <PageHeader
+                kicker="Basis Data Pembinaan"
+                title="Direktori Skuad"
+                actions={
+                  <div className="flex items-center gap-2 self-start sm:self-auto">
                     <Badge variant="brand">Akademi U-13</Badge>
-                    <span className="text-sm text-2">Basis Data Pembinaan</span>
+                    {/* View Mode Toggle */}
+                    <div className="inline-flex rounded-control border border-control bg-raised p-0.5 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setViewMode('table')}
+                        aria-pressed={viewMode === 'table'}
+                        className={`px-3 py-1.5 rounded text-sm font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'table'
+                          ? 'bg-panel text-1 shadow-sm font-semibold'
+                          : 'text-2 hover:text-1'
+                          }`}
+                      >
+                        <LayoutList className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Tabel</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setViewMode('cards')}
+                        aria-pressed={viewMode === 'cards'}
+                        className={`px-3 py-1.5 rounded text-sm font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'cards'
+                          ? 'bg-panel text-1 shadow-sm font-semibold'
+                          : 'text-2 hover:text-1'
+                          }`}
+                      >
+                        <LayoutGrid className="w-4 h-4" strokeWidth={1.5} />
+                        <span>Kartu</span>
+                      </button>
+                    </div>
                   </div>
-                  <h1 className="text-xl sm:text-2xl font-semibold text-1">
-                    Direktori Skuad
-                  </h1>
-                  <p className="text-sm text-2 mt-1 max-w-xl">
-                    Basis data resmi rekam jejak atlet binaan, status asesmen berkala, dan rekam kebugaran fisik.
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2 self-start sm:self-auto">
-                  {/* View Mode Toggle */}
-                  <div className="inline-flex rounded-control border border-control bg-raised p-0.5 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setViewMode('table')}
-                      aria-pressed={viewMode === 'table'}
-                      className={`px-3 py-1.5 rounded text-sm font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'table'
-                        ? 'bg-panel text-1 shadow-sm font-semibold'
-                        : 'text-2 hover:text-1'
-                        }`}
-                    >
-                      <LayoutList className="w-4 h-4" strokeWidth={1.5} />
-                      <span>Tabel</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setViewMode('cards')}
-                      aria-pressed={viewMode === 'cards'}
-                      className={`px-3 py-1.5 rounded text-sm font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-0 ${viewMode === 'cards'
-                        ? 'bg-panel text-1 shadow-sm font-semibold'
-                        : 'text-2 hover:text-1'
-                        }`}
-                    >
-                      <LayoutGrid className="w-4 h-4" strokeWidth={1.5} />
-                      <span>Kartu</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
+                }
+              />
 
               {/* Roster Summary Strip */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">

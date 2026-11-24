@@ -4,6 +4,7 @@ import CoachAssessmentView from '../components/CoachAssessmentView';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/ui/EmptyState';
 import Button from '../components/ui/Button';
+import { PageHeader } from '../components/brand';
 import { usePlayers } from '../hooks/usePlayers';
 
 export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinModal, onToast }) {
@@ -75,12 +76,18 @@ export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinMod
   }
 
   return (
-    <CoachAssessmentView
-      players={players}
-      selectedPlayerId={activePlayer.player_id}
-      activePlayer={activePlayer}
-      onSaveAssessment={handleSaveAssessment}
-      onToast={onToast}
-    />
+    <div className="space-y-6">
+      <PageHeader
+        kicker="Penilaian Berkala"
+        title="Evaluasi Pemain"
+      />
+      <CoachAssessmentView
+        players={players}
+        selectedPlayerId={activePlayer.player_id}
+        activePlayer={activePlayer}
+        onSaveAssessment={handleSaveAssessment}
+        onToast={onToast}
+      />
+    </div>
   );
 }

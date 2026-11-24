@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import Surface from '../components/ui/Surface';
 import Button from '../components/ui/Button';
+import { PageHeader } from '../components/brand';
 import { resetTourDone } from '../lib/tourStorage';
 
 export default function GuidePage() {
@@ -93,15 +94,10 @@ export default function GuidePage() {
   return (
     <div className="space-y-6 animate-fadeIn pb-12 text-1">
       {/* Header */}
-      <section className="p-6 rounded-panel border border-line bg-panel space-y-2">
-        <div className="flex items-center gap-2">
-          <BookOpen className="w-6 h-6 text-brand" strokeWidth={1.5} />
-          <h1 className="text-xl sm:text-2xl font-bold text-1">Panduan Singkat</h1>
-        </div>
-        <p className="text-sm text-2 leading-relaxed">
-          Panduan praktis penggunaan aplikasi pembinaan sepak bola usia muda BallR. Hanya memuat alur kerja dan fungsi yang tersedia secara nyata.
-        </p>
-      </section>
+      <PageHeader
+        kicker="Bantuan & Tur"
+        title="Panduan Singkat"
+      />
 
       {/* First-Run Tour Reset Card */}
       <section

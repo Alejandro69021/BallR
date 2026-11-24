@@ -16,6 +16,7 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import EmptyState from '../components/ux/EmptyState';
 import WelcomeTour from '../components/ux/WelcomeTour';
+import { PageHeader } from '../components/brand';
 
 export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthModal }) {
   const navigate = useNavigate();
@@ -319,28 +320,22 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
 
   return (
     <div className="space-y-6">
-      {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-brand" strokeWidth={1.5} />
-            <h1 className="text-xl font-semibold text-1">Rekaman Pertandingan</h1>
-          </div>
-          <p className="text-sm text-2">
-            Daftar pertandingan resmi akademi, ukuran lapangan, dan catatan kejadian teknis.
-          </p>
-        </div>
-
-        <Button
-          variant="brand"
-          size="md"
-          icon={<Plus className="w-4 h-4" strokeWidth={1.5} />}
-          onClick={handleOpenCreateModal}
-          data-tour="new-match"
-        >
-          Laga baru
-        </Button>
-      </div>
+      {/* Page Header */}
+      <PageHeader
+        kicker="Kompetisi & Uji Tanding"
+        title="Rekaman Pertandingan"
+        actions={
+          <Button
+            variant="brand"
+            size="md"
+            icon={<Plus className="w-4 h-4" strokeWidth={1.5} />}
+            onClick={handleOpenCreateModal}
+            data-tour="new-match"
+          >
+            Laga baru
+          </Button>
+        }
+      />
 
       {/* First-Run Welcome Tour Banner & CoachMark */}
       <WelcomeTour />
