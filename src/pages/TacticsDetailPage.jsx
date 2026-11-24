@@ -538,7 +538,7 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
   if (loading) {
     return (
       <div className="p-12 text-center text-sm text-2">
-        Memuat detail skema taktik...
+        Memuat skema taktik...
       </div>
     );
   }

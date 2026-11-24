@@ -552,7 +552,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   if (loading) {
     return (
       <div className="p-8 border border-line rounded-panel bg-panel text-center">
-        <p className="text-sm text-2">Memuat detail pertandingan...</p>
+        <p className="text-sm text-2">Memuat detail laga...</p>
       </div>
     );
   }

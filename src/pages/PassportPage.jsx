@@ -18,7 +18,7 @@ export default function PassportPage({ userRole = 'public', onOpenShare, onToast
   if (!players || players.length === 0) {
     return (
       <div className="p-8 border border-line rounded-panel bg-panel">
-        <EmptyState title="Tidak ada data pemain" description="Daftar pemain tidak ditemukan." />
+        <EmptyState title="Belum ada data pemain." description="Daftar pemain belum ditambahkan." />
       </div>
     );
   }

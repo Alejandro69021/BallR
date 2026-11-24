@@ -366,7 +366,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
       {/* Main Table / Responsive Cards */}
       {loading ? (
         <div className="p-8 border border-line rounded-panel bg-panel text-center">
-          <p className="text-sm text-2">Memuat daftar pertandingan...</p>
+          <p className="text-sm text-2">Memuat daftar laga...</p>
         </div>
       ) : matches.length === 0 ? (
         <div className="p-8 border border-line rounded-panel bg-panel">

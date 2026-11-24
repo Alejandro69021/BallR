@@ -223,7 +223,7 @@ export default function HomePage({
       {/* Primary Section: Active Task Card or Empty State */}
       {loading ? (
         <div className="p-8 border border-line rounded-panel bg-panel text-center">
-          <p className="text-sm text-2">Memuat ringkasan beranda...</p>
+          <p className="text-sm text-2">Memuat ringkasan...</p>
         </div>
       ) : matches.length === 0 ? (
         <EmptyState

@@ -6,7 +6,7 @@ export default function LoadingSkeleton() {
   return (
     <div
       role="status"
-      aria-label="Memuat data rekam jejak"
+      aria-label="Memuat data..."
       className="w-full max-w-5xl mx-auto px-4 py-6 space-y-6"
     >
       {/* Header Banner Skeleton */}

@@ -247,7 +247,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
       {/* Scenarios Table */}
       {loading ? (
         <div className="p-8 text-center text-sm text-2">
-          Memuat daftar skema taktik...
+          Memuat skema taktik...
         </div>
       ) : scenarios.length === 0 ? (
         <div className="p-8 border border-line rounded-panel bg-panel">

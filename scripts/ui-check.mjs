@@ -693,6 +693,69 @@ async function main() {
         await context.close();
       }
     }
+
+    // Capture specific quiet moments screens (Tour final step & Empty state)
+    for (const width of [1366, 390]) {
+      const height = width === 1366 ? 650 : 844;
+      for (const theme of themes) {
+        // 1. Tour with bib highlight on final step
+        try {
+          const tourCtx = await browser.newContext({ viewport: { width, height } });
+          await tourCtx.addInitScript((th) => {
+            localStorage.removeItem('ballr_tour_done_v1');
+            localStorage.setItem('ballr_surface', th);
+            localStorage.setItem('ballr_theme', th);
+          }, theme);
+          const tourPage = await tourCtx.newPage();
+          await tourPage.goto(`${baseUrl}/beranda`, { waitUntil: 'domcontentloaded' });
+          await tourPage.waitForTimeout(300);
+          const startBtn = await tourPage.$('[data-testid="start-tour-banner-btn"]');
+          if (startBtn) {
+            await startBtn.click();
+            await tourPage.waitForTimeout(200);
+            for (let i = 0; i < 3; i++) {
+              const nextBtn = await tourPage.$('[data-testid="coachmark-next-btn"]');
+              if (nextBtn) {
+                await nextBtn.click();
+                await tourPage.waitForTimeout(200);
+              }
+            }
+          }
+          await tourPage.screenshot({
+            path: path.join(outDir, `tour-step-final-${theme}-${width}.png`),
+            fullPage: false
+          });
+          await tourCtx.close();
+        } catch (e) {
+          console.warn(`[ui-check] Tour screenshot warning (${theme}-${width}):`, e.message);
+        }
+
+        // 2. Empty state with pitch-line illustration
+        try {
+          const emptyCtx = await browser.newContext({ viewport: { width, height } });
+          await emptyCtx.addInitScript((th) => {
+            localStorage.setItem('ballr_tour_done_v1', '1');
+            localStorage.setItem('ballr_surface', th);
+            localStorage.setItem('ballr_theme', th);
+          }, theme);
+          const emptyPage = await emptyCtx.newPage();
+          await emptyPage.goto(`${baseUrl}/taktik`, { waitUntil: 'domcontentloaded' });
+          await emptyPage.waitForTimeout(300);
+          const searchInput = await emptyPage.$('input[placeholder*="Cari"]');
+          if (searchInput) {
+            await searchInput.fill('xyz-tidak-ditemukan');
+            await emptyPage.waitForTimeout(300);
+          }
+          await emptyPage.screenshot({
+            path: path.join(outDir, `empty-state-pitch-${theme}-${width}.png`),
+            fullPage: false
+          });
+          await emptyCtx.close();
+        } catch (e) {
+          console.warn(`[ui-check] Empty state screenshot warning (${theme}-${width}):`, e.message);
+        }
+      }
+    }
   } finally {
     await browser.close();
     await server.close();
