@@ -62,32 +62,33 @@
   --radius-panel: 8px;
 }
 
-[data-surface="dark"] {
-  --app-bg: #0B0F14;
-  --panel: #11161D;
-  --raised: #1A212B;
-  --line: #2C3643;
-  --control-border: #64748B;
-  --text-1: #E8ECF1;
-  --text-2: #9AA6B5;
-  --brand: #4FB286;
-  --warning: #C98A1B;
-  --danger: #E06D66;
-  --success: #4FB286;
-  --accent-soft: #1A382B;
-  --accent-ink: #7FE0B0;
-  --warn-bg: #38290B;
-  --warn-ink: #F7D070;
-  --neutral-chip: #242D38;
+:root {
+  --app-bg: #F5F6F2;
+  --panel: #FFFFFF;
+  --raised: #F5F6F2;
+  --line: #D8DDD6;
+  --control-border: #788594;
+  --text-1: #15211B;
+  --text-2: #4A5750;
+  --brand: #17744A;
+  --warning: #7A4B00;
+  --danger: #C2453D;
+  --success: #17744A;
+  --accent-soft: #DDF1E5;
+  --accent-ink: #0F5A38;
+  --warn-bg: #FFF1CC;
+  --warn-ink: #7A4B00;
+  --neutral-chip: #E6E9E4;
   --series-1: #0072B2;
-  --series-2: #E69F00;
-  --series-3: #009E73;
-  --series-4: #D55E00;
-  --series-5: #CC79A7;
-  --pitch-bg: #0D1712;
-  --pitch-line: #26382D;
+  --series-2: #9E5B00;
+  --series-3: #007A59;
+  --series-4: #B34700;
+  --series-5: #9C4472;
+  --pitch-bg: #EDF4EE;
+  --pitch-line: #C2D6C6;
 }
 
+:root[data-surface="paper"],
 [data-surface="paper"] {
   --app-bg: #F5F6F2;
   --panel: #FFFFFF;
@@ -114,30 +115,31 @@
   --pitch-line: #C2D6C6;
 }
 
-:root {
-  --app-bg: #F5F6F2;
-  --panel: #FFFFFF;
-  --raised: #F5F6F2;
-  --line: #D8DDD6;
-  --control-border: #788594;
-  --text-1: #15211B;
-  --text-2: #4A5750;
-  --brand: #17744A;
-  --warning: #7A4B00;
-  --danger: #C2453D;
-  --success: #17744A;
-  --accent-soft: #DDF1E5;
-  --accent-ink: #0F5A38;
-  --warn-bg: #FFF1CC;
-  --warn-ink: #7A4B00;
-  --neutral-chip: #E6E9E4;
+:root[data-surface="dark"],
+[data-surface="dark"] {
+  --app-bg: #0B0F14;
+  --panel: #11161D;
+  --raised: #1A212B;
+  --line: #2C3643;
+  --control-border: #64748B;
+  --text-1: #E8ECF1;
+  --text-2: #9AA6B5;
+  --brand: #4FB286;
+  --warning: #C98A1B;
+  --danger: #E06D66;
+  --success: #4FB286;
+  --accent-soft: #1A382B;
+  --accent-ink: #7FE0B0;
+  --warn-bg: #38290B;
+  --warn-ink: #F7D070;
+  --neutral-chip: #242D38;
   --series-1: #0072B2;
-  --series-2: #9E5B00;
-  --series-3: #007A59;
-  --series-4: #B34700;
-  --series-5: #9C4472;
-  --pitch-bg: #EDF4EE;
-  --pitch-line: #C2D6C6;
+  --series-2: #E69F00;
+  --series-3: #009E73;
+  --series-4: #D55E00;
+  --series-5: #CC79A7;
+  --pitch-bg: #0D1712;
+  --pitch-line: #26382D;
 }
 
 @layer base {

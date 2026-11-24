@@ -8,12 +8,12 @@ export default function BenchmarkNote({ metricName, benchmarkValue, sampleSize, 
   const primaryRef = Array.isArray(referenceIds) ? referenceIds[0] : referenceIds;
 
   return (
-    <div className="flex items-center justify-between gap-2 p-2 rounded bg-slate-950 border border-slate-800 text-sm text-slate-400">
+    <div className="flex items-center justify-between gap-2 p-2 rounded bg-raised border border-line text-sm text-2">
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-slate-300 font-medium">{metricName}:</span>
-        <span className="font-mono text-white font-semibold">{benchmarkValue}</span>
+        <span className="text-1 font-medium">{metricName}:</span>
+        <span className="font-mono text-1 font-semibold">{benchmarkValue}</span>
         {sampleSize && (
-          <span className="font-mono text-sm text-slate-500">
+          <span className="font-mono text-sm text-2">
             (n={sampleSize}{dateRange ? ` · ${dateRange}` : ''})
           </span>
         )}

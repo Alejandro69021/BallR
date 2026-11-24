@@ -44,7 +44,7 @@ export default function ReferencesPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari rujukan, penulis, atau kurikulum..."
-            className="w-full pl-9 pr-3 py-1.5 bg-app border border-line rounded text-sm text-1 placeholder-slate-500 focus:outline-none focus:border-brand"
+            className="w-full pl-9 pr-3 py-1.5 bg-app border border-line rounded text-sm text-1 focus:outline-none focus:border-brand"
           />
         </div>
 

@@ -517,7 +517,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 type="button"
                 onClick={togglePlay}
                 aria-label={isPlaying ? 'Jeda video' : 'Putar video'}
-                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-fit px-2 sm:px-2.5 py-1 rounded-control bg-brand text-slate-950 hover:bg-brand/90 font-medium inline-flex items-center justify-center gap-1 text-sm transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-fit px-2 sm:px-2.5 py-1 rounded-control bg-brand text-app hover:bg-brand/90 font-medium inline-flex items-center justify-center gap-1 text-sm transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
                 <span>{isPlaying ? 'Jeda' : 'Putar'}</span>

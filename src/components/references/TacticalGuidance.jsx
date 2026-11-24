@@ -8,19 +8,19 @@ export default function TacticalGuidance({ title, guidanceText, referenceIds = [
   const primaryRef = Array.isArray(referenceIds) ? referenceIds[0] : referenceIds;
 
   return (
-    <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-1.5 text-sm text-slate-300">
+    <div className="p-3 rounded-lg bg-panel border border-line space-y-1.5 text-sm text-2">
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2">
           {phase && (
-            <span className="text-sm font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">
+            <span className="text-sm font-mono px-1.5 py-0.2 rounded bg-raised text-2">
               {phase}
             </span>
           )}
-          <span className="font-semibold text-white">{title || 'Panduan Taktis'}</span>
+          <span className="font-semibold text-1">{title || 'Panduan Taktis'}</span>
         </div>
         <RefChip referenceId={primaryRef} />
       </div>
-      <p className="text-slate-300 text-sm leading-relaxed">{guidanceText}</p>
+      <p className="text-2 text-sm leading-relaxed">{guidanceText}</p>
     </div>
   );
 }
