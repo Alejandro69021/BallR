@@ -1,6 +1,7 @@
-export default function PitchLines({ opacity = 0.12, markings = 'all', className = '', ...props }) {
-  const showCenter = markings === 'all' || markings === 'center';
-  const showPenalty = markings === 'all' || markings === 'penalty';
+export default function PitchLines({ opacity = 0.12, markings, variant, className = '', ...props }) {
+  const mode = variant || markings || 'all';
+  const showCenter = mode === 'all' || mode === 'center';
+  const showPenalty = mode === 'all' || mode === 'penalty';
 
   return (
     <svg

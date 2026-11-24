@@ -22,7 +22,7 @@ export default function TrialCta({ isDemoMode = false, onOpenAuthModal }) {
       <div className="max-w-[1160px] mx-auto w-full px-4 sm:px-6">
         {/* CTA Card in Dark Pitch with PitchLines and Bib Lime Accents */}
         <div className="relative bg-pitch text-chalk rounded-panel border-2 border-ink p-8 sm:p-12 md:p-16 overflow-hidden shadow-lg">
-          <PitchLines variant="penalty" opacity={0.14} className="pointer-events-none" />
+          <PitchLines variant="penalty" opacity={0.14} className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
 
           <div className="relative z-10 max-w-2xl">
             <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl uppercase tracking-tight text-chalk leading-tight">

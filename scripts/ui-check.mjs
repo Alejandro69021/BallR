@@ -144,12 +144,28 @@ async function main() {
         }, theme);
 
         const page = await context.newPage();
+        const thirdPartyRequests = [];
+        page.on('request', (req) => {
+          try {
+            const url = new URL(req.url());
+            if (url.hostname !== 'localhost' && url.hostname !== '127.0.0.1') {
+              thirdPartyRequests.push(req.url());
+            }
+          } catch {}
+        });
 
         for (const route of routes) {
           const comboLabel = `${route.slug}-${theme}-${vp.width}x${vp.height}`;
           try {
+            if (route.path === '/') {
+              thirdPartyRequests.length = 0;
+            }
             await page.goto(`${baseUrl}${route.path}`, { waitUntil: 'domcontentloaded' });
-            // Wait for main content and surface attribute
+            if (route.isLanding || route.path === '/' || route.path === '/privasi') {
+              await page.waitForSelector('[data-testid="landing-container"], footer', { timeout: 10000 }).catch(() => {});
+            } else if (!route.optOut) {
+              await page.waitForSelector('[data-testid="page-container"]', { timeout: 10000 }).catch(() => {});
+            }
             await page.waitForTimeout(200);
 
             // Screenshot
@@ -433,6 +449,83 @@ async function main() {
                 failures.push(`Assertion (h - landing) FAILED on ${comboLabel}: ${landingGutterCheck.error}`);
               }
             }
+
+            // Check (i): contrast >= 4.5:1 on "/" for hero paragraph, footer text, and dark principles
+            if (route.path === '/') {
+              const landingContrasts = await page.evaluate(() => {
+                function getRgb(colorStr) {
+                  const canvas = document.createElement('canvas');
+                  canvas.width = 1;
+                  canvas.height = 1;
+                  const ctx = canvas.getContext('2d');
+                  ctx.fillStyle = colorStr;
+                  ctx.fillRect(0, 0, 1, 1);
+                  const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+                  return [r, g, b];
+                }
+
+                function getLuminance([r, g, b]) {
+                  const sRGB = [r, g, b].map((v) => {
+                    v /= 255;
+                    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+                  });
+                  return 0.2126 * sRGB[0] + 0.7152 * sRGB[1] + 0.0722 * sRGB[2];
+                }
+
+                function calcRatio(fgStr, bgStr) {
+                  const l1 = getLuminance(getRgb(fgStr));
+                  const l2 = getLuminance(getRgb(bgStr));
+                  const lighter = Math.max(l1, l2);
+                  const darker = Math.min(l1, l2);
+                  return Math.round(((lighter + 0.05) / (darker + 0.05)) * 100) / 100;
+                }
+
+                function getEffectiveBg(el) {
+                  let cur = el;
+                  while (cur && cur !== document.documentElement) {
+                    const bg = window.getComputedStyle(cur).backgroundColor;
+                    if (bg && bg !== 'transparent' && !bg.startsWith('rgba(0, 0, 0, 0)')) {
+                      return bg;
+                    }
+                    cur = cur.parentElement;
+                  }
+                  return 'rgb(244, 245, 238)';
+                }
+
+                const targets = [
+                  { name: 'hero paragraph', el: document.querySelector('#hero p') },
+                  { name: 'footer text', el: document.querySelector('#kaki p') },
+                  { name: 'footer link', el: document.querySelector('#kaki a') },
+                  { name: 'principles heading', el: document.querySelector('#prinsip h3') },
+                  { name: 'principles description', el: document.querySelector('#prinsip p') }
+                ];
+
+                const results = [];
+                for (const t of targets) {
+                  if (!t.el) continue;
+                  const fg = window.getComputedStyle(t.el).color;
+                  const bg = getEffectiveBg(t.el);
+                  const ratio = calcRatio(fg, bg);
+                  results.push({ name: t.name, ratio, fg, bg });
+                }
+                return results;
+              });
+
+              for (const c of landingContrasts) {
+                if (c.ratio < 4.5) {
+                  failures.push(
+                    `Assertion (i) FAILED on ${comboLabel}: ${c.name} contrast < 4.5:1 (ratio=${c.ratio}:1, fg="${c.fg}", bg="${c.bg}")`
+                  );
+                }
+              }
+
+              // Check (j): Zero requests to third-party hosts on "/"
+              if (thirdPartyRequests.length > 0) {
+                failures.push(
+                  `Assertion (j) FAILED on ${comboLabel}: detected ${thirdPartyRequests.length} third-party requests on landing page: ${thirdPartyRequests.join(', ')}`
+                );
+              }
+            }
           } catch (err) {
             failures.push(`Execution error on ${comboLabel}: ${err.message}`);
           }
@@ -452,7 +545,7 @@ async function main() {
   console.log(`Themes tested: ${themes.join(', ')}`);
   console.log(`Total matrix permutations: ${routes.length * viewports.length * themes.length}`);
   if (failures.length === 0) {
-    console.log('ALL ASSERTIONS (a)-(h) PASSED (0 failures)! Screenshots saved to ui-check-out/');
+    console.log('ALL ASSERTIONS (a)-(j) PASSED (0 failures)! Screenshots saved to ui-check-out/');
     process.exit(0);
   } else {
     console.error(`FAILED: ${failures.length} issues detected:`);

@@ -3,6 +3,16 @@
 // Security & Privacy: Never caches authenticated sessions or children's personal data.
 // ==============================================================================
 
+// On localhost / dev: skip interception and unregister
+if (typeof self !== 'undefined' && (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1')) {
+  self.addEventListener('install', () => self.skipWaiting());
+  self.addEventListener('activate', (event) => {
+    event.waitUntil(
+      caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k)))).then(() => self.registration.unregister())
+    );
+  });
+}
+
 const CACHE_VERSION = 'ballr-v2';
 const STATIC_CACHE_NAME = `ballr-static-${CACHE_VERSION}`;
 
