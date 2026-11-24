@@ -2,6 +2,7 @@ import React from 'react';
 import { Share2 } from 'lucide-react';
 import Button from './ui/Button';
 import { formatPositionLabel, formatPreferredFoot, formatAttributeName } from '../lib/displayLabels';
+import { JerseyTile } from './brand';
 
 export default function PlayerHeader({ player, personalInfo: propPersonalInfo, onOpenStoryCard, hidePlayerName = false }) {
   const personalInfo = propPersonalInfo || player?.personal_info || {};
@@ -76,22 +77,22 @@ export default function PlayerHeader({ player, personalInfo: propPersonalInfo, o
               <span className="font-mono text-sm text-2">
                 ID: {publicId}
               </span>
-              {!hidePlayerName && jersey_number != null && (
-                <span className="font-mono text-sm font-semibold text-1 bg-raised px-1.5 py-0.5 rounded border border-line">
-                  #{jersey_number}
-                </span>
-              )}
             </div>
 
             {!hidePlayerName && (
-              <h1 className="text-xl sm:text-2xl font-semibold text-1">
-                {full_name || 'Atlet'}
-                {nickname && (
-                  <span className="text-sm font-normal text-2 ml-2">
-                    "{nickname}"
-                  </span>
+              <div className="flex items-center gap-3">
+                {jersey_number != null && (
+                  <JerseyTile number={jersey_number} size="lg" />
                 )}
-              </h1>
+                <h1 className="text-xl sm:text-2xl font-semibold text-1">
+                  {full_name || 'Atlet'}
+                  {nickname && (
+                    <span className="text-sm font-normal text-2 ml-2">
+                      "{nickname}"
+                    </span>
+                  )}
+                </h1>
+              </div>
             )}
 
             <div className="text-sm text-2 space-y-0.5 pt-0.5">

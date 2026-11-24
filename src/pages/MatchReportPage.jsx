@@ -41,6 +41,7 @@ import RefChip from '../components/ui/RefChip';
 import Dialog from '../components/ui/Dialog';
 import EmptyState from '../components/ui/EmptyState';
 import Term from '../components/ux/Term';
+import { BrandMark } from '../components/brand';
 
 export default function MatchReportPage({ userRole = 'public', onToast, onOpenAuthModal }) {
   const { matchId } = useParams();
@@ -269,7 +270,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
   if (loading) {
     return (
       <div className="p-12 text-center text-sm text-2 font-mono" data-surface="paper">
-        Memuat berkas laporan pertandingan...
+        Memuat laporan...
       </div>
     );
   }
@@ -957,7 +958,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
           {latestSnapshot && (
             <div className="pt-2 border-t border-line text-2 space-y-0.5">
-              <div>Status: <span className="text-1 font-semibold">Telah Dikunci Resmi</span></div>
+              <div>Status: <span className="text-1 font-semibold">Telah Dikunci</span></div>
               <div>Pemeriksa: <span className="text-1">{latestSnapshot.reviewed_by_profile?.full_name || latestSnapshot.reviewed_by}</span></div>
               <div>Tanggal Penguncian: <span className="text-1">{new Date(latestSnapshot.created_at).toLocaleString('id-ID')}</span></div>
             </div>
@@ -989,14 +990,18 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       `}</style>
 
       {/* FOOTER (Printed on every page via fixed CSS) */}
-      <footer className="print-footer pt-4 border-t border-line text-xs text-2 font-mono">
-        <span>Dokumen internal akademi; berisi data anak, jangan dibagikan tanpa persetujuan wali.</span>
+      <footer className="print-footer pt-4 border-t border-line text-xs text-2 font-mono flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <BrandMark size={14} aria-hidden="true" />
+          <span>Dokumen internal akademi; berisi data anak, jangan dibagikan tanpa persetujuan wali.</span>
+        </div>
       </footer>
 
       {/* Freeze Report Dialog Modal */}
       <Dialog
         isOpen={isFreezeModalOpen}
         onClose={() => setIsFreezeModalOpen(false)}
+        icon={<BrandMark size={20} aria-hidden="true" />}
         title="Kunci Laporan Pertandingan"
         footer={
           <>

@@ -9,6 +9,7 @@ import {
 import { Link } from 'react-router-dom';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
+import { BrandMark } from './brand';
 import { buildPassportSnapshotPayload, generatePassportHash } from '../lib/integrity';
 import { fetchAcademyAccreditation } from '../lib/supabase';
 
@@ -145,7 +146,7 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
             <span>SHA-256 Canonical Hash (Laporan Terkunci):</span>
           </span>
           <div className="p-2.5 rounded-control bg-raised border border-line font-mono text-sm text-1 break-all select-all">
-            {loadingHash ? 'Menghitung hash kriptografis...' : computedHash}
+            {loadingHash ? 'Menghitung hash...' : computedHash}
           </div>
         </div>
 
@@ -190,8 +191,11 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
 
       {/* Paged Media Footer (Visible during print) */}
       <div className="hidden print:flex items-center justify-between text-xs text-2 pt-3 border-t border-line">
-        <span>BallR Passport · {personal_info?.full_name || personal_info?.nickname || pId} (<span className="font-mono">{pId}</span>)</span>
-        <span>Dokumen Resmi Pembinaan Sepakbola Usia Muda</span>
+        <div className="flex items-center gap-1.5">
+          <BrandMark size={14} aria-hidden="true" />
+          <span>ProspekBola Paspor · {personal_info?.full_name || personal_info?.nickname || pId} (<span className="font-mono">{pId}</span>)</span>
+        </div>
+        <span>Dokumen Pembinaan Sepak Bola Usia Muda</span>
       </div>
     </footer>
   );

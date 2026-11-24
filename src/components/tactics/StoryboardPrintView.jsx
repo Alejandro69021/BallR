@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrandMark } from '../brand';
 import { BOARD_DISCLAIMER } from '../../lib/board';
 import { SCENARIO_PHASE_LABELS, SCENARIO_STATUS_LABELS } from '../../lib/scenarios';
 import Badge from '../ui/Badge';
@@ -310,7 +311,10 @@ export default function StoryboardPrintView({
 
       {/* Dossier Footer */}
       <div className="pt-4 border-t border-line flex items-center justify-between text-xs text-2 font-mono">
-        <div>BallR Tactical Board — Lembar Instruksi Pelatih</div>
+        <div className="flex items-center gap-1.5">
+          <BrandMark size={14} aria-hidden="true" />
+          <span>ProspekBola Papan Taktik — Lembar Instruksi Pelatih</span>
+        </div>
         <div>Halaman Cetak Terstruktur A4</div>
       </div>
     </div>
