@@ -33,7 +33,7 @@ export default function HomePage({
   const navigate = useNavigate();
   const location = useLocation();
   const startTour = Boolean(location?.state?.startTour);
-  const { players, isDemoMode } = usePlayers();
+  const { players } = usePlayers();
 
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -4,7 +4,6 @@ import { PlayersProvider } from './context/PlayersContext';
 import { usePlayers } from './hooks/usePlayers';
 import { useDocumentMeta } from './hooks/useDocumentMeta';
 import { signOutUser, getCurrentUserProfile, supabase } from './lib/supabase';
-import { LAYOUT_OPT_OUT_ROUTES } from './routes';
 import PageContainer from './components/ux/PageContainer';
 
 import TopNav from './components/TopNav';

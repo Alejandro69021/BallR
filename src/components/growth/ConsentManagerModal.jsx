@@ -13,7 +13,7 @@ export default function ConsentManagerModal({
   onToast
 }) {
   const [consents, setConsents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [revoking, setRevoking] = useState(false);
   const [confirmRevoke, setConfirmRevoke] = useState(false);
 
