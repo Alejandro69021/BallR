@@ -335,7 +335,7 @@ function MainApp() {
   const isLanding = location.pathname === '/' || location.pathname === '/privasi';
 
   return (
-    <Surface surface={surface} className="min-h-screen flex flex-col items-center justify-start pb-12 selection:bg-brand selection:text-app">
+    <Surface surface={surface} className={`min-h-screen flex flex-col ${isLanding ? 'w-full items-stretch pb-0' : 'items-center justify-start pb-12'} selection:bg-brand selection:text-app`}>
       <OfflineIndicator />
 
       {!isLanding && (

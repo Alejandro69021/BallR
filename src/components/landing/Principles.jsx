@@ -6,9 +6,9 @@ export default function Principles() {
   const copy = landingCopy.principles;
 
   return (
-    <section id="prinsip" className="py-16 sm:py-20 md:py-24 bg-pitch text-chalk relative overflow-hidden border-b-2 border-ink">
+    <section id="prinsip" className="w-full py-16 sm:py-20 md:py-24 bg-pitch text-chalk relative overflow-hidden border-b-2 border-ink">
       {/* Background motif: PitchLines */}
-      <PitchLines variant="penalty" opacity={0.12} className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
+      <PitchLines variant="penalty" opacity={0.09} className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
 
       <div className="relative z-10 max-w-[1160px] mx-auto w-full px-4 sm:px-6">
         {/* Section Heading */}

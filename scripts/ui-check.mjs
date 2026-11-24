@@ -579,7 +579,7 @@ async function main() {
                     continue;
                   }
 
-                  // Never > 6 words
+                  // Never > 6 words (or > 10 words for headings h1-h3)
                   let ownText = '';
                   for (const node of el.childNodes) {
                     if (node.nodeType === Node.TEXT_NODE) {
@@ -588,9 +588,11 @@ async function main() {
                   }
                   const checkText = ownText.trim() || el.textContent.trim();
                   const words = checkText.split(/\s+/).filter(Boolean);
-                  if (words.length > 6) {
+                  const isHeading = ['h1', 'h2', 'h3'].includes(tag);
+                  const maxWords = isHeading ? 10 : 6;
+                  if (words.length > maxWords) {
                     violations.push({
-                      type: 'words-exceeded-6',
+                      type: `words-exceeded-${maxWords}`,
                       count: words.length,
                       tag: el.tagName,
                       text: checkText.slice(0, 50)

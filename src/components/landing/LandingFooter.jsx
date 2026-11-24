@@ -11,7 +11,7 @@ export default function LandingFooter() {
   const contactEmail = import.meta.env.VITE_CONTACT_EMAIL || '';
 
   return (
-    <footer id="kaki" className="bg-pitch text-chalk border-t-2 border-ink py-10 sm:py-14">
+    <footer id="kaki" className="w-full bg-pitch text-chalk border-t-2 border-ink py-10 sm:py-14">
       <div className="max-w-[1160px] mx-auto w-full px-4 sm:px-6 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <Link
@@ -19,7 +19,7 @@ export default function LandingFooter() {
             className="inline-flex rounded-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bib"
             aria-label="ProspekBola Halaman Depan"
           >
-            <Wordmark size="sm" />
+            <Wordmark size="sm" variant="light" />
           </Link>
           <p className="max-w-md text-sm text-mint">
             {copy.note}

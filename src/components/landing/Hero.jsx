@@ -19,9 +19,11 @@ export default function Hero({ isDemoMode = false, onOpenAuthModal }) {
   };
 
   return (
-    <section id="hero" className="relative bg-pitch text-chalk overflow-hidden">
-      {/* Background motif: PitchLines */}
-      <PitchLines variant="center" opacity={0.12} className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
+    <section id="hero" className="relative w-full bg-pitch text-chalk overflow-hidden">
+      {/* Background motif: PitchLines repositioned behind screenshot, below text */}
+      <div className="absolute inset-x-0 bottom-16 h-[500px] sm:h-[600px] overflow-hidden pointer-events-none flex items-center justify-center">
+        <PitchLines variant="center" opacity={0.09} className="w-full max-w-5xl h-full object-contain pointer-events-none" />
+      </div>
 
       {/* Main Hero Content */}
       <div data-testid="landing-container" className="relative z-10 max-w-[1160px] mx-auto w-full px-4 sm:px-6 pt-12 sm:pt-16 md:pt-20 pb-12 sm:pb-16 flex flex-col items-center text-center">

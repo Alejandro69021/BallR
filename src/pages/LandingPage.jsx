@@ -21,7 +21,7 @@ export default function LandingPage({
   return (
     <div
       data-surface="paper"
-      className="min-h-screen bg-chalk text-ink selection:bg-bib selection:text-ink flex flex-col justify-between"
+      className="w-full min-h-screen bg-chalk text-ink selection:bg-bib selection:text-ink flex flex-col justify-between"
     >
       {/* Accessible Skip Link */}
       <a
@@ -39,7 +39,7 @@ export default function LandingPage({
       />
 
       {/* Main Landmark: Sections 2 to 10 */}
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="w-full flex-1">
         {/* 2. Hero (includes 4-principles lime strip) */}
         <Hero isDemoMode={isDemoMode} onOpenAuthModal={onOpenAuthModal} />
 

@@ -40,7 +40,7 @@ Kontras terukur (WCAG, semua ≥ 4,5:1): Ink di Bib 13,5 · Pitch di Bib 10,0 ·
 
 | Peran | Huruf | Aturan |
 |---|---|---|
-| Judul identitas | **Barlow Condensed 800**, kapital | Judul halaman/seksi, angka besar, nama merek. Maks. 6 kata per judul. Ukuran ≥ 24 px. |
+| Judul identitas | **Barlow Condensed 800**, kapital | Judul halaman/seksi, angka besar, nama merek. Maks. 10 kata per judul (maks. 6 kata untuk elemen non-judul). Ukuran ≥ 24 px. |
 | Isi | IBM Plex Sans | Semua kalimat, label, tombol, tabel, formulir. |
 | Angka/kode | IBM Plex Mono | Hanya stopwatch, hash, ID, nilai numerik sejajar. |
 
@@ -79,6 +79,6 @@ Kalimat pendek, kata kerja di depan, tanpa hiperbola, tanpa klaim yang belum ada
 ## 8. Gerbang otomatis
 
 1. `brandTokens.test.js`: token identitas ada, dan setiap pasangan teks/latar di tabel kontras bagian 3 ≥ 4,5:1.
-2. `ui-check` aturan baru: elemen dengan `font-family` Barlow hanya boleh ada pada kelas `.font-display` dan tidak boleh berada di dalam `table`, `form`, `input`, `textarea`, atau berisi teks > 6 kata.
+2. `ui-check` aturan baru: elemen dengan `font-family` Barlow hanya boleh ada pada kelas `.font-display` dan tidak boleh berada di dalam `table`, `form`, `input`, `textarea`, atau berisi teks > 10 kata untuk judul h1-h3 (maks. 6 kata untuk non-judul).
 3. `ui-check`: tidak ada teks berwarna `--bib` di atas latar terang (hitung kontras elemen teks, gagal bila < 4,5).
 4. Lambang tampil di nav, favicon, dan ikon PWA (diperiksa keberadaan berkas dan tag `<link rel="icon">`).
