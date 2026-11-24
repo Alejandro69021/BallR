@@ -16,7 +16,7 @@ export default function ReferencesPage() {
   });
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto text-white pb-12">
+    <div className="space-y-6 pb-12 text-1">
       {/* Header */}
       <div className="border-b border-line pb-4 space-y-1">
         <div className="flex items-center gap-2">
@@ -48,7 +48,7 @@ export default function ReferencesPage() {
           />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto text-sm">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-sm">
           {[
             { id: 'all', label: 'Semua' },
             { id: 'curriculum', label: 'Kurikulum' },
@@ -61,7 +61,7 @@ export default function ReferencesPage() {
               key={cat.id}
               type="button"
               onClick={() => setFilterType(cat.id)}
-              className={`px-3 py-1.5 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:px-2.5 sm:py-1 rounded text-sm transition-colors whitespace-nowrap cursor-pointer inline-flex items-center justify-center ${
+              className={`px-3 py-1.5 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:px-2.5 sm:py-1 rounded-control text-sm transition-colors cursor-pointer inline-flex items-center justify-center ${
                 filterType === cat.id
                   ? 'bg-raised text-1 font-medium border border-line'
                   : 'text-2 hover:text-1'
@@ -75,7 +75,7 @@ export default function ReferencesPage() {
 
       {/* References Table / List */}
       {filteredRefs.length === 0 ? (
-        <div className="p-8 text-center rounded-lg bg-panel border border-line space-y-2 max-w-md mx-auto">
+        <div className="p-8 text-center rounded-panel bg-panel border border-line space-y-2 max-w-md mx-auto">
           <AlertCircle className="w-6 h-6 mx-auto text-2" />
           <h3 className="text-sm font-semibold text-1">Belum Ada Rujukan Terdaftar</h3>
           <p className="text-sm text-2 leading-relaxed">
@@ -83,7 +83,7 @@ export default function ReferencesPage() {
           </p>
         </div>
       ) : (
-        <div className="rounded-lg bg-panel border border-line overflow-hidden shadow-sm">
+        <div className="rounded-panel bg-panel border border-line overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-raised text-2 uppercase font-semibold text-sm border-b border-line">
@@ -114,10 +114,10 @@ export default function ReferencesPage() {
                         <span className="px-2 py-0.5 rounded text-sm bg-raised text-2">
                           {ref.type}
                         </span>
-                        <span className={`px-1.5 py-0.2 rounded text-sm uppercase border ${
+                        <span className={`px-1.5 py-0.5 rounded text-sm uppercase border ${
                           ref.status === 'located'
-                            ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
-                            : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                            ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-600 dark:text-cyan-300'
+                            : 'bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-300'
                         }`}>
                           {ref.status || 'unverified'}
                         </span>
