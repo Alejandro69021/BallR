@@ -3,6 +3,11 @@
  * Ground-truth route registry for routing and validation
  */
 
+export const LAYOUT_OPT_OUT_ROUTES = [
+  '/laga/:matchId/laporan',
+  '/verifikasi/:hash'
+];
+
 export const APP_ROUTES = [
   { path: '/', label: 'Beranda' },
   { path: '/pemain/:publicId', label: 'Paspor' },
@@ -15,10 +20,10 @@ export const APP_ROUTES = [
   { path: '/pencatatan/:matchId', label: 'Logger Laga' },
   { path: '/laga', label: 'Laga' },
   { path: '/laga/:matchId', label: 'Detail Laga' },
-  { path: '/laga/:matchId/laporan', label: 'Laporan Laga' },
+  { path: '/laga/:matchId/laporan', label: 'Laporan Laga', optOutLayout: true },
   { path: '/taktik', label: 'Taktik' },
   { path: '/taktik/:id', label: 'Detail Taktik' },
-  { path: '/verifikasi/:hash', label: 'Verifikasi' },
+  { path: '/verifikasi/:hash', label: 'Verifikasi', optOutLayout: true },
   { path: '/rujukan', label: 'Rujukan' },
   { path: '/bantuan', label: 'Panduan Singkat' }
 ];

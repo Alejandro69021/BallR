@@ -8,7 +8,6 @@ import AICoachCard from '../components/AICoachCard';
 import OfficialDossierFooter from '../components/OfficialDossierFooter';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/ui/EmptyState';
-import PageContainer from '../components/ux/PageContainer';
 import { usePlayers } from '../hooks/usePlayers';
 
 export default function PassportPage({ userRole = 'public', onOpenShare, onToast }) {
@@ -29,7 +28,7 @@ export default function PassportPage({ userRole = 'public', onOpenShare, onToast
   ) || players[0];
 
   return (
-    <PageContainer className="space-y-8 divide-y divide-line text-1">
+    <div className="space-y-8 divide-y divide-line text-1">
       {/* Shared Player Header & Navigation Tabs */}
       <PlayerTabs
         player={player}
@@ -71,6 +70,6 @@ export default function PassportPage({ userRole = 'public', onOpenShare, onToast
           onToast={onToast}
         />
       </div>
-    </PageContainer>
+    </div>
   );
 }

@@ -18,7 +18,6 @@ import Select from '../components/ui/Select';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import EmptyState from '../components/ux/EmptyState';
-import PageContainer from '../components/ux/PageContainer';
 
 export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthModal }) {
   const navigate = useNavigate();
@@ -205,7 +204,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
   }
 
   return (
-    <PageContainer className="space-y-6">
+    <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -620,6 +619,6 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
           </div>
         </div>
       </Dialog>
-    </PageContainer>
+    </div>
   );
 }

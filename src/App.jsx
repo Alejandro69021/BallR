@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { PlayersProvider } from './context/PlayersContext';
 import { usePlayers } from './hooks/usePlayers';
 import { signOutUser, getCurrentUserProfile, supabase } from './lib/supabase';
+import { LAYOUT_OPT_OUT_ROUTES } from './routes';
+import PageContainer from './components/ux/PageContainer';
 
 import TopNav from './components/TopNav';
 import StoryFlexCardModal from './components/StoryFlexCardModal';
@@ -69,6 +71,14 @@ function HomeRedirect({ userRole, onOpenAuthModal, onToast }) {
 
   const targetId = defaultPlayer?.public_id || defaultPlayer?.player_id || 'PLAYER-01';
   return <Navigate to={`/pemain/${targetId}`} replace />;
+}
+
+function SharedCoachLayout() {
+  return (
+    <PageContainer as="main" className="pt-4 sm:pt-6 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6 space-y-4 sm:space-y-6">
+      <Outlet />
+    </PageContainer>
+  );
 }
 
 function MainApp() {
@@ -349,8 +359,9 @@ function MainApp() {
         </div>
       )}
 
-      <main className="w-full mx-auto pt-4 sm:pt-6 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6 space-y-4 sm:space-y-6">
-        <Routes>
+      <Routes>
+        {/* Shared Coach & Admin PageContainer Layout */}
+        <Route element={<SharedCoachLayout />}>
           <Route
             path="/"
             element={
@@ -434,16 +445,6 @@ function MainApp() {
             }
           />
           <Route
-            path="/laga/:matchId/laporan"
-            element={
-              <MatchReportPage
-                userRole={userRole}
-                onOpenAuthModal={handleOpenAuthModal}
-                onToast={(t) => setToastInfo(t)}
-              />
-            }
-          />
-          <Route
             path="/taktik"
             element={
               <TacticsPage
@@ -463,15 +464,33 @@ function MainApp() {
               />
             }
           />
-          <Route
-            path="/verifikasi/:hash"
-            element={<VerificationView players={players} />}
-          />
           <Route path="/rujukan" element={<ReferencesPage />} />
           <Route path="/bantuan" element={<GuidePage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </main>
+        </Route>
+
+        {/* Explicit Layout Opt-Out Routes (A4 report & verification) */}
+        <Route
+          path="/laga/:matchId/laporan"
+          element={
+            <main className="w-full pt-4 sm:pt-6 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6">
+              <MatchReportPage
+                userRole={userRole}
+                onOpenAuthModal={handleOpenAuthModal}
+                onToast={(t) => setToastInfo(t)}
+              />
+            </main>
+          }
+        />
+        <Route
+          path="/verifikasi/:hash"
+          element={
+            <main className="w-full pt-4 sm:pt-6 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6">
+              <VerificationView players={players} />
+            </main>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
 
       {/* 9:16 Story Flex Card Generator Modal */}
       {isStoryCardOpen && (

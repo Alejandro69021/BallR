@@ -37,7 +37,6 @@ import Dialog from '../components/ui/Dialog';
 import Field from '../components/ui/Field';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
-import PageContainer from '../components/ux/PageContainer';
 import EmptyState from '../components/ui/EmptyState';
 import EventMap from '../components/match/EventMap';
 import LocalVideoPanel, { hasStoredVideoMeta } from '../components/video/LocalVideoPanel';
@@ -552,15 +551,15 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
 
   if (loading) {
     return (
-      <PageContainer className="p-8 border border-line rounded-panel bg-panel text-center">
+      <div className="p-8 border border-line rounded-panel bg-panel text-center">
         <p className="text-sm text-2">Memuat detail pertandingan...</p>
-      </PageContainer>
+      </div>
     );
   }
 
   if (!match) {
     return (
-      <PageContainer className="space-y-4">
+      <div className="space-y-4">
         <Button
           variant="secondary"
           size="sm"
@@ -577,7 +576,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
             onAction={() => navigate('/laga')}
           />
         </div>
-      </PageContainer>
+      </div>
     );
   }
 
@@ -734,7 +733,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   ];
 
   return (
-    <PageContainer className="space-y-6">
+    <div className="space-y-6">
       {/* Top back navigation */}
       <div>
         <Button
@@ -1211,6 +1210,6 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
           Perhatian: Hanya laga draf yang dapat dihapus. Pertandingan yang sudah final tetap dilindungi.
         </p>
       </Dialog>
-    </PageContainer>
+    </div>
   );
 }

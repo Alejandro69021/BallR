@@ -17,7 +17,6 @@ import { listMatches, listEvents, formatMatchError } from '../lib/matches';
 import StageStepper from '../components/ux/StageStepper';
 import EmptyState from '../components/ux/EmptyState';
 import WelcomeTour from '../components/ux/WelcomeTour';
-import PageContainer from '../components/ux/PageContainer';
 import CreateMatchDialog from '../components/matches/CreateMatchDialog';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -143,7 +142,7 @@ export default function HomePage({
   };
 
   return (
-    <PageContainer className="space-y-6">
+    <div className="space-y-6">
       {/* Header Bar */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-line">
         <div>
@@ -555,6 +554,6 @@ export default function HomePage({
         players={players}
         onToast={onToast}
       />
-    </PageContainer>
+    </div>
   );
 }
