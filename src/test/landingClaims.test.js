@@ -40,8 +40,12 @@ export const FORBIDDEN_CLAIM_RULES = [
     pattern: /\bterakreditasi\b/i
   },
   {
-    name: 'resmi (sebagai klaim produk)',
-    pattern: /(?:aplikasi|produk|platform|mitra|sponsor)\s+resmi|resmi\s+(?:dari|PSSI|FIFA|Kemenpora|asosiasi|federasi)/i
+    name: 'resmi',
+    pattern: /\bresmi\b/i
+  },
+  {
+    name: 'klaim biaya atau teknis terlarang (biaya apa pun, gratis, U-19, algoritma otomatis, backend)',
+    pattern: /\b(?:biaya\s+apa\s+pun|gratis|U-19|algoritma\s+otomatis|backend)\b/i
   },
   {
     name: 'bersertifikat',
@@ -73,7 +77,8 @@ export const FORBIDDEN_CLAIM_RULES = [
   },
   {
     name: 'harga/Rp',
-    pattern: /\bharga\b|\bRp\s*\d+/i
+    pattern: /\bharga\b|\bRp\s*\d+/i,
+    sanitizer: (text) => text.replace(/belum ada harga/gi, '')
   },
   {
     name: '100%',
@@ -217,17 +222,26 @@ describe('Landing Claims Guard (docs/LANDING_SPEC.md bagian 2 & 9)', () => {
       expect.arrayContaining(['digit diikuti % atau + (kecuali "n ≥ 10" dan "6×3")'])
     );
 
-    // 5. Resmi as product claim & scouting & nomor 1
+    // 5. Bare resmi & scouting & nomor 1
     const bad4 = 'Aplikasi resmi untuk scouting atlet nomor 1 di Indonesia';
     expect(validateLandingText(bad4)).toEqual(
       expect.arrayContaining([
-        'resmi (sebagai klaim produk)',
+        'resmi',
         'scouting',
         'nomor 1'
       ])
     );
 
-    // 6. Sesuai UU PDP (disallowed) vs memperhatikan prinsip UU PDP (allowed)
+    const badResmiAlone = 'Dokumen ini adalah data resmi akademi';
+    expect(validateLandingText(badResmiAlone)).toContain('resmi');
+
+    // 6. Forbidden cost, age, and tech claims
+    const badCostAndTech = 'Aplikasi ini gratis tanpa biaya apa pun untuk U-19 menggunakan algoritma otomatis di backend kami';
+    expect(validateLandingText(badCostAndTech)).toContain(
+      'klaim biaya atau teknis terlarang (biaya apa pun, gratis, U-19, algoritma otomatis, backend)'
+    );
+
+    // 7. Sesuai UU PDP (disallowed) vs memperhatikan prinsip UU PDP (allowed)
     const bad5 = 'Sistem ini sudah sesuai UU PDP';
     expect(validateLandingText(bad5)).toContain(
       'sesuai UU PDP (hanya boleh "memperhatikan prinsip UU PDP")'
@@ -251,5 +265,8 @@ describe('Landing Claims Guard (docs/LANDING_SPEC.md bagian 2 & 9)', () => {
         'terakreditasi'
       ])
     );
+
+    const allowedHarga = 'Belum ada harga untuk saat ini.';
+    expect(validateLandingText(allowedHarga)).not.toContain('harga/Rp');
   });
 });
