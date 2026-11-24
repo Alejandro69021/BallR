@@ -20,6 +20,7 @@ import WelcomeTour from '../components/ux/WelcomeTour';
 import CreateMatchDialog from '../components/matches/CreateMatchDialog';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
+import { PageHeader, PitchLines } from '../components/brand';
 
 /**
  * HomePage ("Beranda")
@@ -143,39 +144,78 @@ export default function HomePage({
 
   return (
     <div className="space-y-6">
-      {/* Header Bar */}
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-line">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-1 tracking-tight">Beranda</h1>
-          </div>
-          <p className="text-sm text-2 mt-0.5">
-            Apa yang mau kamu kerjakan hari ini?
-          </p>
-        </div>
+      {/* Header Bar with PageHeader */}
+      <PageHeader
+        kicker="Ikhtisar Pembinaan"
+        title="Beranda"
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<Trophy className="w-4 h-4 text-brand" />}
+              onClick={() => navigate('/laga')}
+              className="min-h-[44px]"
+            >
+              Semua Laga
+            </Button>
+            <Button
+              variant="brand"
+              size="sm"
+              icon={<Plus className="w-4 h-4" />}
+              onClick={() => setIsCreateOpen(true)}
+              className="min-h-[44px]"
+              data-tour="new-match"
+            >
+              Laga Baru
+            </Button>
+          </>
+        }
+      />
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<Trophy className="w-4 h-4 text-brand" />}
-            onClick={() => navigate('/laga')}
-            className="min-h-[44px]"
-          >
-            Semua Laga
-          </Button>
-          <Button
-            variant="brand"
-            size="sm"
-            icon={<Plus className="w-4 h-4" />}
-            onClick={() => setIsCreateOpen(true)}
-            className="min-h-[44px]"
-            data-tour="new-match"
-          >
-            Laga Baru
-          </Button>
+      {/* Hero Band: Pitch-green with PitchLines & bib primary button */}
+      <div className="relative bg-pitch text-chalk rounded-panel border-2 border-ink p-6 sm:p-8 overflow-hidden shadow-md">
+        <PitchLines variant="center" opacity={0.11} className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <p className="text-xs font-semibold tracking-wider uppercase text-bib">
+              Fokus Hari Ini
+            </p>
+            <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-chalk uppercase tracking-tight">
+              Apa yang mau kamu kerjakan hari ini?
+            </h2>
+            {featuredMatch && (
+              <p className="text-sm text-mint">
+                {isDraftFeatured ? `Laga aktif: vs ${featuredMatch.opponent_name}` : `Laga terakhir: vs ${featuredMatch.opponent_name}`}
+              </p>
+            )}
+          </div>
+
+          <div className="shrink-0">
+            {featuredMatch ? (
+              <button
+                type="button"
+                onClick={() => navigate(isDraftFeatured ? `/pencatatan/${featuredMatch.id}` : `/laga/${featuredMatch.id}`)}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-control bg-bib text-ink font-semibold text-base hover:opacity-90 active:opacity-95 transition-opacity min-h-[44px] select-none shadow-xs"
+                data-testid="hero-continue-action"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                <span>Lanjutkan laga terakhir</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsCreateOpen(true)}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-control bg-bib text-ink font-semibold text-base hover:opacity-90 active:opacity-95 transition-opacity min-h-[44px] select-none shadow-xs"
+                data-testid="hero-continue-action"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Mulai laga pertama</span>
+              </button>
+            )}
+          </div>
         </div>
-      </header>
+      </div>
 
       {/* First-Run Welcome Tour Banner & CoachMark */}
       <WelcomeTour forceStart={startTour} />
