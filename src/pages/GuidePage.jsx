@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import Surface from '../components/ui/Surface';
 import Button from '../components/ui/Button';
+import PageContainer from '../components/ux/PageContainer';
 import { resetTourDone } from '../lib/tourStorage';
 
 export default function GuidePage() {
@@ -91,7 +92,7 @@ export default function GuidePage() {
   ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6 animate-fadeIn pb-12 text-1">
+    <PageContainer className="space-y-6 animate-fadeIn pb-12 text-1">
       {/* Header */}
       <section className="p-6 rounded-panel border border-line bg-panel space-y-2">
         <div className="flex items-center gap-2">
@@ -170,6 +171,6 @@ export default function GuidePage() {
           </Surface>
         ))}
       </div>
-    </div>
+    </PageContainer>
   );
 }

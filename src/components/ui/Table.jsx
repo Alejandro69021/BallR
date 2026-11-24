@@ -50,7 +50,7 @@ export default function Table({
                   key={col.key}
                   scope="col"
                   aria-sort={isSorted ? (sortDirection === 'asc' ? 'ascending' : 'descending') : undefined}
-                  className={`font-semibold select-none ${col.sortable && onSort ? 'p-0' : 'py-2 px-2 sm:px-2.5'} ${alignClass}`}
+                  className={`font-semibold select-none whitespace-nowrap ${col.sortable && onSort ? 'p-0' : 'py-2 px-2 sm:px-2.5'} ${alignClass}`}
                 >
                   {col.sortable && onSort ? (
                     <button

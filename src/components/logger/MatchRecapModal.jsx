@@ -293,8 +293,8 @@ export default function MatchRecapModal({
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-control bg-raised border border-line text-sm">
-            <span className="text-2">
-              Gol tercatat: <strong className="tabular-nums font-semibold">{loggedGoals.own} / {loggedGoals.opp}</strong> (mungkin belum lengkap)
+            <span className="text-2 tabular-nums">
+              Gol tercatat: {loggedGoals.own} / {loggedGoals.opp} (mungkin belum lengkap)
             </span>
             <Button
               type="button"

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import SquadHubView from '../components/SquadHubView';
+import PageContainer from '../components/ux/PageContainer';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import { usePlayers } from '../hooks/usePlayers';
 
@@ -28,11 +29,13 @@ export default function SquadPage({ userRole, onOpenAuthModal, onOpenPinModal })
   };
 
   return (
-    <SquadHubView
-      players={players}
-      userRole={userRole}
-      onViewPassport={handleViewPassport}
-      onEvaluatePlayer={handleEvaluatePlayer}
-    />
+    <PageContainer>
+      <SquadHubView
+        players={players}
+        userRole={userRole}
+        onViewPassport={handleViewPassport}
+        onEvaluatePlayer={handleEvaluatePlayer}
+      />
+    </PageContainer>
   );
 }

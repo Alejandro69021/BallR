@@ -16,6 +16,7 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import EmptyState from '../components/ux/EmptyState';
 import WelcomeTour from '../components/ux/WelcomeTour';
+import PageContainer from '../components/ux/PageContainer';
 
 export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthModal }) {
   const navigate = useNavigate();
@@ -318,7 +319,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6">
+    <PageContainer className="space-y-6">
       {/* Header bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line">
         <div className="space-y-1">
@@ -620,6 +621,6 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
           </div>
         </div>
       </Dialog>
-    </div>
+    </PageContainer>
   );
 }

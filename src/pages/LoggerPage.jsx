@@ -4,6 +4,7 @@ import { ArrowLeft, Lock } from 'lucide-react';
 import FastPitchLogger from '../components/FastPitchLogger';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/ui/EmptyState';
+import PageContainer from '../components/ux/PageContainer';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import { usePlayers } from '../hooks/usePlayers';
@@ -95,7 +96,7 @@ export default function LoggerPage({ userRole = 'public', onOpenAuthModal, onToa
   // 1. Unknown match ID -> EmptyState
   if (!match) {
     return (
-      <div className="max-w-4xl mx-auto p-4 space-y-4">
+      <PageContainer className="p-4 space-y-4">
         <Button
           variant="secondary"
           size="sm"
@@ -112,7 +113,7 @@ export default function LoggerPage({ userRole = 'public', onOpenAuthModal, onToa
             onAction={() => navigate('/laga')}
           />
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
@@ -140,7 +141,7 @@ export default function LoggerPage({ userRole = 'public', onOpenAuthModal, onToa
   const isReadOnly = match.status === 'final';
 
   return (
-    <div className="space-y-3 lg:space-y-2.5 max-w-5xl mx-auto">
+    <PageContainer className="space-y-3 lg:space-y-2.5">
       {/* Back navigation bar */}
       <div className="flex items-center justify-between gap-3">
         <Button
@@ -181,6 +182,6 @@ export default function LoggerPage({ userRole = 'public', onOpenAuthModal, onToa
         onFinishMatch={() => navigate(`/laga/${matchId}`)}
         onToast={onToast}
       />
-    </div>
+    </PageContainer>
   );
 }
