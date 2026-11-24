@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { BrandMark, Wordmark } from './brand';
 import {
   Share2,
   Lock,
@@ -85,13 +86,15 @@ export default function TopNav({
     onToggleSurface?.(nextSurface);
   };
 
+  const brandVariant = surface === 'dark' ? 'light' : 'dark';
+
   return (
     <>
       {/* Desktop & Mobile Header Bar */}
       <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-app/95 border-b border-line">
         <div data-testid="top-nav-bar" className="max-w-6xl mx-auto px-4 sm:px-6 h-12 flex items-center justify-between gap-3">
 
-          {/* Left: Academy Logo + Name ONLY */}
+          {/* Left: Brand Identity + Academy Name */}
           <div className="flex items-center gap-2.5 shrink-0 min-w-0">
             <button
               type="button"
@@ -99,23 +102,15 @@ export default function TopNav({
               className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center cursor-pointer bg-transparent border-none p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-control"
               onClick={() => onSwitchView?.(isCoach ? 'home' : 'passport')}
             >
-              <div className="w-7 h-7 rounded-control bg-raised border border-line flex items-center justify-center overflow-hidden shrink-0">
-                {academy?.logo_url ? (
-                  <img
-                    src={academy.logo_url}
-                    alt={academy.name || 'Akademi'}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <span className="text-sm font-bold text-2">FA</span>
-                )}
-              </div>
+              <span className="hidden sm:inline-flex items-center">
+                <Wordmark size="sm" variant={brandVariant} />
+              </span>
+              <span className="sm:hidden inline-flex items-center">
+                <BrandMark size={24} variant={brandVariant} />
+              </span>
             </button>
 
-            <span className="text-sm font-semibold text-1 truncate max-w-[140px] sm:max-w-xs">
+            <span className="text-sm font-semibold text-1 truncate max-w-[120px] sm:max-w-xs">
               {academy?.name || 'Akademi Sepakbola'}
             </span>
           </div>
