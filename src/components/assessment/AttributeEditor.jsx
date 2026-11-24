@@ -65,7 +65,7 @@ export default function AttributeEditor({
               Scoring atribut kunci sepak bola
             </h3>
             <p className="text-sm text-2">
-              Gunakan tombol stepper (- / +) atau slider sentuh (skala 0-100)
+              Gunakan tombol stepper (- / +) atau slider sentuh (skala 40-99)
             </p>
           </div>
         </div>
