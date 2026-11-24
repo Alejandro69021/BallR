@@ -23,7 +23,7 @@ export const landingCopy = {
   },
 
   hero: {
-    pill: 'Akademi sepak bola usia muda · U-13+',
+    pill: 'Akademi sepak bola usia muda · U-13 ke atas',
     titlePrefix: 'Catat laganya. Bangun ',
     titleHighlight: 'paspor',
     titleSuffix: ' pemainnya.',
@@ -267,8 +267,8 @@ export const landingCopy = {
         a: 'Aplikasi dirancang offline-first dengan antrean lokal, sehingga pencatatan laga tetap dapat berlangsung tanpa internet. Namun, fitur ini belum diuji langsung di lapangan sesungguhnya.'
       },
       {
-        q: 'Apakah aplikasi ini menggunakan AI atau analisis video otomatis?',
-        a: 'Tidak. ProspekBola tidak menggunakan kecerdasan buatan, algoritma otomatis, atau analisis video otomatis. Semua data murni dicatat oleh pelatih dari apa yang terjadi di lapangan.'
+        q: 'Apakah aplikasi ini menebak data atau menganalisis video secara otomatis?',
+        a: 'Tidak. ProspekBola tidak menggunakan algoritma otomatis atau analisis video otomatis. Semua data murni dicatat oleh pelatih dari apa yang terjadi di lapangan.'
       },
       {
         q: 'Berapa rentang usia atlet yang didukung?',
