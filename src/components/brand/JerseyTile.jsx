@@ -1,6 +1,6 @@
 export default function JerseyTile({ number, size = 'md', className = '', ...props }) {
   const sizeClasses = {
-    sm: 'w-6 h-6 text-xs rounded',
+    sm: 'w-6 h-6 text-sm rounded',
     md: 'w-8 h-8 text-sm rounded',
     lg: 'w-12 h-12 text-xl rounded-md',
   };

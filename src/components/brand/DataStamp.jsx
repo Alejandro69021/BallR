@@ -1,8 +1,8 @@
 export default function DataStamp({ size = 'md', className = '', ...props }) {
   const sizeClasses = {
-    sm: 'w-16 h-16 text-[9px] p-1 border',
-    md: 'w-24 h-24 text-xs p-2 border-2',
-    lg: 'w-32 h-32 text-sm p-3 border-2',
+    sm: 'w-16 h-16 text-sm p-1 border',
+    md: 'w-24 h-24 text-sm p-2 border-2',
+    lg: 'w-32 h-32 text-base p-3 border-2',
   };
 
   return (

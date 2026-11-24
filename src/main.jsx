@@ -23,16 +23,24 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>
 );
 
-// Register PWA Service Worker
+// Register PWA Service Worker (only in production)
 if ('serviceWorker' in navigator && typeof window !== 'undefined') {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/sw.js')
-      .then((reg) => {
-        console.log('ProspekBola PWA Service Worker Registered:', reg.scope);
-      })
-      .catch((err) => {
-        console.warn('PWA SW Registration Notice:', err);
-      });
-  });
+  if (import.meta.env.DEV) {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const reg of registrations) {
+        reg.unregister();
+      }
+    });
+  } else {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then((reg) => {
+          console.log('ProspekBola PWA Service Worker Registered:', reg.scope);
+        })
+        .catch((err) => {
+          console.warn('PWA SW Registration Notice:', err);
+        });
+    });
+  }
 }
