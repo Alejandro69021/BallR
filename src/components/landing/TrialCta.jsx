@@ -21,17 +21,21 @@ export default function TrialCta({ isDemoMode = false, onOpenAuthModal }) {
     <section id="cta" className="py-12 sm:py-16 md:py-24 bg-chalk text-ink border-b border-line">
       <div className="max-w-[1160px] mx-auto w-full px-4 sm:px-6">
         {/* CTA Card in Dark Pitch with PitchLines and Bib Lime Accents */}
-        <div className="relative bg-pitch text-chalk rounded-panel border-2 border-ink p-8 sm:p-12 md:p-16 overflow-hidden shadow-lg">
-          <div className="absolute top-0 right-0 bottom-0 w-1/2 overflow-hidden pointer-events-none">
+        <div data-testid="cta-card" className="relative bg-pitch text-chalk rounded-panel border-2 border-ink p-8 sm:p-12 md:p-16 overflow-hidden shadow-lg">
+          <div
+            data-testid="cta-pitchlines"
+            aria-hidden="true"
+            className="hidden md:block absolute top-0 right-0 bottom-0 w-2/5 overflow-hidden pointer-events-none"
+          >
             <PitchLines variant="penalty" opacity={0.09} className="w-full h-full object-cover object-right pointer-events-none" />
           </div>
 
-          <div className="relative z-10 max-w-2xl">
+          <div className="relative z-10 max-w-lg xl:max-w-xl">
             <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl uppercase tracking-tight text-chalk leading-tight">
               {copy.heading}
             </h2>
 
-            <p className="mt-4 text-base sm:text-lg text-mint font-normal leading-relaxed">
+            <p className="mt-4 text-base sm:text-lg text-mint font-normal leading-relaxed max-w-md lg:max-w-[480px] xl:max-w-xl">
               {copy.desc}
             </p>
 

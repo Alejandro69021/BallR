@@ -687,6 +687,78 @@ async function main() {
                 `Assertion (m) FAILED on ${comboLabel}: bib-coloured text has contrast < 4.5:1: ${JSON.stringify(bibContrastViolations[0])}`
               );
             }
+
+            // Check (n): on "/", CTA card PitchLines SVG bounding box must not intersect CTA heading, paragraph, or buttons
+            if (route.path === '/') {
+              const ctaOverlap = await page.evaluate(() => {
+                const card = document.querySelector('[data-testid="cta-card"]');
+                if (!card) return { error: 'data-testid="cta-card" not found on landing page' };
+
+                const wrapper = card.querySelector('[data-testid="cta-pitchlines"]');
+                if (!wrapper) return { error: 'data-testid="cta-pitchlines" not found inside cta-card' };
+
+                const svg = wrapper.querySelector('svg');
+                if (!svg) {
+                  return null;
+                }
+
+                const wrapperStyle = window.getComputedStyle(wrapper);
+                const svgStyle = window.getComputedStyle(svg);
+                if (
+                  wrapperStyle.display === 'none' ||
+                  wrapperStyle.visibility === 'hidden' ||
+                  svgStyle.display === 'none' ||
+                  svgStyle.visibility === 'hidden'
+                ) {
+                  return null;
+                }
+
+                const svgRect = svg.getBoundingClientRect();
+                if (svgRect.width <= 0 || svgRect.height <= 0) {
+                  return null;
+                }
+
+                const targets = [];
+                const heading = card.querySelector('h2');
+                if (heading) targets.push({ name: 'heading', el: heading });
+
+                const p = card.querySelector('p');
+                if (p) targets.push({ name: 'paragraph', el: p });
+
+                const buttons = card.querySelectorAll('button, a, [role="button"]');
+                buttons.forEach((btn, i) => {
+                  targets.push({ name: `button-${i + 1}`, el: btn });
+                });
+
+                for (const target of targets) {
+                  const tStyle = window.getComputedStyle(target.el);
+                  if (tStyle.display === 'none' || tStyle.visibility === 'hidden') continue;
+
+                  const tRect = target.el.getBoundingClientRect();
+                  if (tRect.width <= 0 || tRect.height <= 0) continue;
+
+                  // Check rectangle intersection (allow 1px tolerance)
+                  const intersects = !(
+                    svgRect.right <= tRect.left + 1 ||
+                    svgRect.left >= tRect.right - 1 ||
+                    svgRect.bottom <= tRect.top + 1 ||
+                    svgRect.top >= tRect.bottom - 1
+                  );
+
+                  if (intersects) {
+                    return {
+                      error: `PitchLines SVG intersects CTA ${target.name} (SVG rect: [${Math.round(svgRect.left)}, ${Math.round(svgRect.top)}, ${Math.round(svgRect.right)}, ${Math.round(svgRect.bottom)}], ${target.name} rect: [${Math.round(tRect.left)}, ${Math.round(tRect.top)}, ${Math.round(tRect.right)}, ${Math.round(tRect.bottom)}])`
+                    };
+                  }
+                }
+
+                return null;
+              });
+
+              if (ctaOverlap && ctaOverlap.error) {
+                failures.push(`Assertion (n) FAILED on ${comboLabel}: ${ctaOverlap.error}`);
+              }
+            }
           } catch (err) {
             failures.push(`Execution error on ${comboLabel}: ${err.message}`);
           }
@@ -769,7 +841,7 @@ async function main() {
   console.log(`Themes tested: ${themes.join(', ')}`);
   console.log(`Total matrix permutations: ${routes.length * viewports.length * themes.length}`);
   if (failures.length === 0) {
-    console.log('ALL ASSERTIONS (a)-(m) PASSED (0 failures)! Screenshots saved to ui-check-out/');
+    console.log('ALL ASSERTIONS (a)-(n) PASSED (0 failures)! Screenshots saved to ui-check-out/');
     process.exit(0);
   } else {
     console.error(`FAILED: ${failures.length} issues detected:`);
