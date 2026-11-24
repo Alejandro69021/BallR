@@ -3,7 +3,7 @@ import { Share2 } from 'lucide-react';
 import Button from './ui/Button';
 import { formatPositionLabel, formatPreferredFoot, formatAttributeName } from '../lib/displayLabels';
 
-export default function PlayerHeader({ player, personalInfo: propPersonalInfo, onOpenStoryCard }) {
+export default function PlayerHeader({ player, personalInfo: propPersonalInfo, onOpenStoryCard, hidePlayerName = false }) {
   const personalInfo = propPersonalInfo || player?.personal_info || {};
   const {
     full_name,
@@ -76,21 +76,23 @@ export default function PlayerHeader({ player, personalInfo: propPersonalInfo, o
               <span className="font-mono text-sm text-2">
                 ID: {publicId}
               </span>
-              {jersey_number != null && (
+              {!hidePlayerName && jersey_number != null && (
                 <span className="font-mono text-sm font-semibold text-1 bg-raised px-1.5 py-0.5 rounded border border-line">
                   #{jersey_number}
                 </span>
               )}
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-semibold text-1">
-              {full_name || 'Atlet'}
-              {nickname && (
-                <span className="text-sm font-normal text-2 ml-2">
-                  "{nickname}"
-                </span>
-              )}
-            </h1>
+            {!hidePlayerName && (
+              <h1 className="text-xl sm:text-2xl font-semibold text-1">
+                {full_name || 'Atlet'}
+                {nickname && (
+                  <span className="text-sm font-normal text-2 ml-2">
+                    "{nickname}"
+                  </span>
+                )}
+              </h1>
+            )}
 
             <div className="text-sm text-2 space-y-0.5 pt-0.5">
               <p>

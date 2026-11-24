@@ -21,7 +21,7 @@ export default function GrowthPage({ userRole = 'public', onOpenShare, onToast }
   return (
     <div className="space-y-6 pt-4 text-1">
       <PlayerTabs player={player} activeTab="growth" userRole={userRole} />
-      <PlayerHeader player={player} personalInfo={player.personal_info} onOpenStoryCard={onOpenShare} />
+      <PlayerHeader player={player} personalInfo={player.personal_info} onOpenStoryCard={onOpenShare} hidePlayerName={true} />
       <GrowthBioBandingTab player={player} onToast={onToast} />
       <OfficialDossierFooter player={player} onOpenStoryCard={onOpenShare} onToast={onToast} />
     </div>
