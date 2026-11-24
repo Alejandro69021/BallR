@@ -2,7 +2,7 @@ import React from 'react';
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 import { APP_ROUTES, LAYOUT_OPT_OUT_ROUTES } from '../routes';
@@ -73,7 +73,7 @@ describe('Shared Layout Route Verification', () => {
   it('renders exactly one [data-testid="page-container"] on standard routes inside MemoryRouter', async () => {
     // Test sample previously problematic routes: /taktik/:id, /pemain/:id/pertumbuhan, /rujukan
     const standardRoutes = [
-      '/',
+      '/beranda',
       '/taktik/demo-scenario-contoh-01',
       '/pemain/WK-2026-0042/pertumbuhan',
       '/rujukan',
@@ -100,6 +100,8 @@ describe('Shared Layout Route Verification', () => {
 
   it('does NOT render [data-testid="page-container"] on opt-out routes', async () => {
     const optOutPaths = [
+      '/',
+      '/privasi',
       '/laga/demo-match-contoh-01/laporan',
       '/verifikasi/demo-hash-123'
     ];
@@ -116,6 +118,26 @@ describe('Shared Layout Route Verification', () => {
         containers.length,
         `Opt-out route ${route} should not have [data-testid="page-container"]`
       ).toBe(0);
+
+      unmount();
+    }
+  });
+
+  it('renders [data-testid="landing-container"] on landing routes ("/" and "/privasi") with proper gutters', async () => {
+    const landingPaths = ['/', '/privasi'];
+
+    for (const route of landingPaths) {
+      const { unmount } = render(
+        <MemoryRouter initialEntries={[route]}>
+          <App />
+        </MemoryRouter>
+      );
+
+      const containers = document.querySelectorAll('[data-testid="landing-container"]');
+      expect(
+        containers.length,
+        `Route ${route} should have at least one [data-testid="landing-container"]`
+      ).toBeGreaterThanOrEqual(1);
 
       unmount();
     }

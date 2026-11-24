@@ -83,18 +83,20 @@ async function main() {
   const themes = ['paper', 'dark'];
 
   const routes = [
-    { path: '/', slug: 'home' },
+    { path: '/', slug: 'landing', optOut: true, isLanding: true },
+    { path: '/beranda', slug: 'beranda' },
+    { path: '/privasi', slug: 'privasi', optOut: true, isLanding: true },
     { path: '/pemain/WK-2026-0042', slug: 'pemain-paspor' },
     { path: '/pemain/WK-2026-0042/laga', slug: 'pemain-laga' },
-    { path: '/pemain/WK-2026-0042/laga/demo-match-1', slug: 'pemain-laga-match' },
+    { path: '/pemain/WK-2026-0042/laga/demo-match-contoh-01', slug: 'pemain-laga-match' },
     { path: '/pemain/WK-2026-0042/pertumbuhan', slug: 'pemain-pertumbuhan' },
     { path: '/skuad', slug: 'skuad' },
     { path: '/penilaian/WK-2026-0042', slug: 'penilaian-WK-2026-0042' },
     { path: '/pencatatan', slug: 'pencatatan-root' },
     { path: '/pencatatan/demo-match-draft-02', slug: 'pencatatan-demo-match-draft-02' },
     { path: '/laga', slug: 'laga' },
-    { path: '/laga/demo-match-1', slug: 'laga-demo-match-1' },
-    { path: '/laga/demo-match-1/laporan', slug: 'laga-demo-match-1-laporan', optOut: true },
+    { path: '/laga/demo-match-contoh-01', slug: 'laga-demo-match-contoh-01' },
+    { path: '/laga/demo-match-contoh-01/laporan', slug: 'laga-demo-match-contoh-01-laporan', optOut: true },
     { path: '/taktik', slug: 'taktik' },
     { path: '/taktik/demo-scenario-contoh-01', slug: 'taktik-demo-scenario-contoh-01' },
     { path: '/verifikasi/demo-hash', slug: 'verifikasi-demo-hash', optOut: true },
@@ -110,7 +112,7 @@ async function main() {
       localStorage.setItem('ballr_tour_done_v1', '1');
     });
     const themePage = await themeContext.newPage();
-    await themePage.goto(`${baseUrl}/`, { waitUntil: 'domcontentloaded' });
+    await themePage.goto(`${baseUrl}/beranda`, { waitUntil: 'domcontentloaded' });
     await themePage.waitForTimeout(300);
 
     const bgBefore = await themePage.evaluate(() => window.getComputedStyle(document.body).backgroundColor);
@@ -241,25 +243,27 @@ async function main() {
               );
             }
 
-            // Check (e): demo indicator appears exactly 1 time
-            const demoCount = await page.evaluate(() => {
-              const demoBanners = document.querySelectorAll('[data-testid="demo-banner"]').length;
-              // Check for rogue demo indicators outside the unified banner
-              const all = Array.from(document.querySelectorAll('*'));
-              const rogue = all.filter((el) => {
-                if (el.closest('[data-testid="demo-banner"]')) return false;
-                let text = '';
-                for (const n of el.childNodes) {
-                  if (n.nodeType === Node.TEXT_NODE) text += n.textContent + ' ';
-                }
-                return /mode contoh|data contoh/i.test(text);
+            // Check (e): demo indicator appears exactly 1 time (exempt on landing & privasi)
+            if (!route.isLanding && route.path !== '/' && route.path !== '/privasi') {
+              const demoCount = await page.evaluate(() => {
+                const demoBanners = document.querySelectorAll('[data-testid="demo-banner"]').length;
+                // Check for rogue demo indicators outside the unified banner
+                const all = Array.from(document.querySelectorAll('*'));
+                const rogue = all.filter((el) => {
+                  if (el.closest('[data-testid="demo-banner"]')) return false;
+                  let text = '';
+                  for (const n of el.childNodes) {
+                    if (n.nodeType === Node.TEXT_NODE) text += n.textContent + ' ';
+                  }
+                  return /mode contoh|data contoh/i.test(text);
+                });
+                return { banners: demoBanners, rogue: rogue.length };
               });
-              return { banners: demoBanners, rogue: rogue.length };
-            });
-            if (demoCount.banners !== 1 || demoCount.rogue !== 0) {
-              failures.push(
-                `Assertion (e) FAILED on ${comboLabel}: demo indicator count != 1 (banner: ${demoCount.banners}, rogue: ${demoCount.rogue})`
-              );
+              if (demoCount.banners !== 1 || demoCount.rogue !== 0) {
+                failures.push(
+                  `Assertion (e) FAILED on ${comboLabel}: demo indicator count != 1 (banner: ${demoCount.banners}, rogue: ${demoCount.rogue})`
+                );
+              }
             }
 
             // Check (f): demo banner text has contrast >= 4.5:1 in both themes (canvas pixel read)
@@ -389,6 +393,44 @@ async function main() {
 
               if (gutterCheck && gutterCheck.error) {
                 failures.push(`Assertion (h) FAILED on ${comboLabel}: ${gutterCheck.error}`);
+              }
+            }
+
+            // Check (h - landing): landing container validation on "/" and "/privasi"
+            if (route.isLanding || route.path === '/' || route.path === '/privasi') {
+              const landingGutterCheck = await page.evaluate((vpWidth) => {
+                const containers = document.querySelectorAll('[data-testid="landing-container"]');
+                if (containers.length === 0) {
+                  return {
+                    error: `expected at least 1 [data-testid="landing-container"], found 0`
+                  };
+                }
+                const expectedMinGutter = vpWidth >= 640 ? 24 : 16;
+                for (const container of containers) {
+                  const rect = container.getBoundingClientRect();
+                  const style = window.getComputedStyle(container);
+                  const paddingLeft = parseFloat(style.paddingLeft) || 0;
+                  const paddingRight = parseFloat(style.paddingRight) || 0;
+
+                  const effectiveLeft = rect.left + paddingLeft;
+                  const effectiveRightGap = (window.innerWidth - rect.right) + paddingRight;
+
+                  if (effectiveLeft < expectedMinGutter - 1) {
+                    return {
+                      error: `landing-container left edge (${Math.round(effectiveLeft)}px) < expected minimum (${expectedMinGutter}px)`
+                    };
+                  }
+                  if (effectiveRightGap < expectedMinGutter - 1) {
+                    return {
+                      error: `landing-container right gap (${Math.round(effectiveRightGap)}px) < expected minimum (${expectedMinGutter}px)`
+                    };
+                  }
+                }
+                return null;
+              }, vp.width);
+
+              if (landingGutterCheck && landingGutterCheck.error) {
+                failures.push(`Assertion (h - landing) FAILED on ${comboLabel}: ${landingGutterCheck.error}`);
               }
             }
           } catch (err) {
