@@ -317,6 +317,8 @@ describe('Phase B12: Simplified Navigation & In-App Guide', () => {
     it('APP_ROUTES contains all required application route paths', () => {
       const paths = APP_ROUTES.map((r) => r.path);
       expect(paths).toContain('/');
+      expect(paths).toContain('/beranda');
+      expect(paths).toContain('/privasi');
       expect(paths).toContain('/pemain/:publicId');
       expect(paths).toContain('/pemain/:publicId/pertumbuhan');
       expect(paths).toContain('/skuad');
@@ -350,10 +352,10 @@ describe('Phase B12: Simplified Navigation & In-App Guide', () => {
       expect(actionBtn.className).toMatch(/min-h-\[44px\]/);
     });
 
-    it('renders Home at "/" for coach role', async () => {
+    it('renders Home at "/beranda" for coach role', async () => {
       const App = (await import('../App')).default;
       render(
-        <MemoryRouter initialEntries={['/']}>
+        <MemoryRouter initialEntries={['/beranda']}>
           <App />
         </MemoryRouter>
       );

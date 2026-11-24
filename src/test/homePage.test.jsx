@@ -20,7 +20,7 @@ afterAll(() => {
   vi.unstubAllEnvs();
 });
 
-function renderWithProviders(ui, { route = '/' } = {}) {
+function renderWithProviders(ui, { route = '/beranda' } = {}) {
   return render(
     <PlayersProvider>
       <MemoryRouter initialEntries={[route]}>
@@ -314,10 +314,10 @@ describe('Task UX-2: Coach Home ("Beranda") and UX Components', () => {
   });
 
   describe('5. App Routing Integration', () => {
-    it('"/" renders HomePage for coach in App.jsx', async () => {
+    it('"/beranda" renders HomePage for coach in App.jsx', async () => {
       const App = (await import('../App')).default;
       render(
-        <MemoryRouter initialEntries={['/']}>
+        <MemoryRouter initialEntries={['/beranda']}>
           <App />
         </MemoryRouter>
       );

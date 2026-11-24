@@ -50,7 +50,7 @@ describe('Video Logger Ergonomics & Collision Fixes', () => {
   describe('1. Fixed-element collisions: InstallAppBanner route exclusion', () => {
     it('renders nothing on /pencatatan/:id route', () => {
       const { container } = render(
-        <MemoryRouter initialEntries={['/pencatatan/demo-match-1']}>
+        <MemoryRouter initialEntries={['/pencatatan/demo-match-contoh-01']}>
           <InstallAppBanner />
         </MemoryRouter>
       );

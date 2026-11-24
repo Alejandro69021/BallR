@@ -29,6 +29,8 @@ import TacticsDetailPage from './pages/TacticsDetailPage';
 import MatchReportPage from './pages/MatchReportPage';
 import GuidePage from './pages/GuidePage';
 import HomePage from './pages/HomePage';
+import LandingPage from './pages/LandingPage';
+import PrivacyPage from './pages/PrivacyPage';
 
 function HomeRedirect({ userRole, onOpenAuthModal, onToast }) {
   const { players, loading, error, isDemoMode } = usePlayers();
@@ -153,9 +155,10 @@ function MainApp() {
     }
   };
 
-  // Surface derived from user preference, keeping mandatory paper for reports and verification
+  // Surface derived from user preference, keeping mandatory paper for reports, verification, and landing
   const surface = useMemo(() => {
     const p = location.pathname;
+    if (p === '/' || p === '/privasi') return 'paper';
     // Report/print behaviour must not change: always paper
     if (p.startsWith('/verifikasi/')) return 'paper';
     if (p === '/rujukan') return 'paper';
@@ -212,7 +215,8 @@ function MainApp() {
   // Derive currentView from location pathname for TopNav active tab highlight
   const currentView = useMemo(() => {
     const p = location.pathname;
-    if (p === '/') return (userRole === 'coach' || userRole === 'admin') ? 'home' : 'passport';
+    if (p === '/beranda') return (userRole === 'coach' || userRole === 'admin') ? 'home' : 'passport';
+    if (p === '/') return 'landing';
     if (p.startsWith('/pemain/') && p.includes('/laga')) return 'match';
     if (p.startsWith('/pemain/') && p.includes('/pertumbuhan')) return 'growth';
     if (p.startsWith('/pemain/')) return 'passport';
@@ -260,6 +264,10 @@ function MainApp() {
       navigate('/taktik');
     } else if (targetStr === 'roster') {
       navigate('/skuad');
+    } else if (targetStr === 'home') {
+      navigate('/beranda');
+    } else {
+      navigate('/beranda');
     }
   };
 
@@ -286,7 +294,7 @@ function MainApp() {
 
     switch (view) {
       case 'home':
-        navigate('/');
+        navigate('/beranda');
         break;
       case 'passport':
         navigate(`/pemain/${currentId}`);
@@ -316,30 +324,34 @@ function MainApp() {
         navigate(`/penilaian/${activePlayer.player_id || currentId}`);
         break;
       default:
-        navigate('/');
+        navigate('/beranda');
     }
   };
+
+  const isLanding = location.pathname === '/' || location.pathname === '/privasi';
 
   return (
     <Surface surface={surface} className="min-h-screen flex flex-col items-center justify-start pb-12 selection:bg-brand selection:text-app">
       <OfflineIndicator />
 
-      <TopNav
-        academy={activePlayer.personal_info?.academy}
-        currentView={currentView}
-        userRole={userRole}
-        isDemoMode={isDemoMode}
-        surface={surface}
-        onToggleSurface={handleToggleSurface}
-        onSwitchView={handleSwitchView}
-        onOpenAuthModal={handleOpenAuthModal}
-        onLogout={handleLogout}
-        onShare={() => setIsStoryCardOpen(true)}
-        verifiedText={activePlayer.personal_info?.academy?.name}
-      />
+      {!isLanding && (
+        <TopNav
+          academy={activePlayer.personal_info?.academy}
+          currentView={currentView}
+          userRole={userRole}
+          isDemoMode={isDemoMode}
+          surface={surface}
+          onToggleSurface={handleToggleSurface}
+          onSwitchView={handleSwitchView}
+          onOpenAuthModal={handleOpenAuthModal}
+          onLogout={handleLogout}
+          onShare={() => setIsStoryCardOpen(true)}
+          verifiedText={activePlayer.personal_info?.academy?.name}
+        />
+      )}
 
-      {/* Visible demo indicator banner whenever demo mode is on */}
-      {isDemoMode && (
+      {/* Visible demo indicator banner whenever demo mode is on (hidden on landing) */}
+      {!isLanding && isDemoMode && (
         <div data-testid="demo-banner" className="w-full bg-warn-bg border-b border-warn-ink/20 py-1.5 px-4 text-center">
           <span className="text-sm font-semibold text-warn-ink inline-flex items-center gap-1.5">
             <span className="inline-block w-2 h-2 rounded-full bg-warn-ink"></span>
@@ -349,7 +361,7 @@ function MainApp() {
       )}
 
       {/* Global Error Banner when not in demo mode and Supabase fails */}
-      {error && !isDemoMode && (
+      {!isLanding && error && !isDemoMode && (
         <div className="w-full max-w-5xl px-3.5 sm:px-6 pt-4">
           <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div>
@@ -363,7 +375,7 @@ function MainApp() {
         {/* Shared Coach & Admin PageContainer Layout */}
         <Route element={<SharedCoachLayout />}>
           <Route
-            path="/"
+            path="/beranda"
             element={
               <HomeRedirect
                 userRole={userRole}
@@ -468,7 +480,18 @@ function MainApp() {
           <Route path="/bantuan" element={<GuidePage />} />
         </Route>
 
-        {/* Explicit Layout Opt-Out Routes (A4 report & verification) */}
+        {/* Explicit Layout Opt-Out Routes (Public Landing, Privacy, A4 report & verification) */}
+        <Route
+          path="/"
+          element={
+            <LandingPage
+              userRole={userRole}
+              isDemoMode={isDemoMode}
+              onOpenAuthModal={handleOpenAuthModal}
+            />
+          }
+        />
+        <Route path="/privasi" element={<PrivacyPage />} />
         <Route
           path="/laga/:matchId/laporan"
           element={

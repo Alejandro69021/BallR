@@ -4,12 +4,16 @@
  */
 
 export const LAYOUT_OPT_OUT_ROUTES = [
+  '/',
+  '/privasi',
   '/laga/:matchId/laporan',
   '/verifikasi/:hash'
 ];
 
 export const APP_ROUTES = [
-  { path: '/', label: 'Beranda' },
+  { path: '/', label: 'Halaman Depan', optOutLayout: true },
+  { path: '/beranda', label: 'Beranda' },
+  { path: '/privasi', label: 'Kebijakan Privasi (draf)', optOutLayout: true },
   { path: '/pemain/:publicId', label: 'Paspor' },
   { path: '/pemain/:publicId/laga', label: 'Laga Pemain' },
   { path: '/pemain/:publicId/laga/:matchId', label: 'Laga Detail Pemain' },

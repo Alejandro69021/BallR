@@ -20,7 +20,7 @@ export default function GuidePage() {
 
   const handleResetTour = () => {
     resetTourDone();
-    navigate('/', { state: { startTour: true } });
+    navigate('/beranda', { state: { startTour: true } });
   };
   const sections = [
     {

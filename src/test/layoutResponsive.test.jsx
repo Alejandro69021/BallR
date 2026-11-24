@@ -122,12 +122,12 @@ describe('Layout & Viewport Responsiveness Post-Migration (Task UX-1)', () => {
           setViewport(width, height);
         });
 
-        it('renders / (Beranda) without layout breakage or horizontal overflow', async () => {
+        it('renders /beranda (Beranda) without layout breakage or horizontal overflow', async () => {
           const { container } = renderWithProviders(
             <Routes>
-              <Route path="/" element={<HomePage userRole="coach" isDemoMode={true} />} />
+              <Route path="/beranda" element={<HomePage userRole="coach" isDemoMode={true} />} />
             </Routes>,
-            '/'
+            '/beranda'
           );
 
           expect(await screen.findByRole('heading', { name: /Beranda/i })).toBeInTheDocument();
