@@ -1,7 +1,7 @@
 /**
  * Sumber tunggal salinan teks (single source of truth for landing copy).
  * Diekspor sebagai objek polos agar dapat dipindai oleh tes klaim data otomatis (LP-3).
- * Sesuai teks resmi docs/LANDING_SPEC.md bagian 4.
+ * Sesuai teks docs/LANDING_SPEC.md bagian 4.
  */
 
 export const landingCopy = {
@@ -138,28 +138,28 @@ export const landingCopy = {
     heading: 'Dan fitur pendukung lainnya',
     cards: [
       {
-        title: 'Papan taktik animasi',
-        desc: 'Rancang skema bola mati dan simulasi formasi dengan ekspor animasi.'
+        title: 'Papan taktik',
+        desc: 'Susun formasi dan gerakan pemain dalam beberapa bingkai, lengkap dengan rujukan literatur, lalu cetak.'
       },
       {
         title: 'Laporan terkunci',
-        desc: 'Kunci laporan setelah selesai agar data resmi tidak berubah.'
+        desc: 'Kunci laporan dengan sidik digital SHA-256, lalu periksa ulang kapan saja bahwa isinya tidak berubah.'
       },
       {
         title: 'Direktori skuad',
-        desc: 'Pantau seluruh atlet, status kehadiran, dan kelompok usia dalam satu tabel.'
+        desc: 'Daftar atlet dengan pencarian nama, filter posisi, pengurutan data, dan status rapor draf atau diterbitkan.'
       },
       {
         title: 'Evaluasi pelatih',
-        desc: 'Rubrik 4 pilar perkembangan (teknik, fisik, taktik, mental) tanpa skor karangan.'
+        desc: 'Rapor berbasis rubrik deskriptif untuk atribut teknis, disimpan sebagai draf atau diterbitkan.'
       },
       {
         title: 'Tes kebugaran',
-        desc: 'Catat lari 20m, ketahanan, kelincahan, dan lompat tegak dengan stopwatch bawaan.'
+        desc: 'Lompat vertikal, sprint 20 m dengan stopwatch, shuttle run, dan Yo-Yo, lengkap dengan perubahan dari bulan lalu.'
       },
       {
         title: 'Panduan dan rujukan',
-        desc: 'Dokumentasi metodologi penghitungan, glosarium istilah, dan aturan kejujuran data.'
+        desc: 'Tur pengenalan, glosarium istilah ramah pelatih, dan daftar pustaka ilmiah.'
       }
     ]
   },
@@ -170,22 +170,22 @@ export const landingCopy = {
       {
         step: '1',
         title: 'Buat laga',
-        desc: 'Tentukan lawan, kelompok umur, tanggal, dan format babak.'
+        desc: 'Catat lawan, tanggal, dan ukuran lapangan.'
       },
       {
         step: '2',
         title: 'Catat kejadian',
-        desc: 'Tekan tombol aksi dengan satu jempol dari pinggir lapangan secara langsung.'
+        desc: 'Ketuk aksi saat laga berjalan, atau sambil memutar video laga dari perangkatmu.'
       },
       {
         step: '3',
         title: 'Selesaikan laga',
-        desc: 'Periksa ringkasan menit, jenis kejadian, dan keterlibatan setiap pemain.'
+        desc: 'Isi skor akhir. Setelah itu catatan laga terkunci dan tidak bisa diubah.'
       },
       {
         step: '4',
         title: 'Buat laporan',
-        desc: 'Kunci laporan pertandingan untuk ditinjau staf lain dan dicetak rapi.'
+        desc: 'Laporan dibuat dari catatan yang sudah terkunci.'
       }
     ]
   },
@@ -224,7 +224,7 @@ export const landingCopy = {
           'Peta sebaran aksi dan peta zona 6×3',
           'Paspor perkembangan dan kurva tinggi/berat',
           'Kelompok kematangan tubuh (Khamis-Roche)',
-          'Papan taktik animasi dan ekspor',
+          'Papan taktik dengan bingkai gerak dan cetak',
           'Laporan pertandingan terkunci dan cetak A4',
           'Verifikasi hash integritas paspor'
         ]
@@ -233,8 +233,9 @@ export const landingCopy = {
         title: 'Sedang disiapkan',
         badge: 'Sedang disiapkan',
         items: [
-          'Alur persetujuan digital dari orang tua/wali',
-          'Sinkronisasi awan multi-perangkat',
+          'Server produksi dan pengujian keamanan akses data',
+          'Portal persetujuan wali oleh orang tua',
+          'Tinjauan hukum atas naskah persetujuan (UU PDP)',
           'Pengujian langsung di pinggir lapangan'
         ]
       },
@@ -243,9 +244,9 @@ export const landingCopy = {
         badge: 'Belum ada',
         items: [
           'Unggah video ke server',
-          'Analisis video otomatis (CV)',
-          'Perkiraan tinggi dewasa definitif',
-          'Peringkat atlet atau pemeringkatan bakat'
+          'Analisis video otomatis (semua kejadian dicatat manual oleh pelatih)',
+          'Perkiraan tinggi dewasa',
+          'Peringkat atlet'
         ]
       }
     ]
@@ -256,11 +257,11 @@ export const landingCopy = {
     items: [
       {
         q: 'Berapa biaya menggunakan ProspekBola?',
-        a: 'Saat ini ProspekBola berstatus uji coba terbuka dan tidak dipungut biaya apa pun. Kami tidak menjual langganan atau fitur berbayar.'
+        a: 'Belum ada harga. ProspekBola masih tahap uji coba dan belum menjual langganan. Kami mencari akademi yang mau mencoba bersama pelatihnya, sambil tetap memakai data contoh sampai keamanan datanya siap.'
       },
       {
         q: 'Bagaimana keamanan dan privasi data anak?',
-        a: 'Kami tidak menerima data anak sungguhan untuk saat ini. Seluruh data di demo adalah fiktif dan hanya tersimpan di peramban lokal perangkat Anda. Saat backend resmi aktif, sistem dirancang dengan memperhatikan prinsip UU PDP dan persetujuan wali wajib diperoleh sebelum data dicatat.'
+        a: 'Data anak nyata belum diterima. Seluruh data di demo adalah fiktif dan hanya tersimpan di peramban lokal perangkatmu. Pengujian keamanan akses data, portal persetujuan wali, dan peninjauan hukum atas naskah persetujuan masih disiapkan sebelum data nyata dapat dicatat.'
       },
       {
         q: 'Apakah butuh koneksi internet di lapangan?',
@@ -268,11 +269,11 @@ export const landingCopy = {
       },
       {
         q: 'Apakah aplikasi ini menebak data atau menganalisis video secara otomatis?',
-        a: 'Tidak. ProspekBola tidak menggunakan algoritma otomatis atau analisis video otomatis. Semua data murni dicatat oleh pelatih dari apa yang terjadi di lapangan.'
+        a: 'Belum. Semua kejadian dicatat manual oleh pelatih dari apa yang terjadi di lapangan. Video hanya diputar dari perangkat untuk menyamakan menit kejadian.'
       },
       {
         q: 'Berapa rentang usia atlet yang didukung?',
-        a: 'Aplikasi dirancang untuk akademi sepak bola usia muda mulai dari kelompok U-13 ke atas hingga U-19.'
+        a: 'Dirancang untuk akademi U-13 ke atas.'
       }
     ]
   },
