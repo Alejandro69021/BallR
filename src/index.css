@@ -3,6 +3,7 @@
 @theme {
   --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
 
   --text-xs: 12px;
   --text-xs--line-height: 16px;
@@ -55,14 +56,30 @@
   --color-series-4: var(--series-4);
   --color-series-5: var(--series-5);
 
-  --color-pitch: var(--pitch-bg);
+  --color-pitch: var(--pitch);
+  --color-pitch-2: var(--pitch-2);
+  --color-pitch-bg: var(--pitch-bg);
   --color-pitch-line: var(--pitch-line);
+  --color-bib: var(--bib);
+  --color-chalk: var(--chalk);
+  --color-ink: var(--ink);
+  --color-mint: var(--mint);
+  --color-mint-2: var(--mint-2);
 
   --radius-control: 6px;
   --radius-panel: 8px;
 }
 
 :root {
+  /* Raw Brand Tokens (BRAND_SPEC.md) */
+  --pitch: #0B3A2A;
+  --pitch-2: #0F4A35;
+  --bib: #D2F23F;
+  --chalk: #F4F5EE;
+  --ink: #10201A;
+  --mint: #D5E6DC;
+  --mint-2: #BFD8CB;
+
   --app-bg: #F5F6F2;
   --panel: #FFFFFF;
   --raised: #F5F6F2;
@@ -90,6 +107,15 @@
 
 :root[data-surface="paper"],
 [data-surface="paper"] {
+  /* Raw Brand Tokens (BRAND_SPEC.md) */
+  --pitch: #0B3A2A;
+  --pitch-2: #0F4A35;
+  --bib: #D2F23F;
+  --chalk: #F4F5EE;
+  --ink: #10201A;
+  --mint: #D5E6DC;
+  --mint-2: #BFD8CB;
+
   --app-bg: #F5F6F2;
   --panel: #FFFFFF;
   --raised: #F5F6F2;
@@ -117,6 +143,15 @@
 
 :root[data-surface="dark"],
 [data-surface="dark"] {
+  /* Raw Brand Tokens (BRAND_SPEC.md) */
+  --pitch: #0B3A2A;
+  --pitch-2: #0F4A35;
+  --bib: #D2F23F;
+  --chalk: #F4F5EE;
+  --ink: #10201A;
+  --mint: #D5E6DC;
+  --mint-2: #BFD8CB;
+
   --app-bg: #0B0F14;
   --panel: #11161D;
   --raised: #1A212B;
@@ -230,6 +265,14 @@
 .text-display {
   font-size: var(--text-display);
   line-height: var(--text-display--line-height);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+  line-height: 1;
 }
 
 /* Backward compatibility keyframes during transition */

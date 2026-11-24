@@ -9,6 +9,8 @@ import '@fontsource/ibm-plex-sans/600.css';
 import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/ibm-plex-mono/500.css';
 import '@fontsource/ibm-plex-mono/600.css';
+import '@fontsource/barlow-condensed/latin-700.css';
+import '@fontsource/barlow-condensed/latin-800.css';
 
 import './index.css';
 import App from './App.jsx';
