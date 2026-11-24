@@ -9,6 +9,7 @@ export default function Table({
   sortDirection = 'asc',
   onSort,
   stickyHeader = true,
+  stickyActions = true,
   emptyMessage = 'Belum ada data',
   className = ''
 }) {
@@ -36,8 +37,10 @@ export default function Table({
       <table className="w-full text-left text-sm border-collapse">
         <thead className={`border-b border-line bg-raised text-2 ${stickyHeader ? 'sticky top-0 z-10' : ''}`}>
           <tr>
-            {columns.map((col) => {
+            {columns.map((col, colIdx) => {
               const isSorted = sortKey === col.key;
+              const isLast = colIdx === columns.length - 1;
+              const isStickyAction = stickyActions && (col.key === 'actions' || isLast);
               const alignClass =
                 col.align === 'right'
                   ? 'text-right'
@@ -50,7 +53,7 @@ export default function Table({
                   key={col.key}
                   scope="col"
                   aria-sort={isSorted ? (sortDirection === 'asc' ? 'ascending' : 'descending') : undefined}
-                  className={`font-semibold select-none whitespace-nowrap ${col.sortable && onSort ? 'p-0' : 'py-2 px-2 sm:px-2.5'} ${alignClass}`}
+                  className={`font-semibold select-none whitespace-nowrap ${col.sortable && onSort ? 'p-0' : 'py-2 px-2 sm:px-2.5'} ${alignClass} ${isStickyAction ? 'sticky right-0 z-20 bg-raised shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.06)] pr-3 sm:pr-4' : ''}`}
                 >
                   {col.sortable && onSort ? (
                     <button
@@ -75,9 +78,11 @@ export default function Table({
           {data.map((row, rowIdx) => (
             <tr
               key={row.id || row.player_id || rowIdx}
-              className="hover:bg-raised/50 transition-colors duration-150 ease-out"
+              className="group hover:bg-raised/50 transition-colors duration-150 ease-out"
             >
-              {columns.map((col) => {
+              {columns.map((col, colIdx) => {
+                const isLast = colIdx === columns.length - 1;
+                const isStickyAction = stickyActions && (col.key === 'actions' || isLast);
                 const alignClass =
                   col.align === 'right'
                     ? 'text-right'
@@ -88,7 +93,10 @@ export default function Table({
                 const cellVal = row[col.key];
 
                 return (
-                  <td key={col.key} className={`py-2 px-2 sm:px-2.5 ${alignClass} ${tabularClass}`}>
+                  <td
+                    key={col.key}
+                    className={`py-2 px-2 sm:px-2.5 ${alignClass} ${tabularClass} ${isStickyAction ? 'sticky right-0 z-10 bg-panel group-hover:bg-raised/80 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.06)] pr-3 sm:pr-4' : ''}`}
+                  >
                     {col.render ? col.render(cellVal, row) : (cellVal ?? '-')}
                   </td>
                 );

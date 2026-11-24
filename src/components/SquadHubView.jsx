@@ -131,15 +131,14 @@ export default function SquadHubView({
     }
 
     return (
-      <span className="tabular-nums text-sm text-1 space-x-1.5 whitespace-nowrap">
-        {parts.map((p, idx) => (
-          <span key={p.code}>
-            <span className="text-2 text-sm font-sans mr-0.5">{p.code}</span>
+      <div className="grid grid-cols-3 gap-x-2 gap-y-0.5 tabular-nums text-sm text-1 min-w-[130px] max-w-[170px]">
+        {parts.map((p) => (
+          <span key={p.code} className="inline-flex items-center gap-1 whitespace-nowrap">
+            <span className="text-2 text-sm font-sans">{p.code}</span>
             <span className="font-semibold">{p.val ?? '-'}</span>
-            {idx < parts.length - 1 && <span className="text-line ml-1.5">·</span>}
           </span>
         ))}
-      </span>
+      </div>
     );
   };
 
@@ -165,13 +164,13 @@ export default function SquadHubView({
         <button
           type="button"
           onClick={() => onViewPassport?.(row.player_id)}
-          className="text-left font-medium text-1 hover:text-brand hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded max-w-[150px] whitespace-normal break-words cursor-pointer"
+          className="text-left font-medium text-1 hover:text-brand hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded min-w-[150px] max-w-[190px] whitespace-normal break-words cursor-pointer"
         >
-          <div className="font-semibold text-sm text-1 break-words">
+          <div className="font-semibold text-sm text-1 leading-snug truncate">
             {row.personal_info?.full_name || 'Atlet'}
           </div>
           {row.personal_info?.nickname && (
-            <div className="text-sm text-2">
+            <div className="text-sm text-2 leading-tight truncate">
               "{row.personal_info.nickname}"
             </div>
           )}

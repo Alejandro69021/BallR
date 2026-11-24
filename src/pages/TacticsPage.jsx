@@ -390,15 +390,18 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
               {
                 key: 'actions',
                 header: '',
+                align: 'right',
                 render: (_val, row) => (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => navigate(`/taktik/${row.id}`)}
-                    className="whitespace-nowrap"
-                  >
-                    Buka skema
-                  </Button>
+                  <div className="pr-3 sm:pr-4 flex justify-end">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => navigate(`/taktik/${row.id}`)}
+                      className="whitespace-nowrap"
+                    >
+                      Buka skema
+                    </Button>
+                  </div>
                 )
               }
             ]}
