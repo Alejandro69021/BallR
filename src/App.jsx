@@ -330,9 +330,9 @@ function MainApp() {
 
       {/* Visible demo indicator banner whenever demo mode is on */}
       {isDemoMode && (
-        <div data-testid="demo-banner" className="w-full bg-amber-500/10 border-b border-amber-500/20 py-1.5 px-4 text-center">
-          <span className="text-sm font-semibold text-amber-300 inline-flex items-center gap-1.5">
-            <span className="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
+        <div data-testid="demo-banner" className="w-full bg-warn-bg border-b border-warn-ink/20 py-1.5 px-4 text-center">
+          <span className="text-sm font-semibold text-warn-ink inline-flex items-center gap-1.5">
+            <span className="inline-block w-2 h-2 rounded-full bg-warn-ink"></span>
             Mode contoh: semua data di sini fiktif
           </span>
         </div>
