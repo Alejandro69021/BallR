@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database } from 'lucide-react';
+import { BrandMark } from '../brand';
 
 export default function EmptyState({
   icon,
@@ -11,7 +11,7 @@ export default function EmptyState({
   return (
     <div className={`p-6 text-center flex flex-col items-center justify-center space-y-2 select-none ${className}`}>
       <div className="p-2.5 rounded-full bg-raised text-2 flex items-center justify-center">
-        {icon || <Database className="w-5 h-5" aria-hidden="true" />}
+        {icon || <BrandMark size={20} aria-hidden="true" />}
       </div>
 
       <p className="text-sm font-medium text-1">

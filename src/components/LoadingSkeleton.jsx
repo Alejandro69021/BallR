@@ -1,5 +1,6 @@
 import React from 'react';
 import Skeleton from './ui/Skeleton';
+import { BrandMark } from './brand';
 
 export default function LoadingSkeleton() {
   return (
@@ -11,7 +12,7 @@ export default function LoadingSkeleton() {
       {/* Header Banner Skeleton */}
       <div className="flex items-center justify-between p-4 rounded-panel bg-panel border border-line">
         <div className="flex items-center gap-3">
-          <Skeleton variant="rect" width={40} height={40} />
+          <BrandMark size={40} className="animate-pulse" aria-hidden="true" />
           <div className="space-y-2">
             <Skeleton variant="text" width={140} height={14} />
             <Skeleton variant="text" width={220} height={12} />

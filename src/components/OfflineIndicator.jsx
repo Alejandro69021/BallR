@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { WifiOff, CheckCircle2 } from 'lucide-react';
+import { BrandMark } from './brand';
 
 export default function OfflineIndicator() {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
@@ -37,6 +38,7 @@ export default function OfflineIndicator() {
     <div className="fixed top-2 sm:top-3 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 z-50 flex items-center justify-center pointer-events-none animate-fadeIn select-none">
       {isOffline ? (
         <div className="pointer-events-auto flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-amber-500/20 border-2 border-amber-500/70 text-amber-200 text-sm font-semibold shadow-[0_4px_20px_rgba(245,158,11,0.35)] backdrop-blur-md">
+          <BrandMark size={16} aria-hidden="true" className="shrink-0" />
           <WifiOff className="w-4 h-4 text-amber-400 shrink-0 animate-pulse" />
           <span>
             Offline Mode — Data tersimpan lokal, akan sinkron otomatis saat online.

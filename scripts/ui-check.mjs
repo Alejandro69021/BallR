@@ -526,6 +526,165 @@ async function main() {
                 );
               }
             }
+
+            // Check (k): BrandMark present in top nav bar on non-landing routes
+            if (!route.isLanding && route.path !== '/' && route.path !== '/privasi') {
+              const navBrandMark = await page.evaluate(() => {
+                const nav = document.querySelector('[data-testid="top-nav-bar"]');
+                if (!nav) return { error: 'top-nav-bar not found' };
+                const mark = nav.querySelector('[data-testid="brand-mark"]');
+                return { hasBrandMark: Boolean(mark) };
+              });
+              if (!navBrandMark.hasBrandMark) {
+                failures.push(
+                  `Assertion (k) FAILED on ${comboLabel}: BrandMark not found in top-nav-bar`
+                );
+              }
+            }
+
+            // Check (l): BRAND_SPEC section 8 font-display rules
+            // .font-display allowed only on titles/numerals, never inside table/form/input/textarea, never > 6 words
+            const fontDisplayViolations = await page.evaluate(() => {
+              const violations = [];
+              const allElements = document.querySelectorAll('*');
+              for (const el of allElements) {
+                const tag = el.tagName.toLowerCase();
+                if (tag === 'pre' || tag === 'code' || tag === 'script' || tag === 'style') continue;
+
+                const style = window.getComputedStyle(el);
+                if (style.display === 'none' || style.visibility === 'hidden') continue;
+
+                const hasBarlowFont = style.fontFamily.toLowerCase().includes('barlow');
+                const hasFontDisplayClass = el.classList.contains('font-display');
+
+                if (hasBarlowFont || hasFontDisplayClass) {
+                  // Barlow only allowed with class .font-display
+                  if (hasBarlowFont && !hasFontDisplayClass && !el.closest('.font-display')) {
+                    violations.push({
+                      type: 'missing-font-display-class',
+                      tag: el.tagName,
+                      text: el.textContent.trim().slice(0, 40)
+                    });
+                    continue;
+                  }
+
+                  // Never inside table, form, input, textarea
+                  const forbiddenParent = el.closest('table, form, input, textarea');
+                  if (forbiddenParent) {
+                    violations.push({
+                      type: `inside-${forbiddenParent.tagName.toLowerCase()}`,
+                      tag: el.tagName,
+                      text: el.textContent.trim().slice(0, 40)
+                    });
+                    continue;
+                  }
+
+                  // Never > 6 words
+                  let ownText = '';
+                  for (const node of el.childNodes) {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                      ownText += node.textContent;
+                    }
+                  }
+                  const checkText = ownText.trim() || el.textContent.trim();
+                  const words = checkText.split(/\s+/).filter(Boolean);
+                  if (words.length > 6) {
+                    violations.push({
+                      type: 'words-exceeded-6',
+                      count: words.length,
+                      tag: el.tagName,
+                      text: checkText.slice(0, 50)
+                    });
+                  }
+                }
+              }
+              return violations;
+            });
+            if (fontDisplayViolations.length > 0) {
+              failures.push(
+                `Assertion (l) FAILED on ${comboLabel}: font-display violation: ${JSON.stringify(fontDisplayViolations[0])}`
+              );
+            }
+
+            // Check (m): no bib-coloured text on light backgrounds with contrast < 4.5:1
+            const bibContrastViolations = await page.evaluate(() => {
+              function getRgb(colorStr) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 1;
+                canvas.height = 1;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = colorStr;
+                ctx.fillRect(0, 0, 1, 1);
+                const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+                return [r, g, b];
+              }
+
+              function getLuminance([r, g, b]) {
+                const sRGB = [r, g, b].map((v) => {
+                  v /= 255;
+                  return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+                });
+                return 0.2126 * sRGB[0] + 0.7152 * sRGB[1] + 0.0722 * sRGB[2];
+              }
+
+              function getEffectiveBg(el) {
+                let cur = el;
+                while (cur && cur !== document.documentElement) {
+                  const bg = window.getComputedStyle(cur).backgroundColor;
+                  if (bg && bg !== 'transparent' && !bg.startsWith('rgba(0, 0, 0, 0)')) {
+                    return bg;
+                  }
+                  cur = cur.parentElement;
+                }
+                return window.getComputedStyle(document.body).backgroundColor || 'rgb(244, 245, 238)';
+              }
+
+              const violations = [];
+              const allElements = document.querySelectorAll('*');
+              for (const el of allElements) {
+                const style = window.getComputedStyle(el);
+                if (style.display === 'none' || style.visibility === 'hidden') continue;
+
+                // Check direct text
+                let ownText = '';
+                for (const node of el.childNodes) {
+                  if (node.nodeType === Node.TEXT_NODE) {
+                    ownText += node.textContent;
+                  }
+                }
+                const text = ownText.trim();
+                if (!text) continue;
+
+                const color = style.color;
+                const rgb = getRgb(color);
+                // Bib is rgb(210, 242, 63)
+                const isBib = Math.abs(rgb[0] - 210) < 10 && Math.abs(rgb[1] - 242) < 10 && Math.abs(rgb[2] - 63) < 10;
+                if (isBib) {
+                  const bg = getEffectiveBg(el);
+                  const bgRgb = getRgb(bg);
+                  const l1 = getLuminance(rgb);
+                  const l2 = getLuminance(bgRgb);
+                  const lighter = Math.max(l1, l2);
+                  const darker = Math.min(l1, l2);
+                  const ratio = Math.round(((lighter + 0.05) / (darker + 0.05)) * 100) / 100;
+                  if (ratio < 4.5) {
+                    violations.push({
+                      tag: el.tagName,
+                      text: text.slice(0, 30),
+                      ratio,
+                      fg: color,
+                      bg
+                    });
+                  }
+                }
+              }
+              return violations;
+            });
+            if (bibContrastViolations.length > 0) {
+              failures.push(
+                `Assertion (m) FAILED on ${comboLabel}: bib-coloured text has contrast < 4.5:1: ${JSON.stringify(bibContrastViolations[0])}`
+              );
+            }
           } catch (err) {
             failures.push(`Execution error on ${comboLabel}: ${err.message}`);
           }
@@ -545,7 +704,7 @@ async function main() {
   console.log(`Themes tested: ${themes.join(', ')}`);
   console.log(`Total matrix permutations: ${routes.length * viewports.length * themes.length}`);
   if (failures.length === 0) {
-    console.log('ALL ASSERTIONS (a)-(j) PASSED (0 failures)! Screenshots saved to ui-check-out/');
+    console.log('ALL ASSERTIONS (a)-(m) PASSED (0 failures)! Screenshots saved to ui-check-out/');
     process.exit(0);
   } else {
     console.error(`FAILED: ${failures.length} issues detected:`);

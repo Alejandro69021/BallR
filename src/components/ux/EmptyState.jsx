@@ -1,6 +1,7 @@
 import React from 'react';
 import { Database } from 'lucide-react';
 import Button from '../ui/Button';
+import { BrandMark } from '../brand';
 
 /**
  * EmptyState component (src/components/ux/EmptyState.jsx)
@@ -29,7 +30,7 @@ export default function EmptyState({
       className={`p-8 sm:p-12 text-center flex flex-col items-center justify-center space-y-3 bg-panel border border-line rounded-panel select-none ${className}`}
     >
       <div className="w-12 h-12 rounded-full bg-accent-soft/40 text-brand flex items-center justify-center shrink-0">
-        {icon || <Database className="w-6 h-6" aria-hidden="true" strokeWidth={1.75} />}
+        {icon || <BrandMark size={28} aria-hidden="true" />}
       </div>
 
       <h3 className="text-lg font-semibold text-1">{title}</h3>

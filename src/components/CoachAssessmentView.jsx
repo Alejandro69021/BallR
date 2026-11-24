@@ -5,6 +5,7 @@ import FitnessForm from './assessment/FitnessForm';
 import NarrativeNotesForm from './assessment/NarrativeNotesForm';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
+import { JerseyTile } from './brand';
 
 export default function CoachAssessmentView({
   players = [],
@@ -201,9 +202,7 @@ export default function CoachAssessmentView({
                       : 'bg-panel border-line text-2 hover:text-1 hover:bg-raised'
                   }`}
                 >
-                  <div className="w-8 h-8 rounded-control bg-panel border border-line flex items-center justify-center font-mono text-sm font-semibold shrink-0">
-                    #{p.personal_info.jersey_number}
-                  </div>
+                  <JerseyTile number={p.personal_info.jersey_number} size="md" />
 
                   <div>
                     <div className="text-sm font-semibold text-1">

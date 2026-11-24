@@ -19,6 +19,7 @@ export default function StageStepper({
   steps = MATCH_STAGES,
   currentStep = 2,
   compact = false,
+  onDark = false,
   className = ''
 }) {
   const total = steps.length;
@@ -73,16 +74,22 @@ export default function StageStepper({
                   <div
                     className={`w-7 h-7 rounded-full flex items-center justify-center text-sm transition-colors shrink-0 ${
                       isDone
-                        ? 'bg-accent-soft text-brand font-semibold'
+                        ? onDark
+                          ? 'bg-pitch-2 text-bib font-semibold border border-mint/20'
+                          : 'bg-accent-soft text-brand font-semibold'
                         : isCurrent
-                        ? 'bg-brand text-app font-bold shadow-xs'
+                        ? onDark
+                          ? 'bg-bib text-pitch font-bold shadow-xs'
+                          : 'bg-brand text-app font-bold shadow-xs'
+                        : onDark
+                        ? 'border border-mint/20 bg-pitch-2 text-mint'
                         : 'border border-line bg-panel text-2'
                     }`}
                   >
                     {isDone ? (
                       <Check className="w-4 h-4 stroke-[2.5]" aria-hidden="true" />
                     ) : (
-                      <span>{stepNumber}</span>
+                      <span className="font-display font-extrabold text-base leading-none">{stepNumber}</span>
                     )}
                   </div>
                   <span

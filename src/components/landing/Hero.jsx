@@ -114,11 +114,11 @@ export default function Hero({ isDemoMode = false, onOpenAuthModal }) {
 
       {/* Full-width Lime Principles Strip (BRAND_SPEC bagian 5 & LANDING_SPEC bagian 4) */}
       <div className="w-full bg-bib text-ink py-3.5 px-4 overflow-hidden border-t-2 border-b-2 border-ink">
-        <div className="max-w-[1160px] mx-auto flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center font-display font-extrabold text-sm sm:text-base tracking-wide uppercase">
+        <div className="max-w-[1160px] mx-auto flex flex-wrap items-center justify-around gap-x-6 gap-y-2 text-center text-sm sm:text-base tracking-wide uppercase">
           {copy.principlesStrip.map((item, index) => (
             <React.Fragment key={item}>
               {index > 0 && <span className="hidden sm:inline opacity-40 select-none" aria-hidden="true">·</span>}
-              <span>{item}</span>
+              <span className="font-display font-extrabold">{item}</span>
             </React.Fragment>
           ))}
         </div>
