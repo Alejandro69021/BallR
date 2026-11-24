@@ -136,7 +136,7 @@ export default function VerificationView({ players = [] }) {
         {/* Certificate Content */}
         {loading ? (
           <div className="p-8 text-center text-sm text-2 font-mono">
-            Memeriksa hash kriptografis ke basis data snapshot...
+            Memeriksa hash kriptografis ke basis data laporan terkunci...
           </div>
         ) : isValid && snapshotData ? (
           <div className="space-y-5">
@@ -157,7 +157,7 @@ export default function VerificationView({ players = [] }) {
               </div>
 
               <div className="p-3 rounded-control bg-app border border-line space-y-1">
-                <span className="text-sm text-2 block">Periode snapshot</span>
+                <span className="text-sm text-2 block">Periode laporan terkunci</span>
                 <p className="text-sm font-semibold text-1">
                   {snapshotData.period}
                 </p>
@@ -187,7 +187,7 @@ export default function VerificationView({ players = [] }) {
 
             {/* Source Note with Payload Version */}
             <SourceNote
-              source="Snapshot paspor kanonikal"
+              source="Snapshot paspor kanonikal (Laporan terkunci)"
               date={snapshotData.created_at ? new Date(snapshotData.created_at).toLocaleDateString('id-ID') : undefined}
               citationKey={`versi ${snapshotData.payload?.version || 'v1.0'}`}
             />

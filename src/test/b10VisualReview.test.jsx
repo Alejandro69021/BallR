@@ -102,7 +102,7 @@ describe('Phase B10: Visual Review & Demo Data Consistency', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText('Distribusi Kejadian')).toBeInTheDocument();
+        expect(screen.getByText('Jenis kejadian')).toBeInTheDocument();
       });
 
       const bodyText = document.body.textContent || '';

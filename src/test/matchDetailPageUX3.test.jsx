@@ -194,7 +194,7 @@ describe('UX-3 MatchDetailPage Redesign', () => {
         screen.getByRole('heading', { level: 2, name: 'Bagikan atau cetak laporan' })
       ).toBeInTheDocument();
       expect(
-        screen.getByText('Laporan pertandingan telah dibekukan dan siap dibagikan atau dicetak.')
+        screen.getByText('Laporan pertandingan telah dikunci dan siap dibagikan atau dicetak.')
       ).toBeInTheDocument();
 
       const primaryCta = screen.getByTestId('primary-next-step-action');

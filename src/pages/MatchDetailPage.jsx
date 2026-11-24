@@ -42,6 +42,7 @@ import EventMap from '../components/match/EventMap';
 import LocalVideoPanel, { hasStoredVideoMeta } from '../components/video/LocalVideoPanel';
 import StageStepper from '../components/ux/StageStepper';
 import NextStepPanel from '../components/ux/NextStepPanel';
+import Term from '../components/ux/Term';
 
 export default function MatchDetailPage({ userRole = 'public', onToast }) {
   const { matchId } = useParams();
@@ -270,7 +271,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         variant: 'success'
       });
       // Refresh snapshot
-      getLatestSnapshot(matchId).then(setSnapshot).catch(() => {});
+      getLatestSnapshot(matchId).then(setSnapshot).catch(() => { });
     } catch (err) {
       console.warn('Gagal memfinalkan laga:', err);
       const indonesianError = formatMatchError(err);
@@ -630,15 +631,15 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       };
       secondaryAction = isAdmin
         ? {
-            label: 'Buka kembali',
-            onClick: handleReopen,
-            loading: reopening,
-            icon: <RotateCcw className="w-4 h-4" />
-          }
+          label: 'Buka kembali',
+          onClick: handleReopen,
+          loading: reopening,
+          icon: <RotateCcw className="w-4 h-4" />
+        }
         : null;
     } else {
       nextStepTitle = 'Bagikan atau cetak laporan';
-      nextStepDescription = 'Laporan pertandingan telah dibekukan dan siap dibagikan atau dicetak.';
+      nextStepDescription = 'Laporan pertandingan telah dikunci dan siap dibagikan atau dicetak.';
       primaryAction = {
         label: 'Bagikan atau cetak laporan',
         onClick: () => navigate(`/laga/${match.id}/laporan`),
@@ -647,11 +648,11 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       };
       secondaryAction = isAdmin
         ? {
-            label: 'Buka kembali',
-            onClick: handleReopen,
-            loading: reopening,
-            icon: <RotateCcw className="w-4 h-4" />
-          }
+          label: 'Buka kembali',
+          onClick: handleReopen,
+          loading: reopening,
+          icon: <RotateCcw className="w-4 h-4" />
+        }
         : null;
     }
   }
@@ -659,64 +660,64 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   // Menu items for MenuButton "Lainnya"
   const menuItems = !isFinal
     ? [
-        {
-          id: 'edit',
-          label: 'Ubah data laga',
-          icon: <Edit3 className="w-4 h-4" />,
-          onClick: handleOpenEdit
-        },
-        {
-          id: 'video',
-          label: 'Pilih video laga',
-          icon: <Video className="w-4 h-4" />,
-          onClick: () => {
-            setActiveTab('summary');
-            setIsVideoPanelOpen(true);
-            videoPanelRef.current?.openFilePicker?.();
-          }
-        },
-        {
-          id: 'print-draft',
-          label: 'Cetak catatan sementara',
-          icon: <Printer className="w-4 h-4" />,
-          onClick: () => window.print()
-        },
-        {
-          id: 'delete-draft',
-          label: 'Hapus draf',
-          variant: 'danger',
-          icon: <Trash2 className="w-4 h-4" />,
-          onClick: () => setIsDeleteOpen(true)
+      {
+        id: 'edit',
+        label: 'Ubah data laga',
+        icon: <Edit3 className="w-4 h-4" />,
+        onClick: handleOpenEdit
+      },
+      {
+        id: 'video',
+        label: 'Pilih video laga',
+        icon: <Video className="w-4 h-4" />,
+        onClick: () => {
+          setActiveTab('summary');
+          setIsVideoPanelOpen(true);
+          videoPanelRef.current?.openFilePicker?.();
         }
-      ]
+      },
+      {
+        id: 'print-draft',
+        label: 'Cetak catatan sementara',
+        icon: <Printer className="w-4 h-4" />,
+        onClick: () => window.print()
+      },
+      {
+        id: 'delete-draft',
+        label: 'Hapus draf',
+        variant: 'danger',
+        icon: <Trash2 className="w-4 h-4" />,
+        onClick: () => setIsDeleteOpen(true)
+      }
+    ]
     : [
-        {
-          id: 'video',
-          label: 'Pilih video laga',
-          icon: <Video className="w-4 h-4" />,
-          onClick: () => {
-            setActiveTab('summary');
-            setIsVideoPanelOpen(true);
-            videoPanelRef.current?.openFilePicker?.();
+      {
+        id: 'video',
+        label: 'Pilih video laga',
+        icon: <Video className="w-4 h-4" />,
+        onClick: () => {
+          setActiveTab('summary');
+          setIsVideoPanelOpen(true);
+          videoPanelRef.current?.openFilePicker?.();
+        }
+      },
+      {
+        id: 'print-summary',
+        label: 'Cetak ringkasan',
+        icon: <Printer className="w-4 h-4" />,
+        onClick: () => window.print()
+      },
+      ...(isAdmin
+        ? [
+          {
+            id: 'reopen',
+            label: 'Buka kembali laga',
+            icon: <RotateCcw className="w-4 h-4" />,
+            onClick: handleReopen
           }
-        },
-        {
-          id: 'print-summary',
-          label: 'Cetak ringkasan',
-          icon: <Printer className="w-4 h-4" />,
-          onClick: () => window.print()
-        },
-        ...(isAdmin
-          ? [
-              {
-                id: 'reopen',
-                label: 'Buka kembali laga',
-                icon: <RotateCcw className="w-4 h-4" />,
-                onClick: handleReopen
-              }
-            ]
-          : [])
-      ];
+        ]
+        : [])
+    ];
 
   const tabs = [
     { id: 'summary', label: 'Ringkasan', icon: <BarChart3 className="w-4 h-4" /> },
@@ -814,11 +815,10 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               aria-selected={isActive}
               aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
-              className={`min-h-[44px] px-4 py-2.5 text-sm flex items-center gap-2 font-medium border-b-2 transition-colors cursor-pointer select-none -mb-px whitespace-nowrap ${
-                isActive
+              className={`min-h-[44px] px-4 py-2.5 text-sm flex items-center gap-2 font-medium border-b-2 transition-colors cursor-pointer select-none -mb-px whitespace-nowrap ${isActive
                   ? 'border-brand text-brand font-semibold bg-accent-soft/20 rounded-t-control'
                   : 'border-transparent text-2 hover:text-1 hover:border-line'
-              }`}
+                }`}
             >
               {tab.icon}
               <span>{tab.label}</span>
@@ -850,7 +850,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         {/* Event Breakdown */}
         <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-line">
-            <h2 className="text-sm font-semibold text-1">Distribusi Kejadian</h2>
+            <h2 className="text-sm font-semibold text-1">Jenis kejadian</h2>
             <span className="text-sm text-2 font-mono tabular-nums">
               Total n = {totalEvents}
             </span>
@@ -961,7 +961,12 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       >
         <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-line">
-            <h2 className="text-sm font-semibold text-1">Keterlibatan Pemain</h2>
+            <div className="flex items-center gap-1.5">
+              <h2 className="text-sm font-semibold text-1">Keterlibatan pemain</h2>
+              <Term
+                explanation="Berapa kali pemain tercatat terlibat dalam kejadian."
+              />
+            </div>
             <span className="text-sm text-2 font-mono tabular-nums">
               Lawan n = {eventCountsByPlayer.opponentEvents}
             </span>

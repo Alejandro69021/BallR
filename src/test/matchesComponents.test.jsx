@@ -254,10 +254,10 @@ describe('Matches Components & Integration (MatchesPage, MatchDetailPage, TopNav
 
       // Counts per event type (n shown)
       expect(screen.getByText(/Total n = 25/i)).toBeInTheDocument();
-      expect(screen.getByText(/Distribusi Kejadian/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2, name: /Jenis kejadian/i })).toBeInTheDocument();
 
       // Keterlibatan Pemain
-      expect(screen.getByText(/Keterlibatan Pemain/i)).toBeInTheDocument();
+      expect(screen.getByText(/Keterlibatan pemain/i)).toBeInTheDocument();
 
       // Events table headers
       expect(screen.getByRole('columnheader', { name: /Babak/i })).toBeInTheDocument();

@@ -3,6 +3,7 @@ import { Ruler, Activity } from 'lucide-react';
 import Badge from '../ui/Badge';
 import RefChip from '../ui/RefChip';
 import EmptyState from '../ui/EmptyState';
+import Term from '../ux/Term';
 
 export default function BioMaturityCard({ bioSpecs }) {
   if (!bioSpecs || bioSpecs.inputsMissing) {
@@ -12,7 +13,10 @@ export default function BioMaturityCard({ bioSpecs }) {
           <div>
             <h3 className="text-base font-semibold text-1 flex items-center gap-2">
               <Activity className="w-4 h-4 text-brand" strokeWidth={1.5} />
-              <span>Estimasi kematangan biologis</span>
+              <span>Kelompok kematangan tubuh</span>
+              <Term
+                explanation="Pengelompokan pemain menurut tahap pertumbuhan tubuh, bukan hanya umur."
+              />
             </h3>
             <p className="text-sm text-2 mt-0.5">
               Protokol pemantauan maturitas somatik atlet muda.
@@ -49,7 +53,10 @@ export default function BioMaturityCard({ bioSpecs }) {
           </div>
           <h3 className="text-base font-semibold text-1 flex items-center gap-2">
             <Activity className="w-4 h-4 text-brand" strokeWidth={1.5} />
-            <span>Estimasi kematangan biologis</span>
+            <span>Kelompok kematangan tubuh</span>
+            <Term
+              explanation="Pengelompokan pemain menurut tahap pertumbuhan tubuh, bukan hanya umur."
+            />
           </h3>
           <p className="text-sm text-2 mt-0.5">
             Menilai estimasi maturitas fisik atlet muda guna merancang beban latihan yang proporsional.

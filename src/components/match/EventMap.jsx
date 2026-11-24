@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import PitchSvg from '../ui/PitchSvg';
 import Table from '../ui/Table';
 import Badge from '../ui/Badge';
+import Term from '../ux/Term';
 import { EVENT_TYPE_LABELS, ALLOWED_EVENT_TYPES } from '../../lib/matches';
 import { zoneGrid } from '../../lib/analysis/events';
 
@@ -151,9 +152,13 @@ export default function EventMap({
             }`}
             aria-pressed={mode === 'zones'}
           >
-            Kisi 6x3 Zona
+            Peta zona (6×3)
           </button>
         </div>
+
+        <Term
+          explanation="Lapangan dibagi 6 kolom × 3 baris untuk melihat di area mana kejadian terjadi."
+        />
 
         {/* Quick Reset Filters */}
         <button
@@ -482,7 +487,7 @@ export default function EventMap({
           {mode === 'zones' && (
             <>
               <span>Total kejadian berkoordinat: {zoneData.total_with_coords}</span>
-              <span>Intensitas warna menunjukkan kepadatan aksi dalam kisi 6x3</span>
+              <span>Intensitas warna menunjukkan kepadatan aksi dalam peta zona (6×3)</span>
             </>
           )}
         </div>

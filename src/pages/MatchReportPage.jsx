@@ -40,6 +40,7 @@ import PitchSvg from '../components/ui/PitchSvg';
 import RefChip from '../components/ui/RefChip';
 import Dialog from '../components/ui/Dialog';
 import EmptyState from '../components/ui/EmptyState';
+import Term from '../components/ux/Term';
 
 export default function MatchReportPage({ userRole = 'public', onToast, onOpenAuthModal }) {
   const { matchId } = useParams();
@@ -183,8 +184,8 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
   const handleFreezeReport = async () => {
     if (!selectedReviewer) {
       onToast?.({
-        title: 'Peninjau Belum Dipilih',
-        subtext: 'Pilih peninjau dari daftar staf akademi sebelum membekukan laporan.',
+        title: 'Pemeriksa Belum Dipilih',
+        subtext: 'Pilih pemeriksa dari daftar staf akademi sebelum mengunci laporan.',
         variant: 'warning'
       });
       return;
@@ -203,13 +204,13 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       setLatestSnapshot(snap);
       setIsFreezeModalOpen(false);
       onToast?.({
-        title: 'Laporan Dibekukan',
-        subtext: 'Snapshot laporan resmi berhasil disimpan dengan hash kriptografis.'
+        title: 'Laporan Dikunci',
+        subtext: 'Laporan terkunci resmi berhasil disimpan dengan hash kriptografis.'
       });
     } catch (err) {
-      console.warn('Gagal membekukan laporan:', err);
+      console.warn('Gagal mengunci laporan:', err);
       onToast?.({
-        title: 'Gagal Membekukan Laporan',
+        title: 'Gagal Mengunci Laporan',
         subtext: formatReportError(err),
         variant: 'error'
       });
@@ -227,7 +228,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       if (res.ok) {
         onToast?.({
           title: 'Verifikasi Berhasil',
-          subtext: 'Data saat ini identik (Cocok) dengan snapshot yang dibekukan.'
+          subtext: 'Data saat ini identik (Cocok) dengan laporan terkunci.'
         });
       } else {
         onToast?.({
@@ -315,7 +316,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               icon={<FileText className="w-4 h-4" strokeWidth={1.5} />}
               onClick={() => setViewFrozen((prev) => !prev)}
             >
-              {viewFrozen ? 'Tampilkan data saat ini' : 'Tampilkan versi beku'}
+              {viewFrozen ? 'Tampilkan data saat ini' : 'Tampilkan versi terkunci'}
             </Button>
           )}
 
@@ -335,7 +336,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             <div className="flex items-center gap-2">
               {reviewerCandidates.length === 0 && (
                 <span className="text-sm text-warning font-mono">
-                  Belum ada pelatih lain atau admin yang bisa meninjau
+                  Belum ada pelatih lain atau admin yang bisa memeriksa
                 </span>
               )}
               <Button
@@ -345,7 +346,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                 onClick={() => setIsFreezeModalOpen(true)}
                 disabled={reviewerCandidates.length === 0}
               >
-                Bekukan laporan
+                Kunci laporan
               </Button>
             </div>
           )}
@@ -367,10 +368,10 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <div className="flex items-center gap-2">
             <Lock className="w-4 h-4 text-brand shrink-0" strokeWidth={1.5} />
             <span className="font-semibold text-1">
-              Versi beku {new Date(latestSnapshot.created_at).toLocaleDateString('id-ID')}, peninjau {latestSnapshot.reviewed_by_profile?.full_name || latestSnapshot.reviewed_by}
+              Versi terkunci {new Date(latestSnapshot.created_at).toLocaleDateString('id-ID')}, pemeriksa {latestSnapshot.reviewed_by_profile?.full_name || latestSnapshot.reviewed_by}
             </span>
           </div>
-          <Badge variant="neutral" size="sm">Versi Beku</Badge>
+          <Badge variant="neutral" size="sm">Versi Terkunci</Badge>
         </div>
       )}
 
@@ -544,7 +545,12 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           {/* PPDA */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-1.5">
             <div className="space-y-1">
-              <span className="font-semibold text-1 block">PPDA (Intensitas Pressing)</span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="font-semibold text-1 block">PPDA (Intensitas Pressing)</span>
+                <Term
+                  explanation="Passes Allowed per Defensive Action: rasio umpan lawan sebelum aksi bertahan tim kita. Mengindikasikan intensitas tekanan, bukan ukuran mutlak kualitas tim."
+                />
+              </div>
               <div className="w-full truncate">
                 <RefChip referenceId="trainor-ppda-2014" />
               </div>
@@ -951,9 +957,9 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
           {latestSnapshot && (
             <div className="pt-2 border-t border-line text-2 space-y-0.5">
-              <div>Status: <span className="text-1 font-semibold">Telah Dibekukan Resmi</span></div>
-              <div>Peninjau: <span className="text-1">{latestSnapshot.reviewed_by_profile?.full_name || latestSnapshot.reviewed_by}</span></div>
-              <div>Tanggal Pembekuan: <span className="text-1">{new Date(latestSnapshot.created_at).toLocaleString('id-ID')}</span></div>
+              <div>Status: <span className="text-1 font-semibold">Telah Dikunci Resmi</span></div>
+              <div>Pemeriksa: <span className="text-1">{latestSnapshot.reviewed_by_profile?.full_name || latestSnapshot.reviewed_by}</span></div>
+              <div>Tanggal Penguncian: <span className="text-1">{new Date(latestSnapshot.created_at).toLocaleString('id-ID')}</span></div>
             </div>
           )}
         </div>
@@ -991,7 +997,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       <Dialog
         isOpen={isFreezeModalOpen}
         onClose={() => setIsFreezeModalOpen(false)}
-        title="Bekukan Laporan Pertandingan"
+        title="Kunci Laporan Pertandingan"
         footer={
           <>
             <Button
@@ -1008,14 +1014,14 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               onClick={handleFreezeReport}
               disabled={freezing || !selectedReviewer || reviewerCandidates.length === 0}
             >
-              {freezing ? 'Membekukan...' : 'Konfirmasi & Bekukan'}
+              {freezing ? 'Mengunci...' : 'Konfirmasi & Kunci'}
             </Button>
           </>
         }
       >
         <div className="space-y-4 text-sm">
           <p className="text-2 leading-relaxed">
-            Membekukan laporan akan membuat snapshot kriptografis yang bersifat tetap (immutable). Setelah dibekukan, data laporan tidak dapat diubah atau dihapus.
+            Mengunci laporan akan membuat rekaman laporan yang bersifat tetap (immutable). Setelah dikunci, data laporan tidak dapat diubah atau dihapus.
           </p>
 
           <div className="p-3 rounded-control bg-raised border border-line font-mono space-y-1">
@@ -1025,11 +1031,11 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
           <div>
             <label htmlFor="select-reviewer" className="block font-medium text-1 mb-1">
-              Pilih Peninjau (Pelatih lain atau Admin):
+              Pilih Pemeriksa (Pelatih lain atau Admin):
             </label>
             {reviewerCandidates.length === 0 ? (
               <div className="p-3 rounded-control bg-raised border border-warning text-warning text-sm">
-                Belum ada pelatih lain atau admin yang bisa meninjau
+                Belum ada pelatih lain atau admin yang bisa memeriksa
               </div>
             ) : (
               <>
@@ -1039,7 +1045,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                   onChange={(e) => setSelectedReviewer(e.target.value)}
                   className="w-full min-h-[44px] px-3 py-1.5 rounded-control bg-app border border-line text-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand"
                 >
-                  <option value="">-- Pilih Staf Peninjau --</option>
+                  <option value="">-- Pilih Staf Pemeriksa --</option>
                   {reviewerCandidates.map((staff) => (
                     <option key={staff.id} value={staff.id}>
                       {staff.full_name || staff.name} ({staff.role})
@@ -1047,7 +1053,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                   ))}
                 </select>
                 <p className="text-2 text-sm mt-1">
-                  Peninjau harus pelatih lain dari akademi yang sama atau admin, bukan pembuat laporan.
+                  Pemeriksa harus pelatih lain dari akademi yang sama atau admin, bukan pembuat laporan.
                 </p>
               </>
             )}

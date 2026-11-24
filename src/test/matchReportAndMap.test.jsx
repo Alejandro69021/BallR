@@ -276,7 +276,7 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
       // Mode switch buttons exist
       expect(screen.getByRole('button', { name: /Penanda Aksi/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Aliran Umpan/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Kisi 6x3 Zona/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Peta zona \(6[×x]3\)/i })).toBeInTheDocument();
     });
 
     it('filters events by team and updates displayed counts', () => {
@@ -430,10 +430,10 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText(/Belum ada pelatih lain atau admin yang bisa meninjau/i)).toBeInTheDocument();
+        expect(screen.getByText(/Belum ada pelatih lain atau admin yang bisa memeriksa/i)).toBeInTheDocument();
       });
 
-      const freezeBtn = screen.getByRole('button', { name: /Bekukan laporan/i });
+      const freezeBtn = screen.getByRole('button', { name: /Kunci laporan/i });
       expect(freezeBtn).toBeDisabled();
     });
 
@@ -473,18 +473,18 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Tampilkan versi beku/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Tampilkan versi terkunci/i })).toBeInTheDocument();
       });
 
       // Click to toggle frozen view
-      fireEvent.click(screen.getByRole('button', { name: /Tampilkan versi beku/i }));
+      fireEvent.click(screen.getByRole('button', { name: /Tampilkan versi terkunci/i }));
 
-      expect(screen.getByText(/Versi beku.*peninjau/i)).toBeInTheDocument();
+      expect(screen.getByText(/Versi terkunci.*pemeriksa/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Tampilkan data saat ini/i })).toBeInTheDocument();
 
       // Click again to toggle back to live view
       fireEvent.click(screen.getByRole('button', { name: /Tampilkan data saat ini/i }));
-      expect(screen.queryByText(/Versi beku.*peninjau/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Versi terkunci.*pemeriksa/i)).not.toBeInTheDocument();
     });
 
     it('self-contained snapshot: canonical_payload contains events array and reconstructs exact metrics', async () => {

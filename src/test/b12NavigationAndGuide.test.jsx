@@ -275,7 +275,7 @@ describe('Phase B12: Simplified Navigation & In-App Guide', () => {
       // Section b
       expect(screen.getByText(/Saat laga: Catat kejadian/i)).toBeInTheDocument();
       // Section c
-      expect(screen.getByText(/Setelah laga: Peta kejadian, Laporan, Bekukan laporan dan peninjau/i)).toBeInTheDocument();
+      expect(screen.getByText(/Setelah laga: Peta kejadian, Laporan, Kunci laporan dan pemeriksa/i)).toBeInTheDocument();
       // Section d
       expect(screen.getByText(/Latihan: Papan taktik/i)).toBeInTheDocument();
       // Section e

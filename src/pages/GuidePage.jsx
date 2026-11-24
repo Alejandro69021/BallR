@@ -44,18 +44,18 @@ export default function GuidePage() {
     {
       id: 'setelah-laga',
       icon: <FileText className="w-5 h-5 text-brand shrink-0" strokeWidth={1.5} />,
-      title: 'Setelah laga: Peta kejadian, Laporan, Bekukan laporan dan peninjau',
+      title: 'Setelah laga: Peta kejadian, Laporan, Kunci laporan dan pemeriksa',
       description:
-        'Tinjau distribusi aksi pemain pada peta kejadian dan visualisasi umpan per zona. Laporan akhir merangkum metrik penguasaan dan keterlibatan pemain. Laporan dapat dibekukan (final) bersama catatan peninjau resmi.',
+        'Tinjau sebaran aksi pemain pada peta kejadian dan visualisasi umpan per zona. Laporan akhir merangkum metrik penguasaan dan keterlibatan pemain. Laporan dapat dikunci (final) bersama catatan pemeriksa resmi.',
       linkTo: '/laga',
       linkLabel: 'Lihat Laporan Laga'
     },
     {
       id: 'latihan',
       icon: <Compass className="w-5 h-5 text-brand shrink-0" strokeWidth={1.5} />,
-      title: 'Latihan: Papan taktik (skema ilustrasi buatan pelatih, perlu peninjau lain sebelum terbit)',
+      title: 'Latihan: Papan taktik (skema ilustrasi buatan pelatih, perlu pemeriksa lain sebelum terbit)',
       description:
-        'Rancang pergerakan formasi, lintasan bola, dan arah lari pemain di papan taktik interaktif. Setiap skema taktik merupakan ilustrasi buatan pelatih dan membutuhkan peninjau pelatih lain sebelum dapat diterbitkan.',
+        'Rancang pergerakan formasi, lintasan bola, dan arah lari pemain di papan taktik interaktif. Setiap skema taktik merupakan ilustrasi buatan pelatih dan membutuhkan pemeriksa pelatih lain sebelum dapat diterbitkan.',
       linkTo: '/taktik',
       linkLabel: 'Buka Papan Taktik'
     },

@@ -477,7 +477,7 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
       setScenario(updated);
       onToast?.({
         title: 'Skema Diterbitkan',
-        subtext: 'Skema berhasil diterbitkan dan konten dibekukan.'
+        subtext: 'Skema berhasil diterbitkan dan konten dikunci.'
       });
     } catch (err) {
       onToast?.({
@@ -753,11 +753,11 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
         {scenario.status === 'published' && (
           <div className="p-3 rounded-control bg-raised border border-line text-sm flex items-center justify-between text-2">
             <span>
-              Skema ini telah diterbitkan resmi dan konten dibekukan. Untuk mengubah posisi atau panah, kembalikan ke draf.
+              Skema ini telah diterbitkan resmi dan konten dikunci. Untuk mengubah posisi atau panah, kembalikan ke draf.
             </span>
             {scenario.reviewed_by && (
               <span className="font-mono text-1">
-                Ditinjau oleh: {scenario.reviewed_by}
+                Diperiksa oleh: {scenario.reviewed_by}
               </span>
             )}
           </div>

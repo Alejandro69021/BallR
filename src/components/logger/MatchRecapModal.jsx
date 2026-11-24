@@ -4,6 +4,7 @@ import Dialog from '../ui/Dialog';
 import Field from '../ui/Field';
 import Button from '../ui/Button';
 import Badge from '../ui/Badge';
+import Term from '../ux/Term';
 import { EVENT_TYPE_LABELS, formatMatchError } from '../../lib/matches';
 
 export default function MatchRecapModal({
@@ -176,7 +177,7 @@ export default function MatchRecapModal({
           {/* Event Distribution per Type */}
           <div className="p-3.5 rounded-control bg-panel border border-line space-y-2">
             <h4 className="text-sm font-semibold text-1">
-              Distribusi per jenis kejadian
+              Jenis kejadian
             </h4>
             {eventCountsByType.length === 0 ? (
               <p className="text-sm text-2">Belum ada kejadian tercatat.</p>
@@ -200,9 +201,14 @@ export default function MatchRecapModal({
           {/* Player Engagement Breakdown */}
           <div className="p-3.5 rounded-control bg-panel border border-line space-y-2">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-semibold text-1">
-                Keterlibatan per pemain
-              </h4>
+              <div className="flex items-center gap-1.5">
+                <h4 className="text-sm font-semibold text-1">
+                  Keterlibatan pemain
+                </h4>
+                <Term
+                  explanation="Berapa kali pemain tercatat terlibat dalam kejadian."
+                />
+              </div>
               <span className="text-sm font-mono tabular-nums text-2">
                 Lawan n = {eventCountsByPlayer.opponentEvents}
               </span>

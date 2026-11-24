@@ -142,7 +142,7 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
         <div className="pt-2 border-t border-line space-y-1">
           <span className="text-sm font-mono text-2 flex items-center gap-1">
             <Hash className="w-3.5 h-3.5" strokeWidth={1.5} />
-            <span>SHA-256 Canonical Snapshot Hash:</span>
+            <span>SHA-256 Canonical Hash (Laporan Terkunci):</span>
           </span>
           <div className="p-2.5 rounded-control bg-raised border border-line font-mono text-sm text-1 break-all select-all">
             {loadingHash ? 'Menghitung hash kriptografis...' : computedHash}
