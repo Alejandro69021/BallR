@@ -1,12 +1,11 @@
 import React from 'react';
-import { Database } from 'lucide-react';
 import Button from '../ui/Button';
-import { BrandMark } from '../brand';
+import { PitchIllustration } from '../brand';
 
 /**
  * EmptyState component (src/components/ux/EmptyState.jsx)
- * Per docs/UX_SPEC.md:
- * - Icon, title, one-sentence purpose, ONE primary button.
+ * Per docs/UX_SPEC.md & docs/BRAND_SPEC.md:
+ * - Small pitch-line illustration icon, title, one-sentence purpose, ONE primary button.
  *
  * @param {React.ReactNode} [icon]
  * @param {string} title
@@ -29,8 +28,8 @@ export default function EmptyState({
     <div
       className={`p-8 sm:p-12 text-center flex flex-col items-center justify-center space-y-3 bg-panel border border-line rounded-panel select-none ${className}`}
     >
-      <div className="w-12 h-12 rounded-full bg-accent-soft/40 text-brand flex items-center justify-center shrink-0">
-        {icon || <BrandMark size={28} aria-hidden="true" />}
+      <div className="flex items-center justify-center shrink-0" aria-hidden="true">
+        {icon || <PitchIllustration size={48} />}
       </div>
 
       <h3 className="text-lg font-semibold text-1">{title}</h3>

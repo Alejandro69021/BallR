@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrandMark } from '../brand';
+import { PitchIllustration } from '../brand';
 
 export default function EmptyState({
   icon,
@@ -10,8 +10,8 @@ export default function EmptyState({
 }) {
   return (
     <div className={`p-6 text-center flex flex-col items-center justify-center space-y-2 select-none ${className}`}>
-      <div className="p-2.5 rounded-full bg-raised text-2 flex items-center justify-center">
-        {icon || <BrandMark size={20} aria-hidden="true" />}
+      <div className="flex items-center justify-center" aria-hidden="true">
+        {icon || <PitchIllustration size={40} />}
       </div>
 
       <p className="text-sm font-medium text-1">
