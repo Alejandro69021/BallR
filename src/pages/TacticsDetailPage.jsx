@@ -537,7 +537,7 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
 
   if (loading) {
     return (
-      <div className="p-12 text-center text-sm text-2 font-mono">
+      <div className="p-12 text-center text-sm text-2">
         Memuat detail skema taktik...
       </div>
     );
@@ -642,15 +642,15 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
                   {SCENARIO_STATUS_LABELS[scenario.status] || scenario.status}
                 </Badge>
                 {isDirty && (
-                  <span className="text-sm text-warning font-mono">
+                  <span className="text-sm text-warning">
                     (Ada perubahan belum disimpan)
                   </span>
                 )}
               </div>
-              <p className="text-sm text-2 font-mono mt-0.5">
+              <p className="text-sm text-2 mt-0.5 tabular-nums">
                 Fase: {SCENARIO_PHASE_LABELS[scenario.phase] || scenario.phase} • Format: {scenario.format} • Lapangan: {scenario.pitch_length_m}&times;{scenario.pitch_width_m}m
               </p>
-              <div className="text-sm text-2 font-mono space-y-0.5 mt-1">
+              <div className="text-sm text-2 space-y-0.5 mt-1">
                 {scenario.created_by && (
                   <div>Dibuat oleh: <span className="text-1">{scenario.created_by}</span></div>
                 )}
@@ -756,7 +756,7 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
               Skema ini telah diterbitkan resmi dan konten dikunci. Untuk mengubah posisi atau panah, kembalikan ke draf.
             </span>
             {scenario.reviewed_by && (
-              <span className="font-mono text-1">
+              <span className="text-1">
                 Diperiksa oleh: {scenario.reviewed_by}
               </span>
             )}

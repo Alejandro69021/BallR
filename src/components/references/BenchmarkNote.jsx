@@ -11,9 +11,9 @@ export default function BenchmarkNote({ metricName, benchmarkValue, sampleSize, 
     <div className="flex items-center justify-between gap-2 p-2 rounded bg-raised border border-line text-sm text-2">
       <div className="flex items-center gap-2 flex-wrap">
         <span className="text-1 font-medium">{metricName}:</span>
-        <span className="font-mono text-1 font-semibold">{benchmarkValue}</span>
+        <span className="tabular-nums text-1 font-semibold">{benchmarkValue}</span>
         {sampleSize && (
-          <span className="font-mono text-sm text-2">
+          <span className="tabular-nums text-sm text-2">
             (n={sampleSize}{dateRange ? ` · ${dateRange}` : ''})
           </span>
         )}

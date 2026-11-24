@@ -209,12 +209,12 @@ export default function HomePage({
                     {featuredMatch.opponent_name}
                   </h2>
                   <div className="flex flex-wrap items-center gap-2 text-sm text-2">
-                    <span className="inline-flex items-center gap-1 font-mono">
+                    <span className="inline-flex items-center gap-1 tabular-nums">
                       <Calendar className="w-3.5 h-3.5" />
                       {featuredMatch.match_date || '-'}
                     </span>
                     <span>•</span>
-                    <span className="font-mono">{featuredMatch.format || '11v11'}</span>
+                    <span className="tabular-nums">{featuredMatch.format || '11v11'}</span>
                     {featuredMatch.competition && (
                       <>
                         <span>•</span>
@@ -247,7 +247,7 @@ export default function HomePage({
                 ) : (
                   <>
                     <span className="text-2">Skor akhir:</span>
-                    <span className="font-mono font-bold text-1 text-base">
+                    <span className="tabular-nums font-bold text-1 text-base">
                       {featuredMatch.own_score != null
                         ? `${featuredMatch.own_score} - ${featuredMatch.opponent_score}`
                         : 'Selesai'}
@@ -503,7 +503,7 @@ export default function HomePage({
                         {isDraft ? 'Draf' : 'Final'}
                       </Badge>
                     </div>
-                    <div className="text-sm text-2 font-mono space-x-1.5">
+                    <div className="text-sm text-2 tabular-nums space-x-1.5">
                       <span>{m.match_date || '-'}</span>
                       <span>•</span>
                       <span>{m.format || '11v11'}</span>

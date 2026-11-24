@@ -18,7 +18,7 @@ export default function SourceNote({
   if (parts.length === 0) return null;
 
   return (
-    <p className={`text-sm md:text-sm font-mono text-2 flex items-center gap-1.5 flex-wrap ${className}`}>
+    <p className={`text-sm md:text-sm text-2 flex items-center gap-1.5 flex-wrap ${className}`}>
       {parts.join(' · ')}
     </p>
   );

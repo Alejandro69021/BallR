@@ -182,7 +182,7 @@ export default function CoachAssessmentView({
                 Pilih pemain yang dievaluasi
               </span>
             </div>
-            <span className="text-sm font-mono text-2">
+            <span className="text-sm tabular-nums text-2">
               {players.length} pemain di skuad
             </span>
           </div>
@@ -209,7 +209,7 @@ export default function CoachAssessmentView({
                     <div className="text-sm font-semibold text-1">
                       {p.personal_info.nickname || p.personal_info.full_name}
                     </div>
-                    <div className="text-sm text-2 font-mono">
+                    <div className="text-sm text-2">
                       {p.personal_info.position}
                     </div>
                   </div>

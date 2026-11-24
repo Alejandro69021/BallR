@@ -17,7 +17,7 @@ export default function FitnessStrip({ benchmarks }) {
           </p>
         </div>
         {testDate && (
-          <span className="text-sm font-mono text-2">
+          <span className="text-sm text-2">
             Tanggal tes: {testDate}
           </span>
         )}
@@ -53,7 +53,7 @@ export default function FitnessStrip({ benchmarks }) {
       </div>
 
       <div className="space-y-1 pt-1">
-        <p className="text-sm text-2 font-mono">
+        <p className="text-sm text-2">
           * Catatan: Untuk parameter waktu sprint dan kelincahan (shuttle run), nilai lebih rendah = lebih cepat.
         </p>
         <SourceNote

@@ -40,7 +40,7 @@ export default function MatchTimerBar({
                 isRunning ? 'bg-brand animate-pulse' : 'bg-series-1'
               }`}
             />
-            <span className="text-sm font-mono uppercase tracking-wider text-2">
+            <span className="text-sm uppercase tracking-wider text-2">
               Pencatat laga
             </span>
             <span className="text-2">·</span>

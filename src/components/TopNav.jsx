@@ -110,7 +110,7 @@ export default function TopNav({
                     }}
                   />
                 ) : (
-                  <span className="text-sm font-mono font-bold text-2">FA</span>
+                  <span className="text-sm font-bold text-2">FA</span>
                 )}
               </div>
             </button>
@@ -178,7 +178,7 @@ export default function TopNav({
                 onClick={() => setIsAccountMenuOpen((prev) => !prev)}
                 className="min-h-[44px] min-w-[44px] sm:min-h-8 sm:min-w-fit px-2 py-1 rounded-control bg-raised border border-line text-1 hover:border-brand transition-colors flex items-center gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand text-sm"
               >
-                <div className="w-5 h-5 rounded-full bg-brand/20 text-brand flex items-center justify-center font-bold text-xs">
+                <div className="w-5 h-5 rounded-full bg-brand/20 text-brand flex items-center justify-center font-bold text-sm">
                   {roleLabel.charAt(0).toUpperCase()}
                 </div>
                 <span className="hidden sm:inline text-sm font-medium">{roleLabel}</span>

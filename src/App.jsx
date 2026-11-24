@@ -159,11 +159,11 @@ function MainApp() {
       document.documentElement.setAttribute('data-surface', surface);
       const metaTheme = document.querySelector('meta[name="theme-color"]');
       if (metaTheme) {
-        metaTheme.setAttribute('content', surface === 'dark' ? '#0B0F14' : '#F5F6F2');
+        metaTheme.setAttribute('content', surface === 'dark' ? 'rgb(11, 15, 20)' : 'rgb(245, 246, 242)');
       }
       const metaBg = document.querySelector('meta[name="background-color"]');
       if (metaBg) {
-        metaBg.setAttribute('content', surface === 'dark' ? '#0B0F14' : '#F5F6F2');
+        metaBg.setAttribute('content', surface === 'dark' ? 'rgb(11, 15, 20)' : 'rgb(245, 246, 242)');
       }
     }
   }, [surface]);

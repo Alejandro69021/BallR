@@ -141,7 +141,7 @@ export default function GuidePage() {
               </div>
               <div className="space-y-1.5 flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm font-mono font-semibold text-brand">
+                  <span className="text-sm font-semibold text-brand">
                     Bagian {String.fromCharCode(97 + idx)}
                   </span>
                   <h2 className="text-sm sm:text-base font-semibold text-1 leading-snug">

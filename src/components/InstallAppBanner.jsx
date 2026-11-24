@@ -90,7 +90,7 @@ export default function InstallAppBanner() {
             <Badge variant="brand" size="sm">
               Aplikasi lapangan
             </Badge>
-            <span className="text-sm font-mono text-2">PWA</span>
+            <span className="text-sm text-2">PWA</span>
           </div>
 
           <button

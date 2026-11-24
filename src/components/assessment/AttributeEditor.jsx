@@ -88,10 +88,10 @@ export default function AttributeEditor({
                   </div>
 
                   <div className="text-right shrink-0">
-                    <span className="font-mono tabular-nums text-sm font-semibold text-1">
+                    <span className="tabular-nums text-sm font-semibold text-1">
                       {attr.value}
                     </span>
-                    <span className="text-sm font-mono text-2 ml-1">
+                    <span className="text-sm tabular-nums text-2 ml-1">
                       / 100
                     </span>
                   </div>

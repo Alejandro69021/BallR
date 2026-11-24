@@ -159,13 +159,13 @@ export default function ConsentManagerModal({
         </div>
         <div className="flex items-center justify-between">
           <span className="text-2">Tingkat visibilitas:</span>
-          <span className="font-mono text-1 px-2 py-0.5 rounded-control bg-panel border border-control text-sm">
+          <span className="text-1 px-2 py-0.5 rounded-control bg-panel border border-control text-sm font-medium">
             {isRevoked ? 'private (privat)' : (player?.visibility_tier || 'private')}
           </span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-2">Versi persetujuan:</span>
-          <span className="font-mono text-2">{activeConsent?.version || 'Belum ada'}</span>
+          <span className="text-2 tabular-nums">{activeConsent?.version || 'Belum ada'}</span>
         </div>
       </div>
 

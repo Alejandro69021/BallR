@@ -25,7 +25,7 @@ export default function AICoachCard({ evaluation }) {
             Rangkuman observasi sesi latihan dan pertandingan dari staf kepelatihan.
           </p>
         </div>
-        <div className="text-sm font-mono text-2">
+        <div className="text-sm text-2">
           <span>{coachTitle}</span> {period && <span>· {periodText}</span>}
         </div>
       </div>
@@ -33,7 +33,7 @@ export default function AICoachCard({ evaluation }) {
       <div className="rounded-panel border border-line bg-panel p-4 space-y-4">
         {/* Narrative Block */}
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-2 font-mono mb-1.5">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-2 mb-1.5">
             Narasi Perkembangan
           </h3>
           <p className="text-sm text-1 leading-relaxed">
@@ -44,7 +44,7 @@ export default function AICoachCard({ evaluation }) {
         {/* Strengths & Growth Areas Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-line">
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-2 font-mono mb-2">
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-2 mb-2">
               Kekuatan Menonjol
             </h4>
             {strengths && strengths.length > 0 ? (
@@ -62,7 +62,7 @@ export default function AICoachCard({ evaluation }) {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-2 font-mono mb-2">
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-2 mb-2">
               Area Fokus Latihan
             </h4>
             {growth_areas && growth_areas.length > 0 ? (
@@ -83,7 +83,7 @@ export default function AICoachCard({ evaluation }) {
         {/* Recommended Drill */}
         {recommended_drill && (recommended_drill.title || typeof recommended_drill === 'string') && (
           <div className="pt-3 border-t border-line">
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-2 font-mono mb-1.5">
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-2 mb-1.5">
               Menu Latihan yang Direkomendasikan
             </h4>
             <div className="p-3 rounded-control border border-line bg-raised flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm">
@@ -98,7 +98,7 @@ export default function AICoachCard({ evaluation }) {
                 )}
               </div>
               {recommended_drill.duration && (
-                <span className="font-mono text-2 shrink-0">
+                <span className="text-2 shrink-0 tabular-nums">
                   Durasi: {recommended_drill.duration}
                 </span>
               )}

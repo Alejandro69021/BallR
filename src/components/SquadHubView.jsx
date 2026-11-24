@@ -131,7 +131,7 @@ export default function SquadHubView({
     }
 
     return (
-      <span className="font-mono tabular-nums text-sm text-1 space-x-1.5 whitespace-nowrap">
+      <span className="tabular-nums text-sm text-1 space-x-1.5 whitespace-nowrap">
         {parts.map((p, idx) => (
           <span key={p.code}>
             <span className="text-2 text-sm font-sans mr-0.5">{p.code}</span>
@@ -171,7 +171,7 @@ export default function SquadHubView({
             {row.personal_info?.full_name || 'Atlet'}
           </div>
           {row.personal_info?.nickname && (
-            <div className="text-sm text-2 font-mono">
+            <div className="text-sm text-2">
               "{row.personal_info.nickname}"
             </div>
           )}
@@ -183,7 +183,7 @@ export default function SquadHubView({
       header: 'Posisi',
       sortable: true,
       render: (_, row) => (
-        <span className="text-sm text-2 whitespace-normal break-words max-w-[130px] inline-block">
+        <span className="text-sm text-2 whitespace-nowrap">
           {formatPositionLabel(row.personal_info?.position)}
         </span>
       )
@@ -195,9 +195,9 @@ export default function SquadHubView({
       render: (_, row) => {
         const period = row.ai_coach_evaluation?.period || row.fitness_benchmarks?.test_date;
         return period ? (
-          <span className="font-mono text-sm text-1">{period}</span>
+          <span className="tabular-nums text-sm text-1 whitespace-nowrap">{period}</span>
         ) : (
-          <span className="text-sm text-2 italic">Belum ada data</span>
+          <span className="text-sm text-2 italic whitespace-nowrap">Belum ada data</span>
         );
       }
     },
@@ -309,7 +309,7 @@ export default function SquadHubView({
                 <div className="p-3 rounded-control border border-line bg-raised flex items-center justify-between">
                   <div>
                     <p className="text-sm text-2">Total Atlet Terdaftar</p>
-                    <p className="text-xl font-semibold font-mono tabular-nums text-1 mt-0.5">
+                    <p className="text-xl font-semibold tabular-nums text-1 mt-0.5">
                       {totalCount} <span className="text-sm font-normal text-2">pemain</span>
                     </p>
                   </div>
@@ -374,7 +374,7 @@ export default function SquadHubView({
                     {pos.label}
                   </button>
                 ))}
-                <span className="text-sm font-mono text-2 ml-auto shrink-0 hidden sm:inline">
+                <span className="text-sm tabular-nums text-2 ml-auto shrink-0 hidden sm:inline">
                   Menampilkan {filteredPlayers.length} dari {totalCount}
                 </span>
               </div>

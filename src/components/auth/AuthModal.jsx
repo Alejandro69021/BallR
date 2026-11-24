@@ -107,7 +107,7 @@ export default function AuthModal({
           <CheckCircle2 className="w-5 h-5 mx-auto text-brand" strokeWidth={1.5} />
           <p className="font-semibold text-1 text-sm">Tautan masuk terkirim</p>
           <p className="text-2 leading-relaxed">
-            Periksa kotak masuk email <span className="font-mono text-brand">{email}</span> untuk masuk langsung.
+            Periksa kotak masuk email <span className="font-medium text-brand">{email}</span> untuk masuk langsung.
           </p>
           <Button
             type="button"

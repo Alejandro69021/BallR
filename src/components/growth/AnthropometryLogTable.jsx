@@ -140,7 +140,7 @@ export default function AnthropometryLogTable({ anthropometryLogs = [], birthDat
         row.isLatest ? (
           <Badge variant="brand">Terbaru</Badge>
         ) : (
-          <span className="text-sm text-2 font-mono">-</span>
+          <span className="text-sm text-2">-</span>
         )
     }
   ];
@@ -158,7 +158,7 @@ export default function AnthropometryLogTable({ anthropometryLogs = [], birthDat
           </p>
         </div>
 
-        <span className="text-sm font-mono text-2">
+        <span className="text-sm tabular-nums text-2">
           {anthropometryLogs.length} sesi terdata
         </span>
       </div>

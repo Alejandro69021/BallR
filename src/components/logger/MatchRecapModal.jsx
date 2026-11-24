@@ -191,7 +191,7 @@ export default function MatchRecapModal({
                     <span className="text-1 font-medium">
                       {EVENT_TYPE_LABELS[type] || type}
                     </span>
-                    <span className="font-mono tabular-nums text-2">n = {count}</span>
+                    <span className="tabular-nums text-2">n = {count}</span>
                   </div>
                 ))}
               </div>
@@ -209,7 +209,7 @@ export default function MatchRecapModal({
                   explanation="Berapa kali pemain tercatat terlibat dalam kejadian."
                 />
               </div>
-              <span className="text-sm font-mono tabular-nums text-2">
+              <span className="text-sm tabular-nums text-2">
                 Lawan n = {eventCountsByPlayer.opponentEvents}
               </span>
             </div>
@@ -225,7 +225,7 @@ export default function MatchRecapModal({
                   >
                     <span className="font-mono text-2">#{p.number}</span>
                     <span className="text-1 font-medium">{p.name}</span>
-                    <span className="font-mono tabular-nums text-brand font-semibold">
+                    <span className="tabular-nums text-brand font-semibold">
                       n = {p.count}
                     </span>
                   </div>
@@ -293,8 +293,8 @@ export default function MatchRecapModal({
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-control bg-raised border border-line text-sm">
-            <span className="text-2 font-mono">
-              Gol tercatat: {loggedGoals.own} / {loggedGoals.opp} (mungkin belum lengkap)
+            <span className="text-2">
+              Gol tercatat: <strong className="tabular-nums font-semibold">{loggedGoals.own} / {loggedGoals.opp}</strong> (mungkin belum lengkap)
             </span>
             <Button
               type="button"

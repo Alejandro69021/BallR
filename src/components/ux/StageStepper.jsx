@@ -33,7 +33,7 @@ export default function StageStepper({
           <span className="font-semibold text-1">
             Langkah {clampedStep} dari {total}: {currentStepData.label}
           </span>
-          <span className="text-2 font-mono">
+          <span className="text-2 tabular-nums">
             {Math.round((clampedStep / total) * 100)}%
           </span>
         </div>

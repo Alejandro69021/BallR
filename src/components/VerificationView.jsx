@@ -111,7 +111,7 @@ export default function VerificationView({ players = [] }) {
         {/* Certificate Header */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 pb-4 border-b border-line">
           <div>
-            <span className="text-sm font-mono text-2 uppercase tracking-wider block">
+            <span className="text-sm text-2 uppercase tracking-wider block">
               Pemeriksa kriptografi paspor
             </span>
             <h1 className="text-xl font-semibold text-1 mt-1">
@@ -135,7 +135,7 @@ export default function VerificationView({ players = [] }) {
 
         {/* Certificate Content */}
         {loading ? (
-          <div className="p-8 text-center text-sm text-2 font-mono">
+          <div className="p-8 text-center text-sm text-2">
             Memeriksa hash kriptografis ke basis data laporan terkunci...
           </div>
         ) : isValid && snapshotData ? (
@@ -167,7 +167,7 @@ export default function VerificationView({ players = [] }) {
             {/* SHA-256 Hash with Copy Button */}
             <div className="p-3 rounded-control bg-app border border-line space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-mono text-2 uppercase tracking-wide">
+                <span className="text-sm text-2 uppercase tracking-wide">
                   Hash SHA-256 kanonikal
                 </span>
                 <Button
@@ -199,7 +199,7 @@ export default function VerificationView({ players = [] }) {
                 onClick={() => setShowPayload(!showPayload)}
                 className="w-full flex items-center justify-between p-3 text-sm text-2 hover:text-1 hover:bg-raised transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
-                <span className="font-mono text-sm">Inspeksi data kanonikal terenkripsi</span>
+                <span className="text-sm">Inspeksi data kanonikal terenkripsi</span>
                 {showPayload ? <ChevronUp className="w-4 h-4" strokeWidth={1.5} /> : <ChevronDown className="w-4 h-4" strokeWidth={1.5} />}
               </button>
               {showPayload && (

@@ -438,7 +438,7 @@ export default function FastPitchLogger({
             Sumber waktu: {isVideoSourceActive ? 'Video' : 'Stopwatch'}
           </Badge>
           {isVideoSourceActive && (
-            <span className="text-sm text-2 font-mono">
+            <span className="text-sm text-2">
               (Waktu video aktif)
             </span>
           )}

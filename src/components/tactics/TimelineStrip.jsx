@@ -80,14 +80,14 @@ export default function TimelineStrip({
               aria-current={isActive ? 'step' : undefined}
             >
               <span
-                className={`w-5 h-5 rounded-full flex items-center justify-center font-mono text-sm font-bold ${isActive ? 'bg-brand text-app' : 'bg-raised text-2'
+                className={`w-5 h-5 rounded-full flex items-center justify-center tabular-nums text-sm font-bold ${isActive ? 'bg-brand text-app' : 'bg-raised text-2'
                   }`}
               >
                 {idx + 1}
               </span>
               <div className="text-left">
                 <div className="leading-tight">Bingkai {idx + 1}</div>
-                <div className="text-2 font-mono text-sm">{f.t_ms || 2000} ms</div>
+                <div className="text-2 tabular-nums text-sm">{f.t_ms || 2000} ms</div>
               </div>
             </button>
           );
@@ -109,7 +109,7 @@ export default function TimelineStrip({
                   disabled={activeFrameIndex <= 0}
                   onClick={() => onMoveFrame?.(activeFrameIndex, activeFrameIndex - 1)}
                 />
-                <span className="text-sm font-mono text-1 px-1">
+                <span className="text-sm tabular-nums text-1 px-1">
                   {activeFrameIndex + 1} / {totalFrames}
                 </span>
                 <IconButton
@@ -122,7 +122,7 @@ export default function TimelineStrip({
                 />
               </div>
             ) : (
-              <span className="text-sm font-mono text-1">
+              <span className="text-sm tabular-nums text-1">
                 {activeFrameIndex + 1} dari {totalFrames}
               </span>
             )}
@@ -152,7 +152,7 @@ export default function TimelineStrip({
                 <span className="text-sm text-2">ms</span>
               </div>
             ) : (
-              <span className="text-sm font-mono text-1">
+              <span className="text-sm tabular-nums text-1">
                 {currentFrame.t_ms ?? 2000} ms
               </span>
             )}

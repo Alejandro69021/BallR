@@ -151,8 +151,8 @@ export default function TactileKeypad({
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-2">Pilih pemain:</span>
               {activeParticipant && (
-                <span className="text-sm font-semibold text-brand font-mono">
-                  #{activeParticipant.number} {activeParticipant.name}
+                <span className="text-sm font-semibold text-brand">
+                  <span className="font-mono">#{activeParticipant.number}</span> {activeParticipant.name}
                 </span>
               )}
             </div>
@@ -216,7 +216,7 @@ export default function TactileKeypad({
 
             <div className="flex items-center gap-2">
               {coords.x_m !== null ? (
-                <span className="font-mono text-brand font-semibold">
+                <span className="tabular-nums text-brand font-semibold">
                   Mulai: ({coords.x_m}, {coords.y_m}) m
                   {coords.end_x_m !== null && ` -> Akhir: (${coords.end_x_m}, ${coords.end_y_m}) m`}
                 </span>

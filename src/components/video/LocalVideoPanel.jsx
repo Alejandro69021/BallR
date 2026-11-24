@@ -411,7 +411,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
             Fase A
           </Badge>
         </div>
-        <p className="text-sm text-2 font-mono truncate max-w-[220px] sm:max-w-none text-right">
+        <p className="text-sm text-2 truncate max-w-[220px] sm:max-w-none text-right">
           Video diputar dari perangkat ini dan tidak diunggah.
         </p>
       </div>
@@ -440,7 +440,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
         >
           <div className="flex items-center justify-between pb-0.5 text-sm">
             <div className="flex items-center gap-2 min-w-0">
-              <span className="text-sm text-2 font-mono truncate max-w-[140px] sm:max-w-[200px]">
+              <span className="text-sm text-2 truncate max-w-[140px] sm:max-w-[200px]">
                 {savedMeta?.name || 'Video terpasang'}
               </span>
               <button
@@ -569,7 +569,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                   key={sp}
                   type="button"
                   onClick={() => changeSpeed(sp)}
-                  className={`min-h-[44px] min-w-[44px] sm:min-h-7 sm:min-w-7 px-1.5 py-0.5 rounded-control text-sm font-mono font-medium transition-colors cursor-pointer ${
+                  className={`min-h-[44px] min-w-[44px] sm:min-h-7 sm:min-w-7 px-1.5 py-0.5 rounded-control text-sm tabular-nums font-medium transition-colors cursor-pointer ${
                     playbackSpeed === sp
                       ? 'bg-raised border border-brand text-brand'
                       : 'bg-app border border-line text-2 hover:text-1'
@@ -624,7 +624,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
               Sinkronisasi Offset
             </h4>
           </div>
-          <span className="text-sm text-2 font-mono tabular-nums">
+          <span className="text-sm text-2 tabular-nums">
             {activeOffsetSecs != null
               ? `Offset B${period}: ${formatSecondsToTime(activeOffsetSecs)}`
               : 'Belum diatur'}
@@ -638,7 +638,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
           >
             <div className="flex items-center gap-1.5 min-w-0">
               <CheckCircle2 className="w-3.5 h-3.5 text-brand shrink-0" />
-              <span className="font-mono text-1 text-sm truncate">
+              <span className="text-1 text-sm truncate tabular-nums">
                 {getOffsetSummaryText()}
               </span>
             </div>
@@ -681,7 +681,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                     </Badge>
                   )}
                 </div>
-                <span className="text-sm text-2 font-mono tabular-nums">
+                <span className="text-sm text-2 tabular-nums">
                   {offsetP1Secs != null
                     ? `Peluit: ${formatSecondsToTime(offsetP1Secs)}`
                     : 'Belum diatur'}
@@ -731,7 +731,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                     </Badge>
                   )}
                 </div>
-                <span className="text-sm text-2 font-mono tabular-nums truncate">
+                <span className="text-sm text-2 tabular-nums truncate">
                   {offsetP2Secs != null
                     ? `Peluit: ${formatSecondsToTime(offsetP2Secs)}`
                     : 'Belum diatur'}

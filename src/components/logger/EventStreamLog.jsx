@@ -61,7 +61,7 @@ export default function EventStreamLog({
             <Target className="w-4 h-4 text-2" strokeWidth={1.5} />
           </div>
           <div className="mt-2">
-            <div className="font-mono text-xl tabular-nums font-semibold text-1">
+            <div className="text-xl tabular-nums font-semibold text-1">
               {passesSuccess} <span className="text-sm text-2 font-normal">/ {passesTotal}</span>
             </div>
             <div className="text-sm text-2 mt-0.5">
@@ -77,7 +77,7 @@ export default function EventStreamLog({
             <Shield className="w-4 h-4 text-2" strokeWidth={1.5} />
           </div>
           <div className="mt-2">
-            <div className="font-mono text-xl tabular-nums font-semibold text-1">
+            <div className="text-xl tabular-nums font-semibold text-1">
               {tacklesSuccess} <span className="text-sm text-2 font-normal">/ {tacklesTotal}</span>
             </div>
             <div className="text-sm text-2 mt-0.5">
@@ -93,7 +93,7 @@ export default function EventStreamLog({
             <Flame className="w-4 h-4 text-2" strokeWidth={1.5} />
           </div>
           <div className="mt-2">
-            <div className="font-mono text-xl tabular-nums font-semibold text-1">
+            <div className="text-xl tabular-nums font-semibold text-1">
               {shotsOnTarget} <span className="text-sm text-2 font-normal">/ {shotsTotal}</span>
             </div>
             <div className="text-sm text-2 mt-0.5">
@@ -109,7 +109,7 @@ export default function EventStreamLog({
             <Shield className="w-4 h-4 text-brand" strokeWidth={1.5} />
           </div>
           <div className="mt-2">
-            <div className="font-mono text-xl tabular-nums font-semibold text-1">
+            <div className="text-xl tabular-nums font-semibold text-1">
               {interceptionsTotal} <span className="text-sm text-2 font-normal">/ {clearancesTotal}</span>
             </div>
             <div className="text-sm text-2 mt-0.5">
@@ -123,7 +123,7 @@ export default function EventStreamLog({
       <section className="p-3.5 rounded-panel bg-panel border border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-medium text-1">Status Sinkronisasi:</span>
-          <span className="font-mono tabular-nums text-2">
+          <span className="tabular-nums text-2">
             {isDemoMode ? 'Tersimpan di perangkat (mode demo)' : 'Tersimpan di server'}: {serverCount} · Menunggu sinkron: {outboxCount}
           </span>
           {outboxCount > 0 && (
@@ -171,7 +171,7 @@ export default function EventStreamLog({
               Log kejadian terkini
             </h3>
           </div>
-          <span className="text-sm font-mono tabular-nums text-2">
+          <span className="text-sm tabular-nums text-2">
             Total {allEvents.length} kejadian
           </span>
         </div>
@@ -225,7 +225,7 @@ export default function EventStreamLog({
                     )}
 
                     {evt.x_m !== null && evt.y_m !== null && (
-                      <span className="font-mono text-2 text-sm hidden sm:inline">
+                      <span className="text-2 text-sm tabular-nums hidden sm:inline">
                         ({evt.x_m}, {evt.y_m} m)
                       </span>
                     )}

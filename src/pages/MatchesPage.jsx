@@ -241,7 +241,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
       key: 'format',
       header: 'Format',
       tabular: true,
-      render: (val) => <span className="font-mono">{val || '11v11'}</span>
+      render: (val) => <span className="tabular-nums">{val || '11v11'}</span>
     },
     {
       key: 'score',
@@ -411,7 +411,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <h3 className="text-sm font-semibold text-1">{row.opponent_name}</h3>
-                    <div className="text-sm text-2 mt-0.5 space-x-1.5 font-mono">
+                    <div className="text-sm text-2 mt-0.5 space-x-1.5 tabular-nums">
                       <span>{row.match_date || '-'}</span>
                       <span>•</span>
                       <span>{row.format || '11v11'}</span>
@@ -430,7 +430,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
 
                 <div className="flex items-center justify-between text-sm py-1 border-t border-b border-line">
                   <span className="text-2">Skor:</span>
-                  <span className="font-mono font-bold text-1">
+                  <span className="tabular-nums font-bold text-1">
                     {row.status === 'final' && row.own_score != null
                       ? `${row.own_score} - ${row.opponent_score}`
                       : 'Belum ada skor'}
@@ -568,7 +568,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
           <div className="space-y-2 pt-2 border-t border-line">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-2">Pemain yang bertanding (skuad)</label>
-              <span className="text-sm text-2 font-mono">
+              <span className="text-sm text-2 tabular-nums">
                 {Object.values(selectedParticipants).filter((v) => v?.selected).length} terpilih
               </span>
             </div>

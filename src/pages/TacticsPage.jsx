@@ -248,7 +248,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
 
       {/* Scenarios Table */}
       {loading ? (
-        <div className="p-8 text-center text-sm text-2 font-mono">
+        <div className="p-8 text-center text-sm text-2">
           Memuat daftar skema taktik...
         </div>
       ) : scenarios.length === 0 ? (
@@ -333,7 +333,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 sortable: true,
                 tabular: true,
                 render: (val) => (
-                  <span className="text-sm font-mono text-2">
+                  <span className="text-sm tabular-nums text-2">
                     {val || '11v11'}
                   </span>
                 )
@@ -358,7 +358,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 header: 'Bingkai',
                 tabular: true,
                 render: (val) => (
-                  <span className="text-sm font-mono tabular-nums text-1">
+                  <span className="text-sm tabular-nums text-1">
                     {val || 0}
                   </span>
                 )
@@ -368,7 +368,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 header: 'Rujukan',
                 tabular: true,
                 render: (val) => (
-                  <span className="text-sm font-mono tabular-nums text-1">
+                  <span className="text-sm tabular-nums text-1">
                     {val || 0}
                   </span>
                 )
@@ -379,7 +379,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 sortable: true,
                 tabular: true,
                 render: (val) => (
-                  <span className="text-sm font-mono text-2">
+                  <span className="text-sm tabular-nums text-2">
                     {val
                       ? new Date(val).toLocaleDateString('id-ID')
                       : '-'}
@@ -410,7 +410,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <h3 className="text-sm font-semibold text-1">{row.title}</h3>
-                    <div className="text-sm text-2 mt-0.5 space-x-1.5 font-mono">
+                    <div className="text-sm text-2 mt-0.5 space-x-1.5 tabular-nums">
                       <span>{SCENARIO_PHASE_LABELS[row.phase] || row.phase}</span>
                       <span>•</span>
                       <span>{row.format || '11v11'}</span>
@@ -428,7 +428,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
                   <p className="text-sm text-2 line-clamp-2">{row.description}</p>
                 )}
 
-                <div className="flex items-center justify-between text-sm py-1 border-t border-b border-line font-mono text-2">
+                <div className="flex items-center justify-between text-sm py-1 border-t border-b border-line tabular-nums text-2">
                   <span>{row.frames_count || 0} bingkai</span>
                   <span>{row.references_count || 0} rujukan</span>
                   <span>{row.updated_at ? new Date(row.updated_at).toLocaleDateString('id-ID') : '-'}</span>
@@ -532,7 +532,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
           <div className="space-y-1">
             <label htmlFor="create-formation" className="text-sm font-medium text-1 flex items-center justify-between">
               <span>Formasi tim awal</span>
-              <span className="text-2 font-mono">{TEMPLATE_DISCLAIMER}</span>
+              <span className="text-2">{TEMPLATE_DISCLAIMER}</span>
             </label>
             <Select
               id="create-formation"

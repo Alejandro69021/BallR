@@ -12,7 +12,7 @@ export default function TacticalGuidance({ title, guidanceText, referenceIds = [
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2">
           {phase && (
-            <span className="text-sm font-mono px-1.5 py-0.2 rounded bg-raised text-2">
+            <span className="text-sm px-1.5 py-0.2 rounded bg-raised text-2">
               {phase}
             </span>
           )}

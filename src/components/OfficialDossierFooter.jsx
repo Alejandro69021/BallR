@@ -122,25 +122,25 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
       <div className="rounded-panel border border-line bg-panel p-4 space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
           <div>
-            <span className="text-sm font-mono text-2 block">ID publik atlet</span>
+            <span className="text-sm text-2 block">ID publik atlet</span>
             <span className="font-mono font-semibold text-1">{pId}</span>
           </div>
 
           <div>
-            <span className="text-sm font-mono text-2 block">Akademi penerbit</span>
+            <span className="text-sm text-2 block">Akademi penerbit</span>
             <span className="text-1 font-medium">{academy?.name || 'Belum ada data'}</span>
           </div>
 
           {regText && (
             <div>
-              <span className="text-sm font-mono text-2 block">Status registrasi</span>
-              <span className="text-1 font-mono">{regText}</span>
+              <span className="text-sm text-2 block">Status registrasi</span>
+              <span className="text-1">{regText}</span>
             </div>
           )}
         </div>
 
         <div className="pt-2 border-t border-line space-y-1">
-          <span className="text-sm font-mono text-2 flex items-center gap-1">
+          <span className="text-sm text-2 flex items-center gap-1">
             <Hash className="w-3.5 h-3.5" strokeWidth={1.5} />
             <span>SHA-256 Canonical Hash (Laporan Terkunci):</span>
           </span>
@@ -154,9 +154,9 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
           <div className="pt-1 flex items-center justify-between text-sm">
             <Link
               to={`/verifikasi/${computedHash}`}
-              className="text-brand hover:underline font-mono inline-flex items-center gap-1"
+              className="text-brand hover:underline inline-flex items-center gap-1"
             >
-              <span>Verifikasi keaslian di /verifikasi/{computedHash.slice(0, 12)}...</span>
+              <span>Verifikasi keaslian di <span className="font-mono">/verifikasi/{computedHash.slice(0, 12)}...</span></span>
               <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.5} />
             </Link>
           </div>

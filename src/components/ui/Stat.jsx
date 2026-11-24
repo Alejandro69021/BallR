@@ -22,7 +22,7 @@ export default function Stat({
       <div className="flex items-baseline gap-1.5 flex-wrap">
         {hasValue ? (
           <>
-            <span className="text-xl md:text-2xl font-semibold font-mono tabular-nums text-1">
+            <span className="text-xl md:text-2xl font-semibold tabular-nums text-1">
               {value}
             </span>
             {unit && (
@@ -39,7 +39,7 @@ export default function Stat({
       </div>
 
       {(date || typeof n === 'number' || trend) && (
-        <div className="pt-1 border-t border-line flex items-center justify-between text-sm font-mono text-2">
+        <div className="pt-1 border-t border-line flex items-center justify-between text-sm tabular-nums text-2">
           <div className="flex items-center gap-2 truncate">
             {date && <span>{date}</span>}
             {typeof n === 'number' && <span>n={n}</span>}

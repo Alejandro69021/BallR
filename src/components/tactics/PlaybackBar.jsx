@@ -55,7 +55,7 @@ export default function PlaybackBar({
           <span className="text-sm font-semibold text-1">
             Navigasi bertahap (gerak berkurang)
           </span>
-          <span className="text-sm font-mono text-2 px-2 py-0.5 rounded-control bg-raised border border-line">
+          <span className="text-sm tabular-nums text-2 px-2 py-0.5 rounded-control bg-raised border border-line">
             Bingkai {activeFrameIndex + 1} / {totalFrames}
           </span>
         </div>
@@ -106,7 +106,7 @@ export default function PlaybackBar({
           className="w-full accent-brand cursor-pointer h-2 bg-raised rounded-control"
           aria-label="Posisi garis waktu animasi"
         />
-        <span className="text-sm font-mono text-2 min-w-[40px] text-right">
+        <span className="text-sm tabular-nums text-2 min-w-[40px] text-right">
           {Math.round(currentProgress * 100)}%
         </span>
       </div>
@@ -153,7 +153,7 @@ export default function PlaybackBar({
                 key={`speed-${s}`}
                 type="button"
                 onClick={() => onChangeSpeed?.(s)}
-                className={`px-2 py-1 rounded-control text-sm font-mono min-h-[44px] min-w-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer flex items-center justify-center ${
+                className={`px-2 py-1 rounded-control text-sm tabular-nums min-h-[44px] min-w-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer flex items-center justify-center ${
                   playbackSpeed === s
                     ? 'bg-raised border border-brand text-brand font-bold'
                     : 'bg-app border border-line text-2 hover:text-1'

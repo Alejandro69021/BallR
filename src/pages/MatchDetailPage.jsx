@@ -463,13 +463,19 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               : 'Tanpa nomor';
           return (
             <div className="flex items-center gap-1.5">
-              <span className="font-mono text-2">{numDisplay}</span>
+              <span className="text-2">
+                {info?.number != null && info?.number !== '-' && info?.number !== '' ? (
+                  <span className="font-mono">#{info.number}</span>
+                ) : (
+                  'Tanpa nomor'
+                )}
+              </span>
               <span className="font-medium text-1">{name}</span>
             </div>
           );
         }
         return (
-          <span className="font-mono text-2">
+          <span className="text-2 tabular-nums">
             {row.opponent_number != null ? `Lawan #${row.opponent_number}` : 'Lawan'}
           </span>
         );
@@ -501,7 +507,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       render: (_val, row) => {
         if (row.x_m != null && row.y_m != null) {
           return (
-            <span className="font-mono text-2">
+            <span className="text-2 tabular-nums">
               {row.x_m}, {row.y_m} m
             </span>
           );
@@ -757,12 +763,12 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               {match.competition && (
                 <span>{match.competition}</span>
               )}
-              <span className="font-mono tabular-nums">{match.match_date}</span>
-              <span className="font-mono tabular-nums">
+              <span className="tabular-nums">{match.match_date}</span>
+              <span className="tabular-nums">
                 Ukuran lapangan: {match.pitch_length_m} x {match.pitch_width_m} m
               </span>
               {participants.length > 0 && (
-                <span className="font-mono tabular-nums">
+                <span className="tabular-nums">
                   {participants.length} pemain terdaftar
                 </span>
               )}
@@ -773,7 +779,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
           <div className="border border-line rounded-control bg-app px-4 py-2.5 text-center shrink-0 min-w-[120px]">
             <span className="block text-sm text-2 uppercase tracking-wider font-medium">Skor Akhir</span>
             {isFinal ? (
-              <span className="text-xl font-mono tabular-nums font-bold text-1">
+              <span className="text-xl tabular-nums font-bold text-1">
                 {match.own_score} - {match.opponent_score}
               </span>
             ) : (
@@ -851,7 +857,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-line">
             <h2 className="text-sm font-semibold text-1">Jenis kejadian</h2>
-            <span className="text-sm text-2 font-mono tabular-nums">
+            <span className="text-sm text-2 tabular-nums">
               Total n = {totalEvents}
             </span>
           </div>
@@ -866,7 +872,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control bg-raised border border-line text-sm"
                 >
                   <span className="text-1 font-medium">{EVENT_TYPE_LABELS[type] || type}</span>
-                  <span className="font-mono tabular-nums text-2">n = {count}</span>
+                  <span className="tabular-nums text-2">n = {count}</span>
                 </div>
               ))}
             </div>
@@ -917,7 +923,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-line">
             <h2 className="text-sm font-semibold text-1">Peta Sebaran Kejadian</h2>
-            <span className="text-sm text-2 font-mono tabular-nums">{events.length} kejadian</span>
+            <span className="text-sm text-2 tabular-nums">{events.length} kejadian</span>
           </div>
           <EventMap
             events={events}
@@ -939,7 +945,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-1">Daftar Kejadian Pertandingan</h2>
-            <span className="text-sm text-2 font-mono tabular-nums">
+            <span className="text-sm text-2 tabular-nums">
               {events.length} kejadian
             </span>
           </div>
@@ -967,7 +973,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                 explanation="Berapa kali pemain tercatat terlibat dalam kejadian."
               />
             </div>
-            <span className="text-sm text-2 font-mono tabular-nums">
+            <span className="text-sm text-2 tabular-nums">
               Lawan n = {eventCountsByPlayer.opponentEvents}
             </span>
           </div>
@@ -981,11 +987,11 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                   key={p.id}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control bg-raised border border-line text-sm"
                 >
-                  <span className="font-mono text-2">
+                  <span className="tabular-nums text-2">
                     {p.number != null ? `#${p.number}` : 'Tanpa nomor'}
                   </span>
                   <span className="text-1 font-medium">{p.name}</span>
-                  <span className="font-mono tabular-nums text-brand font-semibold">n = {p.count}</span>
+                  <span className="tabular-nums text-brand font-semibold">n = {p.count}</span>
                 </div>
               ))}
             </div>
@@ -1050,7 +1056,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-control bg-raised border border-line text-sm">
-            <span className="text-2 font-mono">
+            <span className="text-2 tabular-nums">
               Gol tercatat: {loggedGoals.own} / {loggedGoals.opp} (mungkin belum lengkap)
             </span>
             <Button

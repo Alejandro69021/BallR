@@ -63,7 +63,7 @@ export default function BioMaturityCard({ bioSpecs }) {
           </p>
         </div>
 
-        <div className="text-sm font-mono text-2 self-start sm:self-center">
+        <div className="text-sm tabular-nums text-2 self-start sm:self-center">
           {measurementDate}
         </div>
       </div>
@@ -77,7 +77,7 @@ export default function BioMaturityCard({ bioSpecs }) {
             <Ruler className="w-4 h-4 text-brand" strokeWidth={1.5} />
           </div>
           <div>
-            <div className="font-mono text-2xl font-semibold text-1 tabular-nums">
+            <div className="text-2xl font-semibold text-1 tabular-nums">
               {currentHeight ? (
                 <>
                   {currentHeight} <span className="text-sm text-2 font-normal">cm</span>
@@ -88,16 +88,16 @@ export default function BioMaturityCard({ bioSpecs }) {
             </div>
             <div className="text-sm text-2 mt-1 space-y-0.5">
               <div>
-                Berat: <strong className="text-1 font-mono">{currentWeight ? `${currentWeight} kg` : 'Belum ada data'}</strong>
+                Berat: <strong className="text-1 tabular-nums">{currentWeight ? `${currentWeight} kg` : 'Belum ada data'}</strong>
               </div>
               {bmi && (
                 <div>
-                  BMI: <strong className="text-1 font-mono">{bmi}</strong>
+                  BMI: <strong className="text-1 tabular-nums">{bmi}</strong>
                 </div>
               )}
             </div>
           </div>
-          <div className="mt-3 pt-2 border-t border-line text-sm font-mono text-2">
+          <div className="mt-3 pt-2 border-t border-line text-sm text-2">
             Usia kronologis: {bioSpecs.chronologicalAge ? `${bioSpecs.chronologicalAge} th` : 'Belum ada data'}
           </div>
         </div>
@@ -111,7 +111,7 @@ export default function BioMaturityCard({ bioSpecs }) {
           <p className="text-sm text-2 leading-relaxed">
             Prediksi tinggi dewasa belum tersedia: butuh tabel koefisien Khamis-Roche dari sumber primer dan tinggi kedua orang tua.
           </p>
-          <div className="pt-2 border-t border-line text-sm font-mono text-2">
+          <div className="pt-2 border-t border-line text-sm text-2">
             Estimasi, bukan diagnosis; galat umum beberapa cm.
           </div>
         </div>

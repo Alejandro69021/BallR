@@ -68,7 +68,7 @@ export default function PerformanceRadar({
           </p>
         </div>
         {period && (
-          <span className="text-sm font-mono text-2">
+          <span className="text-sm text-2">
             Periode: {period}
           </span>
         )}
@@ -205,9 +205,9 @@ export default function PerformanceRadar({
                 {canonicalAttributes.map((attr) => (
                   <tr key={attr.key} className="hover:bg-raised/40 transition-colors">
                     <td className="py-2 px-3 font-medium">
-                      {attr.label} <span className="text-2 font-mono text-sm">({attr.code})</span>
+                      {attr.label} <span className="text-2 text-sm">({attr.code})</span>
                     </td>
-                    <td className="py-2 px-3 text-right font-mono tabular-nums font-semibold">
+                    <td className="py-2 px-3 text-right tabular-nums font-semibold">
                       {attr.value !== null ? attr.value : <span className="text-2 font-normal italic">Belum ada data</span>}
                     </td>
                     <td className="py-2 px-3 text-2">

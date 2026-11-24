@@ -119,7 +119,7 @@ export default function PlayerHeader({ player, personalInfo: propPersonalInfo, o
 
       {/* 5-Line Technical Summary */}
       <div className="rounded-panel border border-line bg-panel p-4 space-y-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-2 font-mono pb-1 border-b border-line">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-2 pb-1 border-b border-line">
           Ringkasan Paspor Atlet
         </h2>
 
@@ -136,17 +136,17 @@ export default function PlayerHeader({ player, personalInfo: propPersonalInfo, o
 
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
             <dt className="text-2 w-48 shrink-0">3. Periode asesmen terakhir:</dt>
-            <dd className="text-1 font-mono">{latestAssessmentPeriod || 'Belum ada data'}</dd>
+            <dd className="text-1 tabular-nums">{latestAssessmentPeriod || 'Belum ada data'}</dd>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
             <dt className="text-2 w-48 shrink-0">4. Indikator atribut tertinggi:</dt>
-            <dd className="text-1 font-mono tabular-nums">{top3Display}</dd>
+            <dd className="text-1 tabular-nums">{top3Display}</dd>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
             <dt className="text-2 w-48 shrink-0">5. Tanggal tes kebugaran terakhir:</dt>
-            <dd className="text-1 font-mono">{lastFitnessDate || 'Belum ada data'}</dd>
+            <dd className="text-1 tabular-nums">{lastFitnessDate || 'Belum ada data'}</dd>
           </div>
         </dl>
       </div>

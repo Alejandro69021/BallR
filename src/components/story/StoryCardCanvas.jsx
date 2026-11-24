@@ -92,7 +92,7 @@ export default function StoryCardCanvas({
             </div>
           </div>
           <div className="text-right">
-            <span className="inline-block px-2 py-0.5 rounded text-sm border border-line bg-raised text-2 font-mono">
+            <span className="inline-block px-2 py-0.5 rounded text-sm border border-line bg-raised text-2 font-medium">
               {personalInfo.jersey_number != null ? `#${personalInfo.jersey_number}` : ageGroupDisplay}
             </span>
           </div>

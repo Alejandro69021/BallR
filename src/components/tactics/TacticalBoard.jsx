@@ -184,7 +184,7 @@ export default function TacticalBoard({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm">
         <div className="flex items-center gap-2">
           {selectedItemCoords ? (
-            <span className="font-mono tabular-nums px-2 py-0.5 rounded-control bg-raised border border-line text-1">
+            <span className="tabular-nums px-2 py-0.5 rounded-control bg-raised border border-line text-1">
               {selectedPlayer
                 ? `${selectedPlayer.team === 'own' ? 'Tim Kita' : 'Lawan'} #${selectedPlayer.label}: X=${selectedItemCoords.x}m, Y=${selectedItemCoords.y}m`
                 : `Bola: X=${selectedItemCoords.x}m, Y=${selectedItemCoords.y}m`}
@@ -197,14 +197,14 @@ export default function TacticalBoard({
             </span>
           )}
           {snapToGrid && (
-            <span className="font-mono text-2 px-1.5 py-0.5 rounded-control bg-panel border border-control text-sm">
+            <span className="tabular-nums text-2 px-1.5 py-0.5 rounded-control bg-panel border border-control text-sm">
               Grid 1m
             </span>
           )}
         </div>
 
         {/* Mandatory disclaimer */}
-        <div className="text-sm text-2 font-mono flex items-center gap-1.5">
+        <div className="text-sm text-2 flex items-center gap-1.5">
           <span>{BOARD_DISCLAIMER}</span>
         </div>
       </div>
@@ -521,16 +521,16 @@ export default function TacticalBoard({
         {/* Arrow kinds */}
         <div className="flex items-center gap-3 flex-wrap text-2 text-sm">
           <span className="flex items-center gap-1 text-brand">
-            <span className="font-mono">---&gt;</span> Umpan
+            <span>---&gt;</span> Umpan
           </span>
           <span className="flex items-center gap-1 text-series-2">
-            <span className="font-mono">&mdash;&gt;</span> Lari (run)
+            <span>&mdash;&gt;</span> Lari (run)
           </span>
           <span className="flex items-center gap-1 text-danger">
-            <span className="font-mono">&mdash;&gt;</span> Press
+            <span>&mdash;&gt;</span> Press
           </span>
           <span className="flex items-center gap-1 text-warning">
-            <span className="font-mono">...&gt;</span> Cover
+            <span>...&gt;</span> Cover
           </span>
         </div>
       </div>

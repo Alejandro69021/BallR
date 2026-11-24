@@ -242,7 +242,7 @@ function CreateMatchForm({
         <div className="space-y-2 pt-2 border-t border-line">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium text-2">Pemain yang bertanding (skuad)</label>
-            <span className="text-sm text-2 font-mono">
+            <span className="text-sm text-2 tabular-nums">
               {Object.values(selectedParticipants).filter((v) => v?.selected).length} terpilih
             </span>
           </div>

@@ -84,7 +84,7 @@ export default function Table({
                     : col.align === 'center'
                       ? 'text-center'
                       : 'text-left';
-                const tabularClass = col.tabular ? 'font-mono tabular-nums' : '';
+                const tabularClass = col.tabular ? 'tabular-nums' : '';
                 const cellVal = row[col.key];
 
                 return (

@@ -89,15 +89,15 @@ export default function SquadPlayerCard({
         <div className="mt-3 p-2.5 rounded-control bg-raised border border-line space-y-1.5">
           <div className="flex items-center justify-between text-sm">
             <span className="text-2">Kecepatan (Pace)</span>
-            <span className="font-mono tabular-nums text-1 font-semibold">{pace != null ? pace : 'Belum ada data'}</span>
+            <span className="tabular-nums text-1 font-semibold">{pace != null ? pace : 'Belum ada data'}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-2">Operan (Passing)</span>
-            <span className="font-mono tabular-nums text-1 font-semibold">{passing != null ? passing : 'Belum ada data'}</span>
+            <span className="tabular-nums text-1 font-semibold">{passing != null ? passing : 'Belum ada data'}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-2">Fisik (Physical)</span>
-            <span className="font-mono tabular-nums text-1 font-semibold">{physical != null ? physical : 'Belum ada data'}</span>
+            <span className="tabular-nums text-1 font-semibold">{physical != null ? physical : 'Belum ada data'}</span>
           </div>
         </div>
       </div>

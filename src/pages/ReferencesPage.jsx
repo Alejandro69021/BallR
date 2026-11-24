@@ -23,7 +23,7 @@ export default function ReferencesPage() {
           <div className="p-1.5 rounded bg-raised text-brand">
             <BookOpen className="w-5 h-5" />
           </div>
-          <span className="text-sm font-mono uppercase tracking-wider text-2">
+          <span className="text-sm font-semibold uppercase tracking-wider text-2">
             Katalog Kepustakaan Ilmiah
           </span>
         </div>
@@ -86,7 +86,7 @@ export default function ReferencesPage() {
         <div className="rounded-lg bg-panel border border-line overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-raised text-2 uppercase font-mono text-sm border-b border-line">
+              <thead className="bg-raised text-2 uppercase font-semibold text-sm border-b border-line">
                 <tr>
                   <th className="py-2.5 px-3">Judul Rujukan</th>
                   <th className="py-2.5 px-3">Penerbit / Penulis</th>
@@ -106,15 +106,15 @@ export default function ReferencesPage() {
                     <td className="py-3 px-3 text-2">
                       {ref.publisher || 'Belum terkonfirmasi'} {ref.year ? `(${ref.year})` : ''}
                     </td>
-                    <td className="py-3 px-3 font-mono text-1">
+                    <td className="py-3 px-3 text-1">
                       {ref.section || '-'}
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="px-2 py-0.5 rounded text-sm font-mono bg-raised text-2">
+                        <span className="px-2 py-0.5 rounded text-sm bg-raised text-2">
                           {ref.type}
                         </span>
-                        <span className={`px-1.5 py-0.2 rounded text-sm font-mono uppercase border ${
+                        <span className={`px-1.5 py-0.2 rounded text-sm uppercase border ${
                           ref.status === 'located'
                             ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
                             : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
@@ -123,7 +123,7 @@ export default function ReferencesPage() {
                         </span>
                       </div>
                     </td>
-                    <td className="py-3 px-3 font-mono text-sm text-2">
+                    <td className="py-3 px-3 text-sm text-2 tabular-nums">
                       <div>{ref.verified_on || 'Belum diverifikasi'}</div>
                       {ref.next_review_due && (
                         <div className="text-sm text-warning">Jadwal: {ref.next_review_due}</div>
@@ -135,13 +135,13 @@ export default function ReferencesPage() {
                           href={ref.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-brand hover:underline inline-flex items-center gap-1 font-mono text-sm"
+                          className="text-brand hover:underline inline-flex items-center gap-1 text-sm font-medium"
                         >
                           <span>Buka</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       ) : (
-                        <span className="text-2 font-mono text-sm">-</span>
+                        <span className="text-2 text-sm">-</span>
                       )}
                     </td>
                   </tr>

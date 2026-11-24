@@ -178,8 +178,8 @@ export default function StoryFlexCardModal({
 
         {/* Staff identifier shown outside exported canvas */}
         {playerId && (
-          <div className="text-right text-sm text-2 font-mono">
-            ID Atlet: {playerId}
+          <div className="text-right text-sm text-2">
+            ID Atlet: <span className="font-mono">{playerId}</span>
           </div>
         )}
 

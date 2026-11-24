@@ -347,7 +347,7 @@ export default function AthleticProgressChart({
                 {selectedPt.pt.month || selectedPt.pt.date}
               </span>
               <Badge variant="neutral">
-                Hasil: <strong className="text-1 font-mono">{selectedPt.pt.value} {currentDataset.unit}</strong>
+                Hasil: <strong className="text-1 tabular-nums">{selectedPt.pt.value} {currentDataset.unit}</strong>
               </Badge>
             </div>
             {selectedPt.pt.note && (

@@ -121,7 +121,7 @@ export default function ReferencesPanel({
                     <p className="text-sm text-1 font-medium truncate">
                       {entry?.title || r.reference_id}
                     </p>
-                    <p className="text-sm text-2 font-mono">
+                    <p className="text-sm text-2">
                       {entry?.publisher ? `${entry.publisher} • ` : ''}
                       {entry?.year || ''}
                     </p>
@@ -218,7 +218,7 @@ export default function ReferencesPanel({
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono font-semibold text-1">
+                    <span className="font-semibold text-1">
                       {entry.title}
                     </span>
                     <Badge
