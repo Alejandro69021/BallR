@@ -10,12 +10,26 @@ const rootDir = path.resolve(__dirname, '..');
 const outDir = path.resolve(rootDir, 'ui-check-out');
 
 function findChrome() {
+  if (process.env.CHROME_PATH && fs.existsSync(process.env.CHROME_PATH)) {
+    return process.env.CHROME_PATH;
+  }
+
   const candidates = [
+    // Windows
     'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
     'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
     process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, 'Google\\Chrome\\Application\\chrome.exe') : null,
     process.env.PROGRAMFILES ? path.join(process.env.PROGRAMFILES, 'Google\\Chrome\\Application\\chrome.exe') : null,
     process.env['PROGRAMFILES(X86)'] ? path.join(process.env['PROGRAMFILES(X86)'], 'Google\\Chrome\\Application\\chrome.exe') : null,
+    // Linux
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+    '/snap/bin/chromium',
+    // macOS
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/Applications/Chromium.app/Contents/MacOS/Chromium'
   ];
 
   for (const p of candidates) {
@@ -88,6 +102,7 @@ async function main() {
     // Matrix configuration
     const viewports = [
       { width: 1366, height: 650 },
+      { width: 1280, height: 720 },
       { width: 1024, height: 768 },
       { width: 390, height: 844 }
     ];
@@ -232,6 +247,79 @@ async function main() {
               failures.push(
                 `Assertion (e) FAILED on ${comboLabel}: demo indicator count != 1 (banner: ${demoCount.banners}, rogue: ${demoCount.rogue})`
               );
+            }
+
+            // Check (f): demo banner text has contrast >= 4.5:1 in both themes (canvas pixel read)
+            const demoContrast = await page.evaluate(() => {
+              const banner = document.querySelector('[data-testid="demo-banner"]');
+              if (!banner) return null;
+              const span = banner.querySelector('span');
+              if (!span) return null;
+
+              const bgStr = window.getComputedStyle(banner).backgroundColor;
+              const fgStr = window.getComputedStyle(span).color;
+
+              function getRgb(colorStr) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 1;
+                canvas.height = 1;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = colorStr;
+                ctx.fillRect(0, 0, 1, 1);
+                const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+                return [r, g, b];
+              }
+
+              function getLuminance([r, g, b]) {
+                const sRGB = [r, g, b].map((v) => {
+                  v /= 255;
+                  return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+                });
+                return 0.2126 * sRGB[0] + 0.7152 * sRGB[1] + 0.0722 * sRGB[2];
+              }
+
+              const fgRgb = getRgb(fgStr);
+              const bgRgb = getRgb(bgStr);
+              const l1 = getLuminance(fgRgb);
+              const l2 = getLuminance(bgRgb);
+              const lighter = Math.max(l1, l2);
+              const darker = Math.min(l1, l2);
+              const ratio = (lighter + 0.05) / (darker + 0.05);
+
+              return {
+                ratio: Math.round(ratio * 100) / 100,
+                fg: fgStr,
+                bg: bgStr
+              };
+            });
+            if (demoContrast && demoContrast.ratio < 4.5) {
+              failures.push(
+                `Assertion (f) FAILED on ${comboLabel}: demo banner contrast < 4.5:1 (ratio=${demoContrast.ratio}:1, fg="${demoContrast.fg}", bg="${demoContrast.bg}")`
+              );
+            }
+
+            // Check (g): no table card has scrollWidth > clientWidth at 1366 and 1280 on /skuad
+            if (route.path === '/skuad' && (vp.width === 1366 || vp.width === 1280)) {
+              const tableCardOverflow = await page.evaluate(() => {
+                const tables = Array.from(document.querySelectorAll('table'));
+                for (const table of tables) {
+                  const card = table.closest('.overflow-x-auto') || table.parentElement;
+                  if (card && card.scrollWidth > card.clientWidth) {
+                    return {
+                      scrollWidth: card.scrollWidth,
+                      clientWidth: card.clientWidth,
+                      diff: card.scrollWidth - card.clientWidth
+                    };
+                  }
+                }
+                return null;
+              });
+
+              if (tableCardOverflow) {
+                failures.push(
+                  `Assertion (g) FAILED on ${comboLabel}: table card has scrollWidth > clientWidth (scrollWidth=${tableCardOverflow.scrollWidth} > clientWidth=${tableCardOverflow.clientWidth}, diff=${tableCardOverflow.diff}px)`
+                );
+              }
             }
           } catch (err) {
             failures.push(`Execution error on ${comboLabel}: ${err.message}`);
