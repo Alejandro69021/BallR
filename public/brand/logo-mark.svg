@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="ProspekBola">
+  <rect width="64" height="64" rx="14" fill="#0B3A2A"/>
+  <g fill="none" stroke="#F4F5EE" stroke-width="3" stroke-linecap="round">
+    <circle cx="30" cy="36" r="13"/>
+    <path d="M10 36h40"/>
+  </g>
+  <path d="M38 24 L49 13" fill="none" stroke="#D2F23F" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="50" cy="12" r="6" fill="#D2F23F"/>
+</svg>

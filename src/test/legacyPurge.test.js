@@ -233,6 +233,9 @@ describe('Legacy UI & Fabrication Purge Scan (B8)', () => {
       'public/favicon.svg',
       'public/icon.svg',
       'public/manifest.json',
+      'public/brand/favicon.svg',
+      'public/brand/logo-mark-light.svg',
+      'public/brand/logo-mark.svg',
       'scripts/generate-png-icons.js',
       'src/index.css'
     ]);

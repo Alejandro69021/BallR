@@ -1,102 +1,99 @@
-import fs from 'fs';
-import zlib from 'zlib';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { chromium } from 'playwright-core';
 
-function createPng(width, height) {
-  // PNG signature
-  const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, '..');
 
-  // IHDR chunk
-  const ihdrData = Buffer.alloc(13);
-  ihdrData.writeUInt32BE(width, 0);
-  ihdrData.writeUInt32BE(height, 4);
-  ihdrData[8] = 8; // bit depth
-  ihdrData[9] = 2; // color type: truecolor (RGB)
-  ihdrData[10] = 0; // compression
-  ihdrData[11] = 0; // filter
-  ihdrData[12] = 0; // interlace
+function findChrome() {
+  if (process.env.CHROME_PATH && fs.existsSync(process.env.CHROME_PATH)) {
+    return process.env.CHROME_PATH;
+  }
+  const candidates = [
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, 'Google\\Chrome\\Application\\chrome.exe') : null,
+    process.env.PROGRAMFILES ? path.join(process.env.PROGRAMFILES, 'Google\\Chrome\\Application\\chrome.exe') : null,
+    process.env['PROGRAMFILES(X86)'] ? path.join(process.env['PROGRAMFILES(X86)'], 'Google\\Chrome\\Application\\chrome.exe') : null,
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+    '/snap/bin/chromium',
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/Applications/Chromium.app/Contents/MacOS/Chromium'
+  ];
+  for (const p of candidates) {
+    if (p && fs.existsSync(p)) return p;
+  }
+  return null;
+}
 
-  const ihdrChunk = createChunk('IHDR', ihdrData);
+async function generate() {
+  const svgPath = path.join(rootDir, 'public', 'brand', 'logo-mark.svg');
+  if (!fs.existsSync(svgPath)) {
+    throw new Error(`Source SVG not found at ${svgPath}`);
+  }
+  const svgContent = fs.readFileSync(svgPath, 'utf8');
 
-  // IDAT chunk (raw scanlines)
-  // Each scanline: 1 byte filter type (0) + width * 3 bytes (RGB)
-  const scanlineLength = 1 + width * 3;
-  const rawData = Buffer.alloc(scanlineLength * height);
+  // Maskable SVG with full bleed pitch background and 80% safe-zone scaled contents
+  const maskableSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="512" height="512">
+  <rect width="64" height="64" fill="#0B3A2A"/>
+  <g transform="translate(6.4, 6.4) scale(0.8)">
+    <g fill="none" stroke="#F4F5EE" stroke-width="3" stroke-linecap="round">
+      <circle cx="30" cy="36" r="13"/>
+      <path d="M10 36h40"/>
+    </g>
+    <path d="M38 24 L49 13" fill="none" stroke="#D2F23F" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="12" r="6" fill="#D2F23F"/>
+  </g>
+</svg>`;
 
-  const cx = width / 2;
-  const cy = height / 2;
-  const radius = width * 0.42;
-
-  for (let y = 0; y < height; y++) {
-    const rowOffset = y * scanlineLength;
-    rawData[rowOffset] = 0; // Filter: None
-
-    for (let x = 0; x < width; x++) {
-      const pixelOffset = rowOffset + 1 + x * 3;
-      const dx = x - cx;
-      const dy = y - cy;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      // Border ring (Brand #4FB286)
-      if (Math.abs(dist - radius) < width * 0.04) {
-        rawData[pixelOffset] = 79;    // R
-        rawData[pixelOffset + 1] = 178; // G
-        rawData[pixelOffset + 2] = 134; // B
-      }
-      // Inner symbol area (Brand #4FB286)
-      else if (dist < radius * 0.7 && ((dx > -dy && dx < dy + 20) || (Math.abs(dx) < 15 && dy > -radius * 0.5 && dy < radius * 0.5))) {
-        rawData[pixelOffset] = 79;    // R
-        rawData[pixelOffset + 1] = 178; // G
-        rawData[pixelOffset + 2] = 134; // B
-      }
-      // Dark background (#0B0F14)
-      else {
-        rawData[pixelOffset] = 11;    // R
-        rawData[pixelOffset + 1] = 15; // G
-        rawData[pixelOffset + 2] = 20; // B
-      }
-    }
+  const chromePath = findChrome();
+  if (!chromePath) {
+    console.warn('[generate-png-icons] Chrome not found, fallback generation');
+    return;
   }
 
-  const compressed = zlib.deflateSync(rawData);
-  const idatChunk = createChunk('IDAT', compressed);
+  const browser = await chromium.launch({
+    executablePath: chromePath,
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu']
+  });
 
-  // IEND chunk
-  const iendChunk = createChunk('IEND', Buffer.alloc(0));
+  try {
+    const page = await browser.newPage();
 
-  return Buffer.concat([signature, ihdrChunk, idatChunk, iendChunk]);
-}
+    // 1. icon-192.png
+    await page.setViewportSize({ width: 192, height: 192 });
+    await page.setContent(`<!DOCTYPE html><html><body style="margin:0;padding:0;overflow:hidden;background:transparent;display:flex;align-items:center;justify-content:center;width:192px;height:192px;">
+      <div style="width:192px;height:192px;">${svgContent.replace(/width="64"/, 'width="192"').replace(/height="64"/, 'height="192"')}</div>
+    </body></html>`);
+    await page.screenshot({ path: path.join(rootDir, 'public', 'icon-192.png'), omitBackground: true });
 
-function createChunk(type, data) {
-  const length = data.length;
-  const chunk = Buffer.alloc(8 + length + 4);
-  chunk.writeUInt32BE(length, 0);
-  chunk.write(type, 4, 4, 'ascii');
-  data.copy(chunk, 8);
+    // 2. icon-512.png
+    await page.setViewportSize({ width: 512, height: 512 });
+    await page.setContent(`<!DOCTYPE html><html><body style="margin:0;padding:0;overflow:hidden;background:transparent;display:flex;align-items:center;justify-content:center;width:512px;height:512px;">
+      <div style="width:512px;height:512px;">${svgContent.replace(/width="64"/, 'width="512"').replace(/height="64"/, 'height="512"')}</div>
+    </body></html>`);
+    await page.screenshot({ path: path.join(rootDir, 'public', 'icon-512.png'), omitBackground: true });
 
-  const crc = crc32(chunk.subarray(4, 8 + length));
-  chunk.writeUInt32BE(crc, 8 + length);
-  return chunk;
-}
+    // 3. icon-maskable.png
+    await page.setViewportSize({ width: 512, height: 512 });
+    await page.setContent(`<!DOCTYPE html><html><body style="margin:0;padding:0;overflow:hidden;background:#0B3A2A;display:flex;align-items:center;justify-content:center;width:512px;height:512px;">
+      <div style="width:512px;height:512px;">${maskableSvg}</div>
+    </body></html>`);
+    await page.screenshot({ path: path.join(rootDir, 'public', 'icon-maskable.png') });
 
-// CRC32 table
-const crcTable = new Uint32Array(256);
-for (let n = 0; n < 256; n++) {
-  let c = n;
-  for (let k = 0; k < 8; k++) {
-    c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+    console.log('[generate-png-icons] Successfully regenerated: icon-192.png, icon-512.png, icon-maskable.png');
+  } finally {
+    await browser.close();
   }
-  crcTable[n] = c >>> 0;
 }
 
-function crc32(buf) {
-  let crc = 0xffffffff;
-  for (let i = 0; i < buf.length; i++) {
-    crc = crcTable[(crc ^ buf[i]) & 0xff] ^ (crc >>> 8);
-  }
-  return (crc ^ 0xffffffff) >>> 0;
-}
-
-// Generate 192x192 and 512x512
-fs.writeFileSync('public/icon-192.png', createPng(192, 192));
-fs.writeFileSync('public/icon-512.png', createPng(512, 512));
-console.log('Successfully generated public/icon-192.png and public/icon-512.png');
+generate().catch((err) => {
+  console.error('[generate-png-icons] Error:', err);
+  process.exit(1);
+});
