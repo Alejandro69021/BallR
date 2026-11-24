@@ -10,6 +10,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "seed:sql": "node scripts/generate-seed.mjs > supabase/seed.sql",
+    "ui-check": "node scripts/ui-check.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -32,6 +33,7 @@
     "@vitejs/plugin-react": "^6.1.2",
     "jsdom": "^29.1.1",
     "oxlint": "^1.90.0",
+    "playwright-core": "^1.65.1",
     "vite": "^8.3.6",
     "vitest": "^5.1.1"
   }

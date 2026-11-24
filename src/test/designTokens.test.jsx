@@ -523,4 +523,18 @@ describe('Design Tokens & Surface System (docs/DESIGN.md & src/index.css)', () =
       ).toEqual([]);
     });
   });
+
+  describe('9. CSS Source Order & Specificity Protection', () => {
+    it('asserts :root precedes [data-surface=...] in src/index.css', () => {
+      const cssPath = path.resolve(__dirname, '../index.css');
+      const cssContent = fs.readFileSync(cssPath, 'utf-8');
+
+      const rootIndex = cssContent.indexOf(':root');
+      const dataSurfaceIndex = cssContent.search(/\[data-surface=/);
+
+      expect(rootIndex).toBeGreaterThan(-1);
+      expect(dataSurfaceIndex).toBeGreaterThan(-1);
+      expect(rootIndex).toBeLessThan(dataSurfaceIndex);
+    });
+  });
 });

@@ -89,7 +89,7 @@ export default function TopNav({
     <>
       {/* Desktop & Mobile Header Bar */}
       <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-app/95 border-b border-line">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-12 flex items-center justify-between gap-3">
+        <div data-testid="top-nav-bar" className="max-w-6xl mx-auto px-4 sm:px-6 h-12 flex items-center justify-between gap-3">
 
           {/* Left: Academy Logo + Name ONLY */}
           <div className="flex items-center gap-2.5 shrink-0 min-w-0">

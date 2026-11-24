@@ -194,7 +194,7 @@ export default function EventStreamLog({
                   className="py-2 flex items-center justify-between gap-3 text-sm"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="font-mono text-2 tabular-nums shrink-0">
+                    <span className="text-2 tabular-nums shrink-0">
                       B{evt.period} {evt.minute}'
                     </span>
 
