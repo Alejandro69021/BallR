@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { CheckCircle2, AlertCircle, Info, AlertTriangle, X } from 'lucide-react';
+import { BrandMark } from '../brand';
 
 export default function Toast({
   message,
@@ -19,7 +20,11 @@ export default function Toast({
 
   const icons = {
     info: <Info className="w-4 h-4 text-series-1 shrink-0 mt-0.5" aria-hidden="true" />,
-    success: <CheckCircle2 className="w-4 h-4 text-brand shrink-0 mt-0.5" aria-hidden="true" />,
+    success: (
+      <div className="shrink-0 mt-0.5 flex items-center justify-center">
+        <BrandMark size={16} aria-hidden="true" />
+      </div>
+    ),
     warning: <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" aria-hidden="true" />,
     error: <AlertCircle className="w-4 h-4 text-danger shrink-0 mt-0.5" aria-hidden="true" />
   };

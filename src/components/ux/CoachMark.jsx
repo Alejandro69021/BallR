@@ -184,9 +184,18 @@ export default function CoachMark({
     >
       {/* Header: Step counter and Close button */}
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-semibold tracking-wider uppercase text-brand">
-          Langkah {step.stepNumber} dari {step.totalSteps}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`inline-flex items-center justify-center w-6 h-6 rounded-full font-display font-extrabold text-sm ${
+              isLastStep ? 'bg-bib text-ink border border-pitch' : 'bg-brand text-chalk'
+            }`}
+          >
+            {step.stepNumber}
+          </span>
+          <span className="text-sm font-semibold tracking-wider uppercase text-brand">
+            Langkah {step.stepNumber} dari {step.totalSteps}
+          </span>
+        </div>
         <button
           type="button"
           onClick={onClose}
@@ -219,7 +228,7 @@ export default function CoachMark({
           size="sm"
           onClick={onNext}
           icon={isLastStep ? <Check className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
-          className="min-h-[44px] text-sm font-semibold"
+          className={`min-h-[44px] text-sm font-semibold ${isLastStep ? '!bg-bib !text-ink !border-pitch hover:opacity-90' : ''}`}
           data-testid="coachmark-next-btn"
         >
           {isLastStep ? 'Selesai' : 'Berikutnya'}
