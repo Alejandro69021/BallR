@@ -10,6 +10,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "seed:sql": "node scripts/generate-seed.mjs > supabase/seed.sql",
+    "landing-shots": "node scripts/landing-shots.mjs",
     "ui-check": "node scripts/ui-check.mjs",
     "preview": "vite preview"
   },
