@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { PlayersProvider } from './context/PlayersContext';
 import { usePlayers } from './hooks/usePlayers';
+import { useDocumentMeta } from './hooks/useDocumentMeta';
 import { signOutUser, getCurrentUserProfile, supabase } from './lib/supabase';
 import { LAYOUT_OPT_OUT_ROUTES } from './routes';
 import PageContainer from './components/ux/PageContainer';
@@ -87,6 +88,9 @@ function MainApp() {
   const navigate = useNavigate();
   const location = useLocation();
   const { players, isDemoMode, error } = usePlayers();
+
+  // Dynamic meta robots: indexable on "/" and "/privasi", noindex on app routes
+  useDocumentMeta();
 
   // Role state: 'public' | 'coach' | 'parent' | 'admin'
   // In demo mode: fixed demo role 'coach' is allowed (clearly labelled "Mode demo").
