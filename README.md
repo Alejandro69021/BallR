@@ -172,12 +172,12 @@ BallR/
 
 ## Daftar Migrasi Basis Data (`supabase/migrations/`)
 
-1. `001_initial_schema_and_roles.sql`: Skema dasar tabel pemain, akademi, antropometri berkala, penilaian pelatih, riwayat kebugaran, klip video, dan penetapan peran pengguna (coach/admin/guardian).
+1. `001_initial_schema_and_roles.sql`: Skema dasar tabel pemain, akademi, antropometri berkala, penilaian pelatih, riwayat kebugaran, klip video, dan penetapan peran pengguna (admin/coach/parent).
 2. `002_row_level_security.sql`: Kebijakan *Row Level Security* (RLS) dasar untuk pembatasan akses data atlet, profil pengguna, penilaian, dan dokumen terkait.
 3. `005_credible_references_and_rubric.sql`: Skema tabel repositori rujukan pustaka ilmiah (`credible_references`) dan rubrik evaluasi kualitatif pelatih.
 4. `006_security_hardening.sql`: Pengerasan keamanan: fungsi RPC `verify_passport_snapshot` untuk audit publik paspor atlet tanpa izin enumerasi tabel, pencegahan eskalasi peran admin, dan penegakan izin persetujuan wali sebelum visibilitas atlet dibuka.
 5. `007_matches_and_tactics.sql`: Tabel pertandingan (`matches`), kejadian aksi (`match_events`), partisipan (`match_participants`), dan skenario papan taktik (`tactical_scenarios`) dengan trigger penguncian saat laga final.
-6. `008_report_snapshots.sql`: Tabel `report_snapshots` yang bersifat tetap (*immutable*), trigger validasi status final laga dan aturan pemeriksa independen (pemeriksa harus staf akademi yang sama dan berbeda dari pembuat), trigger pemblokiran `UPDATE`/`DELETE`, serta kebijakan RLS staf.
+6. `008_report_snapshots.sql`: Tabel `report_snapshots` yang bersifat tetap (*immutable*), trigger validasi status final laga dan aturan peninjau (pemeriksa harus pelatih akademi yang sama atau admin; pemeriksa harus berbeda dari pembuat laporan hanya jika terdapat lebih dari satu staf yang memenuhi syarat, sehingga pada akademi staf tunggal pembuat dapat meninjau laporannya sendiri), trigger pemblokiran `UPDATE`/`DELETE`, serta kebijakan RLS staf.
 7. `009_ppda_reference.sql`: Entri rujukan ilmiah metrik *Passes Allowed per Defensive Action* (PPDA, Trainor 2014) pada tabel `credible_references`.
 8. `010_event_video_time.sql`: Penambahan kolom `video_time_s` pada tabel `match_events` untuk penautan stempel waktu pemutaran video lokal per kejadian.
 
@@ -189,3 +189,4 @@ BallR/
 - **Kapasitas Penyimpanan Browser**: Dalam mode demo, data tersimpan di `localStorage` peramban yang dapat hilang jika pengguna menghapus cache peramban atau berpindah perangkat.
 - **Video Tetap di Perangkat Pengguna**: Tautan berkas video menggunakan URL objek sementara (`blob:`) atau penandaan berkas lokal, sehingga berkas video tidak berpindah secara otomatis bila akun dibuka dari gawai lain.
 - **Status Pengujian Lapangan**: Mekanisme sinkronisasi antrean *offline-first* baru diuji secara unit test di lingkungan peramban, belum diuji pada kondisi koneksi jaringan putus-nyambung nyata di lapangan sepakbola.
+- **Pemeriksa Laporan pada Akademi Staf Tunggal**: Aturan integritas mengharuskan pemeriksa laporan berbeda dari pembuat hanya bila terdapat lebih dari satu staf yang memenuhi syarat (pelatih akademi atau admin); pada akademi dengan staf tunggal, pembuat dapat meninjau dan mengunci laporannya sendiri.
