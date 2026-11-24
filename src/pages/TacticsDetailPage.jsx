@@ -691,9 +691,6 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
                 >
                   Saya sudah meninjau skema ini
                 </Button>
-                <p className="text-sm text-2 mt-1">
-                  Peninjau harus pelatih lain, bukan pembuat skema (kecuali akademi hanya memiliki satu staf).
-                </p>
               </>
             )}
 
@@ -741,6 +738,12 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
             )}
           </div>
         </div>
+
+        {isDraft && (
+          <p className="text-sm text-2">
+            Peninjau harus pelatih lain, bukan pembuat skema (kecuali akademi hanya memiliki satu staf).
+          </p>
+        )}
 
         {/* Missing criteria notice for publishing */}
         {publishMissingText && (scenario.status === 'reviewed' || isDraft) && (
