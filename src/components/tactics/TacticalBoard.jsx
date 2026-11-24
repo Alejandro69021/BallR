@@ -1,5 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { ArrowRight, Move, Sparkles } from 'lucide-react';
+import React, { useRef, useState, useCallback } from 'react';
 import { clampToPitch, moveBy, BOARD_DISCLAIMER } from '../../lib/board';
 
 export default function TacticalBoard({

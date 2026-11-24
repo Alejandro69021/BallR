@@ -2,14 +2,12 @@ import React, {
   useState,
   useEffect,
   useRef,
-  useCallback,
   useImperativeHandle,
   forwardRef
 } from 'react';
 import {
   Play,
   Pause,
-  RotateCcw,
   FastForward,
   Rewind,
   Video,
@@ -20,7 +18,6 @@ import {
   Maximize2,
   Minimize2
 } from 'lucide-react';
-import Button from '../ui/Button';
 import Badge from '../ui/Badge';
 import { formatSecondsToTime } from '../../lib/calculations';
 import { getMatchVideoOffsets, updateMatchVideoOffsets } from '../../lib/matches';
@@ -382,7 +379,6 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
   const activeOffsetSecs = period === 1 ? offsetP1Secs : (period === 2 ? offsetP2Secs : null);
 
   // Ergonomics: offset completeness for active period
-  const isPeriod1Complete = offsetP1Secs != null;
   const isPeriod2Complete = offsetP2Secs != null && p2StartMinVal != null;
   const isCompleteForPeriod = offsetP1Secs != null && (period === 1 || isPeriod2Complete);
   const isOffsetCollapsed = isCompleteForPeriod && !userExpanded;

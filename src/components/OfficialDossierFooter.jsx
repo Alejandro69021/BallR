@@ -12,7 +12,7 @@ import Badge from './ui/Badge';
 import { buildPassportSnapshotPayload, generatePassportHash } from '../lib/integrity';
 import { fetchAcademyAccreditation } from '../lib/supabase';
 
-export default function OfficialDossierFooter({ player, onOpenStoryCard, onToast }) {
+export default function OfficialDossierFooter({ player, _onOpenStoryCard, onToast }) {
   const [computedHash, setComputedHash] = useState('');
   const [accreditation, setAccreditation] = useState(null);
   const [loadingHash, setLoadingHash] = useState(true);

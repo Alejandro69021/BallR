@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, Plus, Trash2, AlertTriangle, Check, ExternalLink } from 'lucide-react';
+import { BookOpen, Plus, Trash2, AlertTriangle, Check } from 'lucide-react';
 import Button from '../ui/Button';
 import IconButton from '../ui/IconButton';
 import Badge from '../ui/Badge';

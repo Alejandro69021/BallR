@@ -1,5 +1,8 @@
 # Audit Sistem & Inventaris Hutang Teknis (BallR / ProspekBola)
 
+> [!NOTE]
+> Dokumen historis; lihat [README.md](../README.md) untuk kondisi terkini.
+
 Dokumen ini memetakan arsitektur, kepatuhan data, kerentanan keamanan, dan inventaris desain dari repositori ProspekBola per November 2026. Audit ini disusun dalam **Mode Audit Mandiri** tanpa mengubah kode sumber aplikasi.
 
 ---

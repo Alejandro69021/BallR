@@ -205,7 +205,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       setIsFreezeModalOpen(false);
       onToast?.({
         title: 'Laporan Dikunci',
-        subtext: 'Laporan terkunci resmi berhasil disimpan dengan hash kriptografis.'
+        subtext: 'Laporan terkunci berhasil disimpan dengan hash kriptografis.'
       });
     } catch (err) {
       console.warn('Gagal mengunci laporan:', err);

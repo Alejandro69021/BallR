@@ -1,12 +1,11 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import fs from 'node:fs';
 import path from 'node:path';
 
 import LocalVideoPanel, { parseTimeToSeconds } from '../components/video/LocalVideoPanel';
 import FastPitchLogger from '../components/FastPitchLogger';
-import MatchDetailPage from '../pages/MatchDetailPage';
 import { validateEvent } from '../lib/matches';
 import { buildReportPayload, computeSnapshotHash } from '../lib/report';
 
