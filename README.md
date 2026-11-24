@@ -36,7 +36,7 @@ Fitur-fitur berikut telah diimplementasikan dalam kode sumber dan terhubung pada
    - Registrasi pertandingan dengan pengisian lawan, tanggal, dan pemilihan format lapangan (dimensi otomatis disesuaikan).
 6. **Pencatat Laga di Pinggir Lapangan (`/pencatatan/:matchId`)**:
    - Papan sentuh cepat (*fast tactile keypad*) satu jempol untuk mencatat aksi (umpan, tembakan, tekel, intersep, dll.) per menit.
-   - Bekerja secara *offline-first* dengan antrean keluar (*outbox queue*).
+   - Dirancang *offline-first* dengan antrean keluar (*outbox queue*); **belum diuji offline di lapangan**.
    - **Sinkronisasi Video Lokal**: Pemutar video langsung dari berkas di perangkat pengguna dengan pengaturan *offset* waktu sepak-mula (*kickoff*) per babak.
 7. **Detail Laga & Peta Interaktif (`/laga/:matchId`)**:
    - Panel panduan langkah berikutnya (*NextStepPanel*) berbasis tahapan status laga.
@@ -45,8 +45,9 @@ Fitur-fitur berikut telah diimplementasikan dalam kode sumber dan terhubung pada
 8. **Laporan Pertandingan Terkunci (`/laga/:matchId/laporan`)**:
    - Laporan kaku 9 bagian siap cetak A4.
    - Fitur penguncian laporan (*freeze*) dengan penugasan staf pemeriksa independen dan kalkulasi *hash* kanonikal SHA-256.
-9. **Verifikasi Integritas Data (`/verifikasi/:hash`)**:
-   - Audit keaslian sertifikat dan laporan pertandingan menggunakan *hash* kriptografis SHA-256 tanpa memperlihatkan rahasia internal.
+   - **Verifikasi Integritas Laporan Laga**: Dilakukan langsung pada halaman laporan (`verifyReport` di `src/lib/report.js`) dengan tombol "Verifikasi ulang" untuk membandingkan data saat ini dengan *hash* laporan terkunci.
+9. **Verifikasi Integritas Paspor Atlet (`/verifikasi/:hash`)**:
+   - Memverifikasi keabsahan *snapshot* paspor talenta atlet (`passport_snapshots` via fungsi RPC `verify_passport_snapshot` di migrasi 006) menggunakan *hash* SHA-256 kanonikal tanpa memperlihatkan rahasia atau mengenumerasi data atlet lain. Halaman audit publik ini **khusus untuk paspor atlet**, bukan untuk laporan pertandingan.
 10. **Papan Skenario Taktik (`/taktik` & `/taktik/:id`)**:
     - Papan formasi interaktif multi-bingkai (*frame animation*) dengan rujukan literatur taktis.
 11. **Evaluasi Pelatih (`/penilaian/:playerId`)**:
@@ -71,7 +72,7 @@ Fitur-fitur berikut **tidak ada** dan belum dibangun di repositori ini:
 
 - **Mode Demonstrasi (`VITE_DEMO_MODE=true`)**: Berjalan mandiri langsung di peramban menggunakan data contoh fiktif (`src/data/mockData.js`) dan penyimpanan peramban lokal (`localStorage`).
 - **Mode Riil Supabase (`VITE_DEMO_MODE=false`)**: Menghubungkan aplikasi ke API Supabase Postgres.
-- **Status Pengujian Keamanan RLS**: Skrip kebijakan *Row Level Security* (RLS) tersedia di direktori `supabase/migrations/`, namun **belum pernah diuji atau diaudit pada proyek Supabase produksi yang berjalan langsung**.
+- **Status Pengujian Keamanan RLS**: Skrip pengujian SQL RLS tersedia di direktori `supabase/tests/` (`rls_test.sql`, `rls_test_007.sql`, `rls_test_008.sql`), namun **belum pernah dijalankan atau diuji pada proyek Supabase produksi yang berjalan langsung**.
 - **Status Kebijakan Privasi Data**: Teks tata kelola persetujuan wali mengacu pada prinsip UU PDP No. 27/2022 Pasal 25, namun dokumen di `docs/CONSENT_DRAFT.md` masih berstatus **draf awal** dan belum melalui tinjauan penasihat hukum (*legal review*).
 
 ---
@@ -144,7 +145,7 @@ BallR/
 ├── src/
 │   ├── components/               # Komponen antarmuka modular
 │   │   ├── assessment/           # Rapor & instrumen evaluasi pelatih
-│   │   ├── auth/                 # Modal otentikasi peran pelatih (PIN Guard)
+│   │   ├── auth/                 # Modal autentikasi (email/password dan magic-link via Supabase Auth, pemilih peran demo, role gate)
 │   │   ├── growth/               # Kartu kematangan fisik & tabel antropometri
 │   │   ├── logger/               # Tombol pencatat cepat pinggir lapangan
 │   │   ├── match/                # Peta kejadian laga & visualisasi zona
@@ -163,21 +164,22 @@ BallR/
 │   ├── pages/                    # Komponen halaman rute aktif
 │   └── test/                     # Berkas pengujian unit dan integrasi
 └── supabase/
-    └── migrations/               # Naskah migrasi basis data SQL PostgreSQL
+    ├── migrations/               # Naskah migrasi basis data SQL PostgreSQL (001-010)
+    └── tests/                    # Skrip pengujian SQL RLS lokal (rls_test.sql, rls_test_007.sql, rls_test_008.sql)
 ```
 
 ---
 
 ## Daftar Migrasi Basis Data (`supabase/migrations/`)
 
-1. `001_initial_schema_and_roles.sql`: Skema dasar tabel pemain, akademi, antropometri berkala, penilaian pelatih, dan penetapan peran pengguna.
-2. `002_row_level_security.sql`: Kebijakan *Row Level Security* (RLS) pemisahan hak akses publik, wali murid, pelatih, dan admin.
-3. `005_credible_references_and_rubric.sql`: Skema tabel repositori rujukan ilmiah terverifikasi dan rubrik evaluasi kualitatif pelatih.
-4. `006_security_hardening.sql`: Pengerasan fungsi verifikasi paspor atlet kanonikal dan proteksi terhadap enumerasi data identitas.
-5. `007_matches_and_tactics.sql`: Tabel pertandingan, kejadian aksi (*events*), daftar partisipan, dan papan skenario taktik.
-6. `008_report_snapshots.sql`: Tabel penyimpanan dokumen laporan laga terkunci dan fungsi RPC verifikasi integritas *hash* SHA-256.
-7. `009_ppda_reference.sql`: Metadata rujukan ilmiah metrik *Passes Allowed per Defensive Action* (PPDA, Trainor 2014).
-8. `010_event_video_time.sql`: Penambahan kolom `video_time_s` pada kejadian laga untuk penandaan stempel waktu video lokal.
+1. `001_initial_schema_and_roles.sql`: Skema dasar tabel pemain, akademi, antropometri berkala, penilaian pelatih, riwayat kebugaran, klip video, dan penetapan peran pengguna (coach/admin/guardian).
+2. `002_row_level_security.sql`: Kebijakan *Row Level Security* (RLS) dasar untuk pembatasan akses data atlet, profil pengguna, penilaian, dan dokumen terkait.
+3. `005_credible_references_and_rubric.sql`: Skema tabel repositori rujukan pustaka ilmiah (`credible_references`) dan rubrik evaluasi kualitatif pelatih.
+4. `006_security_hardening.sql`: Pengerasan keamanan: fungsi RPC `verify_passport_snapshot` untuk audit publik paspor atlet tanpa izin enumerasi tabel, pencegahan eskalasi peran admin, dan penegakan izin persetujuan wali sebelum visibilitas atlet dibuka.
+5. `007_matches_and_tactics.sql`: Tabel pertandingan (`matches`), kejadian aksi (`match_events`), partisipan (`match_participants`), dan skenario papan taktik (`tactical_scenarios`) dengan trigger penguncian saat laga final.
+6. `008_report_snapshots.sql`: Tabel `report_snapshots` yang bersifat tetap (*immutable*), trigger validasi status final laga dan aturan pemeriksa independen (pemeriksa harus staf akademi yang sama dan berbeda dari pembuat), trigger pemblokiran `UPDATE`/`DELETE`, serta kebijakan RLS staf.
+7. `009_ppda_reference.sql`: Entri rujukan ilmiah metrik *Passes Allowed per Defensive Action* (PPDA, Trainor 2014) pada tabel `credible_references`.
+8. `010_event_video_time.sql`: Penambahan kolom `video_time_s` pada tabel `match_events` untuk penautan stempel waktu pemutaran video lokal per kejadian.
 
 ---
 
@@ -186,3 +188,4 @@ BallR/
 - **Tergantung Ketelitian Pelatih**: Seluruh data aksi pertandingan berasal dari ketukan manual pelatih saat laga berlangsung atau saat memutar ulang rekaman; galat manusia dalam menentukan detik dan lokasi kejadian tidak dapat dihindari sepenuhnya.
 - **Kapasitas Penyimpanan Browser**: Dalam mode demo, data tersimpan di `localStorage` peramban yang dapat hilang jika pengguna menghapus cache peramban atau berpindah perangkat.
 - **Video Tetap di Perangkat Pengguna**: Tautan berkas video menggunakan URL objek sementara (`blob:`) atau penandaan berkas lokal, sehingga berkas video tidak berpindah secara otomatis bila akun dibuka dari gawai lain.
+- **Status Pengujian Lapangan**: Mekanisme sinkronisasi antrean *offline-first* baru diuji secara unit test di lingkungan peramban, belum diuji pada kondisi koneksi jaringan putus-nyambung nyata di lapangan sepakbola.
