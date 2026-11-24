@@ -11,7 +11,7 @@ export default function FeatureDive() {
       <div className="max-w-[1160px] mx-auto w-full px-4 sm:px-6">
         {/* Section Header */}
         <div className="max-w-3xl mb-12 sm:mb-16">
-          <h2 className="font-display font-extrabold text-2xl sm:text-4xl md:text-5xl uppercase tracking-tight text-ink leading-tight">
+          <h2 className="font-bold text-2xl sm:text-4xl md:text-5xl uppercase tracking-tight text-ink leading-tight">
             {copy.heading}
           </h2>
           <p className="mt-3 text-base sm:text-lg text-2 font-normal leading-relaxed">

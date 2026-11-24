@@ -178,10 +178,10 @@ export default function HomePage({
         <PitchLines variant="center" opacity={0.11} className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <p className="text-xs font-semibold tracking-wider uppercase text-bib">
+            <p className="text-sm font-semibold tracking-wider uppercase text-bib">
               Fokus Hari Ini
             </p>
-            <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-chalk uppercase tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold text-chalk tracking-tight">
               Apa yang mau kamu kerjakan hari ini?
             </h2>
             {featuredMatch && (

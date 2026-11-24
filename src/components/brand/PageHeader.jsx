@@ -14,7 +14,7 @@ export default function PageHeader({ kicker, title, actions, className = '' }) {
     <header className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-line select-none ${className}`}>
       <div className="space-y-1">
         {kicker && (
-          <p className="text-xs uppercase tracking-wider font-semibold text-2">
+          <p className="text-sm uppercase tracking-wider font-semibold text-2">
             {kicker}
           </p>
         )}

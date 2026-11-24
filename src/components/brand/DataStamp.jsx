@@ -9,7 +9,7 @@ export default function DataStamp({ size = 'md', className = '', ...props }) {
     <div
       role="img"
       aria-label="Data contoh fiktif"
-      className={`inline-flex flex-col items-center justify-center rounded-full border-dashed border-bib text-bib font-display font-extrabold uppercase tracking-wider text-center select-none -rotate-12 leading-tight ${sizeClasses[size] || sizeClasses.md} ${className}`}
+      className={`inline-flex flex-col items-center justify-center rounded-full border-dashed border-bib bg-pitch text-bib font-display font-extrabold uppercase tracking-wider text-center select-none -rotate-12 leading-tight ${sizeClasses[size] || sizeClasses.md} ${className}`}
       {...props}
     >
       <span>Data Contoh</span>

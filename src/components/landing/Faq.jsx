@@ -22,7 +22,7 @@ export default function Faq() {
               key={item.q}
               className="group border-2 border-line rounded-panel bg-panel overflow-hidden shadow-xs hover:border-pitch/40 transition-colors"
             >
-              <summary className="cursor-pointer p-4 sm:p-5 flex items-center justify-between font-display font-bold text-lg sm:text-xl text-ink uppercase tracking-tight min-h-[44px] select-none hover:bg-raised/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pitch list-none">
+              <summary className="cursor-pointer p-4 sm:p-5 flex items-center justify-between font-bold text-base sm:text-lg text-ink min-h-[44px] select-none hover:bg-raised/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pitch list-none">
                 <span className="pr-4">{item.q}</span>
                 <ChevronDown
                   className="w-5 h-5 text-2 shrink-0 transition-transform duration-200 group-open:rotate-180"

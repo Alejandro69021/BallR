@@ -110,7 +110,7 @@ export default function TopNav({
               </span>
             </button>
 
-            <span className="text-sm font-semibold text-1 truncate max-w-[120px] sm:max-w-xs">
+            <span className="text-sm font-semibold text-1 truncate max-w-[120px] sm:max-w-[70px] xl:max-w-xs">
               {academy?.name || 'Akademi Sepakbola'}
             </span>
           </div>
@@ -118,7 +118,7 @@ export default function TopNav({
           {/* Center: Desktop Navigation Bar (>= 768px, icon+label at >= 1024px) */}
           <nav
             aria-label="Navigasi utama desktop"
-            className="hidden md:flex items-center gap-1 lg:gap-2 h-full shrink-0"
+            className="hidden md:flex items-center gap-1 lg:gap-1.5 h-full shrink-0"
           >
             {navItems.map((item) => {
               const isActive = currentView === item.id;
@@ -127,7 +127,7 @@ export default function TopNav({
                   key={item.id}
                   type="button"
                   onClick={() => onSwitchView?.(item.id)}
-                  className={`relative flex items-center gap-1.5 px-2.5 lg:px-3 h-full text-sm transition-colors duration-150 ease-out select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                  className={`relative flex items-center gap-1.5 px-2 lg:px-2.5 h-full text-sm transition-colors duration-150 ease-out select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
                     isActive
                       ? 'text-1 font-semibold'
                       : 'text-2 hover:text-1'
