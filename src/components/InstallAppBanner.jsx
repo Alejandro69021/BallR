@@ -76,13 +76,18 @@ export default function InstallAppBanner() {
     return null;
   }
 
+  // Only show when the browser actually fires beforeinstallprompt
+  if (!deferredPrompt) {
+    return null;
+  }
+
   // Don't render if already installed or dismissed
   if (isStandalone || isDismissed) {
     return null;
   }
 
   return (
-    <div className="fixed bottom-3 inset-x-3 sm:inset-x-auto sm:right-6 sm:bottom-6 z-50 max-w-md select-none">
+    <div className="md:hidden fixed bottom-3 inset-x-3 z-50 select-none">
       <div className="p-4 rounded-panel bg-panel border border-line shadow-popover flex flex-col gap-3 text-1">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">

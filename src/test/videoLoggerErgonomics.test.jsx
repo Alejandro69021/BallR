@@ -6,7 +6,7 @@ vi.hoisted(() => {
 
 import React from 'react';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import InstallAppBanner from '../components/InstallAppBanner';
 import LocalVideoPanel, { hasStoredVideoMeta } from '../components/video/LocalVideoPanel';
@@ -58,14 +58,30 @@ describe('Video Logger Ergonomics & Collision Fixes', () => {
       expect(screen.queryByText(/Aplikasi lapangan/i)).toBeNull();
     });
 
-    it('renders on /skuad route', () => {
-      render(
+    it('renders on /skuad route when beforeinstallprompt fired', () => {
+      const { container } = render(
         <MemoryRouter initialEntries={['/skuad']}>
           <InstallAppBanner />
         </MemoryRouter>
       );
+      act(() => {
+        const event = new Event('beforeinstallprompt');
+        event.prompt = vi.fn();
+        event.userChoice = Promise.resolve({ outcome: 'dismissed' });
+        window.dispatchEvent(event);
+      });
       expect(screen.getByText(/Aplikasi lapangan/i)).toBeInTheDocument();
       expect(screen.getByText(/PWA/i)).toBeInTheDocument();
+      expect(container.firstChild).toHaveClass('md:hidden');
+    });
+
+    it('renders nothing on /skuad if beforeinstallprompt did not fire', () => {
+      const { container } = render(
+        <MemoryRouter initialEntries={['/skuad']}>
+          <InstallAppBanner />
+        </MemoryRouter>
+      );
+      expect(container.firstChild).toBeNull();
     });
   });
 
