@@ -148,11 +148,6 @@ export default function HomePage({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-1 tracking-tight">Beranda</h1>
-            {isDemoMode && (
-              <Badge variant="warning" size="sm" className="font-medium">
-                Mode contoh: data fiktif
-              </Badge>
-            )}
           </div>
           <p className="text-sm text-2 mt-0.5">
             Apa yang mau kamu kerjakan hari ini?

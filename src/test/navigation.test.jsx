@@ -38,8 +38,12 @@ describe('Navigation (TopNav Desktop & Mobile Tab Bar)', () => {
     fireEvent.click(lagaButton);
     expect(handleSwitch).toHaveBeenCalledWith('matches');
 
-    // Verify visible "Bantuan" button exists in header and calls help
-    const bantuanButton = screen.getByRole('button', { name: /Bantuan/i });
+    // Verify "Bantuan" option exists in account menu and calls help
+    const menuButton = screen.getByRole('button', { name: /Menu akun/i });
+    expect(menuButton).toBeInTheDocument();
+    fireEvent.click(menuButton);
+
+    const bantuanButton = screen.getByRole('menuitem', { name: /Bantuan/i });
     expect(bantuanButton).toBeInTheDocument();
     fireEvent.click(bantuanButton);
     expect(handleSwitch).toHaveBeenCalledWith('help');
@@ -69,7 +73,7 @@ describe('Navigation (TopNav Desktop & Mobile Tab Bar)', () => {
     expect(within(mobileNav).getByRole('button', { name: /Skuad/i })).toBeInTheDocument();
   });
 
-  it('renders visible theme toggle (Terang/Gelap) and triggers onToggleSurface', () => {
+  it('renders visible single theme toggle and triggers onToggleSurface', () => {
     const handleToggle = vi.fn();
     const { rerender } = render(
       <TopNav
@@ -81,15 +85,10 @@ describe('Navigation (TopNav Desktop & Mobile Tab Bar)', () => {
       />
     );
 
-    const lightBtn = screen.getByTestId('theme-toggle-light');
-    const darkBtn = screen.getByTestId('theme-toggle-dark');
+    const themeBtn = screen.getByTestId('theme-toggle');
+    expect(themeBtn).toHaveAttribute('aria-label', 'Tema: Terang. Ganti ke Gelap');
 
-    expect(lightBtn).toHaveTextContent('Terang');
-    expect(darkBtn).toHaveTextContent('Gelap');
-    expect(lightBtn).toHaveAttribute('aria-pressed', 'true');
-    expect(darkBtn).toHaveAttribute('aria-pressed', 'false');
-
-    fireEvent.click(darkBtn);
+    fireEvent.click(themeBtn);
     expect(handleToggle).toHaveBeenCalledWith('dark');
 
     rerender(
@@ -102,10 +101,8 @@ describe('Navigation (TopNav Desktop & Mobile Tab Bar)', () => {
       />
     );
 
-    expect(lightBtn).toHaveAttribute('aria-pressed', 'false');
-    expect(darkBtn).toHaveAttribute('aria-pressed', 'true');
-
-    fireEvent.click(lightBtn);
+    expect(themeBtn).toHaveAttribute('aria-label', 'Tema: Gelap. Ganti ke Terang');
+    fireEvent.click(themeBtn);
     expect(handleToggle).toHaveBeenCalledWith('paper');
   });
 });

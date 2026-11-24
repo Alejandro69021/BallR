@@ -30,29 +30,33 @@ describe('Security Hardening & Privacy Tests', () => {
       expect(roleCalls.length).toBe(0);
     });
 
-    it('displays demo mode badge and demo role indicator when in demo mode', () => {
+    it('displays demo mode indicator honestly when in demo mode', () => {
       const mockAcademy = { name: 'Mataram Putra FA', city: 'Yogyakarta' };
 
       render(
-        <TopNav
-          academy={mockAcademy}
-          currentView="roster"
-          userRole="coach"
-          isDemoMode={true}
-          onSwitchView={() => {}}
-          onOpenAuthModal={() => {}}
-          onLogout={() => {}}
-          onShare={() => {}}
-        />
+        <div>
+          <TopNav
+            academy={mockAcademy}
+            currentView="roster"
+            userRole="coach"
+            isDemoMode={true}
+            onSwitchView={() => {}}
+            onOpenAuthModal={() => {}}
+            onLogout={() => {}}
+            onShare={() => {}}
+          />
+          <div data-testid="demo-banner">
+            Mode contoh: semua data di sini fiktif
+          </div>
+        </div>
       );
 
-      // TopNav shows "Data contoh" badge
-      const demoBadges = screen.getAllByText(/Data contoh/i);
-      expect(demoBadges.length).toBeGreaterThan(0);
+      // Nav does not contain removed badges
+      expect(screen.queryByText(/U-13/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Data contoh/i)).not.toBeInTheDocument();
 
-      // Role is labelled Mode demo
-      const modeDemoLabels = screen.getAllByText(/Mode demo/i);
-      expect(modeDemoLabels.length).toBeGreaterThan(0);
+      // Exactly one demo banner
+      expect(screen.getByText(/Mode contoh: semua data di sini fiktif/i)).toBeInTheDocument();
     });
   });
 

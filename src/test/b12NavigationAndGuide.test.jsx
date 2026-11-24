@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, afterAll } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 vi.hoisted(() => {
@@ -154,7 +154,7 @@ describe('Phase B12: Simplified Navigation & In-App Guide', () => {
       expect(buttons[2]).toHaveTextContent(/Skuad/i);
     });
 
-    it('renders visible 44px "Bantuan" button in TopNav header', () => {
+    it('renders "Bantuan" option in TopNav account menu', () => {
       render(
         <TopNav
           userRole="coach"
@@ -162,10 +162,12 @@ describe('Phase B12: Simplified Navigation & In-App Guide', () => {
         />
       );
 
-      const bantuanButton = screen.getByRole('button', { name: /bantuan/i });
+      const menuButton = screen.getByRole('button', { name: /Menu akun/i });
+      expect(menuButton).toBeInTheDocument();
+      fireEvent.click(menuButton);
+
+      const bantuanButton = screen.getByRole('menuitem', { name: /bantuan/i });
       expect(bantuanButton).toBeInTheDocument();
-      expect(bantuanButton.className).toMatch(/min-h-\[44px\]/);
-      expect(bantuanButton.className).toMatch(/min-w-\[44px\]/);
     });
   });
 

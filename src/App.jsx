@@ -328,12 +328,12 @@ function MainApp() {
         verifiedText={activePlayer.personal_info?.academy?.name}
       />
 
-      {/* 3d. Visible "Data contoh" badge whenever demo mode is on */}
+      {/* Visible demo indicator banner whenever demo mode is on */}
       {isDemoMode && (
-        <div className="w-full bg-amber-500/10 border-b border-amber-500/20 py-1.5 px-4 text-center">
+        <div data-testid="demo-banner" className="w-full bg-amber-500/10 border-b border-amber-500/20 py-1.5 px-4 text-center">
           <span className="text-sm font-semibold text-amber-300 inline-flex items-center gap-1.5">
             <span className="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
-            Data contoh — Mode demo aktif
+            Mode contoh: semua data di sini fiktif
           </span>
         </div>
       )}
