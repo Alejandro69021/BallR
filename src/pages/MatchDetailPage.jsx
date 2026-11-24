@@ -457,10 +457,6 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
           const name = info?.name && !info.name.startsWith('PLAYER-') && !info.name.startsWith('WK-')
             ? info.name
             : 'Pemain tanpa nama';
-          const numDisplay =
-            info?.number != null && info?.number !== '-' && info?.number !== ''
-              ? `#${info.number}`
-              : 'Tanpa nomor';
           return (
             <div className="flex items-center gap-1.5">
               <span className="text-2">
