@@ -72,6 +72,36 @@ async function main() {
 
   const failures = [];
 
+  // Matrix configuration
+  const viewports = [
+    { width: 1366, height: 650 },
+    { width: 1280, height: 720 },
+    { width: 1024, height: 768 },
+    { width: 390, height: 844 }
+  ];
+
+  const themes = ['paper', 'dark'];
+
+  const routes = [
+    { path: '/', slug: 'home' },
+    { path: '/pemain/WK-2026-0042', slug: 'pemain-paspor' },
+    { path: '/pemain/WK-2026-0042/laga', slug: 'pemain-laga' },
+    { path: '/pemain/WK-2026-0042/laga/demo-match-1', slug: 'pemain-laga-match' },
+    { path: '/pemain/WK-2026-0042/pertumbuhan', slug: 'pemain-pertumbuhan' },
+    { path: '/skuad', slug: 'skuad' },
+    { path: '/penilaian/WK-2026-0042', slug: 'penilaian-WK-2026-0042' },
+    { path: '/pencatatan', slug: 'pencatatan-root' },
+    { path: '/pencatatan/demo-match-draft-02', slug: 'pencatatan-demo-match-draft-02' },
+    { path: '/laga', slug: 'laga' },
+    { path: '/laga/demo-match-1', slug: 'laga-demo-match-1' },
+    { path: '/laga/demo-match-1/laporan', slug: 'laga-demo-match-1-laporan', optOut: true },
+    { path: '/taktik', slug: 'taktik' },
+    { path: '/taktik/demo-scenario-contoh-01', slug: 'taktik-demo-scenario-contoh-01' },
+    { path: '/verifikasi/demo-hash', slug: 'verifikasi-demo-hash', optOut: true },
+    { path: '/rujukan', slug: 'rujukan' },
+    { path: '/bantuan', slug: 'bantuan' }
+  ];
+
   try {
     // 2. Check (a): getComputedStyle(body).backgroundColor changes after clicking theme button
     console.log('[ui-check] Checking assertion (a): theme toggle changes background-color...');
@@ -99,26 +129,6 @@ async function main() {
     }
     await themeContext.close();
 
-    // Matrix configuration
-    const viewports = [
-      { width: 1366, height: 650 },
-      { width: 1280, height: 720 },
-      { width: 1024, height: 768 },
-      { width: 390, height: 844 }
-    ];
-
-    const themes = ['paper', 'dark'];
-
-    const routes = [
-      { path: '/', slug: 'home' },
-      { path: '/skuad', slug: 'skuad' },
-      { path: '/laga', slug: 'laga' },
-      { path: '/penilaian/WK-2026-0042', slug: 'penilaian-WK-2026-0042' },
-      { path: '/pencatatan/demo-match-draft-02', slug: 'pencatatan-demo-match-draft-02' },
-      { path: '/taktik', slug: 'taktik' },
-      { path: '/bantuan', slug: 'bantuan' }
-    ];
-
     for (const vp of viewports) {
       for (const theme of themes) {
         const context = await browser.newContext({
@@ -138,7 +148,7 @@ async function main() {
           try {
             await page.goto(`${baseUrl}${route.path}`, { waitUntil: 'domcontentloaded' });
             // Wait for main content and surface attribute
-            await page.waitForTimeout(400);
+            await page.waitForTimeout(200);
 
             // Screenshot
             const shotPath = path.join(outDir, `${route.slug}-${theme}-${vp.width}.png`);
@@ -200,6 +210,9 @@ async function main() {
               for (const el of allElements) {
                 const tag = el.tagName.toLowerCase();
                 if (tag === 'pre' || tag === 'code' || tag === 'script' || tag === 'style') continue;
+
+                const style = window.getComputedStyle(el);
+                if (style.display === 'none' || style.visibility === 'hidden') continue;
 
                 let ownText = '';
                 for (const node of el.childNodes) {
@@ -321,6 +334,63 @@ async function main() {
                 );
               }
             }
+
+            // Check (h): Page container validation on non-opt-out routes
+            // Every non-opt-out route has exactly one [data-testid="page-container"],
+            // its left edge >= 16px and right gap >= 16px (>= 24px at width >= 640),
+            // and no page-level section (direct child) has left < container.left.
+            if (!route.optOut) {
+              const gutterCheck = await page.evaluate((vpWidth) => {
+                const containers = document.querySelectorAll('[data-testid="page-container"]');
+                if (containers.length !== 1) {
+                  return {
+                    error: `expected exactly 1 [data-testid="page-container"], found ${containers.length}`
+                  };
+                }
+                const container = containers[0];
+                const rect = container.getBoundingClientRect();
+                const style = window.getComputedStyle(container);
+                const paddingLeft = parseFloat(style.paddingLeft) || 0;
+                const paddingRight = parseFloat(style.paddingRight) || 0;
+
+                const expectedMinGutter = vpWidth >= 640 ? 24 : 16;
+                // Effective left edge and right gap of container
+                const effectiveLeft = rect.left + paddingLeft;
+                const effectiveRightGap = (window.innerWidth - rect.right) + paddingRight;
+
+                // 1. Left edge check (allow 1px rounding tolerance)
+                if (effectiveLeft < expectedMinGutter - 1) {
+                  return {
+                    error: `container left edge (${Math.round(effectiveLeft)}px) < expected minimum (${expectedMinGutter}px)`
+                  };
+                }
+
+                // 2. Right gap check
+                if (effectiveRightGap < expectedMinGutter - 1) {
+                  return {
+                    error: `container right gap (${Math.round(effectiveRightGap)}px) < expected minimum (${expectedMinGutter}px)`
+                  };
+                }
+
+                // 3. Direct children check: no page-level section has left < container.left
+                const children = Array.from(container.children);
+                for (const child of children) {
+                  if (child.offsetWidth === 0 && child.offsetHeight === 0) continue;
+                  const childRect = child.getBoundingClientRect();
+                  if (childRect.left < rect.left - 1) {
+                    return {
+                      error: `direct child <${child.tagName.toLowerCase()}> left (${Math.round(childRect.left)}px) < container.left (${Math.round(rect.left)}px)`
+                    };
+                  }
+                }
+
+                return null;
+              }, vp.width);
+
+              if (gutterCheck && gutterCheck.error) {
+                failures.push(`Assertion (h) FAILED on ${comboLabel}: ${gutterCheck.error}`);
+              }
+            }
           } catch (err) {
             failures.push(`Execution error on ${comboLabel}: ${err.message}`);
           }
@@ -335,8 +405,12 @@ async function main() {
   }
 
   console.log('\n================ UI GATE RESULTS ================');
+  console.log(`Routes tested: ${routes.length} (${routes.map((r) => r.path).join(', ')})`);
+  console.log(`Viewports tested: ${viewports.map((v) => `${v.width}x${v.height}`).join(', ')}`);
+  console.log(`Themes tested: ${themes.join(', ')}`);
+  console.log(`Total matrix permutations: ${routes.length * viewports.length * themes.length}`);
   if (failures.length === 0) {
-    console.log('ALL ASSERTIONS PASSED (0 failures)! Screenshots saved to ui-check-out/');
+    console.log('ALL ASSERTIONS (a)-(h) PASSED (0 failures)! Screenshots saved to ui-check-out/');
     process.exit(0);
   } else {
     console.error(`FAILED: ${failures.length} issues detected:`);

@@ -189,8 +189,8 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
       </div>
 
       {/* Paged Media Footer (Visible during print) */}
-      <div className="hidden print:flex items-center justify-between text-xs font-mono text-2 pt-3 border-t border-line">
-        <span>BallR Passport · {personal_info?.full_name || personal_info?.nickname || pId} ({pId})</span>
+      <div className="hidden print:flex items-center justify-between text-xs text-2 pt-3 border-t border-line">
+        <span>BallR Passport · {personal_info?.full_name || personal_info?.nickname || pId} (<span className="font-mono">{pId}</span>)</span>
         <span>Dokumen Resmi Pembinaan Sepakbola Usia Muda</span>
       </div>
     </footer>

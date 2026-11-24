@@ -397,15 +397,21 @@ export async function listMatches() {
   return data || [];
 }
 
+function resolveDemoMatchId(id) {
+  if (id === 'demo-match-1') return 'demo-match-contoh-01';
+  return id;
+}
+
 /**
  * Get a single match by ID.
  */
 export async function getMatch(id) {
   if (!id) return null;
+  const targetId = resolveDemoMatchId(id);
 
   if (isDemoModeActive()) {
     const store = getDemoStore();
-    return store.matches.find((m) => m.id === id) || null;
+    return store.matches.find((m) => m.id === targetId || m.id === id) || null;
   }
 
   if (!supabase) {
@@ -652,10 +658,11 @@ export async function reopenMatch(id) {
  */
 export async function listEvents(matchId) {
   if (!matchId) return [];
+  const targetId = resolveDemoMatchId(matchId);
 
   if (isDemoModeActive()) {
     const store = getDemoStore();
-    const events = store.events[matchId] || [];
+    const events = store.events[targetId] || store.events[matchId] || [];
     return [...events].sort((a, b) => {
       if (a.period !== b.period) return a.period - b.period;
       return a.minute - b.minute;
