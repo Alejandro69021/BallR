@@ -30,6 +30,9 @@ import RefChip from '../ui/RefChip';
 import EmptyState from '../ui/EmptyState';
 import MatchVisualReplay from './MatchVisualReplay';
 
+const VISION_API_BASE = String(import.meta.env?.VITE_VISION_API_URL || '').replace(/\/+$/, '');
+const visionApiUrl = (endpoint) => `${VISION_API_BASE}${endpoint}`;
+
 function describePitchZone(x, y, L, W, team) {
   if (x == null || y == null || isNaN(x) || isNaN(y)) return 'area lapangan';
   const relX = team === 'opponent' ? L - Number(x) : Number(x);
@@ -370,7 +373,7 @@ export default function TacticalMatchAnalysis({
     const pollStatus = setInterval(async () => {
       if (cancelled) return;
       try {
-        const res = await fetch('/api/vision/youtube/status');
+        const res = await fetch(visionApiUrl('/api/vision/youtube/status'));
         if (!res?.ok) return;
         const json = await res.json();
         if (cancelled || !json?.ok || !json?.progress) return;
@@ -607,7 +610,7 @@ export default function TacticalMatchAnalysis({
     setErrorNotice(null);
     setLoadingLatest(true);
     try {
-      const res = await fetch('/api/vision/latest');
+      const res = await fetch(visionApiUrl('/api/vision/latest'));
       const json = await res.json();
       if (!res.ok || !json?.ok) {
         throw new Error(json?.error || 'Belum ada hasil vision terbaru pada server lokal.');
@@ -677,7 +680,7 @@ export default function TacticalMatchAnalysis({
       if (youtubeCookiesBrowser) {
         payloadBody.cookiesFromBrowser = youtubeCookiesBrowser;
       }
-      const res = await fetch('/api/vision/youtube', {
+      const res = await fetch(visionApiUrl('/api/vision/youtube'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payloadBody),
@@ -719,7 +722,7 @@ export default function TacticalMatchAnalysis({
   const handleCancelYoutubeVision = async () => {
     youtubeAbortRef.current?.abort();
     try {
-      await fetch('/api/vision/youtube/cancel', { method: 'POST' });
+      await fetch(visionApiUrl('/api/vision/youtube/cancel'), { method: 'POST' });
     } catch {
       // Abaikan bila endpoint tidak terjangkau
     }

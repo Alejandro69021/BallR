@@ -61,6 +61,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   const [previewVisionEvents, setPreviewVisionEvents] = useState(null);
   const [previewVisionQuality, setPreviewVisionQuality] = useState(null);
   const [visionTeamNames, setVisionTeamNames] = useState(null);
+  const [playerSlotMap, setPlayerSlotMap] = useState({});
   const [participants, setParticipants] = useState([]);
   const [snapshot, setSnapshot] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -215,20 +216,59 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
     return Object.entries(counts).sort((a, b) => b[1] - a[1]);
   }, [events]);
 
-  const displayEvents = useMemo(
+  const rawDisplayEvents = useMemo(
     () => (Array.isArray(previewVisionEvents) && previewVisionEvents.length > 0 ? previewVisionEvents : events),
     [previewVisionEvents, events]
   );
 
+  const displayEvents = useMemo(() => {
+    const keys = Object.keys(playerSlotMap);
+    if (keys.length === 0) return rawDisplayEvents;
+    return rawDisplayEvents.map((evt) => {
+      if (evt.team === 'own' && !evt.player_id && evt.player_number != null) {
+        const mappedPid = playerSlotMap[String(evt.player_number)];
+        if (mappedPid) {
+          const info = playerMap[mappedPid];
+          return {
+            ...evt,
+            player_id: mappedPid,
+            player_number: info?.number != null && info.number !== '' ? Number(info.number) : evt.player_number
+          };
+        }
+      }
+      return evt;
+    });
+  }, [rawDisplayEvents, playerSlotMap, playerMap]);
+
+  const inferSpatialRole = (avgX, avgY, L, W) => {
+    if (avgX == null || avgY == null) return null;
+    const xPct = avgX / Math.max(1, L);
+    const yPct = avgY / Math.max(1, W);
+    if (xPct < 0.16) return 'Kiper / Bek Dalam';
+    if (xPct < 0.36) return yPct < 0.25 ? 'Bek Kiri' : yPct > 0.75 ? 'Bek Kanan' : 'Bek Tengah';
+    if (xPct < 0.68) return yPct < 0.25 ? 'Sayap Kiri' : yPct > 0.75 ? 'Sayap Kanan' : 'Gelandang';
+    return yPct < 0.28 ? 'Penyerang Kiri' : yPct > 0.72 ? 'Penyerang Kanan' : 'Penyerang Tengah';
+  };
+
   const eventCountsByPlayer = useMemo(() => {
+    const L = Number(match?.pitch_length_m) || 90;
+    const W = Number(match?.pitch_width_m) || 60;
     const ownCounts = {};
+    const ownCoords = {};
     const oppCounts = {};
+    const oppCoords = {};
     let opponentEvents = 0;
 
     displayEvents.forEach((evt, idx) => {
       if (evt.team === 'own') {
         if (evt.player_id) {
           ownCounts[evt.player_id] = (ownCounts[evt.player_id] || 0) + 1;
+          if (evt.x_m != null && evt.y_m != null) {
+            if (!ownCoords[evt.player_id]) ownCoords[evt.player_id] = { sx: 0, sy: 0, n: 0 };
+            ownCoords[evt.player_id].sx += Number(evt.x_m);
+            ownCoords[evt.player_id].sy += Number(evt.y_m);
+            ownCoords[evt.player_id].n += 1;
+          }
         } else {
           const num =
             evt.player_number != null && evt.player_number !== ''
@@ -236,6 +276,12 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               : ((idx % 11) + 1);
           const key = `vision-own-${num}`;
           ownCounts[key] = (ownCounts[key] || 0) + 1;
+          if (evt.x_m != null && evt.y_m != null) {
+            if (!ownCoords[key]) ownCoords[key] = { sx: 0, sy: 0, n: 0 };
+            ownCoords[key].sx += Number(evt.x_m);
+            ownCoords[key].sy += Number(evt.y_m);
+            ownCoords[key].n += 1;
+          }
         }
       } else if (evt.team === 'opponent') {
         opponentEvents += 1;
@@ -247,17 +293,27 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               : ((idx % 11) + 1);
         const key = `opp-${num}`;
         oppCounts[key] = (oppCounts[key] || 0) + 1;
+        if (evt.x_m != null && evt.y_m != null) {
+          if (!oppCoords[key]) oppCoords[key] = { sx: 0, sy: 0, n: 0 };
+          oppCoords[key].sx += L - Number(evt.x_m);
+          oppCoords[key].sy += Number(evt.y_m);
+          oppCoords[key].n += 1;
+        }
       }
     });
 
     const ownList = Object.entries(ownCounts)
       .map(([pid, count]) => {
+        const c = ownCoords[pid];
+        const role = c && c.n > 0 ? inferSpatialRole(c.sx / c.n, c.sy / c.n, L, W) : null;
         if (pid.startsWith('vision-own-')) {
           const num = Number(pid.replace('vision-own-', ''));
           return {
             id: pid,
+            slotNum: num,
             name: `Pemain #${num}`,
             number: num,
+            role,
             count
           };
         }
@@ -265,8 +321,10 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         const name = info.name && !info.name.startsWith('PLAYER-') && !info.name.startsWith('WK-') ? info.name : 'Pemain tanpa nama';
         return {
           id: pid,
+          slotNum: null,
           name,
           number: info.number != null && info.number !== '-' && info.number !== '' ? info.number : null,
+          role,
           count
         };
       })
@@ -275,17 +333,20 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
     const oppList = Object.entries(oppCounts)
       .map(([key, count]) => {
         const num = Number(key.replace('opp-', ''));
+        const c = oppCoords[key];
+        const role = c && c.n > 0 ? inferSpatialRole(c.sx / c.n, c.sy / c.n, L, W) : null;
         return {
           id: key,
           name: `Pemain #${num}`,
           number: num,
+          role,
           count
         };
       })
       .sort((a, b) => b.count - a.count);
 
     return { ownList, oppList, opponentEvents };
-  }, [displayEvents, playerMap]);
+  }, [displayEvents, playerMap, match?.pitch_length_m, match?.pitch_width_m]);
 
   // Finalise flow (menghitung gol dari data tersimpan maupun hasil analisis otomatis)
   const loggedGoals = useMemo(() => {
@@ -1192,10 +1253,58 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                           {p.number != null ? `#${p.number}` : 'Tanpa nomor'}
                         </span>
                         <span className="text-1 font-medium">{p.name}</span>
+                        {p.role && (
+                          <span className="text-xs text-2">· {p.role}</span>
+                        )}
                         <span className="tabular-nums text-brand font-semibold">{p.count} aksi</span>
                       </div>
                     ))}
                   </div>
+                )}
+
+                {isCoach && participants.length > 0 && eventCountsByPlayer.ownList.some((p) => p.slotNum != null) && (
+                  <details className="pt-2 border-t border-line">
+                    <summary className="text-xs font-semibold text-1 cursor-pointer select-none">
+                      Hubungkan Nomor Deteksi Video ke Pemain Skuad
+                    </summary>
+                    <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {eventCountsByPlayer.ownList
+                        .filter((p) => p.slotNum != null)
+                        .map((p) => (
+                          <label key={`map-${p.slotNum}`} className="flex items-center justify-between gap-2 text-xs text-2">
+                            <span className="font-medium text-1 shrink-0">
+                              #{p.slotNum} {p.role ? `· ${p.role}` : ''}
+                            </span>
+                            <select
+                              value={playerSlotMap[String(p.slotNum)] || ''}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setPlayerSlotMap((prev) => {
+                                  const next = { ...prev };
+                                  if (val) next[String(p.slotNum)] = val;
+                                  else delete next[String(p.slotNum)];
+                                  return next;
+                                });
+                              }}
+                              className="px-2 py-1 rounded-control bg-panel border border-control text-xs text-1 max-w-[160px]"
+                            >
+                              <option value="">Biarkan #{p.slotNum}</option>
+                              {participants.map((part) => {
+                                const pid = part.player_id || part.id;
+                                const info = playerMap[pid];
+                                const label = info?.name || part.full_name || pid;
+                                const num = info?.number != null ? `#${info.number} ` : '';
+                                return (
+                                  <option key={pid} value={pid}>
+                                    {num}{label}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </label>
+                        ))}
+                    </div>
+                  </details>
                 )}
               </div>
 
@@ -1217,6 +1326,9 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                       >
                         <span className="tabular-nums text-2">#{p.number}</span>
                         <span className="text-1 font-medium">{p.name}</span>
+                        {p.role && (
+                          <span className="text-xs text-2">· {p.role}</span>
+                        )}
                         <span className="tabular-nums text-warning font-semibold">{p.count} aksi</span>
                       </div>
                     ))}
