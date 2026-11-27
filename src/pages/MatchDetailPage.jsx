@@ -967,17 +967,32 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
           </div>
 
           {/* Score display */}
-          <div className="border border-line rounded-control bg-app px-4 py-2.5 text-center shrink-0 min-w-[140px]">
+          <div className="border border-line rounded-control bg-app px-4 py-2.5 text-center shrink-0 min-w-[160px]">
             <span className="block text-xs text-2 uppercase tracking-wider font-medium">Skor Akhir</span>
             {isFinal || (match.own_score != null && match.opponent_score != null) ? (
-              <span className="text-xl tabular-nums font-bold text-1">
-                {match.own_score} - {match.opponent_score}
-              </span>
-            ) : (
               <div className="mt-0.5 space-y-0.5">
+                <span className="block text-xl tabular-nums font-bold text-1">
+                  {match.own_score} - {match.opponent_score}
+                </span>
+                {isCoach && !isFinal && (
+                  <button
+                    type="button"
+                    onClick={handleOpenFinalise}
+                    className="text-xs font-semibold text-brand hover:underline cursor-pointer bg-transparent border-none p-0"
+                  >
+                    Ubah skor
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="mt-0.5 space-y-1">
+                <span className="block text-sm font-semibold text-2">Belum diisi</span>
                 {(loggedGoals.own > 0 || loggedGoals.opp > 0) && (
-                  <span className="block text-sm font-bold text-1 tabular-nums">
-                    {loggedGoals.own} - {loggedGoals.opp}
+                  <span
+                    className="block text-sm text-2 tabular-nums"
+                    title="Estimasi otomatis dari deteksi video sebelum verifikasi pelatih"
+                  >
+                    Est. deteksi video: {loggedGoals.own} - {loggedGoals.opp}
                   </span>
                 )}
                 {isCoach ? (
@@ -989,7 +1004,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                     Isi skor akhir
                   </button>
                 ) : (
-                  <span className="text-sm text-2">Belum dicatat</span>
+                  <span className="text-xs text-2">Menunggu pelatih</span>
                 )}
               </div>
             )}

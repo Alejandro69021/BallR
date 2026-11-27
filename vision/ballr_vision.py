@@ -902,7 +902,7 @@ def analyze_video(
         if evt.get("event_type") not in ("shot", "shot_on_target"):
             continue
         shot_t = float(evt.get("video_time_s") or 0.0)
-        if shot_t - last_goal_t < 90.0:
+        if shot_t - last_goal_t < 120.0:
             continue
 
         end_x = evt.get("end_x_m") if evt.get("end_x_m") is not None else evt.get("x_m")
@@ -911,7 +911,7 @@ def analyze_video(
             continue
 
         rel_end_x = (pitch_length_m - float(end_x)) if evt.get("team") == "opponent" else float(end_x)
-        near_goal_mouth = rel_end_x >= pitch_length_m * 0.85 and abs(float(end_y) - pitch_width_m * 0.5) <= pitch_width_m * 0.24
+        near_goal_mouth = rel_end_x >= pitch_length_m * 0.90 and abs(float(end_y) - pitch_width_m * 0.5) <= pitch_width_m * 0.16
         if not near_goal_mouth:
             continue
 
@@ -983,14 +983,19 @@ def analyze_video(
         if max_low_streak >= 2:
             signals.append("jeda selebrasi")
 
+        strong_signals = sum([
+            1 if has_audio_spike else 0,
+            1 if scoreboard_changed else 0,
+            1 if (has_center_kickoff and pause_gap_s >= 18.0) else 0,
+        ])
         promoted = (
-            (pause_gap_s >= 10.0 and has_center_kickoff)
-            or (has_audio_spike and (has_center_kickoff or max_low_streak >= 2 or scoreboard_changed))
-            or (scoreboard_changed and (evt.get("event_type") == "shot_on_target" or max_low_streak >= 2))
+            strong_signals >= 2
+            or (scoreboard_changed and evt.get("event_type") == "shot_on_target" and max_low_streak >= 3 and pause_gap_s >= 15.0)
         )
         if promoted:
             evt["event_type"] = "goal"
             evt["outcome"] = "success"
+            evt["is_estimated_goal"] = True
             sig_text = " + ".join(signals) if signals else "tembakan ke gawang diikuti jeda"
             evt["note"] = f"Estimasi gol otomatis ({sig_text})"
             last_goal_t = shot_t
