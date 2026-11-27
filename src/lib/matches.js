@@ -64,7 +64,7 @@ export const MATCH_STAGES = [
   { id: 'report', label: 'Laporan' }
 ];
 
-export const DEMO_STORE_VERSION = 'v11.0';
+export const DEMO_STORE_VERSION = 'v11.1';
 
 export function isDemoModeActive() {
   return import.meta.env?.VITE_DEMO_MODE === 'true';
@@ -322,14 +322,41 @@ function createInitialDemoState() {
     { id: 'demo-draft-evt-03', match_id: draftMatchId, client_event_id: 'd-evt-03', period: 1, minute: 8.0, team: 'own', player_id: 'WK-2026-0042', opponent_number: null, event_type: 'key_pass', outcome: 'success', x_m: 60.0, y_m: 35.0, end_x_m: 78.0, end_y_m: 30.0, note: '' }
   ];
 
+  // Third match: Liga Sleman 2026 YouTube Live match (ready to tag, zero fabricated events)
+  const ligaSlemanId = 'demo-match-liga-sleman-01';
+  const ligaSlemanMatch = {
+    id: ligaSlemanId,
+    academy_id: 'demo-academy-01',
+    home_team_name: 'AMS Seyegan',
+    opponent_name: 'PS Palma',
+    match_date: '2026-11-22',
+    competition: 'Seri A | Liga Sleman 2026',
+    age_group: 'Seri A',
+    format: '11v11',
+    pitch_length_m: 90,
+    pitch_width_m: 60,
+    own_score: null,
+    opponent_score: null,
+    status: 'draft',
+    youtube_video_id: 'utJElEonijc',
+    video_offset_s: null,
+    video_offset_p2_s: null,
+    video_p2_start_min: null,
+    created_by: 'demo-coach-01',
+    created_at: '2026-11-22T15:35:45Z',
+    updated_at: '2026-11-22T15:35:45Z'
+  };
+
   return {
     version: DEMO_STORE_VERSION,
-    matches: [initialMatch, draftMatch],
+    matches: [ligaSlemanMatch, initialMatch, draftMatch],
     participants: {
+      [ligaSlemanId]: initialParticipants.map((p) => ({ ...p, match_id: ligaSlemanId })),
       [matchId]: initialParticipants,
       [draftMatchId]: draftParticipants
     },
     events: {
+      [ligaSlemanId]: [],
       [matchId]: initialEvents,
       [draftMatchId]: draftEvents
     }

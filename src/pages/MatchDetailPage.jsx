@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -12,6 +12,7 @@ import {
   Edit3,
   Video,
   BarChart3,
+  Compass,
   MapPin,
   ListOrdered,
   Users
@@ -21,6 +22,7 @@ import {
   getMatch,
   listEvents,
   listParticipants,
+  addEvents,
   finaliseMatch,
   reopenMatch,
   deleteEvent,
@@ -39,6 +41,7 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import EmptyState from '../components/ui/EmptyState';
 import EventMap from '../components/match/EventMap';
+import TacticalMatchAnalysis from '../components/match/TacticalMatchAnalysis';
 import LocalVideoPanel, { hasStoredVideoMeta } from '../components/video/LocalVideoPanel';
 import StageStepper from '../components/ux/StageStepper';
 import NextStepPanel from '../components/ux/NextStepPanel';
@@ -47,6 +50,7 @@ import Term from '../components/ux/Term';
 export default function MatchDetailPage({ userRole = 'public', onToast }) {
   const { matchId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { players } = usePlayers();
 
   const isCoach = userRole === 'coach' || userRole === 'admin';
@@ -54,12 +58,25 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
 
   const [match, setMatch] = useState(null);
   const [events, setEvents] = useState([]);
+  const [previewVisionEvents, setPreviewVisionEvents] = useState(null);
+  const [previewVisionQuality, setPreviewVisionQuality] = useState(null);
+  const [visionTeamNames, setVisionTeamNames] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [snapshot, setSnapshot] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Active Tab: 'summary' | 'map' | 'events' | 'players'
-  const [activeTab, setActiveTab] = useState('summary');
+  // Active Tab: 'summary' | 'tactical' | 'map' | 'events' | 'players'
+  const allowedTabs = ['summary', 'tactical', 'map', 'events', 'players'];
+  const requestedTab = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(() =>
+    allowedTabs.includes(requestedTab) ? requestedTab : 'summary'
+  );
+
+  useEffect(() => {
+    if (requestedTab && ['summary', 'tactical', 'map', 'events', 'players'].includes(requestedTab)) {
+      setActiveTab(requestedTab);
+    }
+  }, [requestedTab]);
 
   // Finalise modal state
   const [isFinaliseOpen, setIsFinaliseOpen] = useState(false);
@@ -90,6 +107,10 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
 
   // Local Video Panel state
   const videoPanelRef = useRef(null);
+  const onToastRef = useRef(onToast);
+  useEffect(() => {
+    onToastRef.current = onToast;
+  }, [onToast]);
   const [hasVideo, setHasVideo] = useState(false);
   const [isVideoPanelOpen, setIsVideoPanelOpen] = useState(() => Boolean(matchId && hasStoredVideoMeta(matchId)));
 
@@ -166,7 +187,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       setSnapshot(latestSnap);
     } catch (err) {
       console.warn('Gagal memuat detail laga:', err);
-      onToast?.({
+      onToastRef.current?.({
         title: 'Gagal Memuat Laga',
         subtext: formatMatchError(err),
         variant: 'error'
@@ -174,7 +195,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
     } finally {
       setLoading(false);
     }
-  }, [matchId, onToast]);
+  }, [matchId]);
 
   useEffect(() => {
     (async () => {
@@ -194,20 +215,52 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
     return Object.entries(counts).sort((a, b) => b[1] - a[1]);
   }, [events]);
 
+  const displayEvents = useMemo(
+    () => (Array.isArray(previewVisionEvents) && previewVisionEvents.length > 0 ? previewVisionEvents : events),
+    [previewVisionEvents, events]
+  );
+
   const eventCountsByPlayer = useMemo(() => {
-    const counts = {};
+    const ownCounts = {};
+    const oppCounts = {};
     let opponentEvents = 0;
 
-    events.forEach((evt) => {
-      if (evt.team === 'own' && evt.player_id) {
-        counts[evt.player_id] = (counts[evt.player_id] || 0) + 1;
+    displayEvents.forEach((evt, idx) => {
+      if (evt.team === 'own') {
+        if (evt.player_id) {
+          ownCounts[evt.player_id] = (ownCounts[evt.player_id] || 0) + 1;
+        } else {
+          const num =
+            evt.player_number != null && evt.player_number !== ''
+              ? Number(evt.player_number)
+              : ((idx % 11) + 1);
+          const key = `vision-own-${num}`;
+          ownCounts[key] = (ownCounts[key] || 0) + 1;
+        }
       } else if (evt.team === 'opponent') {
         opponentEvents += 1;
+        const num =
+          evt.opponent_number != null && evt.opponent_number !== ''
+            ? Number(evt.opponent_number)
+            : evt.player_number != null && evt.player_number !== ''
+              ? Number(evt.player_number)
+              : ((idx % 11) + 1);
+        const key = `opp-${num}`;
+        oppCounts[key] = (oppCounts[key] || 0) + 1;
       }
     });
 
-    const ownList = Object.entries(counts)
+    const ownList = Object.entries(ownCounts)
       .map(([pid, count]) => {
+        if (pid.startsWith('vision-own-')) {
+          const num = Number(pid.replace('vision-own-', ''));
+          return {
+            id: pid,
+            name: `Pemain #${num}`,
+            number: num,
+            count
+          };
+        }
         const info = playerMap[pid] || { name: 'Pemain tanpa nama', number: null };
         const name = info.name && !info.name.startsWith('PLAYER-') && !info.name.startsWith('WK-') ? info.name : 'Pemain tanpa nama';
         return {
@@ -219,21 +272,33 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       })
       .sort((a, b) => b.count - a.count);
 
-    return { ownList, opponentEvents };
-  }, [events, playerMap]);
+    const oppList = Object.entries(oppCounts)
+      .map(([key, count]) => {
+        const num = Number(key.replace('opp-', ''));
+        return {
+          id: key,
+          name: `Pemain #${num}`,
+          number: num,
+          count
+        };
+      })
+      .sort((a, b) => b.count - a.count);
 
-  // Finalise flow
+    return { ownList, oppList, opponentEvents };
+  }, [displayEvents, playerMap]);
+
+  // Finalise flow (menghitung gol dari data tersimpan maupun hasil analisis otomatis)
   const loggedGoals = useMemo(() => {
     let own = 0;
     let opp = 0;
-    (events || []).forEach((e) => {
+    (displayEvents || []).forEach((e) => {
       if (e.event_type === 'goal') {
         if (e.team === 'own') own++;
         else if (e.team === 'opponent') opp++;
       }
     });
     return { own, opp };
-  }, [events]);
+  }, [displayEvents]);
 
   const handleOpenFinalise = () => {
     setOwnScoreInput('');
@@ -423,6 +488,36 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
     }
   };
 
+  // Save automated vision events into current draft match
+  const handleSaveVisionEvents = async (normalizedEvents) => {
+    if (!match || match.status === 'final') {
+      throw new Error('Pertandingan sudah final; buka kembali sebagai draf untuk menyimpan hasil analisis otomatis.');
+    }
+    const added = await addEvents(match.id, normalizedEvents);
+    const refreshed = await listEvents(match.id);
+    setEvents(refreshed || []);
+    setPreviewVisionEvents(null);
+    onToast?.({
+      title: 'Hasil Vision Tersimpan ke Laga',
+      subtext: `${added.length || normalizedEvents.length} kejadian otomatis telah ditambahkan ke pertandingan.`,
+      variant: 'success'
+    });
+    return added.length || normalizedEvents.length;
+  };
+
+  const parsedHeaderTeams = useMemo(() => {
+    const rawOpp = String(match?.opponent_name || '').trim();
+    const vsMatch = rawOpp.match(/\(\s*vs\s+([^)]+)\)/i);
+    const cleanedOpp = rawOpp.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+    const extractedHome = vsMatch ? vsMatch[1].trim() : '';
+    const home = visionTeamNames?.teamA || match?.home_team_name || extractedHome || '';
+    const away = visionTeamNames?.teamB || cleanedOpp || 'Lawan';
+    return { home, away };
+  }, [match?.home_team_name, match?.opponent_name, visionTeamNames]);
+
+  const displayTeamA = parsedHeaderTeams.home || 'Tim sendiri';
+  const displayTeamB = parsedHeaderTeams.away;
+
   const columns = [
     {
       key: 'period',
@@ -443,16 +538,21 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
       header: 'Tim',
       render: (val) => (
         <Badge variant={val === 'own' ? 'brand' : 'neutral'} size="sm">
-          {val === 'own' ? 'Tim sendiri' : 'Lawan'}
+          {val === 'own' ? displayTeamA : displayTeamB}
         </Badge>
       )
     },
     {
       key: 'player',
-      header: 'Pemain / Lawan',
+      header: 'Pemain',
       render: (_val, row) => {
         if (row.team === 'own') {
-          if (!row.player_id) return <span className="text-2">-</span>;
+          if (!row.player_id) {
+            if (row.player_number != null) {
+              return <span className="text-1 font-medium tabular-nums">Pemain #{row.player_number}</span>;
+            }
+            return <span className="text-2">-</span>;
+          }
           const info = playerMap[row.player_id];
           const name = info?.name && !info.name.startsWith('PLAYER-') && !info.name.startsWith('WK-')
             ? info.name
@@ -470,9 +570,10 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
             </div>
           );
         }
+        const oppNum = row.opponent_number ?? row.player_number;
         return (
           <span className="text-2 tabular-nums">
-            {row.opponent_number != null ? `Lawan #${row.opponent_number}` : 'Lawan'}
+            {oppNum != null ? `Pemain #${oppNum}` : displayTeamB}
           </span>
         );
       }
@@ -723,6 +824,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
 
   const tabs = [
     { id: 'summary', label: 'Ringkasan', icon: <BarChart3 className="w-4 h-4" /> },
+    { id: 'tactical', label: 'Analisis Taktis', icon: <Compass className="w-4 h-4" /> },
     { id: 'map', label: 'Peta lapangan', icon: <MapPin className="w-4 h-4" /> },
     { id: 'events', label: 'Daftar kejadian', icon: <ListOrdered className="w-4 h-4" /> },
     { id: 'players', label: 'Pemain', icon: <Users className="w-4 h-4" /> }
@@ -747,8 +849,18 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm text-2">vs</span>
-              <h1 className="text-xl font-semibold text-1">{match.opponent_name}</h1>
+              {parsedHeaderTeams.home ? (
+                <>
+                  <span className="text-xl font-semibold text-1">{parsedHeaderTeams.home}</span>
+                  <span className="text-sm text-2">vs</span>
+                  <h1 className="text-xl font-semibold text-1">{parsedHeaderTeams.away}</h1>
+                </>
+              ) : (
+                <>
+                  <span className="text-sm text-2">vs</span>
+                  <h1 className="text-xl font-semibold text-1">{parsedHeaderTeams.away}</h1>
+                </>
+              )}
               <Badge variant={isFinal ? 'brand' : 'neutral'} size="sm">
                 {isFinal ? 'Final' : 'Draf'}
               </Badge>
@@ -763,23 +875,62 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               <span className="tabular-nums">
                 Ukuran lapangan: {match.pitch_length_m} x {match.pitch_width_m} m
               </span>
-              {participants.length > 0 && (
-                <span className="tabular-nums">
-                  {participants.length} pemain terdaftar
-                </span>
-              )}
+              {(() => {
+                const detectedCount =
+                  eventCountsByPlayer.ownList.length + eventCountsByPlayer.oppList.length;
+                if (detectedCount > 0) {
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('players')}
+                      className="tabular-nums text-brand hover:underline cursor-pointer bg-transparent border-none p-0 text-sm"
+                    >
+                      {detectedCount} pemain terlibat
+                    </button>
+                  );
+                }
+                if (participants.length > 0) {
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('players')}
+                      className="tabular-nums hover:text-1 hover:underline cursor-pointer bg-transparent border-none p-0 text-sm text-2"
+                    >
+                      {participants.length} pemain terdaftar
+                    </button>
+                  );
+                }
+                return null;
+              })()}
             </div>
           </div>
 
           {/* Score display */}
-          <div className="border border-line rounded-control bg-app px-4 py-2.5 text-center shrink-0 min-w-[120px]">
-            <span className="block text-sm text-2 uppercase tracking-wider font-medium">Skor Akhir</span>
-            {isFinal ? (
+          <div className="border border-line rounded-control bg-app px-4 py-2.5 text-center shrink-0 min-w-[140px]">
+            <span className="block text-xs text-2 uppercase tracking-wider font-medium">Skor Akhir</span>
+            {isFinal || (match.own_score != null && match.opponent_score != null) ? (
               <span className="text-xl tabular-nums font-bold text-1">
                 {match.own_score} - {match.opponent_score}
               </span>
             ) : (
-              <span className="text-sm text-2 italic">Draf (belum selesai)</span>
+              <div className="mt-0.5 space-y-0.5">
+                {(loggedGoals.own > 0 || loggedGoals.opp > 0) && (
+                  <span className="block text-sm font-bold text-1 tabular-nums">
+                    {loggedGoals.own} - {loggedGoals.opp}
+                  </span>
+                )}
+                {isCoach ? (
+                  <button
+                    type="button"
+                    onClick={handleOpenFinalise}
+                    className="text-xs font-semibold text-brand hover:underline cursor-pointer bg-transparent border-none p-0"
+                  >
+                    Isi skor akhir
+                  </button>
+                ) : (
+                  <span className="text-sm text-2">Belum dicatat</span>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -790,8 +941,8 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         <StageStepper steps={MATCH_STAGES} currentStep={currentStep} />
       </div>
 
-      {/* Next Step Panel (max 3 visible actions: Primary + Optional Secondary + MenuButton) */}
-      {isCoach && (
+      {/* Next Step Panel (disembunyikan pada tab Analisis Taktis agar tidak bertabrakan dengan kontrol analisis video) */}
+      {isCoach && activeTab !== 'tactical' && (
         <NextStepPanel
           title={nextStepTitle}
           description={nextStepDescription}
@@ -909,7 +1060,30 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         </div>
       </div>
 
-      {/* Tab 2: Peta lapangan */}
+      {/* Tab 2: Analisis Taktis */}
+      <div
+        role="tabpanel"
+        id="tabpanel-tactical"
+        aria-labelledby="tab-tactical"
+        className={activeTab === 'tactical' ? 'space-y-4' : 'hidden'}
+      >
+        {activeTab === 'tactical' && (
+          <TacticalMatchAnalysis
+            match={match}
+            events={events}
+            participants={participants}
+            initialVisionEvents={previewVisionEvents}
+            initialVisionQuality={previewVisionQuality}
+            onSaveVisionEvents={handleSaveVisionEvents}
+            onVisionEventsChange={setPreviewVisionEvents}
+            onVisionQualityChange={setPreviewVisionQuality}
+            onTeamNamesChange={setVisionTeamNames}
+            canSaveEvents={isCoach && !isFinal}
+          />
+        )}
+      </div>
+
+      {/* Tab 3: Peta lapangan */}
       <div
         role="tabpanel"
         id="tabpanel-map"
@@ -917,12 +1091,17 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         className={activeTab === 'map' ? 'space-y-4' : 'hidden'}
       >
         <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-line">
+          <div className="flex items-center justify-between pb-2 border-b border-line flex-wrap gap-2">
             <h2 className="text-sm font-semibold text-1">Peta Sebaran Kejadian</h2>
-            <span className="text-sm text-2 tabular-nums">{events.length} kejadian</span>
+            <div className="flex items-center gap-2">
+              {previewVisionEvents && (
+                <Badge variant="brand" size="sm">Dari Analisis Otomatis</Badge>
+              )}
+              <span className="text-sm text-2 tabular-nums">{displayEvents.length} kejadian</span>
+            </div>
           </div>
           <EventMap
-            events={events}
+            events={displayEvents}
             pitchLengthM={match.pitch_length_m || 90}
             pitchWidthM={match.pitch_width_m || 60}
             participants={participants}
@@ -931,7 +1110,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         </div>
       </div>
 
-      {/* Tab 3: Daftar kejadian */}
+      {/* Tab 4: Daftar kejadian */}
       <div
         role="tabpanel"
         id="tabpanel-events"
@@ -939,60 +1118,111 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         className={activeTab === 'events' ? 'space-y-4' : 'hidden'}
       >
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <h2 className="text-sm font-semibold text-1">Daftar Kejadian Pertandingan</h2>
-            <span className="text-sm text-2 tabular-nums">
-              {events.length} kejadian
-            </span>
+            <div className="flex items-center gap-2">
+              {previewVisionEvents && (
+                <Badge variant="brand" size="sm">Dari Analisis Otomatis</Badge>
+              )}
+              <span className="text-sm text-2 tabular-nums">
+                {displayEvents.length} kejadian
+              </span>
+            </div>
           </div>
 
           <Table
             columns={columns}
-            data={events}
+            data={displayEvents}
             emptyMessage="Belum ada kejadian yang dicatat untuk laga ini"
           />
         </div>
       </div>
 
-      {/* Tab 4: Pemain */}
+      {/* Tab 5: Pemain */}
       <div
         role="tabpanel"
         id="tabpanel-players"
         aria-labelledby="tab-players"
         className={activeTab === 'players' ? 'space-y-4' : 'hidden'}
       >
-        <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-line">
+        {activeTab === 'players' && (
+        <div className="p-4 border border-line rounded-panel bg-panel space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-line flex-wrap gap-2">
             <div className="flex items-center gap-1.5">
-              <h2 className="text-sm font-semibold text-1">Keterlibatan pemain</h2>
+              <h2 className="text-sm font-semibold text-1">Keterlibatan Pemain</h2>
               <Term
-                explanation="Berapa kali pemain tercatat terlibat dalam kejadian."
+                explanation="Berapa kali setiap pemain tercatat terlibat dalam kejadian pertandingan."
               />
             </div>
-            <span className="text-sm text-2 tabular-nums">
-              Lawan n = {eventCountsByPlayer.opponentEvents}
-            </span>
+            <div className="flex items-center gap-2">
+              {previewVisionEvents && (
+                <Badge variant="brand" size="sm">Dari Analisis Otomatis</Badge>
+              )}
+              <span className="text-sm text-2 tabular-nums">
+                Total {displayEvents.length} aksi
+              </span>
+            </div>
           </div>
 
-          {eventCountsByPlayer.ownList.length === 0 ? (
+          {eventCountsByPlayer.ownList.length === 0 && eventCountsByPlayer.oppList.length === 0 ? (
             <p className="text-sm text-2 py-2">Belum ada pemain terlibat dalam kejadian.</p>
           ) : (
-            <div className="flex flex-wrap gap-1.5">
-              {eventCountsByPlayer.ownList.map((p) => (
-                <div
-                  key={p.id}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control bg-raised border border-line text-sm"
-                >
-                  <span className="tabular-nums text-2">
-                    {p.number != null ? `#${p.number}` : 'Tanpa nomor'}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="p-3 rounded-control border border-line bg-app space-y-2.5">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-semibold text-1">{displayTeamA}</span>
+                  <span className="text-xs text-2 tabular-nums">
+                    {eventCountsByPlayer.ownList.length} pemain tercatat
                   </span>
-                  <span className="text-1 font-medium">{p.name}</span>
-                  <span className="tabular-nums text-brand font-semibold">n = {p.count}</span>
                 </div>
-              ))}
+                {eventCountsByPlayer.ownList.length === 0 ? (
+                  <p className="text-xs text-2">Belum ada keterlibatan tercatat.</p>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    {eventCountsByPlayer.ownList.map((p) => (
+                      <div
+                        key={p.id}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control bg-panel border border-line text-sm"
+                      >
+                        <span className="tabular-nums text-2">
+                          {p.number != null ? `#${p.number}` : 'Tanpa nomor'}
+                        </span>
+                        <span className="text-1 font-medium">{p.name}</span>
+                        <span className="tabular-nums text-brand font-semibold">{p.count} aksi</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="p-3 rounded-control border border-line bg-app space-y-2.5">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-semibold text-1">{displayTeamB}</span>
+                  <span className="text-xs text-2 tabular-nums">
+                    {eventCountsByPlayer.opponentEvents} aksi
+                  </span>
+                </div>
+                {eventCountsByPlayer.oppList.length === 0 ? (
+                  <p className="text-xs text-2">Belum ada keterlibatan tercatat.</p>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    {eventCountsByPlayer.oppList.map((p) => (
+                      <div
+                        key={p.id}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control bg-panel border border-line text-sm"
+                      >
+                        <span className="tabular-nums text-2">#{p.number}</span>
+                        <span className="text-1 font-medium">{p.name}</span>
+                        <span className="tabular-nums text-warning font-semibold">{p.count} aksi</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
+        )}
       </div>
 
       {/* Finalise Match Dialog */}

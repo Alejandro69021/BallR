@@ -26,6 +26,7 @@ export default function TopNav({
   onToggleSurface,
   onSwitchView,
   onOpenAuthModal,
+  onOpenTutorial,
   onLogout,
   onShare
 }) {
@@ -91,16 +92,16 @@ export default function TopNav({
   return (
     <>
       {/* Desktop & Mobile Header Bar */}
-      <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-app/95 border-b border-line">
+      <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-app/95 border-b border-line print:hidden">
         <div data-testid="top-nav-bar" className="max-w-6xl mx-auto px-4 sm:px-6 h-12 flex items-center justify-between gap-3">
 
           {/* Left: Brand Identity + Academy Name */}
           <div className="flex items-center gap-2.5 shrink-0 min-w-0">
             <button
               type="button"
-              aria-label="Navigasi beranda akademi"
-              className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center cursor-pointer bg-transparent border-none p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-control"
-              onClick={() => onSwitchView?.(isCoach ? 'home' : 'passport')}
+              aria-label="Kembali ke halaman depan"
+              className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center cursor-pointer bg-transparent border-none p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-control transition-transform active:scale-95"
+              onClick={() => onSwitchView?.('landing')}
             >
               <span className="hidden sm:inline-flex items-center">
                 <Wordmark size="sm" variant={brandVariant} />
@@ -110,41 +111,45 @@ export default function TopNav({
               </span>
             </button>
 
-            <span className="text-sm font-semibold text-1 truncate max-w-[120px] sm:max-w-[70px] xl:max-w-xs">
-              {academy?.name || 'Akademi Sepakbola'}
-            </span>
+            {!isDemoMode && isAuthenticated && academy?.name && (
+              <span className="text-sm font-semibold text-1 truncate max-w-[120px] sm:max-w-[70px] xl:max-w-xs">
+                {academy.name}
+              </span>
+            )}
           </div>
 
-          {/* Center: Desktop Navigation Bar (>= 768px, icon+label at >= 1024px) */}
-          <nav
-            aria-label="Navigasi utama desktop"
-            className="hidden md:flex items-center gap-1 lg:gap-1.5 h-full shrink-0"
-          >
-            {navItems.map((item) => {
-              const isActive = currentView === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => onSwitchView?.(item.id)}
-                  className={`relative flex items-center gap-1.5 px-2 lg:px-2.5 h-full text-sm transition-colors duration-150 ease-out select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
-                    isActive
-                      ? 'text-1 font-semibold'
-                      : 'text-2 hover:text-1'
-                  }`}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                  {isActive && (
-                    <span
-                      className="absolute bottom-0 left-2 right-2 h-0.5 bg-brand rounded-full"
-                      aria-hidden="true"
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </nav>
+          {/* Center: Desktop Navigation Bar for public role only (Coach & Parent use Left Sidebar on md+) */}
+          {!isAuthenticated && (
+            <nav
+              aria-label="Navigasi utama desktop"
+              className="hidden md:flex items-center gap-1 lg:gap-1.5 h-full shrink-0"
+            >
+              {navItems.map((item) => {
+                const isActive = currentView === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => onSwitchView?.(item.id)}
+                    className={`relative flex items-center gap-1.5 px-2 lg:px-2.5 h-full text-sm transition-colors duration-150 ease-out select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                      isActive
+                        ? 'text-1 font-semibold'
+                        : 'text-2 hover:text-1'
+                    }`}
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                    {isActive && (
+                      <span
+                        className="absolute bottom-0 left-2 right-2 h-0.5 bg-brand rounded-full"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+          )}
 
           {/* Right: ONE Theme Toggle + ONE Account Menu Button */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
@@ -190,6 +195,32 @@ export default function TopNav({
                   <div className="px-3 py-2 border-b border-line text-sm text-2">
                     Peran: <strong className="text-1 font-semibold">{roleLabel}</strong>
                   </div>
+
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setIsAccountMenuOpen(false);
+                      onSwitchView?.('landing');
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm text-1 hover:bg-raised flex items-center gap-2 cursor-pointer transition-colors"
+                  >
+                    <Home className="w-4 h-4 text-2" />
+                    <span>Halaman Depan</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setIsAccountMenuOpen(false);
+                      onOpenTutorial?.();
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm text-2 hover:text-1 hover:bg-raised flex items-center gap-2 cursor-pointer transition-colors"
+                  >
+                    <HelpCircle className="w-4 h-4 text-brand" />
+                    <span>Ulangi Tutorial</span>
+                  </button>
 
                   <button
                     type="button"
@@ -254,10 +285,83 @@ export default function TopNav({
         </div>
       </header>
 
+      {/* Desktop Left Sidebar for Coach, Admin & Parent Mode (>= 768px) */}
+      {isAuthenticated && (
+        <aside
+          aria-label={isCoach ? 'Sidebar menu pelatih' : 'Sidebar portal orang tua'}
+          data-testid="coach-left-sidebar"
+          className="hidden md:flex fixed top-12 left-0 bottom-0 w-56 z-30 flex-col justify-between bg-panel border-r border-line p-3 select-none overflow-y-auto print:hidden"
+        >
+          <div className="space-y-3">
+            <div className="px-2.5 pt-1 text-xs font-medium text-2 tracking-wide">
+              {isCoach ? 'Menu Pelatih' : 'Portal Orang Tua'}
+            </div>
+            <nav
+              aria-label="Navigasi utama desktop"
+              className="flex flex-col gap-1"
+            >
+              {navItems.map((item) => {
+                const isActive = currentView === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => onSwitchView?.(item.id)}
+                    className={`relative w-full flex items-center gap-2.5 px-3 py-2.5 rounded-control text-sm transition-colors duration-150 ease-out cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+                      isActive
+                        ? 'bg-raised text-1 font-semibold border border-line'
+                        : 'text-2 hover:text-1 hover:bg-app border border-transparent'
+                    }`}
+                  >
+                    {isActive && (
+                      <span
+                        className="absolute left-0 top-2 bottom-2 w-1 bg-brand rounded-r-full"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span className={isActive ? 'text-brand' : 'text-2'}>
+                      {item.icon}
+                    </span>
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          <div className="pt-3 border-t border-line space-y-1">
+            <button
+              type="button"
+              onClick={() => onSwitchView?.('landing')}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-control text-xs text-2 hover:text-1 hover:bg-app transition-colors cursor-pointer text-left"
+            >
+              <Home className="w-4 h-4 shrink-0" />
+              <span>Kembali ke Halaman Depan</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onOpenTutorial?.()}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-control text-xs text-2 hover:text-1 hover:bg-app transition-colors cursor-pointer text-left"
+            >
+              <HelpCircle className="w-4 h-4 shrink-0 text-brand" />
+              <span>Ulangi Tutorial</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onSwitchView?.('help')}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-control text-xs text-2 hover:text-1 hover:bg-app transition-colors cursor-pointer text-left"
+            >
+              <HelpCircle className="w-4 h-4 shrink-0" />
+              <span>Panduan Singkat</span>
+            </button>
+          </div>
+        </aside>
+      )}
+
       {/* Mobile Bottom Tab Bar (< 768px) */}
       <nav
         aria-label="Navigasi bawah seluler"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 h-14 min-h-[56px] bg-panel border-t border-line flex items-center justify-around px-1 select-none"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 h-14 min-h-[56px] bg-panel border-t border-line flex items-center justify-around px-1 select-none print:hidden"
       >
         {navItems.map((item) => {
           const isActive = currentView === item.id;
