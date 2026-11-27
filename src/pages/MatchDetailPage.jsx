@@ -1090,6 +1090,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         aria-labelledby="tab-map"
         className={activeTab === 'map' ? 'space-y-4' : 'hidden'}
       >
+        {activeTab === 'map' && (
         <div className="p-4 border border-line rounded-panel bg-panel space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-line flex-wrap gap-2">
             <h2 className="text-sm font-semibold text-1">Peta Sebaran Kejadian</h2>
@@ -1108,6 +1109,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
             playerMap={playerMap}
           />
         </div>
+        )}
       </div>
 
       {/* Tab 4: Daftar kejadian */}
@@ -1117,6 +1119,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         aria-labelledby="tab-events"
         className={activeTab === 'events' ? 'space-y-4' : 'hidden'}
       >
+        {activeTab === 'events' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <h2 className="text-sm font-semibold text-1">Daftar Kejadian Pertandingan</h2>
@@ -1136,6 +1139,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
             emptyMessage="Belum ada kejadian yang dicatat untuk laga ini"
           />
         </div>
+        )}
       </div>
 
       {/* Tab 5: Pemain */}

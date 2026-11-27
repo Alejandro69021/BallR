@@ -19,6 +19,7 @@ import {
   thirds,
   ppda,
   dataQuality,
+  buildTacticalSummary,
   METRIC_DEFINITIONS,
   SMALL_SAMPLE_N
 } from '../lib/analysis/events';
@@ -164,6 +165,16 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
   const activeOppThirds = isViewingFrozen ? reconstructed.thirds_opp : oppThirds;
   const activePpdaMetric = isViewingFrozen ? reconstructed.ppda_metric : ppdaMetric;
   const activePlayerStats = isViewingFrozen ? reconstructed.playerStats : playerStats;
+  const tacticalSummary = useMemo(
+    () =>
+      buildTacticalSummary(
+        activeEvents,
+        activeMatch?.pitch_length_m || 90,
+        activeMatch?.pitch_width_m || 60,
+        activeMatch?.opponent_name || 'Lawan'
+      ),
+    [activeEvents, activeMatch]
+  );
 
   // Canonical payload & hash
   const [currentPayload, setCurrentPayload] = useState(null);
@@ -410,7 +421,10 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               Bagian 1 • Dokumen Resmi Pertandingan
             </span>
             <h1 className="text-2xl font-bold tracking-tight text-1 mt-0.5">
-              Laporan Pertandingan: {activeMatch.opponent_name ? activeMatch.opponent_name.replace(/^(?:contoh:\s*)?(?:vs\.?\s*)?/i, '').trim() : ''}
+              Laporan Pertandingan: {activeMatch.home_team_name ? `${activeMatch.home_team_name} vs ` : ''}
+              {activeMatch.opponent_name
+                ? activeMatch.opponent_name.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/^(?:contoh:\s*)?(?:vs\.?\s*)?/i, '').trim()
+                : ''}
             </h1>
             <p className="text-sm text-2 font-mono mt-1">
               Tanggal: {activeMatch.match_date || '-'} • Format: {activeMatch.format || '11v11'} • Lapangan: {activeMatch.pitch_length_m}&times;{activeMatch.pitch_width_m}m
@@ -845,6 +859,137 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               Solid: Sukses • Putus-putus: Gagal
             </div>
           </div>
+        </div>
+
+        {/* Ringkasan Analisis Taktis Berbasis Literatur (Cetak A4) */}
+        <div className="p-4 rounded-control bg-raised border border-line space-y-4" data-testid="report-tactical-summary">
+          <div className="flex items-center justify-between gap-2 flex-wrap border-b border-line pb-2">
+            <h3 className="text-sm font-semibold text-1">
+              Analisis Taktis Terukur (Tim Kita vs {activeMatch.opponent_name})
+            </h3>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <RefChip referenceId="fifa-football-language-2022" />
+              <RefChip referenceId="sarmento-2014-match-analysis" />
+              <RefChip referenceId="vogelbein-2014-defensive-transition" />
+              <RefChip referenceId="pollard-reep-1997-playing-strategies" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+            <div className="p-2.5 rounded bg-app border border-line space-y-0.5">
+              <span className="text-sm text-2 block">Field Tilt (Sepertiga Akhir)</span>
+              <span className="font-semibold text-1 tabular-nums block">
+                {tacticalSummary.field_tilt.own_pct != null
+                  ? `${tacticalSummary.field_tilt.own_pct}% vs ${tacticalSummary.field_tilt.opponent_pct}%`
+                  : 'Belum ada data'}
+              </span>
+              <span className="text-sm text-2 tabular-nums">n = {tacticalSummary.field_tilt.n} umpan</span>
+            </div>
+
+            <div className="p-2.5 rounded bg-app border border-line space-y-0.5">
+              <span className="text-sm text-2 block">Tinggi Blok Bertahan</span>
+              <span className="font-semibold text-1 block">
+                Kita: {tacticalSummary.own.def_line.avg_m != null ? `${tacticalSummary.own.def_line.avg_m} m (${tacticalSummary.own.def_line.block_label})` : '-'}
+              </span>
+              <span className="text-sm text-2 block">
+                Lawan: {tacticalSummary.opponent.def_line.avg_m != null ? `${tacticalSummary.opponent.def_line.avg_m} m (${tacticalSummary.opponent.def_line.block_label})` : '-'}
+              </span>
+            </div>
+
+            <div className="p-2.5 rounded bg-app border border-line space-y-0.5">
+              <span className="text-sm text-2 block">Tembakan Dalam Kotak</span>
+              <span className="font-semibold text-1 tabular-nums block">
+                Kita: {tacticalSummary.own.shot_zones.inside_box.count}/{tacticalSummary.own.shot_zones.n}
+                {tacticalSummary.own.shot_zones.avg_distance_m != null ? ` (${tacticalSummary.own.shot_zones.avg_distance_m} m)` : ''}
+              </span>
+              <span className="text-sm text-2 tabular-nums block">
+                Lawan: {tacticalSummary.opponent.shot_zones.inside_box.count}/{tacticalSummary.opponent.shot_zones.n}
+                {tacticalSummary.opponent.shot_zones.avg_distance_m != null ? ` (${tacticalSummary.opponent.shot_zones.avg_distance_m} m)` : ''}
+              </span>
+            </div>
+
+            <div className="p-2.5 rounded bg-app border border-line space-y-0.5">
+              <span className="text-sm text-2 block">Transisi & Koridor Dominan</span>
+              <span className="font-semibold text-1 tabular-nums block">
+                Rebut tinggi kita: {tacticalSummary.own.transitions.high_regains}
+              </span>
+              <span className="text-sm text-2 block">
+                Koridor: {tacticalSummary.own.corridors.dominant?.label || '-'} vs {tacticalSummary.opponent.corridors.dominant?.label || '-'}
+              </span>
+            </div>
+          </div>
+
+          {/* Pembacaan Teknik Permainan & Strategi Lawan (Cetak A4) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm" data-testid="report-technique-and-strategy">
+            <div className="p-3 rounded bg-app border border-line space-y-1.5">
+              <h4 className="font-semibold text-1">Pembacaan Teknik Permainan (Tim Kita)</h4>
+              <p className="text-2">
+                <strong className="text-1">Gaya umpan:</strong> {tacticalSummary.technique.own.passing.style_label} (progresif: {tacticalSummary.technique.own.passing.progressive_count}, umpan kunci: {tacticalSummary.technique.own.passing.key_passes}).
+              </p>
+              <p className="text-2">
+                <strong className="text-1">Keamanan bola:</strong> {tacticalSummary.technique.own.ball_security.total_losses} kehilangan bola ({tacticalSummary.technique.own.ball_security.dangerous_losses} di sepertiga pertahanan sendiri).
+              </p>
+              <p className="text-2">
+                <strong className="text-1">Bertahan & duel:</strong> Tekel {tacticalSummary.technique.own.defensive_technique.tackles}, intersepsi {tacticalSummary.technique.own.defensive_technique.interceptions}, sapuan {tacticalSummary.technique.own.defensive_technique.clearances}.
+              </p>
+            </div>
+
+            <div className="p-3 rounded bg-app border border-line space-y-1.5">
+              <h4 className="font-semibold text-1">Pembacaan Strategi Lawan ({activeMatch.opponent_name})</h4>
+              <p className="text-2">
+                <strong className="text-1">Blok bertahan:</strong> {tacticalSummary.opponent_strategy.defensive_title}.
+              </p>
+              <p className="text-2">
+                <strong className="text-1">Jalur dominan:</strong> {tacticalSummary.opponent_strategy.channel_pattern}.
+              </p>
+              {tacticalSummary.opponent_strategy.vulnerabilities.length > 0 && (
+                <p className="text-2">
+                  <strong className="text-1">Celah utama:</strong> {tacticalSummary.opponent_strategy.vulnerabilities.map((v) => v.title).join('; ')}.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Rekomendasi Kontra-Taktik Berbasis Rujukan (Cetak A4) */}
+          {tacticalSummary.counter_tactics.length > 0 && (
+            <div className="p-3 rounded bg-app border border-line space-y-2 text-sm" data-testid="report-counter-tactics">
+              <h4 className="font-semibold text-1">Rekomendasi Kontra-Taktik & Fokus Latihan Berbasis Rujukan</h4>
+              <div className="space-y-2">
+                {tacticalSummary.counter_tactics.map((ct) => (
+                  <div key={ct.id} className="p-2.5 rounded bg-raised border border-line space-y-1">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="font-semibold text-1">{ct.title}</span>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Badge variant="neutral" size="sm">Prioritas {ct.priority}</Badge>
+                        {ct.reference_ids.map((rid) => (
+                          <RefChip key={rid} referenceId={rid} />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-2">
+                      <strong className="text-1">Bukti:</strong> {ct.trigger_evidence}
+                    </p>
+                    <p className="text-1">
+                      <strong>Kontra-taktik:</strong> {ct.tactical_action}
+                    </p>
+                    <p className="text-2">
+                      <strong className="text-1">Fokus latihan:</strong> {ct.training_focus}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {tacticalSummary.observations.length > 0 && (
+            <ul className="list-disc pl-5 space-y-1 text-sm text-2">
+              {tacticalSummary.observations.map((obs) => (
+                <li key={obs.id}>
+                  <strong className="text-1">{obs.title}:</strong> {obs.detail}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
 

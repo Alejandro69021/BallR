@@ -256,14 +256,16 @@ describe('Matches Components & Integration (MatchesPage, MatchDetailPage, TopNav
       expect(screen.getByText(/Total n = 25/i)).toBeInTheDocument();
       expect(screen.getByRole('heading', { level: 2, name: /Jenis kejadian/i })).toBeInTheDocument();
 
-      // Keterlibatan Pemain
-      expect(screen.getByText(/Keterlibatan pemain/i)).toBeInTheDocument();
+      // Switch to Pemain tab and verify Keterlibatan Pemain
+      fireEvent.click(screen.getByRole('tab', { name: /Pemain/i }));
+      expect(screen.getByText(/Keterlibatan Pemain/i)).toBeInTheDocument();
 
-      // Events table headers
+      // Switch to Daftar kejadian tab and verify Events table headers
+      fireEvent.click(screen.getByRole('tab', { name: /Daftar kejadian/i }));
       expect(screen.getByRole('columnheader', { name: /Babak/i })).toBeInTheDocument();
       expect(screen.getByRole('columnheader', { name: /Menit/i })).toBeInTheDocument();
       expect(screen.getAllByRole('columnheader', { name: /Tim/i }).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getByRole('columnheader', { name: /Pemain \/ Lawan/i })).toBeInTheDocument();
+      expect(screen.getByRole('columnheader', { name: /Pemain/i })).toBeInTheDocument();
       expect(screen.getByRole('columnheader', { name: /Jenis/i })).toBeInTheDocument();
       expect(screen.getAllByRole('columnheader', { name: /Hasil/i }).length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByRole('columnheader', { name: /Koordinat/i }).length).toBeGreaterThanOrEqual(1);

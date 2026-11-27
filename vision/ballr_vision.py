@@ -157,6 +157,56 @@ def download_youtube_clip(
     sys.exit(1)
 
 
+def extract_audio_energy_envelope(video_path: str) -> tuple[dict[int, float], float]:
+    """Extracts 1-second RMS audio energy envelope via ffmpeg + NumPy for goal crowd/commentator spike detection."""
+    try:
+        proc = subprocess.run(
+            [
+                "ffmpeg",
+                "-v",
+                "error",
+                "-i",
+                video_path,
+                "-vn",
+                "-ac",
+                "1",
+                "-ar",
+                "8000",
+                "-f",
+                "s16le",
+                "-",
+            ],
+            capture_output=True,
+            timeout=45,
+        )
+        if proc.returncode != 0 or not proc.stdout:
+            return {}, 0.0
+        samples = np.frombuffer(proc.stdout, dtype=np.int16).astype(np.float32)
+        if samples.size < 8000:
+            return {}, 0.0
+        n_secs = samples.size // 8000
+        trimmed = samples[: n_secs * 8000].reshape(n_secs, 8000)
+        rms = np.sqrt(np.mean(trimmed * trimmed, axis=1))
+        median_rms = float(np.median(rms)) if rms.size > 0 else 0.0
+        p85_rms = float(np.percentile(rms, 85)) if rms.size > 0 else 0.0
+        spike_thresh = max(median_rms * 1.65, p85_rms * 1.15, 350.0)
+        envelope = {sec: float(rms[sec]) for sec in range(n_secs)}
+        return envelope, spike_thresh
+    except Exception:
+        return {}, 0.0
+
+
+def extract_scoreboard_fingerprint(frame: np.ndarray) -> np.ndarray | None:
+    """Extracts a lightweight 48x16 grayscale fingerprint of the top-left broadcast scoreboard strip."""
+    h, w = frame.shape[:2]
+    if h < 120 or w < 200:
+        return None
+    roi = frame[0 : max(16, int(h * 0.13)), 0 : max(48, int(w * 0.45))]
+    gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+    small = cv2.resize(gray, (48, 16), interpolation=cv2.INTER_AREA)
+    return small.astype(np.float32)
+
+
 def extract_jersey_color(frame: np.ndarray, box: np.ndarray) -> np.ndarray | None:
     """Extracts representative RGB color of a player's jersey (ignoring green pitch turf)."""
     x1, y1, x2, y2 = [int(v) for v in box]
@@ -676,10 +726,12 @@ def analyze_video(
         frame_records.append(
             {
                 "video_time_s": video_time_s,
+                "rel_time_s": rel_time_s,
                 "minute": minute,
                 "ball": ball_pos,
                 "pitch_bbox": pitch_bbox,
                 "players": players_in_frame,
+                "scoreboard_fp": extract_scoreboard_fingerprint(frame),
             }
         )
         frame_idx += 1
@@ -838,9 +890,14 @@ def analyze_video(
             "video_time_s": rec["video_time_s"],
         }
 
-    # Deteksi otomatis estimasi GOL:
-    # Tembakan mengarah area gawang yang diikuti jeda selebrasi/cut kamera atau restart kick-off di lingkaran tengah
+    # Deteksi otomatis estimasi GOL (Multi-Signal Fusion):
+    # 1. Lonjakan energi audio (komentator / sorakan penonton) via ffmpeg RMS
+    # 2. Perubahan area papan skor (scoreboard strip) pasca tembakan
+    # 3. Jeda selebrasi / cut kamera + restart kick-off di lingkaran tengah
+    audio_env, audio_spike_thresh = extract_audio_energy_envelope(video_path)
     last_goal_t = -999.0
+    goals_detected = 0
+
     for idx, evt in enumerate(events):
         if evt.get("event_type") not in ("shot", "shot_on_target"):
             continue
@@ -858,7 +915,37 @@ def analyze_video(
         if not near_goal_mouth:
             continue
 
-        # Cek jendela 6–75 detik setelah tembakan: apakah ada jeda/selebrasi atau kick-off di lingkaran tengah
+        # Sinyal 1: Lonjakan audio dalam 1–12 detik setelah tembakan
+        rel_shot_s = max(0, int(round(shot_t - clip_start_s)))
+        has_audio_spike = False
+        if audio_env and audio_spike_thresh > 0:
+            window_rms = [audio_env[s] for s in range(rel_shot_s + 1, rel_shot_s + 13) if s in audio_env]
+            if window_rms and max(window_rms) >= audio_spike_thresh:
+                has_audio_spike = True
+
+        # Sinyal 2: Perubahan papan skor (area pojok kiri atas) antara sebelum vs 8–35 detik sesudah tembakan
+        before_fps = [
+            fr["scoreboard_fp"]
+            for fr in frame_records
+            if fr.get("scoreboard_fp") is not None
+            and -12.0 <= (float(fr.get("video_time_s") or 0.0) - shot_t) <= -2.0
+        ]
+        after_fps = [
+            fr["scoreboard_fp"]
+            for fr in frame_records
+            if fr.get("scoreboard_fp") is not None
+            and 8.0 <= (float(fr.get("video_time_s") or 0.0) - shot_t) <= 35.0
+        ]
+        scoreboard_changed = False
+        if len(before_fps) >= 2 and len(after_fps) >= 2:
+            mean_before = np.mean(before_fps, axis=0)
+            mean_after = np.mean(after_fps, axis=0)
+            sb_diff = float(np.mean(np.abs(mean_after - mean_before)))
+            # Perubahan nyata pada digit papan skor (hindari fade hitam penuh / perubahan kamera total)
+            if 4.5 <= sb_diff <= 28.0:
+                scoreboard_changed = True
+
+        # Sinyal 3: Jeda permainan, cut kamera selebrasi, & kick-off di lingkaran tengah
         later_events = [
             e for e in events[idx + 1 :]
             if 6.0 <= (float(e.get("video_time_s") or 0.0) - shot_t) <= 75.0
@@ -873,7 +960,6 @@ def analyze_video(
             for e in later_events[:4]
         )
 
-        # Cek apakah ada cut kamera selebrasi/replay (jumlah pemain lapangan turun drastis >= 2 frame beruntun)
         post_frames = [
             fr for fr in frame_records
             if 3.0 <= (float(fr.get("video_time_s") or 0.0) - shot_t) <= 50.0
@@ -887,13 +973,28 @@ def analyze_video(
             else:
                 low_pitch_streak = 0
 
-        if (pause_gap_s >= 10.0 and has_center_kickoff) or (
-            evt.get("event_type") == "shot_on_target" and max_low_streak >= 3 and has_center_kickoff
-        ):
+        signals = []
+        if has_audio_spike:
+            signals.append("lonjakan audio")
+        if scoreboard_changed:
+            signals.append("perubahan papan skor")
+        if has_center_kickoff:
+            signals.append("kick-off tengah")
+        if max_low_streak >= 2:
+            signals.append("jeda selebrasi")
+
+        promoted = (
+            (pause_gap_s >= 10.0 and has_center_kickoff)
+            or (has_audio_spike and (has_center_kickoff or max_low_streak >= 2 or scoreboard_changed))
+            or (scoreboard_changed and (evt.get("event_type") == "shot_on_target" or max_low_streak >= 2))
+        )
+        if promoted:
             evt["event_type"] = "goal"
             evt["outcome"] = "success"
-            evt["note"] = "Estimasi gol otomatis (tembakan ke gawang diikuti jeda/kick-off tengah)"
+            sig_text = " + ".join(signals) if signals else "tembakan ke gawang diikuti jeda"
+            evt["note"] = f"Estimasi gol otomatis ({sig_text})"
             last_goal_t = shot_t
+            goals_detected += 1
 
     elapsed_s = round(time.time() - t0, 2)
     payload = {
@@ -905,6 +1006,8 @@ def analyze_video(
             "elapsed_s": elapsed_s,
             "ball_detection_rate_pct": round((ball_hits / max(1, processed)) * 100.0, 1),
             "avg_players_detected": round(total_players / max(1, processed), 1),
+            "goals_detected": goals_detected,
+            "audio_analyzed": bool(audio_env),
             "model": model_label,
             "disclaimer": "Hasil estimasi otomatis dari 1 kamera; wajib ditinjau pelatih sebelum dijadikan laporan resmi.",
         },
