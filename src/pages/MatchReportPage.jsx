@@ -275,7 +275,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
   if (!isCoachOrAdmin) {
     return (
-      <div className="p-8 text-center rounded-panel bg-panel border border-line space-y-4 max-w-md mx-auto my-12" data-surface="paper">
+      <div className="p-8 text-center rounded-panel bg-panel border border-line space-y-4 max-w-md mx-auto my-12">
         <Lock className="w-10 h-10 text-2 mx-auto" strokeWidth={1.5} />
         <div className="space-y-1">
           <h2 className="text-sm font-semibold text-1">Akses Terbatas: Staf Akademi</h2>
@@ -292,7 +292,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
   if (loading) {
     return (
-      <div className="p-12 text-center text-sm text-2 font-mono" data-surface="paper">
+      <div className="p-12 text-center text-sm text-2 font-mono">
         Memuat laporan...
       </div>
     );
@@ -300,7 +300,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
   if (!match) {
     return (
-      <div data-surface="paper" className="p-6">
+      <div className="p-6">
         <EmptyState
           title="Pertandingan tidak ditemukan"
           description="Pertandingan yang diminta tidak ada atau sudah dihapus."
@@ -437,7 +437,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
     : allOwnPassLines;
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto p-4 sm:p-6" data-surface="paper">
+    <div className="space-y-6 max-w-4xl mx-auto p-4 sm:p-6">
       {/* Non-print Action Bar */}
       <div className="no-print flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-line">
         <div className="flex items-center gap-2">

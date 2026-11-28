@@ -15,6 +15,7 @@ import OfflineIndicator from './components/OfflineIndicator';
 import LoadingSkeleton from './components/LoadingSkeleton';
 import VerificationView from './components/VerificationView';
 import Surface from './components/ui/Surface';
+import RoleTutorialModal, { isRoleTutorialDone } from './components/ux/RoleTutorialModal';
 
 import PassportPage from './pages/PassportPage';
 import GrowthPage from './pages/GrowthPage';
@@ -75,11 +76,13 @@ function HomeRedirect({ userRole, onOpenAuthModal, onToast }) {
   return <Navigate to={`/pemain/${targetId}`} replace />;
 }
 
-function SharedCoachLayout() {
+function SharedCoachLayout({ hasCoachSidebar = false }) {
   return (
-    <PageContainer as="main" className="pt-4 sm:pt-6 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6 space-y-4 sm:space-y-6">
-      <Outlet />
-    </PageContainer>
+    <div className={hasCoachSidebar ? 'w-full md:pl-56 transition-all' : 'w-full'}>
+      <PageContainer as="main" className="pt-4 sm:pt-6 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6 space-y-4 sm:space-y-6">
+        <Outlet />
+      </PageContainer>
+    </div>
   );
 }
 
@@ -133,6 +136,7 @@ function MainApp() {
 
   // Modal & Toast states
   const [isStoryCardOpen, setIsStoryCardOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [toastInfo, setToastInfo] = useState(null);
 
   // Theme preference persisted in localStorage ('paper' | 'dark').
@@ -158,17 +162,9 @@ function MainApp() {
     }
   };
 
-  // Surface derived from user preference, keeping mandatory paper for reports, verification, and landing
-  const surface = useMemo(() => {
-    const p = location.pathname;
-    if (p === '/' || p === '/privasi') return 'paper';
-    // Report/print behaviour must not change: always paper
-    if (p.startsWith('/verifikasi/')) return 'paper';
-    if (p === '/rujukan') return 'paper';
-    if (p.includes('/laporan')) return 'paper';
-
-    return themePreference;
-  }, [location.pathname, themePreference]);
+  // Selalu hormati pilihan tema pengguna ('paper' | 'dark') di semua halaman.
+  // Saat cetak A4 (@media print di src/index.css), tampilan otomatis beralih ke kertas putih.
+  const surface = themePreference;
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -242,15 +238,32 @@ function MainApp() {
     setUserRole(assignedRole);
     setIsAuthModalOpen(false);
 
+    const roleDisplay =
+      assignedRole === 'coach' || assignedRole === 'admin'
+        ? 'Pelatih'
+        : assignedRole === 'parent'
+        ? 'Orang Tua / Wali'
+        : 'Publik';
+
     setToastInfo({
-      title: assignedRole === 'coach' ? "Sesi Pelatih Terverifikasi" : assignedRole === 'parent' ? "Sesi Wali Terverifikasi" : "Sesi Terverifikasi",
-      subtext: isDemoMode ? `Masuk sebagai peran: ${assignedRole} (Mode demo).` : `Masuk sebagai peran: ${assignedRole}.`
+      title: `Masuk sebagai ${roleDisplay}`,
+      subtext: isDemoMode
+        ? `Simulasi peran ${roleDisplay} aktif.`
+        : `Sesi ${roleDisplay} terverifikasi.`
     });
+
+    const pid = activePlayer.public_id || activePlayer.player_id || 'PLAYER-01';
+
+    // Parent role always lands on the athlete passport / guardian view (never coach-only routes)
+    if (assignedRole === 'parent') {
+      navigate(`/pemain/${pid}`);
+      return;
+    }
 
     const targetStr = typeof target === 'string' ? target : pendingTargetView;
     if (targetStr.startsWith('assessment:')) {
-      const pid = targetStr.split(':')[1];
-      navigate(`/penilaian/${pid}`);
+      const targetPid = targetStr.split(':')[1];
+      navigate(`/penilaian/${targetPid}`);
     } else if (targetStr.startsWith('logger:')) {
       const mid = targetStr.split(':')[1];
       if (mid) {
@@ -259,8 +272,7 @@ function MainApp() {
         navigate('/laga');
       }
     } else if (targetStr === 'assessment') {
-      const pid = activePlayer.player_id || activePlayer.public_id || 'PLAYER-01';
-      navigate(`/penilaian/${pid}`);
+      navigate(`/penilaian/${activePlayer.player_id || pid}`);
     } else if (targetStr === 'logger') {
       navigate('/laga');
     } else if (targetStr === 'tactics') {
@@ -296,6 +308,9 @@ function MainApp() {
     }
 
     switch (view) {
+      case 'landing':
+        navigate('/');
+        break;
       case 'home':
         navigate('/beranda');
         break;
@@ -332,6 +347,16 @@ function MainApp() {
   };
 
   const isLanding = location.pathname === '/' || location.pathname === '/privasi';
+  const isPrintableOrVerify = location.pathname.includes('/laporan') || location.pathname.startsWith('/verifikasi/');
+  const hasCoachSidebar = !isLanding && (userRole === 'coach' || userRole === 'admin' || userRole === 'parent');
+
+  // Auto-open role tutorial ONLY on first visit to each mode (never on homepage or print/verify)
+  useEffect(() => {
+    if (isLanding || isPrintableOrVerify) return;
+    if (!isRoleTutorialDone(userRole)) {
+      setIsTutorialOpen(true);
+    }
+  }, [isLanding, isPrintableOrVerify, userRole]);
 
   return (
     <Surface surface={surface} className={`min-h-screen flex flex-col ${isLanding ? 'w-full items-stretch pb-0' : 'items-center justify-start pb-12'} selection:bg-brand selection:text-app`}>
@@ -347,6 +372,7 @@ function MainApp() {
           onToggleSurface={handleToggleSurface}
           onSwitchView={handleSwitchView}
           onOpenAuthModal={handleOpenAuthModal}
+          onOpenTutorial={() => setIsTutorialOpen(true)}
           onLogout={handleLogout}
           onShare={() => setIsStoryCardOpen(true)}
           verifiedText={activePlayer.personal_info?.academy?.name}
@@ -355,7 +381,10 @@ function MainApp() {
 
       {/* Visible demo indicator banner whenever demo mode is on (hidden on landing) */}
       {!isLanding && isDemoMode && (
-        <div data-testid="demo-banner" className="w-full bg-warn-bg border-b border-warn-ink/20 py-1.5 px-4 text-center">
+        <div
+          data-testid="demo-banner"
+          className={`w-full bg-warn-bg border-b border-warn-ink/20 py-1.5 px-4 text-center print:hidden ${hasCoachSidebar ? 'md:pl-56' : ''}`}
+        >
           <span className="text-sm font-semibold text-warn-ink inline-flex items-center gap-1.5">
             <span className="inline-block w-2 h-2 rounded-full bg-warn-ink"></span>
             Mode contoh: semua data di sini fiktif
@@ -365,18 +394,20 @@ function MainApp() {
 
       {/* Global Error Banner when not in demo mode and Supabase fails */}
       {!isLanding && error && !isDemoMode && (
-        <div className="w-full max-w-5xl px-3.5 sm:px-6 pt-4">
-          <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <div>
-              <strong className="font-semibold">Koneksi Supabase Gagal:</strong> {error}. Mode demo dimatikan; data mock tidak digunakan.
+        <div className={`w-full ${hasCoachSidebar ? 'md:pl-56' : ''}`}>
+          <div className="w-full max-w-5xl mx-auto px-3.5 sm:px-6 pt-4">
+            <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div>
+                <strong className="font-semibold">Koneksi Supabase Gagal:</strong> {error}. Mode demo dimatikan; data mock tidak digunakan.
+              </div>
             </div>
           </div>
         </div>
       )}
 
       <Routes>
-        {/* Shared Coach & Admin PageContainer Layout */}
-        <Route element={<SharedCoachLayout />}>
+        {/* Shared Coach, Admin & Parent PageContainer Layout */}
+        <Route element={<SharedCoachLayout hasCoachSidebar={hasCoachSidebar} />}>
           <Route
             path="/beranda"
             element={
@@ -498,7 +529,7 @@ function MainApp() {
         <Route
           path="/laga/:matchId/laporan"
           element={
-            <main className="w-full pt-4 sm:pt-6 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6">
+            <main className={`w-full pt-4 sm:pt-6 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6 ${hasCoachSidebar ? 'md:pl-56 print:pl-0' : ''}`}>
               <MatchReportPage
                 userRole={userRole}
                 onOpenAuthModal={handleOpenAuthModal}
@@ -510,7 +541,7 @@ function MainApp() {
         <Route
           path="/verifikasi/:hash"
           element={
-            <main className="w-full pt-4 sm:pt-6 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6">
+            <main className={`w-full pt-4 sm:pt-6 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] md:pb-6 ${hasCoachSidebar ? 'md:pl-56 print:pl-0' : ''}`}>
               <VerificationView players={players} />
             </main>
           }
@@ -534,6 +565,13 @@ function MainApp() {
         onClose={() => setIsAuthModalOpen(false)}
         targetView={pendingTargetView}
         isDemoMode={isDemoMode}
+      />
+
+      {/* Role-Aware First-Time Onboarding Tutorial Modal */}
+      <RoleTutorialModal
+        isOpen={isTutorialOpen}
+        userRole={userRole}
+        onClose={() => setIsTutorialOpen(false)}
       />
 
       {/* Toast Notification */}

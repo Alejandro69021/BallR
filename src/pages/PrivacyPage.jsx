@@ -10,11 +10,10 @@ export default function PrivacyPage() {
 
   return (
     <div
-      data-surface="paper"
-      className="min-h-screen bg-chalk text-ink selection:bg-bib selection:text-ink flex flex-col justify-between"
+      className="min-h-screen bg-app text-1 selection:bg-brand selection:text-app flex flex-col justify-between"
     >
       {/* Top Header */}
-      <header className="border-b border-line bg-chalk/95 sticky top-0 z-40 backdrop-blur-md">
+      <header className="border-b border-line bg-app/95 sticky top-0 z-40 backdrop-blur-md">
         <div
           data-testid="landing-container"
           className="max-w-[1160px] mx-auto w-full px-4 sm:px-6 h-16 flex items-center justify-between"
