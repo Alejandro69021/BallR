@@ -118,10 +118,10 @@ export default function MatchRecapModal({
         isOpen={true}
         onClose={onClose}
         title="Ringkasan kejadian pertandingan"
-        description={`vs ${match?.opponent_name || 'Lawan'} (${match?.format || '11v11'}) · Total ${allEvents.length} kejadian`}
+        description={`vs ${match?.opponent_name || 'Lawan'} · ${match?.format || '11v11'} · Total ${allEvents.length} kejadian`}
         className="max-w-lg"
         footer={
-          <div className="flex items-center gap-2 w-full justify-between">
+          <div className="flex flex-wrap items-center gap-2 w-full justify-between">
             <Button type="button" variant="secondary" size="sm" onClick={onClose}>
               Kembali ke logger
             </Button>
@@ -166,10 +166,10 @@ export default function MatchRecapModal({
               </div>
             </div>
           ) : (
-            <div className="p-3 rounded-control bg-raised border border-line flex items-center justify-between text-sm">
+            <div className="p-3 rounded-control bg-raised border border-line flex flex-wrap items-center justify-between gap-2 text-sm">
               <span className="text-2">Status sinkronisasi server:</span>
               <Badge variant="brand" size="sm">
-                Semua {events.length} kejadian tersimpan di {import.meta.env?.VITE_DEMO_MODE === 'true' ? 'perangkat (mode demo)' : 'server'}
+                Semua {events.length} kejadian tersimpan di {import.meta.env?.VITE_DEMO_MODE === 'true' ? 'perangkat lokal' : 'server'}
               </Badge>
             </div>
           )}
@@ -271,11 +271,13 @@ export default function MatchRecapModal({
               <input
                 id="recap-score-own"
                 type="number"
+                inputMode="numeric"
                 min="0"
                 required
+                placeholder="0"
                 value={ownScoreInput}
                 onChange={(e) => setOwnScoreInput(e.target.value)}
-                className="w-full px-3 h-8 bg-app border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-10 bg-app border border-control rounded-control text-lg font-mono font-semibold tabular-nums text-center text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
 
@@ -283,23 +285,31 @@ export default function MatchRecapModal({
               <input
                 id="recap-score-opp"
                 type="number"
+                inputMode="numeric"
                 min="0"
                 required
+                placeholder="0"
                 value={oppScoreInput}
                 onChange={(e) => setOppScoreInput(e.target.value)}
-                className="w-full px-3 h-8 bg-app border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-10 bg-app border border-control rounded-control text-lg font-mono font-semibold tabular-nums text-center text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-control bg-raised border border-line text-sm">
-            <span className="text-2 tabular-nums">
-              Gol tercatat: {loggedGoals.own} / {loggedGoals.opp} (mungkin belum lengkap)
-            </span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-control bg-raised border border-line text-sm">
+            <div className="space-y-0.5 min-w-0">
+              <span className="text-1 font-medium block tabular-nums">
+                Gol tercatat: <span className="font-mono font-bold">{loggedGoals.own} - {loggedGoals.opp}</span>
+              </span>
+              <span className="text-2 text-sm block leading-snug">
+                Periksa kembali bila ada gol yang belum tercatat
+              </span>
+            </div>
             <Button
               type="button"
               variant="secondary"
               size="sm"
+              className="whitespace-nowrap shrink-0 self-start sm:self-center"
               onClick={() => {
                 setOwnScoreInput(String(loggedGoals.own));
                 setOppScoreInput(String(loggedGoals.opp));

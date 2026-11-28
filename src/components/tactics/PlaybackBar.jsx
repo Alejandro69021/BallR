@@ -141,9 +141,9 @@ export default function PlaybackBar({
         </div>
 
         {/* Speed & Loop settings */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {/* Speed picker */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm text-2 mr-1 flex items-center gap-1">
               <Gauge className="w-3.5 h-3.5" strokeWidth={1.5} />
               Kecepatan:
@@ -153,11 +153,10 @@ export default function PlaybackBar({
                 key={`speed-${s}`}
                 type="button"
                 onClick={() => onChangeSpeed?.(s)}
-                className={`px-2 py-1 rounded-control text-sm tabular-nums min-h-[44px] min-w-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer flex items-center justify-center ${
-                  playbackSpeed === s
-                    ? 'bg-raised border border-brand text-brand font-bold'
-                    : 'bg-app border border-line text-2 hover:text-1'
-                }`}
+                className={`px-2 py-1 rounded-control text-sm tabular-nums min-h-[44px] min-w-[44px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer flex items-center justify-center ${playbackSpeed === s
+                  ? 'bg-raised border border-brand text-brand font-bold'
+                  : 'bg-app border border-line text-2 hover:text-1'
+                  }`}
                 aria-pressed={playbackSpeed === s}
               >
                 {s}x
@@ -169,11 +168,10 @@ export default function PlaybackBar({
           <button
             type="button"
             onClick={onToggleLoop}
-            className={`px-2.5 py-1 rounded-control text-sm min-h-[44px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${
-              isLooping
-                ? 'bg-raised border-brand text-brand font-medium'
-                : 'bg-app border-line text-2 hover:text-1'
-            }`}
+            className={`px-2.5 py-1 rounded-control text-sm min-h-[44px] border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer ${isLooping
+              ? 'bg-raised border-brand text-brand font-medium'
+              : 'bg-app border-line text-2 hover:text-1'
+              }`}
             aria-pressed={isLooping}
           >
             {isLooping ? 'Ulang terus: Aktif' : 'Ulang terus: Nonaktif'}

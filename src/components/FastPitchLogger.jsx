@@ -4,6 +4,7 @@ import MatchTimerBar from './logger/MatchTimerBar';
 import TactileKeypad from './logger/TactileKeypad';
 import EventStreamLog from './logger/EventStreamLog';
 import MatchRecapModal from './logger/MatchRecapModal';
+import LiveTacticalPanel from './logger/LiveTacticalPanel';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
 import LocalVideoPanel from './video/LocalVideoPanel';
@@ -460,6 +461,7 @@ export default function FastPitchLogger({
           <LocalVideoPanel
             ref={videoPanelRef}
             matchId={matchId}
+            defaultYoutubeId={match?.youtube_video_id || null}
             period={period}
             onVideoLoadedChange={setHasVideo}
             onOffsetChange={setVideoOffsets}
@@ -481,6 +483,13 @@ export default function FastPitchLogger({
           />
         </div>
       </div>
+
+      {/* Live Tactical Readout (Collapsible) */}
+      <LiveTacticalPanel
+        match={match}
+        events={serverEvents}
+        outbox={outbox}
+      />
 
       {/* Event Stream Log & Honest Counts */}
       <EventStreamLog

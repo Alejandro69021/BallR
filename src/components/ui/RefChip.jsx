@@ -62,7 +62,7 @@ export default function RefChip({ referenceId, customLabel }) {
           </div>
         }
         footer={
-          <div className="flex items-center justify-between w-full">
+          <div className="flex flex-wrap items-center justify-between gap-2 w-full">
             {ref.url ? (
               <a
                 href={ref.url}
@@ -71,7 +71,7 @@ export default function RefChip({ referenceId, customLabel }) {
                 className="inline-flex items-center gap-1 text-sm text-brand hover:underline font-medium"
               >
                 <span>Buka Dokumen Sumber</span>
-                <ExternalLink className="w-3 h-3" />
+                <ExternalLink className="w-3 h-3 shrink-0" />
               </a>
             ) : (
               <span className="text-sm text-2 italic">Tautan dokumen tidak tersedia</span>
@@ -90,33 +90,33 @@ export default function RefChip({ referenceId, customLabel }) {
       >
         {/* Details */}
         <div className="space-y-2 text-sm">
-          <div className="grid grid-cols-2 gap-2 p-2.5 rounded bg-raised border border-line text-sm">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-2.5 rounded bg-raised border border-line text-sm">
+            <div className="min-w-0">
               <span className="text-2 block">Penerbit / Penulis:</span>
-              <span className="text-1">{ref.publisher || 'Belum terkonfirmasi'}</span>
+              <span className="text-1 break-words">{ref.publisher || 'Belum terkonfirmasi'}</span>
             </div>
-            <div>
+            <div className="min-w-0">
               <span className="text-2 block">Tahun Publikasi:</span>
-              <span className="text-1">{ref.year || 'Belum terkonfirmasi'}</span>
+              <span className="text-1 break-words">{ref.year || 'Belum terkonfirmasi'}</span>
             </div>
-            <div>
+            <div className="min-w-0">
               <span className="text-2 block">Bagian / Halaman:</span>
-              <span className="text-brand font-medium">{ref.section || ref.section_page || 'Dokumen penuh'}</span>
+              <span className="text-brand font-medium break-words">{ref.section || ref.section_page || 'Dokumen penuh'}</span>
             </div>
-            <div>
+            <div className="min-w-0">
               <span className="text-2 block">Kategori:</span>
-              <span className="text-1 capitalize">{ref.type}</span>
+              <span className="text-1 capitalize break-words">{ref.type}</span>
             </div>
           </div>
 
           {ref.notes && (
-            <div className="p-2.5 rounded bg-raised border border-line text-2 text-sm leading-relaxed">
+            <div className="p-2.5 rounded bg-raised border border-line text-2 text-sm leading-relaxed break-words">
               <span className="font-semibold text-1 block mb-0.5">Catatan Metodologi:</span>
               {ref.notes}
             </div>
           )}
 
-          <div className="flex items-center justify-between text-sm text-2 pt-1">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-2 pt-1">
             <span className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
               Diverifikasi: {ref.verified_on || 'Belum diverifikasi mandiri'}

@@ -12,6 +12,7 @@ import {
   TrialCta,
   LandingFooter
 } from '../components/landing';
+import RevealSection from '../components/landing/RevealSection';
 
 export default function LandingPage({
   userRole = 'public',
@@ -44,28 +45,44 @@ export default function LandingPage({
         <Hero isDemoMode={isDemoMode} onOpenAuthModal={onOpenAuthModal} />
 
         {/* 3. Masalah */}
-        <ProblemStrip />
+        <RevealSection>
+          <ProblemStrip />
+        </RevealSection>
 
         {/* 4. Fitur Utama (#fitur) */}
-        <FeatureDive />
+        <RevealSection>
+          <FeatureDive />
+        </RevealSection>
 
         {/* 5. Fitur Pendukung (#fitur-pendukung) */}
-        <FeatureGrid />
+        <RevealSection>
+          <FeatureGrid />
+        </RevealSection>
 
         {/* 6. Cara Kerja (#cara-kerja) */}
-        <Steps />
+        <RevealSection>
+          <Steps />
+        </RevealSection>
 
         {/* 7. Prinsip Data (#prinsip) */}
-        <Principles />
+        <RevealSection>
+          <Principles />
+        </RevealSection>
 
         {/* 8. Status (#status) */}
-        <StatusColumns />
+        <RevealSection>
+          <StatusColumns />
+        </RevealSection>
 
         {/* 9. Tanya Jawab (#tanya) */}
-        <Faq />
+        <RevealSection>
+          <Faq />
+        </RevealSection>
 
         {/* 10. Ajakan Uji Coba (#cta) */}
-        <TrialCta isDemoMode={isDemoMode} onOpenAuthModal={onOpenAuthModal} />
+        <RevealSection>
+          <TrialCta isDemoMode={isDemoMode} onOpenAuthModal={onOpenAuthModal} />
+        </RevealSection>
       </main>
 
       {/* 11. Kaki (#kaki) */}

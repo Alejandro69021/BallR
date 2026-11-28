@@ -238,6 +238,66 @@ export const REFERENCES_REGISTRY = [
     verified_on: "",
     status: "located",
     notes: "Proxy based on on-ball events only. Not verified by us."
+  },
+  {
+    id: "sarmento-2014-match-analysis",
+    title: "Match analysis in football: a systematic review",
+    publisher: "Sarmento H, Marcelino R, Anguera MT, Campaniço J, Matos N, Leitão JC. Journal of Sports Sciences 32(20):1831-1843",
+    year: 2014,
+    type: "paper",
+    url: "https://pubmed.ncbi.nlm.nih.gov/24787442/",
+    section: "",
+    verified_on: "",
+    status: "located",
+    notes: "Systematic review of descriptive and comparative match analysis variables (spatial zones, match half, situational context)."
+  },
+  {
+    id: "vogelbein-2014-defensive-transition",
+    title: "Defensive transition in soccer - are prompt possession regains a measure of success? A quantitative analysis of German Fußball-Bundesliga 2010/2011",
+    publisher: "Vogelbein M, Nopp S, Hökelmann A. Journal of Sports Sciences 32(11):1076-1083",
+    year: 2014,
+    type: "paper",
+    url: "https://pubmed.ncbi.nlm.nih.gov/24506111/",
+    section: "",
+    verified_on: "",
+    status: "located",
+    notes: "Operationalises defensive transition and prompt ball recovery after losing possession; adult Bundesliga baseline, use descriptively for youth."
+  },
+  {
+    id: "pollard-reep-1997-playing-strategies",
+    title: "Measuring the effectiveness of playing strategies at soccer",
+    publisher: "Pollard R, Reep C. Journal of the Royal Statistical Society: Series D (The Statistician) 46(4):541-550",
+    year: 1997,
+    type: "paper",
+    url: "https://www.researchgate.net/publication/227692321_Measuring_the_effectiveness_of_playing_strategies_at_soccer",
+    section: "",
+    verified_on: "",
+    status: "located",
+    notes: "Notational analysis of team possessions and shot location/distance influence on scoring probability."
+  },
+  {
+    id: "rathke-2017-shot-efficiency",
+    title: "An examination of expected goals and shot efficiency in soccer",
+    publisher: "Rathke A. Journal of Human Sport and Exercise 12(Proc2):S514-S529",
+    year: 2017,
+    type: "paper",
+    url: "https://www.mendeley.com/catalogue/c1bf7664-7145-38b5-bb51-ee5efc5f6813/",
+    section: "",
+    verified_on: "",
+    status: "located",
+    notes: "Examines shot distance and angle from goal; BallR uses transparent shot-zone and distance breakdown rather than pro-calibrated xG."
+  },
+  {
+    id: "fifa-football-language-2022",
+    title: "The FIFA Football Language",
+    publisher: "FIFA Training Centre",
+    year: 2022,
+    type: "framework",
+    url: "https://www.fifatrainingcentre.com/en/game/performance-analysis/football-language-analysis/the-fifa-football-language.php",
+    section: "",
+    verified_on: "",
+    status: "located",
+    notes: "Universal analytical framework for breaking down in-possession, out-of-possession, defensive blocks (low/mid/high), and line-breaking progression."
   }
 ];
 

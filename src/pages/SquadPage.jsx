@@ -152,7 +152,7 @@ export default function SquadPage({ userRole, onOpenAuthModal, onOpenPinModal, o
             </Field>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Field label="No. punggung" id="add-jersey">
               <input
                 id="add-jersey"
@@ -200,7 +200,7 @@ export default function SquadPage({ userRole, onOpenAuthModal, onOpenPinModal, o
             </Field>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Field label="Kaki dominan" id="add-foot">
               <Select
                 id="add-foot"

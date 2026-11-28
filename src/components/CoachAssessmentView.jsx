@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Save, Send, CheckCircle2, UserCheck } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Save, Send, CheckCircle2, UserCheck, ChevronLeft, ChevronRight } from 'lucide-react';
 import AttributeEditor from './assessment/AttributeEditor';
 import FitnessForm from './assessment/FitnessForm';
 import NarrativeNotesForm from './assessment/NarrativeNotesForm';
@@ -37,6 +37,60 @@ export default function CoachAssessmentView({
   const [isGeneratingAI] = useState(false);
   const [isSavingSupabase, setIsSavingSupabase] = useState(false);
   const [hasDraftSaved, setHasDraftSaved] = useState(false);
+
+  const rosterStripRef = useRef(null);
+  const dragStateRef = useRef({ active: false, startX: 0, scrollLeft: 0, dragged: false });
+
+  useEffect(() => {
+    const el = rosterStripRef.current;
+    if (!el) return;
+    const handleWheel = (e) => {
+      if (el.scrollWidth <= el.clientWidth) return;
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        el.scrollLeft += e.deltaY;
+      }
+    };
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [players.length]);
+
+  const scrollRosterBy = (delta) => {
+    const el = rosterStripRef.current;
+    if (!el) return;
+    el.scrollBy({ left: delta, behavior: 'smooth' });
+  };
+
+  const handleRosterMouseDown = (e) => {
+    if (e.button !== 0) return;
+    const el = rosterStripRef.current;
+    if (!el) return;
+    dragStateRef.current = {
+      active: true,
+      startX: e.clientX,
+      scrollLeft: el.scrollLeft,
+      dragged: false
+    };
+  };
+
+  const handleRosterMouseMove = (e) => {
+    const drag = dragStateRef.current;
+    if (!drag.active) return;
+    const dx = e.clientX - drag.startX;
+    if (Math.abs(dx) > 6) {
+      drag.dragged = true;
+    }
+    if (drag.dragged && rosterStripRef.current) {
+      rosterStripRef.current.scrollLeft = drag.scrollLeft - dx;
+    }
+  };
+
+  const handleRosterMouseUpOrLeave = () => {
+    dragStateRef.current.active = false;
+    setTimeout(() => {
+      dragStateRef.current.dragged = false;
+    }, 0);
+  };
 
   useEffect(() => {
     if (!activePlayer) return;
@@ -172,7 +226,7 @@ export default function CoachAssessmentView({
   };
 
   return (
-    <div className="space-y-6 pb-28 text-1">
+    <div className="space-y-6 pb-36 md:pb-24 text-1">
       {/* 1. Roster Switcher Strip (if players list provided) */}
       {players.length > 0 && (
         <section className="space-y-2">
@@ -183,19 +237,49 @@ export default function CoachAssessmentView({
                 Pilih pemain yang dievaluasi
               </span>
             </div>
-            <span className="text-sm tabular-nums text-2">
-              {players.length} pemain di skuad
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm tabular-nums text-2">
+                {players.length} pemain di skuad
+              </span>
+              <div className="hidden sm:flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => scrollRosterBy(-260)}
+                  aria-label="Geser daftar pemain ke kiri"
+                  className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 p-1.5 rounded-control border border-line bg-panel text-2 hover:text-1 hover:bg-raised transition-colors cursor-pointer flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                >
+                  <ChevronLeft className="w-4 h-4" strokeWidth={1.5} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollRosterBy(260)}
+                  aria-label="Geser daftar pemain ke kanan"
+                  className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 p-1.5 rounded-control border border-line bg-panel text-2 hover:text-1 hover:bg-raised transition-colors cursor-pointer flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                >
+                  <ChevronRight className="w-4 h-4" strokeWidth={1.5} />
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none snap-x">
+          <div
+            ref={rosterStripRef}
+            onMouseDown={handleRosterMouseDown}
+            onMouseMove={handleRosterMouseMove}
+            onMouseUp={handleRosterMouseUpOrLeave}
+            onMouseLeave={handleRosterMouseUpOrLeave}
+            className="flex gap-2 overflow-x-auto pb-1 scrollbar-none snap-x select-none cursor-grab active:cursor-grabbing"
+          >
             {players.map((p) => {
               const isSelected = p.player_id === activePlayer.player_id;
               return (
                 <button
                   key={p.player_id}
                   type="button"
-                  onClick={() => onSelectPlayer && onSelectPlayer(p.player_id)}
+                  onClick={() => {
+                    if (dragStateRef.current.dragged) return;
+                    if (onSelectPlayer) onSelectPlayer(p.player_id);
+                  }}
                   className={`shrink-0 flex items-center gap-2.5 p-2 rounded-control border transition-colors duration-150 snap-center min-h-[44px] text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
                     isSelected
                       ? 'bg-raised border-control text-1 font-medium'
@@ -247,8 +331,8 @@ export default function CoachAssessmentView({
         onGenerateAI={handleGenerateAI}
       />
 
-      {/* 5. Bottom Sticky Action Bar */}
-      <div className="fixed bottom-0 inset-x-0 z-40 bg-panel/95 backdrop-blur-xs border-t border-line p-3">
+      {/* 5. Bottom Sticky Action Bar: offset above mobile bottom nav (< md) and right of desktop sidebar (>= md) */}
+      <div className="fixed bottom-14 md:bottom-0 left-0 right-0 md:left-56 z-30 bg-panel/95 backdrop-blur-xs border-t border-line p-3 print:hidden">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="text-sm text-2 font-medium hidden sm:inline">

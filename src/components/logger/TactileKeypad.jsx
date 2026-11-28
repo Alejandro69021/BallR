@@ -183,22 +183,23 @@ export default function TactileKeypad({
             </div>
           </div>
         ) : (
-          <div className="flex items-center gap-3 pt-1 border-t border-line">
+          <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-line">
             <label htmlFor="opp-num" className="text-sm font-medium text-2 shrink-0">
-              Nomor punggung lawan (1-99):
+              Nomor punggung lawan 1-99:
             </label>
             <input
               id="opp-num"
               type="number"
+              inputMode="numeric"
               min="1"
               max="99"
               disabled={isReadOnly}
               value={opponentNumber}
               onChange={(e) => setOpponentNumber(e.target.value)}
-              className="w-20 px-3 h-8 bg-app border border-control rounded-control text-sm font-mono font-bold tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand"
+              className="w-20 px-3 min-h-[44px] sm:min-h-0 sm:h-9 bg-app border border-control rounded-control text-sm font-mono font-bold tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand"
             />
             <span className="text-sm text-2">
-              (Hanya nomor punggung; tanpa nama pemain)
+              Hanya nomor punggung, tanpa nama pemain
             </span>
           </div>
         )}
@@ -207,14 +208,14 @@ export default function TactileKeypad({
       {/* 2. Optional Pitch Svg with Attack Direction */}
       {recordLocation && (
         <div className="p-3.5 rounded-panel bg-panel border border-line space-y-2">
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
             <div className="flex items-center gap-1.5 text-2">
               <span className="font-medium text-1">Arah serang</span>
               <ArrowRight className="w-4 h-4 text-brand shrink-0" strokeWidth={1.5} />
-              <span>(Kiri ke Kanan)</span>
+              <span>Kiri ke Kanan</span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {coords.x_m !== null ? (
                 <span className="tabular-nums text-brand font-semibold">
                   Mulai: ({coords.x_m}, {coords.y_m}) m

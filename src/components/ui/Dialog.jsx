@@ -100,7 +100,7 @@ export default function Dialog({
   );
 
   const footerContent = footer ? (
-    <div className="shrink-0 px-4 py-3 sm:px-5 border-t border-line flex items-center justify-end gap-2">
+    <div className="shrink-0 px-4 py-3 sm:px-5 border-t border-line flex flex-wrap items-center justify-end gap-2">
       {footer}
     </div>
   ) : null;
@@ -137,7 +137,7 @@ export default function Dialog({
                 )
               )}
               {description && (
-                <p id="dialog-desc" className="text-sm text-2 mt-0.5">
+                <p id="dialog-desc" className="text-sm text-2 mt-0.5 break-words">
                   {description}
                 </p>
               )}

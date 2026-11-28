@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Lock } from 'lucide-react';
+import { ArrowLeft, Lock, Compass } from 'lucide-react';
 import FastPitchLogger from '../components/FastPitchLogger';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import EmptyState from '../components/ui/EmptyState';
@@ -141,16 +141,27 @@ export default function LoggerPage({ userRole = 'public', onOpenAuthModal, onToa
 
   return (
     <div className="space-y-3 lg:space-y-2.5">
-      {/* Back navigation bar */}
-      <div className="flex items-center justify-between gap-3">
-        <Button
-          variant="secondary"
-          size="sm"
-          icon={<ArrowLeft className="w-3.5 h-3.5" />}
-          onClick={() => navigate(`/laga/${matchId}`)}
-        >
-          Kembali ke detail laga
-        </Button>
+      {/* Back navigation bar + shortcut to automated tactical analysis */}
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<ArrowLeft className="w-3.5 h-3.5" />}
+            onClick={() => navigate(`/laga/${matchId}`)}
+          >
+            Kembali ke detail laga
+          </Button>
+          <Button
+            variant="brand"
+            size="sm"
+            icon={<Compass className="w-3.5 h-3.5" />}
+            onClick={() => navigate(`/laga/${matchId}?tab=tactical`)}
+            data-testid="shortcut-tactical-analysis-btn"
+          >
+            Analisis Otomatis (Video / YouTube)
+          </Button>
+        </div>
 
         {isReadOnly && (
           <Badge variant="warning" size="md">

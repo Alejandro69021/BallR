@@ -85,6 +85,10 @@ export default function AssessmentPage({ userRole, onOpenAuthModal, onOpenPinMod
         players={players}
         selectedPlayerId={activePlayer.player_id}
         activePlayer={activePlayer}
+        onSelectPlayer={(pid) => {
+          const target = players.find((p) => p.player_id === pid || p.public_id === pid);
+          navigate(`/penilaian/${target?.public_id || pid}`);
+        }}
         onSaveAssessment={handleSaveAssessment}
         onToast={onToast}
       />

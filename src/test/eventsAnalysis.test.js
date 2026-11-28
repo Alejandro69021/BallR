@@ -10,7 +10,14 @@ import {
   thirds,
   zoneGrid,
   ppda,
-  dataQuality
+  dataQuality,
+  fieldTilt,
+  corridorDistribution,
+  defensiveLineHeight,
+  shotZones,
+  transitionMetrics,
+  timeIntervals,
+  buildTacticalSummary
 } from '../lib/analysis/events';
 
 describe('Event Analysis Pure Engine (events.js)', () => {
@@ -34,8 +41,8 @@ describe('Event Analysis Pure Engine (events.js)', () => {
   ];
 
   describe('1. METRIC_DEFINITIONS Registry', () => {
-    it('defines 8 metric registry entries with honest definitions and limitations', () => {
-      expect(METRIC_DEFINITIONS.length).toBe(8);
+    it('defines 14 metric registry entries with honest definitions and limitations', () => {
+      expect(METRIC_DEFINITIONS.length).toBe(14);
       METRIC_DEFINITIONS.forEach((m) => {
         expect(m.id).toBeDefined();
         expect(m.name).toBeDefined();
@@ -261,6 +268,81 @@ describe('Event Analysis Pure Engine (events.js)', () => {
       expect(res.players_with_events_count.value).toBe(2); // p1, p2
       expect(res.players_with_events_count.n).toBe(3); // 3 participants
       expect(res.statement).toBe('Pencatatan manual oleh pelatih; belum diverifikasi silang.');
+    });
+  });
+
+  describe('9. Evidence-Based Tactical Match Analysis Extensions', () => {
+    const tacticalEvents = [
+      { id: 't1', team: 'own', event_type: 'pass', outcome: 'success', x_m: 70, y_m: 5, period: 1, minute: 10 },
+      { id: 't2', team: 'own', event_type: 'key_pass', outcome: 'success', x_m: 75, y_m: 8, period: 1, minute: 14 },
+      { id: 't3', team: 'own', event_type: 'shot_on_target', outcome: 'success', x_m: 80, y_m: 30, period: 1, minute: 20 },
+      { id: 't4', team: 'own', event_type: 'shot', outcome: 'fail', x_m: 65, y_m: 30, period: 2, minute: 55 },
+      { id: 't5', team: 'own', event_type: 'interception', outcome: 'success', x_m: 68, y_m: 20, period: 1, minute: 25 },
+      { id: 't6', team: 'own', event_type: 'ball_loss', outcome: 'fail', x_m: 15, y_m: 30, period: 2, minute: 65 },
+      { id: 't7', team: 'opponent', event_type: 'pass', outcome: 'success', x_m: 20, y_m: 55, period: 1, minute: 12 },
+      { id: 't8', team: 'opponent', event_type: 'tackle', outcome: 'success', x_m: 72, y_m: 40, period: 2, minute: 78 },
+      { id: 't9', team: 'opponent', event_type: 'shot', outcome: 'fail', x_m: 10, y_m: 30, period: 2, minute: 82 }
+    ];
+
+    it('computes fieldTilt accurately for final-third passes', () => {
+      const res = fieldTilt(tacticalEvents, 90);
+      expect(res.own_passes).toBe(2);
+      expect(res.opponent_passes).toBe(1);
+      expect(res.own_pct).toBe(66.7);
+      expect(res.opponent_pct).toBe(33.3);
+      expect(res.small_sample).toBe(true);
+      expect(res.reference_ids).toContain('fifa-football-language-2022');
+    });
+
+    it('computes 5-corridor distribution and dominant channel', () => {
+      const ownRes = corridorDistribution(tacticalEvents, 60, 'own');
+      expect(ownRes.corridors).toHaveLength(5);
+      expect(ownRes.dominant.id).toBe('central');
+      const oppRes = corridorDistribution(tacticalEvents, 60, 'opponent');
+      expect(oppRes.dominant).not.toBeNull();
+    });
+
+    it('computes defensiveLineHeight from each team own goal', () => {
+      const ownDef = defensiveLineHeight(tacticalEvents, 90, 'own');
+      expect(ownDef.avg_m).toBe(68.0);
+      expect(ownDef.n).toBe(1);
+      expect(ownDef.block_label).toContain('Blok Tinggi');
+
+      const oppDef = defensiveLineHeight(tacticalEvents, 90, 'opponent');
+      expect(oppDef.avg_m).toBe(18.0); // 90 - 72
+      expect(oppDef.block_label).toContain('Blok Rendah');
+    });
+
+    it('classifies shotZones inside vs outside box with average distance', () => {
+      const ownZones = shotZones(tacticalEvents, 90, 60, 'own');
+      expect(ownZones.inside_box.count).toBe(1);
+      expect(ownZones.outside_box.count).toBe(1);
+      expect(ownZones.avg_distance_m).toBe(17.5); // (10 + 25) / 2
+      expect(ownZones.reference_ids).toContain('pollard-reep-1997-playing-strategies');
+
+      const oppZones = shotZones(tacticalEvents, 90, 60, 'opponent');
+      expect(oppZones.inside_box.count).toBe(1);
+      expect(oppZones.avg_distance_m).toBe(10.0);
+    });
+
+    it('computes transitionMetrics (high regains & dangerous losses)', () => {
+      const res = transitionMetrics(tacticalEvents, 90, 'own');
+      expect(res.high_regains).toBe(1);
+      expect(res.dangerous_losses).toBe(1);
+      expect(res.reference_ids).toContain('vogelbein-2014-defensive-transition');
+    });
+
+    it('aggregates 15-minute timeIntervals and builds unified tactical summary', () => {
+      const intervals = timeIntervals(tacticalEvents);
+      expect(intervals.buckets).toHaveLength(6);
+      expect(intervals.buckets[0].own_events).toBe(2);
+      expect(intervals.buckets[0].opp_events).toBe(1);
+
+      const summary = buildTacticalSummary(tacticalEvents, 90, 60);
+      expect(summary.observations.length).toBeGreaterThan(0);
+      summary.observations.forEach((obs) => {
+        expect(obs.reference_ids.length).toBeGreaterThan(0);
+      });
     });
   });
 });

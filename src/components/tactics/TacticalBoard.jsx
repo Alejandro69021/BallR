@@ -4,6 +4,8 @@ import { clampToPitch, moveBy, BOARD_DISCLAIMER } from '../../lib/board';
 export default function TacticalBoard({
   scenario,
   frame,
+  ghostFrame = null,
+  viewMode = '2d',
   isEditing = false,
   selectedItemId = null,
   onSelectItem,
@@ -209,16 +211,24 @@ export default function TacticalBoard({
         </div>
       </div>
 
-      {/* Main Pitch Container */}
+      {/* Main Pitch Container (supports lightweight 2D and 3D VAR perspective) */}
       <div
-        ref={containerRef}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onClick={handlePitchClick}
-        className={`relative w-full overflow-hidden rounded-panel border border-pitch-line bg-pitch text-pitch-line ${drawingArrowKind ? 'cursor-crosshair' : isEditing ? 'cursor-default' : ''
-          }`}
-        style={{ aspectRatio: `${pitchLength} / ${pitchWidth}` }}
+        className={viewMode === '3d' ? 'rounded-panel bg-app/80 border border-line px-2 py-4 sm:px-6 sm:py-6 overflow-hidden' : ''}
+        style={viewMode === '3d' ? { perspective: '920px' } : undefined}
       >
+        <div
+          ref={containerRef}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onClick={handlePitchClick}
+          className={`relative w-full overflow-hidden rounded-panel border border-pitch-line bg-pitch text-pitch-line transition-transform duration-500 ease-out ${drawingArrowKind ? 'cursor-crosshair' : isEditing ? 'cursor-default' : ''
+            }`}
+          style={{
+            aspectRatio: `${pitchLength} / ${pitchWidth}`,
+            transform: viewMode === '3d' ? 'rotateX(38deg) scale(0.95)' : 'rotateX(0deg) scale(1)',
+            transformOrigin: 'center center'
+          }}
+        >
         <svg
           viewBox={`0 0 ${pitchLength} ${pitchWidth}`}
           className="w-full h-full select-none"
@@ -396,6 +406,49 @@ export default function TacticalBoard({
             />
           )}
 
+          {/* 3B. Ghost Layer: Posisi Awal (Aktual) vs Usulan Pelatih */}
+          {ghostFrame && Array.isArray(ghostFrame.players) && ghostFrame.players.map((gp) => {
+            const curr = players.find((p) => p.id === gp.id);
+            const moved = curr ? Math.hypot(curr.x - gp.x, curr.y - gp.y) > 0.5 : false;
+            if (!moved) return null;
+            const isOwn = gp.team === 'own';
+            const radius = 1.8;
+            return (
+              <g key={`ghost-${gp.id}`} opacity="0.45" className="pointer-events-none">
+                <line
+                  x1={gp.x}
+                  y1={gp.y}
+                  x2={curr.x}
+                  y2={curr.y}
+                  className={isOwn ? 'stroke-brand' : 'stroke-series-1'}
+                  strokeWidth="0.6"
+                  strokeDasharray="1.4,1.2"
+                />
+                {isOwn ? (
+                  <circle
+                    cx={gp.x}
+                    cy={gp.y}
+                    r={radius}
+                    className="fill-none stroke-brand"
+                    strokeWidth="0.55"
+                    strokeDasharray="1.1,0.9"
+                  />
+                ) : (
+                  <rect
+                    x={gp.x - radius}
+                    y={gp.y - radius}
+                    width={radius * 2}
+                    height={radius * 2}
+                    rx="0.4"
+                    className="fill-none stroke-series-1"
+                    strokeWidth="0.55"
+                    strokeDasharray="1.1,0.9"
+                  />
+                )}
+              </g>
+            );
+          })}
+
           {/* 4. Players (Distinguished by Color AND Shape: Own = Circle, Opponent = Square) */}
           {players.map((p) => {
             const isSelected = selectedItemId === p.id;
@@ -488,6 +541,7 @@ export default function TacticalBoard({
             </g>
           )}
         </svg>
+        </div>
       </div>
 
       {/* Legend */}

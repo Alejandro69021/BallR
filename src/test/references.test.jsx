@@ -9,8 +9,8 @@ import RefChip from '../components/ui/RefChip';
 
 describe('Credible Reference Enforcement & Registry Verification', () => {
   describe('Registry matches docs/REFERENCES_SEED.md exactly', () => {
-    it('contains exactly 18 seeded entries with expected IDs', () => {
-      expect(REFERENCES_REGISTRY).toHaveLength(18);
+    it('contains exactly 23 seeded entries with expected IDs', () => {
+      expect(REFERENCES_REGISTRY).toHaveLength(23);
 
       const expectedIds = [
         'pssi-kurikulum-filanesia',
@@ -30,7 +30,12 @@ describe('Credible Reference Enforcement & Registry Verification', () => {
         'cdf-2025',
         'uu-pdp-27-2022-pasal-25',
         'pp-33-2026',
-        'trainor-ppda-2014'
+        'trainor-ppda-2014',
+        'sarmento-2014-match-analysis',
+        'vogelbein-2014-defensive-transition',
+        'pollard-reep-1997-playing-strategies',
+        'rathke-2017-shot-efficiency',
+        'fifa-football-language-2022'
       ];
 
       expectedIds.forEach((id) => {

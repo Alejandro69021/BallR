@@ -1419,12 +1419,13 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               <input
                 id="score-own"
                 type="number"
+                inputMode="numeric"
                 min="0"
                 required
                 placeholder="0"
                 value={ownScoreInput}
                 onChange={(e) => setOwnScoreInput(e.target.value)}
-                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-9 bg-app border border-control rounded-control text-base font-mono font-semibold tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-10 bg-app border border-control rounded-control text-lg font-mono font-semibold tabular-nums text-center text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
 
@@ -1432,22 +1433,23 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               <input
                 id="score-opp"
                 type="number"
+                inputMode="numeric"
                 min="0"
                 required
                 placeholder="0"
                 value={oppScoreInput}
                 onChange={(e) => setOppScoreInput(e.target.value)}
-                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-9 bg-app border border-control rounded-control text-base font-mono font-semibold tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-10 bg-app border border-control rounded-control text-lg font-mono font-semibold tabular-nums text-center text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-control bg-raised border border-line text-sm">
             <div className="space-y-0.5 min-w-0">
-              <span className="text-1 font-medium block">
+              <span className="text-1 font-medium block tabular-nums">
                 Gol tercatat: <span className="font-mono font-bold">{loggedGoals.own} - {loggedGoals.opp}</span>
               </span>
-              <span className="text-2 text-sm block">
+              <span className="text-2 text-sm block leading-snug">
                 Periksa kembali bila ada gol yang belum tercatat
               </span>
             </div>
@@ -1455,7 +1457,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               type="button"
               variant="secondary"
               size="sm"
-              className="whitespace-nowrap shrink-0"
+              className="whitespace-nowrap shrink-0 self-start sm:self-center"
               onClick={() => {
                 setOwnScoreInput(String(loggedGoals.own));
                 setOppScoreInput(String(loggedGoals.opp));

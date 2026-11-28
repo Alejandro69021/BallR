@@ -586,7 +586,7 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                       return (
                         <div
                           key={pid}
-                          className="flex items-center justify-between py-1 px-1.5 hover:bg-raised/40 rounded transition-colors text-sm"
+                          className="flex items-center justify-between gap-2 py-1 px-1.5 hover:bg-raised/40 rounded transition-colors text-sm"
                         >
                           <label className="flex items-center gap-2 cursor-pointer select-none min-w-0">
                             <input
@@ -597,11 +597,11 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
                             />
                             <span className="font-mono text-2 w-6 text-right shrink-0">#{num}</span>
                             <span className="font-medium text-1 truncate">{name}</span>
-                            <Badge variant="neutral" size="sm">{pos}</Badge>
+                            <Badge variant="neutral" size="sm" className="shrink-0">{pos}</Badge>
                           </label>
 
                           {part.selected && (
-                            <label className="flex items-center gap-1.5 cursor-pointer text-2 hover:text-1 select-none">
+                            <label className="flex items-center gap-1.5 cursor-pointer text-2 hover:text-1 select-none shrink-0">
                               <input
                                 type="checkbox"
                                 checked={Boolean(part.started)}

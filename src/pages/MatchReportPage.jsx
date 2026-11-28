@@ -1547,8 +1547,8 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </p>
 
           <div className="p-3 rounded-control bg-raised border border-line font-mono space-y-1">
-            <div>Laga: vs {activeMatch.opponent_name}</div>
-            <div>Hash: {currentHash.slice(0, 24)}...</div>
+            <div className="break-words">Laga: vs {activeMatch.opponent_name}</div>
+            <div className="break-all">Hash: {currentHash.slice(0, 24)}...</div>
           </div>
 
           <div>

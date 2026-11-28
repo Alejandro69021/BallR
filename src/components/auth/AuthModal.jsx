@@ -123,7 +123,7 @@ export default function AuthModal({
         <form onSubmit={handleSubmit} className="space-y-3">
           <Field label="Alamat email" id="auth-email" required>
             <div className="relative">
-              <Mail className="w-4 h-4 text-2 absolute left-2.5 top-2 pointer-events-none" strokeWidth={1.5} />
+              <Mail className="w-4 h-4 text-2 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" strokeWidth={1.5} />
               <input
                 id="auth-email"
                 type="email"
@@ -131,7 +131,7 @@ export default function AuthModal({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="pelatih@akademi.id"
-                className="w-full pl-9 pr-3 h-8 bg-app border border-control rounded-control text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full pl-9 pr-3 min-h-[44px] sm:min-h-0 sm:h-9 bg-app border border-control rounded-control text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </div>
           </Field>
@@ -139,7 +139,7 @@ export default function AuthModal({
           {authMode === 'password' && (
             <Field label="Kata sandi" id="auth-password" required>
               <div className="relative">
-                <KeyRound className="w-4 h-4 text-2 absolute left-2.5 top-2 pointer-events-none" strokeWidth={1.5} />
+                <KeyRound className="w-4 h-4 text-2 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" strokeWidth={1.5} />
                 <input
                   id="auth-password"
                   type="password"
@@ -147,7 +147,7 @@ export default function AuthModal({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-9 pr-3 h-8 bg-app border border-control rounded-control text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                  className="w-full pl-9 pr-3 min-h-[44px] sm:min-h-0 sm:h-9 bg-app border border-control rounded-control text-sm text-1 placeholder:text-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
                 />
               </div>
             </Field>

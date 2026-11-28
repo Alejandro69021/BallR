@@ -360,7 +360,7 @@ describe('UX-3 MatchDetailPage Redesign', () => {
   });
 
   describe('4. Tabs and Summary Rules (SMALL_SAMPLE_N & Video Card)', () => {
-    it('renders 4 tabs: Ringkasan, Peta lapangan, Daftar kejadian, Pemain and supports switching', async () => {
+    it('renders 5 tabs: Ringkasan, Analisis Taktis, Peta lapangan, Daftar kejadian, Pemain and supports switching', async () => {
       const match = await matchesLib.createMatch({
         opponent_name: 'Tab Test FC',
         match_date: '2026-11-24',
@@ -380,11 +380,16 @@ describe('UX-3 MatchDetailPage Redesign', () => {
       });
 
       const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(4);
+      expect(tabs).toHaveLength(5);
       expect(screen.getByRole('tab', { name: /Ringkasan/i })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByRole('tab', { name: /Analisis Taktis/i })).toHaveAttribute('aria-selected', 'false');
       expect(screen.getByRole('tab', { name: /Peta lapangan/i })).toHaveAttribute('aria-selected', 'false');
       expect(screen.getByRole('tab', { name: /Daftar kejadian/i })).toHaveAttribute('aria-selected', 'false');
       expect(screen.getByRole('tab', { name: /Pemain/i })).toHaveAttribute('aria-selected', 'false');
+
+      // Switch to Analisis Taktis
+      fireEvent.click(screen.getByRole('tab', { name: /Analisis Taktis/i }));
+      expect(screen.getByRole('tab', { name: /Analisis Taktis/i })).toHaveAttribute('aria-selected', 'true');
 
       // Switch to Peta lapangan
       fireEvent.click(screen.getByRole('tab', { name: /Peta lapangan/i }));

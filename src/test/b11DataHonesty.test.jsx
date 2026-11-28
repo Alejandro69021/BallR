@@ -199,7 +199,8 @@ describe('Phase B11: Data Honesty, Demo Store Reset, & Consent Seeds', () => {
       expect(submitBtn).toBeDisabled();
 
       // Hint displays logged goal count
-      expect(screen.getByText(/Gol tercatat: 2 \/ 1/i)).toBeInTheDocument();
+      expect(screen.getByText(/Gol tercatat:/i)).toBeInTheDocument();
+      expect(screen.getByText(/2 - 1/)).toBeInTheDocument();
 
       // Click "Pakai angka ini" button
       const pakaiBtn = screen.getByRole('button', { name: /Pakai angka ini/i });

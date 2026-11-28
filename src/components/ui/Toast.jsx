@@ -33,7 +33,7 @@ export default function Toast({
     <div
       role="status"
       aria-live="polite"
-      className={`fixed bottom-4 right-4 z-50 max-w-sm w-full p-3.5 rounded-panel border border-line bg-raised text-1 shadow-popover flex items-start gap-3 transition-transform duration-150 ease-out ${className}`}
+      className={`fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:bottom-4 left-4 right-4 sm:left-auto z-50 max-w-sm sm:w-full p-3.5 rounded-panel border border-line bg-raised text-1 shadow-popover flex items-start gap-3 transition-transform duration-150 ease-out ${className}`}
     >
       {icons[variant] || icons.info}
 

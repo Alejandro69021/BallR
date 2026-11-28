@@ -138,7 +138,7 @@ export default function ConsentManagerModal({
       description="Persetujuan orang tua/wali (UU PDP No. 27/2022 Pasal 25)"
       className="max-w-md"
       footer={
-        <div className="w-full text-sm text-2 flex items-center justify-between">
+        <div className="w-full text-sm text-2 flex flex-wrap items-center justify-between gap-2">
           <span>UU PDP No. 27/2022 Pasal 25</span>
           <a
             href="docs/CONSENT_DRAFT.md"
@@ -146,24 +146,24 @@ export default function ConsentManagerModal({
             rel="noopener noreferrer"
             className="text-2 hover:text-1 underline flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
           >
-            <FileText className="w-4 h-4" strokeWidth={1.5} />
+            <FileText className="w-4 h-4 shrink-0" strokeWidth={1.5} />
             <span>Lihat draf perjanjian</span>
           </a>
         </div>
       }
     >
       <div className="p-3 rounded-control bg-app border border-line text-sm space-y-2">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="text-2">Nama atlet:</span>
           <span className="font-semibold text-1">{pName}</span>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="text-2">Tingkat visibilitas:</span>
           <span className="text-1 px-2 py-0.5 rounded-control bg-panel border border-control text-sm font-medium">
             {isRevoked ? 'private (privat)' : (player?.visibility_tier || 'private')}
           </span>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="text-2">Versi persetujuan:</span>
           <span className="text-2 tabular-nums">{activeConsent?.version || 'Belum ada'}</span>
         </div>
@@ -181,9 +181,9 @@ export default function ConsentManagerModal({
               <div
                 key={item.key}
                 data-testid={`purpose-row-${item.key}`}
-                className="p-3 rounded-control bg-panel border border-line flex items-start justify-between gap-3"
+                className="p-3 rounded-control bg-panel border border-line flex flex-wrap sm:flex-nowrap items-start justify-between gap-3"
               >
-                <div>
+                <div className="min-w-0">
                   <span className="font-semibold text-1 block">{item.title}</span>
                   <span className="text-sm text-2 block mt-0.5">{item.description}</span>
                 </div>
@@ -221,7 +221,7 @@ export default function ConsentManagerModal({
               <p className="text-2 leading-relaxed">
                 Data paspor {pName} akan seketika diubah menjadi status privat. Tautan publik dan pembagian ke pemandu bakat akan dinonaktifkan seketika. Tindakan ini dicatat di log audit peladen.
               </p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex flex-wrap items-center gap-2 pt-1">
                 <Button
                   type="button"
                   variant="danger"

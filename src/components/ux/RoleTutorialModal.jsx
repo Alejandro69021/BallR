@@ -146,7 +146,7 @@ export default function RoleTutorialModal({ isOpen, userRole = 'public', onClose
         </p>
 
         {/* Actions */}
-        <div className="flex items-center justify-between gap-2 pt-2 border-t border-line">
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-line">
           <Button
             type="button"
             variant="ghost"
@@ -156,7 +156,7 @@ export default function RoleTutorialModal({ isOpen, userRole = 'public', onClose
             Lewati
           </Button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {!isFirst && (
               <Button
                 type="button"

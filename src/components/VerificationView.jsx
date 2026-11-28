@@ -166,7 +166,7 @@ export default function VerificationView({ players = [] }) {
 
             {/* SHA-256 Hash with Copy Button */}
             <div className="p-3 rounded-control bg-app border border-line space-y-2">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-sm text-2 uppercase tracking-wide">
                   Hash SHA-256 kanonikal
                 </span>
@@ -174,7 +174,7 @@ export default function VerificationView({ players = [] }) {
                   variant="ghost"
                   size="sm"
                   onClick={handleCopyHash}
-                  className="sm:h-7 px-2 text-sm text-2 hover:text-1"
+                  className="px-2 text-sm text-2 hover:text-1 whitespace-nowrap shrink-0"
                   icon={copied ? <Check className="w-4 h-4 text-brand" strokeWidth={1.5} /> : <Copy className="w-4 h-4" strokeWidth={1.5} />}
                 >
                   {copied ? 'Tersalin' : 'Salin hash'}

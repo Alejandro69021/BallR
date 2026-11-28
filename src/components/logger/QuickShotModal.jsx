@@ -21,9 +21,9 @@ export default function QuickShotModal({
         <button
           type="button"
           onClick={() => onSelectShot('goal')}
-          className="p-3.5 rounded-control bg-raised hover:bg-panel border border-control text-left transition-colors duration-150 cursor-pointer flex items-center justify-between min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          className="p-3.5 rounded-control bg-raised hover:bg-panel border border-control text-left transition-colors duration-150 cursor-pointer flex items-center justify-between gap-3 min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
         >
-          <div>
+          <div className="min-w-0">
             <div className="font-semibold text-brand text-sm">
               Gol tercipta
             </div>
@@ -31,23 +31,23 @@ export default function QuickShotModal({
               +1 Gol & +1 tembakan tepat sasaran
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-brand" strokeWidth={1.5} />
+          <ArrowRight className="w-4 h-4 text-brand shrink-0" strokeWidth={1.5} />
         </button>
 
         <button
           type="button"
           onClick={() => onSelectShot('shot_on_target')}
-          className="p-3.5 rounded-control bg-raised hover:bg-panel border border-line text-left transition-colors duration-150 cursor-pointer flex items-center justify-between min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          className="p-3.5 rounded-control bg-raised hover:bg-panel border border-line text-left transition-colors duration-150 cursor-pointer flex items-center justify-between gap-3 min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
         >
-          <div>
+          <div className="min-w-0">
             <div className="font-semibold text-1 text-sm">
               Tembakan tepat sasaran
             </div>
             <div className="text-sm text-2">
-              +1 tembakan tepat sasaran (ditepis / tiang)
+              +1 tembakan tepat sasaran · ditepis atau kena tiang
             </div>
           </div>
-          <ArrowRight className="w-4 h-4 text-2" strokeWidth={1.5} />
+          <ArrowRight className="w-4 h-4 text-2 shrink-0" strokeWidth={1.5} />
         </button>
 
         <button

@@ -531,7 +531,7 @@ export default function TacticsPage({ userRole = 'public', onToast, onOpenAuthMo
 
           {/* Formation Template Select (Explicit label: "Template awal, bukan rekomendasi") */}
           <div className="space-y-1">
-            <label htmlFor="create-formation" className="text-sm font-medium text-1 flex items-center justify-between">
+            <label htmlFor="create-formation" className="text-sm font-medium text-1 flex flex-wrap items-center justify-between gap-1">
               <span>Formasi tim awal</span>
               <span className="text-2">{TEMPLATE_DISCLAIMER}</span>
             </label>
