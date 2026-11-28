@@ -14,15 +14,28 @@ import {
   BarChart3,
   AlertTriangle,
   CheckCircle2,
-  ArrowLeftRight
+  ArrowLeftRight,
+  Mic,
+  MicOff,
+  Users,
+  FileText
 } from 'lucide-react';
 import { buildTacticalSummary, SMALL_SAMPLE_N } from '../../lib/analysis/events';
 import { ALLOWED_EVENT_TYPES, generateUUID } from '../../lib/matches';
 import {
   applyPlayerSlotMap,
+  loadDetectedPlayers,
   loadGoalOverrides,
-  saveGoalOverrides
+  loadSlotNameMap,
+  saveDetectedPlayers,
+  saveGoalOverrides,
+  saveSlotNameMap
 } from '../../lib/playerSlotMap';
+import {
+  attachDetectedNamesToEvents,
+  extractPlayerNamesFromCommentary,
+  parseLineupText
+} from '../../lib/vision/commentaryNameParser';
 import {
   analyzeVideoFileInBrowser,
   buildMatchSegments,
@@ -78,7 +91,11 @@ function buildGoalAndChanceMoments(events, L, W, teamA, teamB, participants = []
       const num = p.jersey_number != null && p.jersey_number !== '' ? `#${p.jersey_number}` : '';
       return [name, num].filter(Boolean).join(' ') || `Pemain #${(idx % 11) + 1}`;
     }
+    const directName = String(evt?.player_name || '').trim();
     const num = evt?.player_number ?? evt?.opponent_number;
+    if (directName) {
+      return num != null ? `${directName} #${num}` : directName;
+    }
     return num != null ? `Pemain #${num}` : `Pemain #${(idx % 11) + 1}`;
   };
 
@@ -287,6 +304,7 @@ export function normalizeVisionEventsForMatch(rawEvents = [], pitchLength = 90, 
       team,
       player_id: team === 'own' ? (evt?.player_id || null) : null,
       player_number: playerNumber,
+      player_name: team === 'own' && evt?.player_name ? String(evt.player_name).trim() : null,
       opponent_number: opponentNumber,
       period,
       minute,
@@ -330,7 +348,15 @@ export default function TacticalMatchAnalysis({
 
   const fileInputRef = useRef(null);
   const videoInputRef = useRef(null);
+  const subtitleInputRef = useRef(null);
+  const speechRecRef = useRef(null);
   const browserAbortRef = useRef(null);
+
+  const [slotNameMap, setSlotNameMap] = useState(() => loadSlotNameMap(match?.id));
+  const [detectedPlayers, setDetectedPlayers] = useState(() => loadDetectedPlayers(match?.id));
+  const [lineupDraftText, setLineupDraftText] = useState('');
+  const [listeningCommentary, setListeningCommentary] = useState(false);
+  const [liveTranscriptLog, setLiveTranscriptLog] = useState('');
 
   const [importedEvents, setImportedEvents] = useState(() =>
     Array.isArray(initialVisionEvents) && initialVisionEvents.length > 0 ? initialVisionEvents : null
@@ -434,7 +460,7 @@ export default function TacticalMatchAnalysis({
   const rawActiveEvents = importedEvents || events;
   const activeEvents = useMemo(() => {
     const base = Array.isArray(rawActiveEvents) ? rawActiveEvents : [];
-    const mapped = applyPlayerSlotMap(base, playerSlotMap, playerMap);
+    const mapped = applyPlayerSlotMap(base, playerSlotMap, playerMap, slotNameMap);
     const hasOverrides = goalOverrides && Object.keys(goalOverrides).length > 0;
     return mapped.map((evt, idx) => {
       const eid = evt?.id || evt?.client_event_id || `moment-${idx}`;
@@ -447,7 +473,7 @@ export default function TacticalMatchAnalysis({
         ...(overriddenType ? { event_type: overriddenType, outcome: 'success' } : {})
       };
     });
-  }, [rawActiveEvents, swapPerspective, playerSlotMap, playerMap, goalOverrides]);
+  }, [rawActiveEvents, swapPerspective, playerSlotMap, playerMap, slotNameMap, goalOverrides]);
 
   const summary = useMemo(
     () => buildTacticalSummary(activeEvents, pitchLength, pitchWidth, effectiveTeamB),
@@ -521,28 +547,183 @@ export default function TacticalMatchAnalysis({
     setHalf1End(formatSecondsToTimecode(effectiveStart + durationSec));
   };
 
+  const applyDetectedPlayersList = (playersList, mentionsList = []) => {
+    if (!Array.isArray(playersList) || playersList.length === 0) return;
+    setDetectedPlayers(playersList);
+    saveDetectedPlayers(match?.id, playersList);
+    setSlotNameMap((prev) => {
+      const next = { ...(prev || {}) };
+      playersList.forEach((dp) => {
+        const slotKey =
+          dp?.slot_number != null
+            ? String(dp.slot_number)
+            : dp?.jersey_number != null
+              ? String(dp.jersey_number)
+              : null;
+        if (slotKey && dp?.name && !next[slotKey]) {
+          next[slotKey] = dp.name;
+        }
+      });
+      saveSlotNameMap(match?.id, next);
+      return next;
+    });
+    if (Array.isArray(importedEvents) && importedEvents.length > 0) {
+      setImportedEvents((prev) => attachDetectedNamesToEvents(prev || [], playersList, mentionsList));
+    }
+  };
+
+  const handleUpdateSlotName = (slotNum, rawName) => {
+    setSlotNameMap((prev) => {
+      const next = { ...(prev || {}) };
+      const cleaned = String(rawName || '').trim();
+      if (cleaned) {
+        next[String(slotNum)] = cleaned;
+      } else {
+        delete next[String(slotNum)];
+      }
+      saveSlotNameMap(match?.id, next);
+      return next;
+    });
+  };
+
+  const handleImportSubtitle = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const { detectedPlayers: found, mentions } = extractPlayerNamesFromCommentary(text, {
+        teamNames: [effectiveTeamA, effectiveTeamB],
+        source: 'subtitle_file'
+      });
+      if (found.length === 0) {
+        setErrorNotice('Belum ditemukan nama pemain pada berkas subtitle atau transkrip ini.');
+      } else {
+        setErrorNotice(null);
+        applyDetectedPlayersList(found, mentions);
+        setImportNotice(`Berhasil mengekstrak ${found.length} nama pemain dari komentar "${file.name}".`);
+      }
+    } catch {
+      setErrorNotice('Gagal membaca berkas subtitle komentar.');
+    } finally {
+      e.target.value = '';
+    }
+  };
+
+  const handleApplyLineupDraft = () => {
+    const found = parseLineupText(lineupDraftText, [effectiveTeamA, effectiveTeamB]);
+    if (found.length === 0) {
+      setErrorNotice('Masukkan minimal satu nama pemain, misalnya #10 Marselino atau satu nama per baris.');
+      return;
+    }
+    setErrorNotice(null);
+    setDetectedPlayers(found);
+    saveDetectedPlayers(match?.id, found);
+    setSlotNameMap((prev) => {
+      const next = { ...(prev || {}) };
+      found.forEach((dp) => {
+        const key = dp.slot_number != null ? String(dp.slot_number) : dp.jersey_number != null ? String(dp.jersey_number) : null;
+        if (key && dp.name) next[key] = dp.name;
+      });
+      saveSlotNameMap(match?.id, next);
+      return next;
+    });
+    if (Array.isArray(importedEvents) && importedEvents.length > 0) {
+      setImportedEvents((prev) => attachDetectedNamesToEvents(prev || [], found));
+    }
+    setLineupDraftText('');
+    setImportNotice(`Berhasil menerapkan ${found.length} nama pemain asli ke seluruh slot video dan laporan.`);
+  };
+
+  const handleToggleCommentaryMic = () => {
+    if (listeningCommentary) {
+      try {
+        speechRecRef.current?.stop();
+      } catch {
+        // Abaikan jika sudah berhenti
+      }
+      setListeningCommentary(false);
+      return;
+    }
+    const SpeechRec =
+      typeof window !== 'undefined'
+        ? window.SpeechRecognition || window.webkitSpeechRecognition
+        : null;
+    if (!SpeechRec) {
+      setErrorNotice('Browser ini belum mendukung tangkap suara komentar langsung. Gunakan unggah subtitle atau tempel susunan pemain.');
+      return;
+    }
+    setErrorNotice(null);
+    const rec = new SpeechRec();
+    rec.lang = 'id-ID';
+    rec.continuous = true;
+    rec.interimResults = false;
+    rec.onresult = (event) => {
+      let appended = '';
+      for (let i = event.resultIndex; i < event.results.length; i += 1) {
+        if (event.results[i].isFinal) {
+          appended += ` ${event.results[i][0]?.transcript || ''}`;
+        }
+      }
+      const cleanChunk = appended.trim();
+      if (!cleanChunk) return;
+      setLiveTranscriptLog((prev) => {
+        const combined = `${prev} ${cleanChunk}`.trim().slice(-2000);
+        const { detectedPlayers: found, mentions } = extractPlayerNamesFromCommentary(combined, {
+          teamNames: [effectiveTeamA, effectiveTeamB],
+          source: 'live_commentary_mic'
+        });
+        if (found.length > 0) {
+          applyDetectedPlayersList(found, mentions);
+        }
+        return combined;
+      });
+    };
+    rec.onerror = () => {
+      setListeningCommentary(false);
+    };
+    rec.onend = () => {
+      setListeningCommentary(false);
+    };
+    speechRecRef.current = rec;
+    try {
+      rec.start();
+      setListeningCommentary(true);
+    } catch {
+      setListeningCommentary(false);
+      setErrorNotice('Tidak dapat mengaktifkan mikrofon untuk menangkap suara komentator.');
+    }
+  };
+
   const applyVisionPayload = (parsed, sourceLabel) => {
     const list = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.events) ? parsed.events : null;
     if (!list || list.length === 0) {
       const vq = parsed?.vision_quality;
       if (vq && vq.frames_processed != null) {
         setErrorNotice(
-          `Video berhasil diproses (${vq.frames_processed} frame, rata-rata ${vq.avg_players_detected ?? 0} pemain, deteksi bola ${vq.ball_detection_rate_pct ?? 0}%), tetapi belum ada kejadian terdeteksi pada segmen ini. Coba geser rentang waktu ke momen permainan aktif.`
+          `Video berhasil diproses dengan ${vq.frames_processed} frame, rata-rata ${vq.avg_players_detected ?? 0} pemain, dan deteksi bola ${vq.ball_detection_rate_pct ?? 0}%, tetapi belum ada kejadian terdeteksi pada segmen ini. Coba geser rentang waktu ke momen permainan aktif.`
         );
       } else {
-        setErrorNotice('Hasil analisis belum mengandung kejadian yang valid (array "events" kosong).');
+        setErrorNotice('Hasil analisis belum mengandung kejadian yang valid.');
       }
       setErrorDetail(null);
       return false;
     }
     setErrorNotice(null);
     setErrorDetail(null);
-    setImportedEvents(list);
+    const incomingPlayers = Array.isArray(parsed?.detected_players) ? parsed.detected_players : [];
+    const enrichedList =
+      incomingPlayers.length > 0 ? attachDetectedNamesToEvents(list, incomingPlayers) : list;
+    setImportedEvents(enrichedList);
     setVisionQuality(parsed?.vision_quality || null);
+    if (incomingPlayers.length > 0) {
+      applyDetectedPlayersList(incomingPlayers);
+    }
     const qualityNote = parsed?.vision_quality
       ? ` · ${parsed.vision_quality.frames_processed} frame · deteksi bola ${parsed.vision_quality.ball_detection_rate_pct}%`
       : '';
-    setImportNotice(`Berhasil memuat ${list.length} kejadian dari ${sourceLabel}${qualityNote}.`);
+    const playerNote =
+      incomingPlayers.length > 0 ? ` · ${incomingPlayers.length} nama pemain terdeteksi` : '';
+    setImportNotice(`Berhasil memuat ${enrichedList.length} kejadian dari ${sourceLabel}${qualityNote}${playerNote}.`);
     return true;
   };
 
@@ -722,7 +903,9 @@ export default function TacticalMatchAnalysis({
         segments,
         fps: autoFps,
         ownCluster,
-        engine: 'pitch_cv'
+        engine: 'pitch_cv',
+        teamA: effectiveTeamA,
+        teamB: effectiveTeamB
       };
       if (youtubeCookiesBrowser) {
         payloadBody.cookiesFromBrowser = youtubeCookiesBrowser;
@@ -780,7 +963,7 @@ export default function TacticalMatchAnalysis({
     setSavingToMatch(true);
     setErrorNotice(null);
     try {
-      const normalized = normalizeVisionEventsForMatch(importedEvents, pitchLength, pitchWidth);
+      const normalized = normalizeVisionEventsForMatch(activeEvents, pitchLength, pitchWidth);
       const savedCount = await onSaveVisionEvents(normalized);
       setImportedEvents(null);
       setImportNotice(
@@ -1086,6 +1269,137 @@ export default function TacticalMatchAnalysis({
                 <Upload className="w-4 h-4 text-brand shrink-0" />
                 <span>Muat File Backup</span>
               </button>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      {/* Panel Nama Pemain Asli dari Video — Komentar YouTube, Subtitle, Suara & Susunan Pemain */}
+      <details
+        className="rounded-control border border-line bg-app"
+        data-testid="vision-player-names-panel"
+        open={detectedPlayers.length > 0}
+      >
+        <summary className="px-3.5 py-2.5 cursor-pointer select-none flex items-center justify-between gap-2 text-sm font-semibold text-1 list-none">
+          <span className="inline-flex items-center gap-2">
+            <Users className="w-4 h-4 text-brand shrink-0" />
+            <span>Nama Pemain Asli dari Video</span>
+          </span>
+          <span className="text-sm font-normal text-2">
+            {Object.keys(slotNameMap).length > 0
+              ? `${Object.keys(slotNameMap).length} nama aktif · otomatis masuk laporan`
+              : 'Otomatis dari komentar YouTube, subtitle, atau susunan pemain'}
+          </span>
+        </summary>
+
+        <div className="px-3.5 pb-3.5 pt-2 border-t border-line space-y-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => subtitleInputRef.current?.click()}
+              className="min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-control bg-panel border border-line hover:border-brand text-sm font-medium text-1 inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+            >
+              <FileText className="w-4 h-4 text-brand shrink-0" />
+              <span>Ekstrak dari Subtitle VTT / SRT</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleToggleCommentaryMic}
+              className={`min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-control border text-sm font-medium inline-flex items-center gap-1.5 cursor-pointer transition-colors ${
+                listeningCommentary
+                  ? 'bg-danger/15 border-danger text-danger'
+                  : 'bg-panel border-line hover:border-brand text-1'
+              }`}
+            >
+              {listeningCommentary ? (
+                <MicOff className="w-4 h-4 shrink-0" />
+              ) : (
+                <Mic className="w-4 h-4 text-brand shrink-0" />
+              )}
+              <span>
+                {listeningCommentary ? 'Hentikan Tangkap Suara Komentator' : 'Tangkap Suara Komentator Langsung'}
+              </span>
+            </button>
+
+            <input
+              ref={subtitleInputRef}
+              type="file"
+              accept=".vtt,.srt,.txt,text/vtt,text/plain"
+              className="hidden"
+              onChange={handleImportSubtitle}
+            />
+          </div>
+
+          {listeningCommentary && (
+            <div className="p-2.5 rounded-control bg-panel border border-brand/40 text-sm text-1 space-y-1">
+              <div className="font-semibold text-brand">Sedang mendengarkan komentar pertandingan...</div>
+              <p className="text-2">
+                {liveTranscriptLog || 'Putar video pertandingan agar suara komentator tertangkap dan nama pemain langsung diekstrak.'}
+              </p>
+            </div>
+          )}
+
+          {detectedPlayers.length > 0 && (
+            <div className="space-y-1.5">
+              <div className="text-sm font-semibold text-1">
+                Terdeteksi {detectedPlayers.length} nama pemain dari video
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {detectedPlayers.map((dp, idx) => (
+                  <span
+                    key={`${dp.name}-${idx}`}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control bg-panel border border-line text-sm text-1"
+                  >
+                    <span className="font-mono font-bold text-brand">
+                      #{dp.jersey_number || dp.slot_number || idx + 1}
+                    </span>
+                    <span className="font-medium">{dp.name}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-1.5">
+            <label htmlFor="vision-lineup-paste" className="block text-sm font-semibold text-1">
+              Tempel Susunan Pemain Asli
+            </label>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <textarea
+                id="vision-lineup-paste"
+                rows={2}
+                value={lineupDraftText}
+                onChange={(e) => setLineupDraftText(e.target.value)}
+                placeholder="Contoh: #1 Ernando, #7 Pratama Arhan, #10 Marselino — atau satu nama per baris"
+                className="flex-1 px-3 py-2 rounded-control bg-panel border border-control text-sm text-1"
+              />
+              <button
+                type="button"
+                onClick={handleApplyLineupDraft}
+                className="min-h-[44px] sm:min-h-[40px] px-4 py-2 rounded-control bg-brand text-app font-semibold text-sm cursor-pointer shrink-0"
+              >
+                Terapkan Nama
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="text-sm font-semibold text-1">Edit Nama per Slot Video #1–#11</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((slotNum) => (
+                <div key={slotNum} className="flex items-center gap-2">
+                  <span className="w-8 font-mono text-sm font-bold text-2 shrink-0">#{slotNum}</span>
+                  <input
+                    type="text"
+                    aria-label={`Nama pemain slot ${slotNum}`}
+                    placeholder={`Nama pemain #${slotNum}`}
+                    value={slotNameMap[String(slotNum)] || ''}
+                    onChange={(e) => handleUpdateSlotName(slotNum, e.target.value)}
+                    className="flex-1 min-h-[40px] px-2.5 py-1 rounded-control bg-panel border border-control text-sm text-1"
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>

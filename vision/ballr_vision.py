@@ -616,6 +616,9 @@ def analyze_video(
     max_frames: int = 0,
     flip_pitch: bool = False,
     clip_start_s: float = 0.0,
+    youtube_url: str = "",
+    cookies_from_browser: str = "",
+    team_names: list | None = None,
 ):
     chosen_engine = resolve_engine(engine)
     cap = cv2.VideoCapture(video_path)
@@ -1001,6 +1004,29 @@ def analyze_video(
             last_goal_t = shot_t
             goals_detected += 1
 
+    detected_players = []
+    player_detection_meta = {"sources_used": [], "detected_count": 0, "mention_count": 0, "notes": []}
+    try:
+        vision_dir = os.path.dirname(os.path.abspath(__file__))
+        if vision_dir not in sys.path:
+            sys.path.insert(0, vision_dir)
+        from player_name_extractor import attach_player_names_to_events, extract_players_for_analysis
+
+        emit_progress("players", 98, "Mengekstrak nama pemain dari komentar dan metadata video...", processed, total_frames)
+        extracted = extract_players_for_analysis(
+            youtube_url=youtube_url or None,
+            video_path=video_path,
+            clip_start_s=clip_start_s,
+            cookies_from_browser=cookies_from_browser,
+            team_names=team_names or [],
+        )
+        detected_players = extracted.get("detected_players") or []
+        player_detection_meta = extracted.get("meta") or player_detection_meta
+        if detected_players:
+            attach_player_names_to_events(events, detected_players, extracted.get("mentions") or [])
+    except Exception as exc:
+        player_detection_meta["notes"] = [f"Ekstraksi nama pemain dilewati: {exc}"]
+
     elapsed_s = round(time.time() - t0, 2)
     payload = {
         "schema": "ballr-vision-v1",
@@ -1013,9 +1039,13 @@ def analyze_video(
             "avg_players_detected": round(total_players / max(1, processed), 1),
             "goals_detected": goals_detected,
             "audio_analyzed": bool(audio_env),
+            "detected_players_count": len(detected_players),
+            "player_name_sources": player_detection_meta.get("sources_used", []),
             "model": model_label,
             "disclaimer": "Hasil estimasi otomatis dari 1 kamera; wajib ditinjau pelatih sebelum dijadikan laporan resmi.",
         },
+        "detected_players": detected_players,
+        "player_detection": player_detection_meta,
         "events": events,
     }
 
@@ -1054,6 +1084,8 @@ def main():
         default="",
         help="Opsional: nama browser untuk --cookies-from-browser yt-dlp (mis. chrome, edge, firefox)",
     )
+    parser.add_argument("--team-a", type=str, default="", help="Nama tim sendiri untuk menyaring kata klub saat ekstraksi nama pemain")
+    parser.add_argument("--team-b", type=str, default="", help="Nama tim lawan untuk menyaring kata klub saat ekstraksi nama pemain")
     args = parser.parse_args()
 
     video_path = args.video
@@ -1072,6 +1104,8 @@ def main():
         print("Harap berikan --youtube <URL> atau --video <file.mp4>", file=sys.stderr)
         sys.exit(1)
 
+    team_names = [t.strip() for t in (args.team_a, args.team_b) if t and t.strip()]
+
     analyze_video(
         video_path=video_path,
         output_json=args.out,
@@ -1084,6 +1118,9 @@ def main():
         max_frames=args.max_frames,
         flip_pitch=args.flip_pitch,
         clip_start_s=clip_start_s,
+        youtube_url=args.youtube or "",
+        cookies_from_browser=args.cookies_from_browser or "",
+        team_names=team_names,
     )
 
 

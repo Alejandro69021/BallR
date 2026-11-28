@@ -674,6 +674,49 @@ export async function reopenMatch(id) {
   return data;
 }
 
+const SLOT_META_RE = /\s*\[slot:#(\d{1,2})\]/i;
+const NAME_META_RE = /\s*\[nama:([^\]]+)\]/i;
+
+function encodeVisionPlayerMeta(note, playerNumber, playerName) {
+  let clean = String(note || '')
+    .replace(SLOT_META_RE, '')
+    .replace(NAME_META_RE, '')
+    .trim();
+  const tags = [];
+  if (playerNumber != null && Number.isInteger(Number(playerNumber)) && Number(playerNumber) >= 1 && Number(playerNumber) <= 99) {
+    tags.push(`[slot:#${Number(playerNumber)}]`);
+  }
+  const safeName = String(playerName || '').replace(/[\[\]]/g, '').trim();
+  if (safeName) {
+    tags.push(`[nama:${safeName}]`);
+  }
+  return tags.length > 0 ? `${clean}${clean ? ' ' : ''}${tags.join(' ')}` : clean;
+}
+
+function hydrateEventPlayerMeta(evt) {
+  if (!evt) return evt;
+  const rawNote = String(evt.note || '');
+  let playerNumber = evt.player_number != null && evt.player_number !== '' ? Number(evt.player_number) : null;
+  let playerName = evt.player_name ? String(evt.player_name).trim() : null;
+
+  const slotMatch = rawNote.match(SLOT_META_RE);
+  if (playerNumber == null && slotMatch) {
+    playerNumber = Number(slotMatch[1]);
+  }
+  const nameMatch = rawNote.match(NAME_META_RE);
+  if (!playerName && nameMatch) {
+    playerName = nameMatch[1].trim();
+  }
+
+  const cleanNote = rawNote.replace(SLOT_META_RE, '').replace(NAME_META_RE, '').trim();
+  return {
+    ...evt,
+    note: cleanNote,
+    ...(playerNumber != null ? { player_number: playerNumber } : {}),
+    ...(playerName ? { player_name: playerName } : {})
+  };
+}
+
 /**
  * List events for a match, ordered by period and minute ascending.
  */
@@ -683,10 +726,12 @@ export async function listEvents(matchId) {
   if (isDemoModeActive()) {
     const store = getDemoStore();
     const events = store.events[matchId] || [];
-    return [...events].sort((a, b) => {
-      if (a.period !== b.period) return a.period - b.period;
-      return a.minute - b.minute;
-    });
+    return [...events]
+      .map(hydrateEventPlayerMeta)
+      .sort((a, b) => {
+        if (a.period !== b.period) return a.period - b.period;
+        return a.minute - b.minute;
+      });
   }
 
   if (!supabase) {
@@ -701,7 +746,7 @@ export async function listEvents(matchId) {
     .order('minute', { ascending: true });
 
   if (error) throw error;
-  return data || [];
+  return (data || []).map(hydrateEventPlayerMeta);
 }
 
 /**
@@ -730,23 +775,30 @@ export async function addEvents(matchId, events = []) {
     validateEvent(evt, pitchDimensions);
   }
 
-  const sanitized = events.map((evt) => ({
-    match_id: matchId,
-    client_event_id: evt.client_event_id || generateUUID(),
-    team: evt.team,
-    player_id: evt.team === 'own' ? (evt.player_id || null) : null,
-    opponent_number: evt.team === 'opponent' ? Number(evt.opponent_number) : null,
-    period: Number(evt.period || 1),
-    minute: Number(evt.minute || 0),
-    event_type: evt.event_type,
-    outcome: evt.outcome || null,
-    x_m: evt.x_m !== null && evt.x_m !== undefined && evt.x_m !== '' ? Number(evt.x_m) : null,
-    y_m: evt.y_m !== null && evt.y_m !== undefined && evt.y_m !== '' ? Number(evt.y_m) : null,
-    end_x_m: evt.end_x_m !== null && evt.end_x_m !== undefined && evt.end_x_m !== '' ? Number(evt.end_x_m) : null,
-    end_y_m: evt.end_y_m !== null && evt.end_y_m !== undefined && evt.end_y_m !== '' ? Number(evt.end_y_m) : null,
-    note: evt.note || '',
-    video_time_s: evt.video_time_s !== null && evt.video_time_s !== undefined && evt.video_time_s !== '' ? Number(Number(evt.video_time_s).toFixed(1)) : null
-  }));
+  const sanitized = events.map((evt) => {
+    const rawNum = evt.player_number != null && evt.player_number !== '' ? Number(evt.player_number) : null;
+    const validNum = Number.isInteger(rawNum) && rawNum >= 1 && rawNum <= 99 ? rawNum : null;
+    const validName = evt.player_name ? String(evt.player_name).trim() : null;
+    return {
+      match_id: matchId,
+      client_event_id: evt.client_event_id || generateUUID(),
+      team: evt.team,
+      player_id: evt.team === 'own' ? (evt.player_id || null) : null,
+      opponent_number: evt.team === 'opponent' ? Number(evt.opponent_number) : null,
+      period: Number(evt.period || 1),
+      minute: Number(evt.minute || 0),
+      event_type: evt.event_type,
+      outcome: evt.outcome || null,
+      x_m: evt.x_m !== null && evt.x_m !== undefined && evt.x_m !== '' ? Number(evt.x_m) : null,
+      y_m: evt.y_m !== null && evt.y_m !== undefined && evt.y_m !== '' ? Number(evt.y_m) : null,
+      end_x_m: evt.end_x_m !== null && evt.end_x_m !== undefined && evt.end_x_m !== '' ? Number(evt.end_x_m) : null,
+      end_y_m: evt.end_y_m !== null && evt.end_y_m !== undefined && evt.end_y_m !== '' ? Number(evt.end_y_m) : null,
+      note: encodeVisionPlayerMeta(evt.note || '', evt.team === 'own' ? validNum : null, evt.team === 'own' ? validName : null),
+      video_time_s: evt.video_time_s !== null && evt.video_time_s !== undefined && evt.video_time_s !== '' ? Number(Number(evt.video_time_s).toFixed(1)) : null,
+      _player_number: evt.team === 'own' ? validNum : null,
+      _player_name: evt.team === 'own' ? validName : null
+    };
+  });
 
   if (isDemoModeActive()) {
     const store = getDemoStore();
@@ -758,11 +810,14 @@ export async function addEvents(matchId, events = []) {
         (e) => e.client_event_id === item.client_event_id && e.match_id === matchId
       );
       if (!already) {
-        const fullItem = {
-          ...item,
+        const { _player_number, _player_name, ...dbFields } = item;
+        const fullItem = hydrateEventPlayerMeta({
+          ...dbFields,
+          ...(_player_number != null ? { player_number: _player_number } : {}),
+          ...(_player_name ? { player_name: _player_name } : {}),
           id: 'demo-evt-' + generateUUID().slice(0, 8),
           created_at: new Date().toISOString()
-        };
+        });
         existing.push(fullItem);
         addedList.push(fullItem);
       }
@@ -777,13 +832,14 @@ export async function addEvents(matchId, events = []) {
     throw new Error('Koneksi Supabase belum dikonfigurasi.');
   }
 
+  const dbPayload = sanitized.map(({ _player_number, _player_name, ...rest }) => rest);
   const { data, error } = await supabase
     .from('match_events')
-    .upsert(sanitized, { onConflict: 'match_id,client_event_id', ignoreDuplicates: true })
+    .upsert(dbPayload, { onConflict: 'match_id,client_event_id', ignoreDuplicates: true })
     .select();
 
   if (error) throw error;
-  return data || [];
+  return (data || []).map(hydrateEventPlayerMeta);
 }
 
 /**

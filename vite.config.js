@@ -79,6 +79,8 @@ function runPythonSegment({
   fps,
   ownCluster,
   cookiesFromBrowser,
+  teamA,
+  teamB,
   seg,
   segOutPath,
   onSpawn,
@@ -110,6 +112,12 @@ function runPythonSegment({
     }
     if (cookiesFromBrowser) {
       args.push('--cookies-from-browser', cookiesFromBrowser)
+    }
+    if (teamA) {
+      args.push('--team-a', teamA)
+    }
+    if (teamB) {
+      args.push('--team-b', teamB)
     }
 
     const child = spawn(pyExecutable, args, {
@@ -354,6 +362,8 @@ function ballrVisionLocalApiPlugin() {
                   ? body.cookiesFromBrowser.trim().toLowerCase()
                   : ''
               const cookiesFromBrowser = allowedBrowsers.has(rawBrowser) ? rawBrowser : ''
+              const teamA = typeof body.teamA === 'string' ? body.teamA.trim().slice(0, 80) : ''
+              const teamB = typeof body.teamB === 'string' ? body.teamB.trim().slice(0, 80) : ''
               const pyExecutable = process.env.BALLR_PYTHON || 'python'
 
               activeRun = true
@@ -407,6 +417,8 @@ function ballrVisionLocalApiPlugin() {
                     fps: segFps,
                     ownCluster,
                     cookiesFromBrowser,
+                    teamA,
+                    teamB,
                     seg,
                     segOutPath,
                     onSpawn: (child) => {
@@ -453,6 +465,8 @@ function ballrVisionLocalApiPlugin() {
                 } else {
                   let counter = 1
                   const mergedEvents = []
+                  const mergedPlayersMap = new Map()
+                  const mergedPlayerSources = new Set()
                   let totalFramesProcessed = 0
                   let totalVideoFrames = 0
                   let totalElapsed = 0
@@ -468,6 +482,16 @@ function ballrVisionLocalApiPlugin() {
                     weightedBallHits += ((Number(vq.ball_detection_rate_pct) || 0) / 100) * fp
                     weightedPlayers += (Number(vq.avg_players_detected) || 0) * fp
 
+                    for (const dp of data.detected_players || []) {
+                      const k = String(dp?.name || '').toLowerCase()
+                      if (k && !mergedPlayersMap.has(k)) {
+                        mergedPlayersMap.set(k, dp)
+                      }
+                    }
+                    for (const src of data.player_detection?.sources_used || []) {
+                      mergedPlayerSources.add(src)
+                    }
+
                     for (const evt of data.events || []) {
                       const newId = `vision-evt-${String(counter++).padStart(4, '0')}`
                       mergedEvents.push({
@@ -478,6 +502,7 @@ function ballrVisionLocalApiPlugin() {
                     }
                   }
 
+                  const mergedDetectedPlayers = Array.from(mergedPlayersMap.values())
                   const baseVq = segOutputs[0].data.vision_quality || {}
                   finalData = {
                     schema: 'ballr-vision-v1',
@@ -501,11 +526,18 @@ function ballrVisionLocalApiPlugin() {
                       avg_players_detected: Number(
                         (weightedPlayers / Math.max(1, totalFramesProcessed)).toFixed(1)
                       ),
+                      detected_players_count: mergedDetectedPlayers.length,
+                      player_name_sources: Array.from(mergedPlayerSources),
                       segments_analyzed: segments.length,
                       model: baseVq.model || 'BallR Pitch-Aware CV',
                       disclaimer:
                         baseVq.disclaimer ||
                         'Hasil estimasi otomatis dari 1 kamera; wajib ditinjau pelatih sebelum dijadikan laporan resmi.'
+                    },
+                    detected_players: mergedDetectedPlayers,
+                    player_detection: {
+                      sources_used: Array.from(mergedPlayerSources),
+                      detected_count: mergedDetectedPlayers.length
                     },
                     events: mergedEvents
                   }

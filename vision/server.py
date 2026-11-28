@@ -91,7 +91,7 @@ def normalize_segments(body: dict) -> list[dict]:
     }]
 
 
-def run_segment(py_exec: str, raw_url: str, engine: str, fps: float, own_cluster: int, cookies_browser: str, seg: dict, seg_out: str, seg_idx: int, total_segs: int, started_at: float):
+def run_segment(py_exec: str, raw_url: str, engine: str, fps: float, own_cluster: int, cookies_browser: str, seg: dict, seg_out: str, seg_idx: int, total_segs: int, started_at: float, team_a: str = "", team_b: str = ""):
     global _active_proc, _active_progress
     temp_clip = os.path.join(VISION_DIR, "match_clip.mp4")
     if os.path.exists(temp_clip):
@@ -118,6 +118,10 @@ def run_segment(py_exec: str, raw_url: str, engine: str, fps: float, own_cluster
         cmd.append("--flip-pitch")
     if cookies_browser:
         cmd.extend(["--cookies-from-browser", cookies_browser])
+    if team_a:
+        cmd.extend(["--team-a", team_a])
+    if team_b:
+        cmd.extend(["--team-b", team_b])
 
     proc = subprocess.Popen(
         cmd,
@@ -265,6 +269,8 @@ class VisionApiHandler(BaseHTTPRequestHandler):
             engine = body.get("engine") if body.get("engine") in ALLOWED_ENGINES else "pitch_cv"
             raw_browser = str(body.get("cookiesFromBrowser") or "").strip().lower()
             cookies_browser = raw_browser if raw_browser in ALLOWED_BROWSERS else ""
+            team_a = str(body.get("teamA") or "").strip()[:80]
+            team_b = str(body.get("teamB") or "").strip()[:80]
             py_exec = os.environ.get("BALLR_PYTHON") or sys.executable
             started_at = time.time()
 
@@ -277,19 +283,28 @@ class VisionApiHandler(BaseHTTPRequestHandler):
                 seg_dur = max(10, seg["endSec"] - seg["startSec"])
                 seg_fps = min(req_fps, 0.35) if seg_dur > 1200 else (min(req_fps, 0.75) if seg_dur > 300 else req_fps)
                 seg_out = LATEST_PATH if len(segments) == 1 else os.path.join(VISION_DIR, f"ballr_analysis_p{seg['period']}.json")
-                data = run_segment(py_exec, raw_url, engine, seg_fps, own_cluster, cookies_browser, seg, seg_out, idx, len(segments), started_at)
+                data = run_segment(py_exec, raw_url, engine, seg_fps, own_cluster, cookies_browser, seg, seg_out, idx, len(segments), started_at, team_a=team_a, team_b=team_b)
                 seg_outputs.append(data)
 
             final_data = seg_outputs[0]
             if len(seg_outputs) > 1:
                 merged_events = []
+                merged_players = {}
                 counter = 1
                 for d in seg_outputs:
+                    for dp in d.get("detected_players") or []:
+                        k = str(dp.get("name") or "").lower()
+                        if k and k not in merged_players:
+                            merged_players[k] = dp
                     for evt in d.get("events") or []:
                         new_id = f"vision-evt-{counter:04d}"
                         counter += 1
                         merged_events.append({**evt, "id": new_id, "client_event_id": new_id})
-                final_data = {**seg_outputs[0], "events": merged_events}
+                final_data = {
+                    **seg_outputs[0],
+                    "detected_players": list(merged_players.values()),
+                    "events": merged_events,
+                }
                 with open(LATEST_PATH, "w", encoding="utf-8") as f:
                     json.dump(final_data, f, indent=2, ensure_ascii=False)
 

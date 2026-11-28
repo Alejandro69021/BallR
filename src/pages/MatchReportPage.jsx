@@ -11,7 +11,12 @@ import {
   Lock
 } from 'lucide-react';
 import { getMatch, listEvents, listParticipants, formatMatchError } from '../lib/matches';
-import { loadPlayerSlotMap, applyPlayerSlotMap } from '../lib/playerSlotMap';
+import {
+  loadPlayerSlotMap,
+  loadSlotNameMap,
+  loadDetectedPlayers,
+  applyPlayerSlotMap
+} from '../lib/playerSlotMap';
 import { listScenarios } from '../lib/scenarios';
 import {
   countsByPlayer,
@@ -96,7 +101,8 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           };
         }
       });
-      setEvents(applyPlayerSlotMap(evts || [], savedSlotMap, partLookup));
+      const savedSlotNameMap = loadSlotNameMap(matchId);
+      setEvents(applyPlayerSlotMap(evts || [], savedSlotMap, partLookup, savedSlotNameMap));
       setParticipants(parts || []);
       setPublishedScenarios((scenList || []).filter((s) => s.status === 'published'));
       setLatestSnapshot(snap || null);
@@ -335,23 +341,57 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
     .replace(/^(?:contoh:\s*)?(?:vs\.?\s*)?/i, '')
     .trim();
 
-  // Fallback Bagian 5: bila data memakai slot deteksi video (#1–#11) tanpa player_id
+  // Fallback Bagian 5: bila data berasal dari analisis video tanpa player_id roster
+  const savedSlotNameMap = loadSlotNameMap(activeMatch?.id || matchId);
+  const savedDetectedPlayers = loadDetectedPlayers(activeMatch?.id || matchId);
+  const detectedBySlot = {};
+  savedDetectedPlayers.forEach((dp) => {
+    const key = dp?.slot_number != null ? Number(dp.slot_number) : dp?.jersey_number != null ? Number(dp.jersey_number) : null;
+    if (key != null && dp?.name && !detectedBySlot[key]) {
+      detectedBySlot[key] = dp;
+    }
+  });
+
+  const inferZoneSlotNumber = (xVal, yVal, L, W) => {
+    if (xVal == null || yVal == null) return 6;
+    const xPct = Number(xVal) / Math.max(1, L);
+    const yPct = Number(yVal) / Math.max(1, W);
+    if (xPct < 0.16) return 1;
+    if (xPct < 0.36) return yPct < 0.28 ? 3 : yPct > 0.72 ? 2 : yPct < 0.5 ? 4 : 5;
+    if (xPct < 0.68) return yPct < 0.25 ? 11 : yPct > 0.75 ? 7 : yPct < 0.5 ? 6 : 8;
+    return yPct < 0.35 ? 10 : 9;
+  };
+
   const reportPlayerRows = (() => {
     if (hasRosterEvents) return activePlayerStats.rows;
-    const ownVisionEvts = (activeEvents || []).filter(
-      (e) => e.team === 'own' && e.player_number != null
-    );
-    if (ownVisionEvts.length === 0) return activePlayerStats.rows;
+    const ownEvts = (activeEvents || []).filter((e) => e.team === 'own');
+    if (ownEvts.length === 0) return activePlayerStats.rows;
     const L = Number(activeMatch.pitch_length_m) || 90;
     const W = Number(activeMatch.pitch_width_m) || 60;
     const byNum = {};
-    ownVisionEvts.forEach((e) => {
-      const num = Number(e.player_number);
+    ownEvts.forEach((e) => {
+      const num =
+        e.player_number != null && Number.isFinite(Number(e.player_number))
+          ? Number(e.player_number)
+          : inferZoneSlotNumber(e.x_m, e.y_m, L, W);
+      const detectedInfo = detectedBySlot[num];
+      const resolvedName =
+        String(e.player_name || '').trim() ||
+        String(savedSlotNameMap[String(num)] || '').trim() ||
+        String(detectedInfo?.name || '').trim() ||
+        `Slot Video #${num}`;
+      const nameSourceLabel =
+        String(savedSlotNameMap[String(num)] || '').trim()
+          ? 'Nama dari daftar tim'
+          : String(e.player_name || '').trim() || detectedInfo?.name
+            ? 'Terdeteksi dari video'
+            : 'Belum diberi nama';
       if (!byNum[num]) {
         byNum[num] = {
           player_id: `slot-${num}`,
-          jersey_number: num,
-          player_name: `Pemain #${num} · Deteksi Video`,
+          jersey_number: detectedInfo?.jersey_number || num,
+          player_name: resolvedName,
+          name_source: nameSourceLabel,
           position: 'Slot Video',
           is_starter: true,
           minutes_played: activeDq?.last_minute?.value || 45,
@@ -361,6 +401,9 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           sy: 0,
           cn: 0
         };
+      } else if (byNum[num].player_name.startsWith('Slot Video #') && !resolvedName.startsWith('Slot Video #')) {
+        byNum[num].player_name = resolvedName;
+        byNum[num].name_source = nameSourceLabel;
       }
       const row = byNum[num];
       row.n += 1;
@@ -901,7 +944,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                   <div>
                     <span className="font-semibold text-1 block">{name}</span>
                     <span className="text-sm text-2 font-mono">
-                      {formatPositionLabel(row.position)} • {row.is_starter ? 'Starter' : 'Cadangan'}
+                      {formatPositionLabel(row.position).replace(/\s*\([^)]*\)/g, '')} • {row.name_source || (row.is_starter ? 'Starter' : 'Cadangan')}
                     </span>
                   </div>
                 );
@@ -933,7 +976,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             },
             {
               key: 'n',
-              header: 'Total (n)',
+              header: 'Total Aksi',
               render: (_val, row) => (
                 <div className="text-right">
                   <span className="font-mono text-sm font-bold text-1">{row.n}</span>
