@@ -639,6 +639,8 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             </h1>
             <p className="text-sm text-2 font-mono mt-1">
               Tanggal: {activeMatch.match_date || '-'} • Format: {activeMatch.format || '11v11'} • Lapangan: {activeMatch.pitch_length_m}&times;{activeMatch.pitch_width_m}m
+              {activeMatch.venue ? ` • ${activeMatch.venue}` : ''}
+              {activeMatch.head_coach ? ` • Pelatih: ${activeMatch.head_coach}` : ''}
             </p>
           </div>
           <div className="flex sm:flex-col items-baseline sm:items-center justify-between sm:justify-center gap-2 sm:gap-0 px-4 py-2 rounded-control bg-raised border border-line text-center shrink-0">
@@ -650,6 +652,20 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             </div>
           </div>
         </div>
+
+        {Array.isArray(activeMatch.official_events) && activeMatch.official_events.length > 0 && (
+          <div className="p-3 rounded-control bg-raised border border-line text-sm space-y-1.5 print-avoid-break">
+            <span className="font-semibold text-1 block">Lini Masa Resmi Pertandingan · Gol, Kartu &amp; Pergantian</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 print:grid-cols-2 gap-x-4 gap-y-1 text-sm">
+              {activeMatch.official_events.map((ev, idx) => (
+                <div key={`off-${idx}`} className="flex items-start gap-2 text-2">
+                  <span className="font-mono font-semibold text-1 shrink-0 w-10">{ev.minute}</span>
+                  <span>{ev.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {activeMatch.notes && (
           <div className="p-3 rounded-control bg-raised border border-line text-sm text-2 leading-relaxed">
@@ -851,7 +867,9 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         </div>
 
         <p className="text-sm text-2 italic">
-          Pengamatan satu laga: data lawan dicatat secara terbatas dari sudut pandang pelatih tim kita di pinggir lapangan.
+          {isVisionData
+            ? 'Pengamatan satu laga: data lawan diekstrak dari rekaman video pertandingan secara terbatas.'
+            : 'Pengamatan satu laga: data lawan dicatat secara terbatas dari sudut pandang pelatih tim kita di pinggir lapangan.'}
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
@@ -1004,19 +1022,20 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
       {/* SECTION 6: PETA KEJADIAN */}
       <section className="space-y-4 pb-6 border-b border-line">
-        <div className="print-keep-with-next">
-          <span className="text-sm font-mono uppercase tracking-wider text-2">
-            Bagian 6 • Distribusi Spasial
-          </span>
-          <h2 className="text-xl font-bold text-1">Peta Kejadian</h2>
-          <p className="text-sm text-2 font-mono mt-0.5">
-            {isVisionData
-              ? 'Hasil deteksi otomatis dari video. Tampilan disederhanakan agar langsung terbaca.'
-              : 'Data pencatatan manual; bukan pelacakan otomatis.'}
-          </p>
-        </div>
+        <div className="space-y-4 print-avoid-break">
+          <div className="print-keep-with-next">
+            <span className="text-sm font-mono uppercase tracking-wider text-2">
+              Bagian 6 • Distribusi Spasial
+            </span>
+            <h2 className="text-xl font-bold text-1">Peta Kejadian</h2>
+            <p className="text-sm text-2 font-mono mt-0.5">
+              {isVisionData
+                ? 'Hasil deteksi otomatis dari video. Tampilan disederhanakan agar langsung terbaca.'
+                : 'Data pencatatan manual; bukan pelacakan otomatis.'}
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-4">
           {/* Figure A: Peta Tembakan & Gol atau Sebaran Titik Aksi */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-2">
             <span className="font-semibold text-1 text-sm block">
@@ -1149,6 +1168,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                 Solid: Sukses • Putus-putus: Gagal
               </div>
             )}
+          </div>
           </div>
         </div>
 
@@ -1335,19 +1355,25 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </p>
         </div>
 
-        <div className="space-y-3 print:space-y-0 print:grid print:grid-cols-2 print:gap-2">
+        <div className="space-y-3 print:space-y-0 print:grid print:grid-cols-2 print:gap-1.5">
           {METRIC_DEFINITIONS.map((m) => (
-            <div key={m.id} className="p-3 print:p-2 rounded-control bg-raised border border-line text-sm space-y-1.5 print:space-y-1 print-avoid-break">
+            <div key={m.id} className="p-3 print:p-2 rounded-control bg-raised border border-line text-sm space-y-1.5 print:space-y-0.5 print-avoid-break">
               <div className="flex items-center justify-between gap-2">
                 <span className="font-semibold text-1 text-sm">{m.name}</span>
                 <span className="font-mono text-2 shrink-0">{m.unit}</span>
               </div>
-              <p className="text-2 leading-relaxed print:leading-snug">{m.definition}</p>
+              <p className="text-2 leading-relaxed print:leading-tight">{m.definition}</p>
               <div className="font-mono text-sm bg-app p-2 rounded border border-line text-1 print:hidden">
                 Rumus: {m.formula}
               </div>
-              <p className="text-sm text-2 italic print:leading-snug">
-                Batasan: {m.limitations}
+              <p className="text-sm text-2 italic print:leading-tight">
+                Batasan:{' '}
+                {isVisionData
+                  ? m.limitations
+                      .replace(/pencatatan manual oleh staf pelatih di pinggir lapangan/gi, 'deteksi video otomatis satu kamera')
+                      .replace(/Pencatatan manual oleh pelatih; belum diverifikasi silang dengan rekaman video multi-sudut/gi, 'Analisis video otomatis satu kamera; perlu verifikasi pelatih untuk aksi tanpa bola')
+                      .replace(/data kejadian on-ball manual tanpa pelacakan posisi 22 pemain/gi, 'deteksi video otomatis tanpa pelacakan optik multi-kamera')
+                  : m.limitations}
               </p>
               {m.reference_ids && m.reference_ids.length > 0 && (
                 <div className="flex items-center gap-2 pt-1 print:hidden">

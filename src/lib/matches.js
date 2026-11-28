@@ -322,8 +322,44 @@ function createInitialDemoState() {
     { id: 'demo-draft-evt-03', match_id: draftMatchId, client_event_id: 'd-evt-03', period: 1, minute: 8.0, team: 'own', player_id: 'WK-2026-0042', opponent_number: null, event_type: 'key_pass', outcome: 'success', x_m: 60.0, y_m: 35.0, end_x_m: 78.0, end_y_m: 30.0, note: '' }
   ];
 
-  // Third match: Liga Sleman 2026 YouTube Live match (ready to tag, zero fabricated events)
+  // Third match: Liga Sleman 2026 official match (PS Angkatan Muda Seyegan vs PS Palma, 22 Nov 2026)
   const ligaSlemanId = 'demo-match-liga-sleman-01';
+  const ligaSlemanOfficialParticipants = [
+    { match_id: ligaSlemanId, player_id: 'ams-1', player_name: 'Baru Dibya Hartarta', jersey_number: 1, position: 'GK', minutes_played: 69, is_starter: true, goals_scored: 0, goals_conceded: 2 },
+    { match_id: ligaSlemanId, player_id: 'ams-2', player_name: "Ahmad Rafi' Dwi Santoso", jersey_number: 2, position: 'CB', minutes_played: 94, is_starter: true, goals_scored: 0, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-4', player_name: 'Ferdian Nur Santoso', jersey_number: 4, position: 'LM', minutes_played: 29, is_starter: false, goals_scored: 0, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-6', player_name: 'Landung Herdan Hutomo', jersey_number: 6, position: 'CM', minutes_played: 94, is_starter: true, goals_scored: 1, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-9', player_name: 'Wahyu Arya Saputra', jersey_number: 9, position: 'DF', minutes_played: 65, is_starter: true, goals_scored: 0, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-10', player_name: 'Rafii Irwananta', jersey_number: 10, position: 'CM', minutes_played: 46, is_starter: true, goals_scored: 0, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-12', player_name: 'Benedictus Tintyo Engenori', jersey_number: 12, position: 'LWF', minutes_played: 94, is_starter: true, goals_scored: 1, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-13', player_name: 'Mukhlisin', jersey_number: 13, position: 'LWB', minutes_played: 94, is_starter: true, goals_scored: 0, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-14', player_name: 'Risang Dananjaya', jersey_number: 14, position: 'AM', minutes_played: 94, is_starter: true, goals_scored: 0, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-15', player_name: 'Widi Aryanto', jersey_number: 15, position: 'CM', minutes_played: 94, is_starter: true, is_captain: true, goals_scored: 0, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-20', player_name: 'Muhammad Rizki Saputra', jersey_number: 20, position: 'LWF', minutes_played: 18, is_starter: false, goals_scored: 0, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-21', player_name: 'Erlanda Aryawan', jersey_number: 21, position: 'CM', minutes_played: 94, is_starter: true, goals_scored: 0, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-22', player_name: 'Rizal Daniel Calvinno', jersey_number: 22, position: 'DM', minutes_played: 48, is_starter: false, goals_scored: 0, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-24', player_name: 'Rizky Apri Kurniawan', jersey_number: 24, position: 'RW', minutes_played: 65, is_starter: true, goals_scored: 0, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-32', player_name: 'Kukuh Hartono', jersey_number: 32, position: 'RM', minutes_played: 11, is_starter: false, goals_scored: 1, goals_conceded: 0 },
+    { match_id: ligaSlemanId, player_id: 'ams-33', player_name: 'Muhammad Rafli Firmansyah', jersey_number: 33, position: 'GK', minutes_played: 25, is_starter: false, goals_scored: 0, goals_conceded: 1 }
+  ];
+
+  const ligaSlemanOfficialEvents = [
+    { minute: "2'", team: 'opponent', type: 'goal', text: 'Gol PS Palma: Devin Perdana Putra #11' },
+    { minute: "24'", team: 'opponent', type: 'yellow_card', text: 'Kartu Kuning PS Palma: Muh Rudy Kurniawan #2' },
+    { minute: "25'", team: 'own', type: 'goal', text: 'Gol AMS Seyegan: Benedictus Tintyo Engenori #12' },
+    { minute: 'HT', team: 'own', type: 'sub', text: 'Pergantian AMS Seyegan: Masuk Rizal Daniel Calvinno #22, Keluar Rafii Irwananta #10' },
+    { minute: "55'", team: 'opponent', type: 'sub', text: 'Pergantian PS Palma: Masuk Happy Reygarcia Alhasnie #19, Keluar Muhammad Achzen Radityatama Cholid #16' },
+    { minute: "62'", team: 'opponent', type: 'goal', text: 'Gol PS Palma: Bagus Khairil Anwar #7' },
+    { minute: "65'", team: 'own', type: 'sub', text: 'Pergantian AMS Seyegan: Masuk Muhammad Rizki Saputra #20 & Ferdian Nur Santoso #4, Keluar Rizky Apri Kurniawan #24 & Wahyu Arya Saputra #9' },
+    { minute: "69'", team: 'own', type: 'sub', text: 'Pergantian AMS Seyegan: Masuk Muhammad Rafli Firmansyah #33, Keluar Baru Dibya Hartarta #1' },
+    { minute: "75'", team: 'opponent', type: 'goal', text: 'Gol PS Palma: Riko Aldi Nugroho #9' },
+    { minute: "76'", team: 'opponent', type: 'sub', text: 'Pergantian PS Palma: Masuk Moch Bismo Ramadhansyah Putra #28, Keluar Muh Rudy Kurniawan #2' },
+    { minute: "83'", team: 'own', type: 'sub', text: 'Pergantian AMS Seyegan: Masuk Kukuh Hartono #32, Keluar Muhammad Rizki Saputra #20' },
+    { minute: "87'", team: 'opponent', type: 'sub', text: 'Pergantian PS Palma: Masuk Muhammad Irfan Sandow #3, Keluar Fauzan Ardianto #18' },
+    { minute: "90'", team: 'own', type: 'goal', text: 'Gol AMS Seyegan: Kukuh Hartono #32' },
+    { minute: "90+2'", team: 'own', type: 'goal', text: 'Gol AMS Seyegan: Landung Herdan Hutomo #6' }
+  ];
+
   const ligaSlemanMatch = {
     id: ligaSlemanId,
     academy_id: 'demo-academy-01',
@@ -331,13 +367,16 @@ function createInitialDemoState() {
     opponent_name: 'PS Palma',
     match_date: '2026-11-22',
     competition: 'Seri A | Liga Sleman 2026',
+    venue: 'Maguwoharjo Sleman, Kab. Sleman',
+    head_coach: 'Lafran Pribadi',
     age_group: 'Seri A',
     format: '11v11',
     pitch_length_m: 90,
     pitch_width_m: 60,
-    own_score: null,
-    opponent_score: null,
-    status: 'draft',
+    own_score: 3,
+    opponent_score: 3,
+    status: 'final',
+    official_events: ligaSlemanOfficialEvents,
     youtube_video_id: 'utJElEonijc',
     video_offset_s: null,
     video_offset_p2_s: null,
@@ -351,7 +390,7 @@ function createInitialDemoState() {
     version: DEMO_STORE_VERSION,
     matches: [ligaSlemanMatch, initialMatch, draftMatch],
     participants: {
-      [ligaSlemanId]: initialParticipants.map((p) => ({ ...p, match_id: ligaSlemanId })),
+      [ligaSlemanId]: ligaSlemanOfficialParticipants,
       [matchId]: initialParticipants,
       [draftMatchId]: draftParticipants
     },
@@ -379,6 +418,31 @@ export function getDemoStore() {
       const fresh = createInitialDemoState();
       window.localStorage.setItem(DEMO_STORE_KEY, JSON.stringify(fresh));
       return fresh;
+    }
+    // Auto-sync official PSSI Sleman lineup & timeline for demo-match-liga-sleman-01 if outdated
+    const ligaId = 'demo-match-liga-sleman-01';
+    const existingParts = parsed.participants?.[ligaId] || [];
+    const existingMatch = (parsed.matches || []).find((m) => m.id === ligaId);
+    if (
+      existingMatch &&
+      (!existingMatch.official_events ||
+        existingParts.length < 16 ||
+        !existingParts.some((p) => String(p.player_id || '').startsWith('ams-')))
+    ) {
+      const fresh = createInitialDemoState();
+      const freshMatch = fresh.matches.find((m) => m.id === ligaId);
+      if (freshMatch) {
+        existingMatch.home_team_name = freshMatch.home_team_name;
+        existingMatch.opponent_name = freshMatch.opponent_name;
+        existingMatch.venue = freshMatch.venue;
+        existingMatch.head_coach = freshMatch.head_coach;
+        existingMatch.official_events = freshMatch.official_events;
+        if (existingMatch.own_score == null) existingMatch.own_score = 3;
+        if (existingMatch.opponent_score == null) existingMatch.opponent_score = 3;
+      }
+      parsed.participants = parsed.participants || {};
+      parsed.participants[ligaId] = fresh.participants[ligaId];
+      window.localStorage.setItem(DEMO_STORE_KEY, JSON.stringify(parsed));
     }
     return parsed;
   } catch (e) {
