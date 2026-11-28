@@ -826,31 +826,6 @@ export default function TacticalMatchAnalysis({
           <span>Muat Vision Terbaru</span>
         </button>
 
-        <details className="relative" data-testid="vision-backup-menu">
-          <summary className="min-h-[44px] sm:min-h-[38px] px-3 py-1.5 rounded-control bg-app border border-line hover:border-brand text-sm font-medium text-2 hover:text-1 inline-flex items-center gap-1.5 cursor-pointer select-none list-none">
-            <span>Opsi Lanjutan / Backup</span>
-          </summary>
-          <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-1.5 z-30 min-w-[230px] flex flex-col gap-1 p-1.5 rounded-control bg-panel border border-line shadow-popover">
-            <button
-              type="button"
-              onClick={handleExportJson}
-              className="w-full min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-control hover:bg-raised text-sm font-medium text-1 inline-flex items-center gap-2 cursor-pointer text-left transition-colors"
-            >
-              <Download className="w-4 h-4 text-brand shrink-0" />
-              <span>Simpan Backup Analisis</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-control hover:bg-raised text-sm font-medium text-1 inline-flex items-center gap-2 cursor-pointer text-left transition-colors"
-            >
-              <Upload className="w-4 h-4 text-brand shrink-0" />
-              <span>Muat File Backup</span>
-            </button>
-          </div>
-        </details>
-
         <input
           ref={fileInputRef}
           type="file"
@@ -1089,6 +1064,30 @@ export default function TacticalMatchAnalysis({
           )}
         </div>
       </div>
+
+          {/* Opsi Lanjutan / Backup (rata kiri, rapi di dalam Pengaturan Video & Tim) */}
+          <div className="pt-3 border-t border-line space-y-2" data-testid="vision-backup-menu">
+            <span className="block text-sm font-semibold text-1">Opsi Lanjutan / Backup</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={handleExportJson}
+                className="min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-control bg-panel border border-line hover:border-brand text-sm font-medium text-1 inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <Download className="w-4 h-4 text-brand shrink-0" />
+                <span>Simpan Backup Analisis</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-control bg-panel border border-line hover:border-brand text-sm font-medium text-1 inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <Upload className="w-4 h-4 text-brand shrink-0" />
+                <span>Muat File Backup</span>
+              </button>
+            </div>
+          </div>
         </div>
       </details>
 
