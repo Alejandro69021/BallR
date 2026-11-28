@@ -25,12 +25,17 @@ export default function LandingHeader({
   };
 
   return (
-    <header id="bilah-atas" className="sticky top-0 z-40 w-full backdrop-blur-md bg-chalk/95 border-b border-line">
+    <header id="bilah-atas" className="sticky top-0 z-40 w-full backdrop-blur-lg bg-chalk/75 border-b border-line/80 shadow-xs">
       <div data-testid="landing-container" className="max-w-[1160px] mx-auto w-full px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
         {/* Brand Wordmark with Clean Wrapper to Avoid Tailwind display Clash */}
         <Link
           to="/"
-          className="flex items-center gap-2 rounded-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pitch shrink-0"
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
+          className="flex items-center gap-2 rounded-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pitch shrink-0 transition-transform active:scale-95"
           aria-label="ProspekBola Halaman Depan"
         >
           <span className="sm:hidden flex items-center">

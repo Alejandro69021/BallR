@@ -162,9 +162,10 @@ function MainApp() {
     }
   };
 
-  // Selalu hormati pilihan tema pengguna ('paper' | 'dark') di semua halaman.
-  // Saat cetak A4 (@media print di src/index.css), tampilan otomatis beralih ke kertas putih.
-  const surface = themePreference;
+  // Halaman depan & privasi selalu memakai tema kertas terang agar kontras editorial tetap tajam.
+  // Di halaman aplikasi, selalu hormati pilihan tema pengguna ('paper' | 'dark').
+  const isEditorialPublicRoute = location.pathname === '/' || location.pathname === '/privasi';
+  const surface = isEditorialPublicRoute ? 'paper' : themePreference;
 
   useEffect(() => {
     if (typeof document !== 'undefined') {

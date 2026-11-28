@@ -1310,12 +1310,12 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                     <summary className="text-sm font-semibold text-1 cursor-pointer select-none">
                       Hubungkan Nomor Deteksi Video ke Pemain Skuad
                     </summary>
-                    <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="mt-2 grid grid-cols-1 gap-2">
                       {eventCountsByPlayer.ownList
                         .filter((p) => p.slotNum != null)
                         .map((p) => (
-                          <label key={`map-${p.slotNum}`} className="flex items-center justify-between gap-2 text-sm text-2">
-                            <span className="font-medium text-1 shrink-0">
+                          <label key={`map-${p.slotNum}`} className="flex items-center justify-between gap-3 text-sm text-2 min-w-0">
+                            <span className="font-medium text-1 truncate">
                               #{p.slotNum} {p.role ? `· ${p.role}` : ''}
                             </span>
                             <select
@@ -1329,7 +1329,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                                   return next;
                                 });
                               }}
-                              className="px-2 py-1 rounded-control bg-panel border border-control text-sm text-1 max-w-[160px]"
+                              className="px-2.5 py-1.5 rounded-control bg-panel border border-control text-sm text-1 w-44 sm:w-52 shrink-0"
                             >
                               <option value="">Biarkan #{p.slotNum}</option>
                               {participants.map((part) => {
