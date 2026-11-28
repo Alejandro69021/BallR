@@ -91,6 +91,11 @@ export default function StoryFlexCardModal({
       });
     } catch (err) {
       console.error('Gagal mengekspor kartu perkembangan:', err);
+      onToast?.({
+        title: 'Gagal mengunduh kartu',
+        subtext: 'Coba ulangi beberapa saat lagi.',
+        variant: 'error'
+      });
     } finally {
       setIsExporting(false);
     }
@@ -102,7 +107,7 @@ export default function StoryFlexCardModal({
     const rawName = player?.personal_info?.full_name;
     const name = formatPlayerName(rawName, isPrivate);
     const pos = player?.personal_info?.position || 'Belum ada data';
-    const text = `Kartu Perkembangan: ${name} (${pos}) - Data resmi tersimpan di paspor.`;
+    const text = `Kartu Perkembangan: ${name} · ${pos} - Data resmi tersimpan di paspor.`;
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).catch(() => {});

@@ -79,22 +79,19 @@ export default function StoryCardCanvas({
       <div
         ref={cardRef}
         data-testid="progress-card-canvas"
-        className="relative w-full max-w-[360px] rounded-panel overflow-hidden text-white font-sans select-none shadow-lg border border-emerald-900/60"
-        style={{
-          background: 'linear-gradient(160deg, #0c1f17 0%, #123124 52%, #0a1812 100%)'
-        }}
+        className="relative w-full max-w-[360px] rounded-panel overflow-hidden bg-pitch text-chalk font-sans select-none shadow-lg border border-mint/25"
       >
         {/* Subtle Football Pitch Line Watermark (Editorial, Zero Neon) */}
         <svg
           aria-hidden="true"
           viewBox="0 0 360 540"
-          className="absolute inset-0 w-full h-full pointer-events-none opacity-10"
+          className="absolute inset-0 w-full h-full pointer-events-none opacity-10 text-chalk"
         >
-          <rect x="18" y="18" width="324" height="504" fill="none" stroke="#ffffff" strokeWidth="1.5" />
-          <line x1="18" y1="270" x2="342" y2="270" stroke="#ffffff" strokeWidth="1.2" />
-          <circle cx="180" cy="270" r="54" fill="none" stroke="#ffffff" strokeWidth="1.2" />
-          <rect x="86" y="18" width="188" height="72" fill="none" stroke="#ffffff" strokeWidth="1.2" />
-          <rect x="86" y="450" width="188" height="72" fill="none" stroke="#ffffff" strokeWidth="1.2" />
+          <rect x="18" y="18" width="324" height="504" fill="none" stroke="currentColor" strokeWidth="1.5" />
+          <line x1="18" y1="270" x2="342" y2="270" stroke="currentColor" strokeWidth="1.2" />
+          <circle cx="180" cy="270" r="54" fill="none" stroke="currentColor" strokeWidth="1.2" />
+          <rect x="86" y="18" width="188" height="72" fill="none" stroke="currentColor" strokeWidth="1.2" />
+          <rect x="86" y="450" width="188" height="72" fill="none" stroke="currentColor" strokeWidth="1.2" />
         </svg>
 
         <div className="relative z-10 p-5 space-y-4">

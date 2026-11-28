@@ -57,7 +57,7 @@ describe('B2 Migrated Components Tests', () => {
       );
 
       expect(screen.getAllByText(/Mode demo/i).length).toBeGreaterThan(0);
-      const coachDemoBtn = screen.getByRole('button', { name: /Masuk pelatih \(Mode demo\)/i });
+      const coachDemoBtn = screen.getByRole('button', { name: /Masuk Pelatih/i });
       fireEvent.click(coachDemoBtn);
       expect(onSuccess).toHaveBeenCalledWith('coach', 'assessment');
     });

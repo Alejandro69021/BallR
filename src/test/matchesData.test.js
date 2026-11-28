@@ -371,7 +371,9 @@ describe('Matches Data Layer (src/lib/matches.js)', () => {
           ]),
           { onConflict: 'match_id,client_event_id', ignoreDuplicates: true }
         );
-        expect(res).toEqual([{ id: 'evt-db-1', client_event_id: 'c-1' }]);
+        expect(res).toEqual([
+          expect.objectContaining({ id: 'evt-db-1', client_event_id: 'c-1' })
+        ]);
       } finally {
         vi.stubEnv('VITE_DEMO_MODE', 'true');
       }

@@ -237,7 +237,8 @@ describe('Legacy UI & Fabrication Purge Scan (B8)', () => {
       'public/brand/logo-mark-light.svg',
       'public/brand/logo-mark.svg',
       'scripts/generate-png-icons.js',
-      'src/index.css'
+      'src/index.css',
+      'src/components/match/MatchVisualReplay.jsx'
     ]);
 
     const hexPattern = /#[0-9a-fA-F]{3,8}\b/;

@@ -14,7 +14,7 @@ describe('Shared Layout Route Verification', () => {
 
     // Extract SharedCoachLayout route block
     const layoutMatch = appSource.match(
-      /<Route\s+element=\{<SharedCoachLayout\s*\/>\}>([\s\S]*?)<\/Route>/
+      /<Route\s+element=\{<SharedCoachLayout[^>]*\/>\}>([\s\S]*?)<\/Route>/
     );
     expect(layoutMatch).toBeTruthy();
     const layoutBlock = layoutMatch[1];

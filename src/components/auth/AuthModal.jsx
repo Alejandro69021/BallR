@@ -56,7 +56,7 @@ export default function AuthModal({
     <Dialog
       isOpen={isOpen}
       onClose={onClose}
-      title="Masuk ke BallR"
+      title="Masuk ke ProspekBola"
       description="Akses staf pelatih dan orang tua/wali"
       className="max-w-sm"
     >
@@ -182,7 +182,7 @@ export default function AuthModal({
               onClick={() => handleDemoLogin('coach')}
               className="w-full text-sm"
             >
-              Masuk pelatih (Mode demo)
+              Masuk Pelatih
             </Button>
             <Button
               type="button"
@@ -191,7 +191,7 @@ export default function AuthModal({
               onClick={() => handleDemoLogin('parent')}
               className="w-full text-sm"
             >
-              Masuk orang tua (Mode demo)
+              Masuk Orang Tua
             </Button>
           </div>
         </div>
