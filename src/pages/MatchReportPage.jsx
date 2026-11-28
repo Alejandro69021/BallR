@@ -440,6 +440,21 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       for (let c = 0; c < 3; c += 1) {
         const count = counts[r][c];
         const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+        const ratio = maxCount > 0 ? count / maxCount : 0;
+        const fillClass =
+          ratio >= 0.7
+            ? 'fill-danger stroke-line'
+            : ratio >= 0.35
+              ? 'fill-warning stroke-line'
+              : 'fill-1 stroke-line';
+        const opacity =
+          ratio >= 0.7
+            ? 0.52
+            : ratio >= 0.35
+              ? 0.38
+              : count > 0
+                ? 0.08
+                : 0.02;
         cells.push({
           key: `z-${r}-${c}`,
           x: (pitchLenReport / 3) * c,
@@ -448,7 +463,8 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           h: pitchWidReport / 3,
           count,
           pct,
-          opacity: count > 0 ? 0.1 + (count / maxCount) * 0.45 : 0.03,
+          fillClass,
+          opacity,
           label: `${colLabels[c]} ${rowLabels[r]}`
         });
       }
@@ -1016,7 +1032,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                         y={cell.y}
                         width={cell.w}
                         height={cell.h}
-                        className="fill-brand stroke-line"
+                        className={cell.fillClass}
                         fillOpacity={cell.opacity}
                         strokeWidth="0.35"
                       />
@@ -1055,11 +1071,31 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                     />
                   ))}
             </PitchSvg>
-            <div className="text-2 text-sm font-mono text-center">
-              {isDenseMapB
-                ? 'Semakin pekat = area paling sering dimainkan • Kiri → Kanan'
-                : 'Solid: Sukses • Putus-putus: Gagal'}
-            </div>
+            {isDenseMapB ? (
+              <>
+                <div className="flex items-center justify-center gap-3 flex-wrap text-2 text-sm">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-xs bg-1/15 border border-line inline-block" />
+                    Jarang
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-xs bg-warning/70 border border-line inline-block" />
+                    Sedang
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-xs bg-danger/80 border border-line inline-block" />
+                    Paling Ramai
+                  </span>
+                </div>
+                <div className="text-2 text-sm font-mono text-center">
+                  Arah serang: Kiri &rarr; Kanan
+                </div>
+              </>
+            ) : (
+              <div className="text-2 text-sm font-mono text-center">
+                Solid: Sukses • Putus-putus: Gagal
+              </div>
+            )}
           </div>
         </div>
 

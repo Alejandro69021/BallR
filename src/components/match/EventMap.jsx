@@ -506,8 +506,18 @@ export default function EventMap({
           )}
           {mode === 'zones' && (
             <>
-              <span>Angka di kotak = jumlah kejadian di zona tersebut (total berkoordinat: {zoneData.total_with_coords})</span>
-              <span>Semakin gelap warna hijau, semakin sering aksi terjadi di area itu</span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-xs bg-1/15 border border-line inline-block" /> Jarang
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-xs bg-warning/70 border border-line inline-block" /> Sedang
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-xs bg-danger/80 border border-line inline-block" /> Paling Ramai
+              </span>
+              <span className="text-2">
+                (Total berkoordinat: {zoneData.total_with_coords})
+              </span>
             </>
           )}
         </div>
@@ -718,7 +728,21 @@ export default function EventMap({
                 const cellH = pitchWidthM / 3;
                 const cellX = cell.col * cellW;
                 const cellY = cell.row * cellH;
-                const opacity = maxZoneCount > 0 ? (cell.count / maxZoneCount) * 0.45 : 0;
+                const ratio = maxZoneCount > 0 ? cell.count / maxZoneCount : 0;
+                const fillClass =
+                  ratio >= 0.7
+                    ? 'fill-danger stroke-line'
+                    : ratio >= 0.35
+                      ? 'fill-warning stroke-line'
+                      : 'fill-1 stroke-line';
+                const opacity =
+                  ratio >= 0.7
+                    ? 0.52
+                    : ratio >= 0.35
+                      ? 0.38
+                      : cell.count > 0
+                        ? 0.08
+                        : 0.02;
 
                 return (
                   <g key={`zone-${cell.col}-${cell.row}`}>
@@ -727,7 +751,7 @@ export default function EventMap({
                       y={cellY}
                       width={cellW}
                       height={cellH}
-                      className="fill-brand stroke-line"
+                      className={fillClass}
                       strokeWidth="0.3"
                       style={{ fillOpacity: opacity }}
                     />
