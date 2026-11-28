@@ -42,6 +42,7 @@ import {
   formatSecondsToTimecode,
   parseTimecodeToSeconds
 } from '../../lib/vision/browserVideoAnalyzer';
+import { calibrateVisionEvents } from '../../lib/vision/calibrateVisionEvents';
 import { extractYouTubeVideoId } from '../../lib/youtube';
 import Badge from '../ui/Badge';
 import RefChip from '../ui/RefChip';
@@ -711,8 +712,14 @@ export default function TacticalMatchAnalysis({
     setErrorNotice(null);
     setErrorDetail(null);
     const incomingPlayers = Array.isArray(parsed?.detected_players) ? parsed.detected_players : [];
-    const enrichedList =
+    const namedList =
       incomingPlayers.length > 0 ? attachDetectedNamesToEvents(list, incomingPlayers) : list;
+    const { events: enrichedList, stats: calStats } = calibrateVisionEvents(namedList, {
+      participants,
+      pitchLengthM: pitchLength,
+      pitchWidthM: pitchWidth,
+      orientationNormalized: Boolean(parsed?.orientation_normalized)
+    });
     setImportedEvents(enrichedList);
     setVisionQuality(parsed?.vision_quality || null);
     if (incomingPlayers.length > 0) {
@@ -723,7 +730,12 @@ export default function TacticalMatchAnalysis({
       : '';
     const playerNote =
       incomingPlayers.length > 0 ? ` · ${incomingPlayers.length} nama pemain terdeteksi` : '';
-    setImportNotice(`Berhasil memuat ${enrichedList.length} kejadian dari ${sourceLabel}${qualityNote}${playerNote}.`);
+    const calNotes = [];
+    if (calStats.flipped) calNotes.push('arah serang dinormalisasi kiri ke kanan');
+    if (calStats.failedPassesInferred > 0) calNotes.push(`${calStats.failedPassesInferred} umpan gagal terdeteksi`);
+    if (calStats.mappedToRoster > 0) calNotes.push('dipetakan ke daftar pemain laga');
+    const calSuffix = calNotes.length > 0 ? ` · ${calNotes.join(', ')}` : '';
+    setImportNotice(`Berhasil memuat ${enrichedList.length} kejadian dari ${sourceLabel}${qualityNote}${playerNote}${calSuffix}.`);
     return true;
   };
 
