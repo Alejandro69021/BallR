@@ -113,7 +113,7 @@ export default function AttributeEditor({
                     max="99"
                     value={attr.value}
                     onChange={(e) => onAttributeSlider(index, e.target.value)}
-                    className="flex-1 h-2 bg-raised rounded-control appearance-none cursor-pointer accent-brand min-h-[44px]"
+                    className="flex-1 bg-transparent cursor-pointer accent-brand min-h-[44px]"
                   />
 
                   <button

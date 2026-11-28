@@ -165,7 +165,7 @@ export default function SquadHubView({
         <button
           type="button"
           onClick={() => onViewPassport?.(row.player_id)}
-          className="text-left font-medium text-1 hover:text-brand hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded min-w-[150px] max-w-[190px] whitespace-normal break-words cursor-pointer"
+          className="text-left font-medium text-1 hover:text-brand hover:underline transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand rounded min-w-[125px] max-w-[170px] whitespace-normal break-words cursor-pointer"
         >
           <div className="font-semibold text-sm text-1 leading-snug truncate">
             {row.personal_info?.full_name || 'Atlet'}
@@ -413,6 +413,7 @@ export default function SquadHubView({
                 sortDirection={sortDirection}
                 onSort={handleSort}
                 stickyHeader={true}
+                stickyActions={false}
                 emptyMessage="Belum ada data pemain"
                 renderCard={(player) => (
                   <SquadPlayerCard

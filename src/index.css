@@ -221,9 +221,14 @@ html {
     font-variant-numeric: tabular-nums;
   }
 
-  table {
+  table td {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
+  }
+
+  table th,
+  table button {
+    font-family: var(--font-sans, 'Plus Jakarta Sans', -apple-system, sans-serif);
   }
 
   input::placeholder,

@@ -47,7 +47,8 @@ export default function ResponsiveList({
   className = '',
   tableClassName = '',
   cardContainerClassName = 'space-y-3',
-  stickyHeader = true
+  stickyHeader = true,
+  stickyActions = true
 }) {
   const isMobile = useIsMobile(768);
 
@@ -86,6 +87,7 @@ export default function ResponsiveList({
         sortDirection={sortDirection}
         onSort={onSort}
         stickyHeader={stickyHeader}
+        stickyActions={stickyActions}
         emptyMessage={emptyMessage}
         className={tableClassName}
       />

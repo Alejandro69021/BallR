@@ -180,13 +180,13 @@ export default function EventMap({
 
   const formatPlayerLabel = (row) => {
     if (row.team === 'opponent') {
-      const num = row.opponent_number || row.player_number || '-';
-      return `#${num} Lawan`;
+      const num = row.opponent_number || row.player_number;
+      return num ? `#${num} Lawan` : 'Lawan';
     }
     const info = row.player_id ? (playerMap[row.player_id] || {}) : {};
-    const num = info.number ?? row.player_number ?? '-';
+    const num = info.number ?? row.player_number ?? null;
     const name = info.name || row.player_name || (row.player_id ? row.player_id : 'Pemain Terdeteksi');
-    return `#${num} ${name}`;
+    return num != null ? `#${num} ${name}` : name;
   };
 
   return (
@@ -473,7 +473,7 @@ export default function EventMap({
                 <span className="w-3 h-3 rounded-full bg-series-1 inline-block" /> Tembakan Tepat Sasaran
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full border-2 border-1 inline-block" /> Tembakan Melenceng
+                <span className="w-2.5 h-2.5 rounded-full border-2 border-current text-1 inline-block" /> Tembakan Melenceng
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 bg-brand inline-block" /> Rebut/Tekel Tim Kita

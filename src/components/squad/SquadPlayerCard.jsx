@@ -33,24 +33,28 @@ export default function SquadPlayerCard({
         <div className="flex items-start justify-between gap-3 mb-3">
           {/* Athlete photo or jersey badge */}
           <div className="relative shrink-0">
-            <div className="w-14 h-16 rounded-control overflow-hidden bg-raised border border-line flex items-center justify-center">
-              {personal_info?.photo_url ? (
-                <img
-                  src={personal_info.photo_url}
-                  alt={personal_info.full_name || personal_info.nickname || 'Atlet'}
-                  className="w-full h-full object-cover object-top"
-                  loading="lazy"
-                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                />
-              ) : (
-                <span className="font-mono text-base font-semibold text-2">
-                  #{personal_info?.jersey_number ?? '-'}
-                </span>
-              )}
-            </div>
-            {personal_info?.jersey_number != null && (
-              <div className="absolute -bottom-1 -left-1">
-                <JerseyTile number={personal_info.jersey_number} size="sm" />
+            {personal_info?.photo_url ? (
+              <>
+                <div className="w-14 h-16 rounded-control overflow-hidden bg-raised border border-line flex items-center justify-center">
+                  <img
+                    src={personal_info.photo_url}
+                    alt={personal_info.full_name || personal_info.nickname || 'Atlet'}
+                    className="w-full h-full object-cover object-top"
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                </div>
+                {personal_info?.jersey_number != null && (
+                  <div className="absolute -bottom-1 -left-1">
+                    <JerseyTile number={personal_info.jersey_number} size="sm" />
+                  </div>
+                )}
+              </>
+            ) : personal_info?.jersey_number != null ? (
+              <JerseyTile number={personal_info.jersey_number} size="lg" className="w-14 h-14 rounded-control" />
+            ) : (
+              <div className="w-14 h-14 rounded-control bg-raised border border-line flex items-center justify-center">
+                <span className="font-mono text-base font-semibold text-2">-</span>
               </div>
             )}
           </div>
@@ -76,8 +80,8 @@ export default function SquadPlayerCard({
 
           <div className="flex items-center gap-1.5 text-sm text-2">
             <span className="truncate">{formatPositionLabel(personal_info?.position)}</span>
-            <span>·</span>
-            <span>{personal_info?.age ? `${personal_info.age} thn` : 'Belum ada data'}</span>
+            <span className="shrink-0">·</span>
+            <span className="shrink-0 whitespace-nowrap">{personal_info?.age ? `${personal_info.age} thn` : 'Belum ada data'}</span>
           </div>
 
           <div className="text-sm text-2 flex items-center justify-between pt-1">
