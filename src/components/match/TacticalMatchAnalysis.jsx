@@ -830,54 +830,26 @@ export default function TacticalMatchAnalysis({
           <summary className="min-h-[44px] sm:min-h-[38px] px-3 py-1.5 rounded-control bg-app border border-line hover:border-brand text-sm font-medium text-2 hover:text-1 inline-flex items-center gap-1.5 cursor-pointer select-none list-none">
             <span>Opsi Lanjutan / Backup</span>
           </summary>
-          <div className="mt-1.5 flex items-center gap-2 flex-wrap p-2 rounded-control bg-app border border-line">
+          <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-1.5 z-30 min-w-[230px] flex flex-col gap-1 p-1.5 rounded-control bg-panel border border-line shadow-popover">
             <button
               type="button"
               onClick={handleExportJson}
-              className="min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-sm font-medium text-1 inline-flex items-center gap-1.5 cursor-pointer"
+              className="w-full min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-control hover:bg-raised text-sm font-medium text-1 inline-flex items-center gap-2 cursor-pointer text-left transition-colors"
             >
-              <Download className="w-4 h-4 text-brand" />
+              <Download className="w-4 h-4 text-brand shrink-0" />
               <span>Simpan Backup Analisis</span>
             </button>
 
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-control bg-panel border border-line hover:border-brand text-sm font-medium text-1 inline-flex items-center gap-1.5 cursor-pointer"
+              className="w-full min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-control hover:bg-raised text-sm font-medium text-1 inline-flex items-center gap-2 cursor-pointer text-left transition-colors"
             >
-              <Upload className="w-4 h-4 text-brand" />
+              <Upload className="w-4 h-4 text-brand shrink-0" />
               <span>Muat File Backup</span>
             </button>
           </div>
         </details>
-
-        {importedEvents && typeof onSaveVisionEvents === 'function' && canSaveEvents && (
-          <button
-            type="button"
-            onClick={handleSaveToMatch}
-            disabled={savingToMatch || browserAnalyzing || youtubeBusy}
-            className="min-h-[44px] sm:min-h-[38px] px-3 py-1.5 rounded-control bg-success text-app text-sm font-semibold inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
-            data-testid="save-vision-to-match-btn"
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>{savingToMatch ? 'Menyimpan...' : `Simpan ke Data Laga (${importedEvents.length})`}</span>
-          </button>
-        )}
-
-        {importedEvents && (
-          <button
-            type="button"
-            onClick={() => {
-              setImportedEvents(null);
-              setVisionQuality(null);
-              setImportNotice(null);
-              setErrorNotice(null);
-            }}
-            className="min-h-[44px] sm:min-h-[38px] px-3 py-1.5 rounded-control bg-app border border-danger/50 text-sm font-medium text-danger cursor-pointer"
-          >
-            Kembali ke Data Laga
-          </button>
-        )}
 
         <input
           ref={fileInputRef}
@@ -896,6 +868,36 @@ export default function TacticalMatchAnalysis({
           aria-label="Unggah video MP4 atau WebM untuk analisis di browser"
         />
       </div>
+
+      {importedEvents && (
+        <div className="flex items-center gap-2 flex-wrap pt-1">
+          {typeof onSaveVisionEvents === 'function' && canSaveEvents && (
+            <button
+              type="button"
+              onClick={handleSaveToMatch}
+              disabled={savingToMatch || browserAnalyzing || youtubeBusy}
+              className="min-h-[44px] sm:min-h-[38px] px-3 py-1.5 rounded-control bg-success text-app text-sm font-semibold inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
+              data-testid="save-vision-to-match-btn"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              <span>{savingToMatch ? 'Menyimpan...' : `Simpan ke Data Laga (${importedEvents.length})`}</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => {
+              setImportedEvents(null);
+              setVisionQuality(null);
+              setImportNotice(null);
+              setErrorNotice(null);
+            }}
+            className="min-h-[44px] sm:min-h-[38px] px-3 py-1.5 rounded-control bg-app border border-danger/50 text-sm font-medium text-danger cursor-pointer"
+          >
+            Kembali ke Data Laga
+          </button>
+        </div>
+      )}
 
       {/* Pengaturan Video & Tim (ringkas otomatis saat data analisis sudah tampil) */}
       <details
