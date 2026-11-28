@@ -990,6 +990,9 @@ export default function TacticalMatchAnalysis({
 
   const renderVisionToolbar = () => (
     <div className="space-y-3" data-testid="vision-automation-toolbar">
+      <p className="text-sm text-2 leading-relaxed">
+        Alur analisis cepat: pilih sumber video di bawah, tinjau atau simpan kejadian ke laga, lalu klik Buat Laporan untuk cetak A4.
+      </p>
       <div className="flex items-center gap-2 flex-wrap">
         <button
           type="button"

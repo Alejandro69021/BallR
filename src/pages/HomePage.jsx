@@ -302,6 +302,87 @@ export default function HomePage({
         </div>
       )}
 
+      {/* Quick-Start 3 Langkah Utama */}
+      <section aria-label="Mulai cepat 3 langkah" data-testid="quick-start-steps" className="space-y-3">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <h2 className="text-base font-semibold text-1">Mulai Cepat dalam 3 Langkah</h2>
+          <span className="text-sm text-2">Alur utama dari data skuad hingga cetak laporan</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          <button
+            type="button"
+            onClick={() => navigate('/skuad')}
+            className="p-4 rounded-panel border border-line bg-panel hover:border-brand/50 hover:bg-raised/40 transition-colors duration-150 flex flex-col justify-between gap-3 text-left min-h-[44px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-mono text-sm font-semibold text-brand">01</span>
+                <Users className="w-4 h-4 text-brand shrink-0" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-1">Kelola Skuad &amp; Tim</h3>
+                <p className="text-sm text-2 mt-1 leading-snug">
+                  Tambah pemain baru, perbarui posisi, atau buka rapor individu.
+                </p>
+              </div>
+            </div>
+            <span className="text-sm font-medium text-brand inline-flex items-center gap-1">
+              Buka direktori skuad <ChevronRight className="w-3.5 h-3.5" />
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/laga')}
+            className="p-4 rounded-panel border border-line bg-panel hover:border-brand/50 hover:bg-raised/40 transition-colors duration-150 flex flex-col justify-between gap-3 text-left min-h-[44px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-mono text-sm font-semibold text-brand">02</span>
+                <Trophy className="w-4 h-4 text-brand shrink-0" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-1">Catat atau Analisis Laga</h3>
+                <p className="text-sm text-2 mt-1 leading-snug">
+                  Lakukan pencatatan langsung atau analisis video pertandingan otomatis.
+                </p>
+              </div>
+            </div>
+            <span className="text-sm font-medium text-brand inline-flex items-center gap-1">
+              Buka daftar laga <ChevronRight className="w-3.5 h-3.5" />
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (featuredMatch?.id) {
+                navigate(`/laga/${featuredMatch.id}/laporan`);
+              } else {
+                navigate('/penilaian');
+              }
+            }}
+            className="p-4 rounded-panel border border-line bg-panel hover:border-brand/50 hover:bg-raised/40 transition-colors duration-150 flex flex-col justify-between gap-3 text-left min-h-[44px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-mono text-sm font-semibold text-brand">03</span>
+                <FileText className="w-4 h-4 text-brand shrink-0" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-1">Terbitkan Rapor &amp; Cetak A4</h3>
+                <p className="text-sm text-2 mt-1 leading-snug">
+                  Tinjau dokumen laporan laga resmi siap cetak atau isi evaluasi atlet.
+                </p>
+              </div>
+            </div>
+            <span className="text-sm font-medium text-brand inline-flex items-center gap-1">
+              {featuredMatch?.id ? 'Buka laporan A4 terbaru' : 'Buka evaluasi atlet'} <ChevronRight className="w-3.5 h-3.5" />
+            </span>
+          </button>
+        </div>
+      </section>
+
       {/* Work-Order Cards (dilipat agar Beranda bersih bagi pelatih yang sudah terbiasa) */}
       <details
         open={matches.length === 0}

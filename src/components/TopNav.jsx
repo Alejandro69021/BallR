@@ -14,7 +14,8 @@ import {
   HelpCircle,
   Sun,
   Moon,
-  ChevronDown
+  ChevronDown,
+  ArrowLeftRight
 } from 'lucide-react';
 
 export default function TopNav({
@@ -25,6 +26,7 @@ export default function TopNav({
   surface = 'paper',
   onToggleSurface,
   onSwitchView,
+  onSwitchDemoRole,
   onOpenAuthModal,
   onOpenTutorial,
   onLogout,
@@ -190,11 +192,27 @@ export default function TopNav({
                 <div
                   role="menu"
                   aria-label="Opsi akun"
-                  className="absolute right-0 mt-1.5 w-48 rounded-panel bg-panel border border-line shadow-popover py-1 z-50 text-1"
+                  className="absolute right-0 mt-1.5 w-56 rounded-panel bg-panel border border-line shadow-popover py-1 z-50 text-1"
                 >
                   <div className="px-3 py-2 border-b border-line text-sm text-2">
                     Peran: <strong className="text-1 font-semibold">{roleLabel}</strong>
                   </div>
+
+                  {isDemoMode && isAuthenticated && onSwitchDemoRole && (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      data-testid="switch-demo-role-menu"
+                      onClick={() => {
+                        setIsAccountMenuOpen(false);
+                        onSwitchDemoRole();
+                      }}
+                      className="w-full text-left px-3 py-2 text-sm text-brand font-medium hover:bg-raised flex items-center gap-2 cursor-pointer transition-colors border-b border-line"
+                    >
+                      <ArrowLeftRight className="w-4 h-4 shrink-0" />
+                      <span>{isParent ? 'Kembali ke Pelatih' : 'Lihat Portal Orang Tua'}</span>
+                    </button>
+                  )}
 
                   <button
                     type="button"
@@ -316,7 +334,18 @@ export default function TopNav({
             </nav>
           </div>
 
-          <div className="pt-3 border-t border-line space-y-1">
+          <div className="pt-3 border-t border-line space-y-2">
+            {isDemoMode && onSwitchDemoRole && (
+              <button
+                type="button"
+                data-testid="switch-demo-role-sidebar"
+                onClick={onSwitchDemoRole}
+                className="w-full min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-control text-sm font-medium text-brand bg-brand/10 border border-brand/25 hover:bg-brand/15 transition-colors cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              >
+                <ArrowLeftRight className="w-4 h-4 shrink-0" />
+                <span>{isParent ? 'Kembali ke Pelatih' : 'Lihat Portal Orang Tua'}</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => onSwitchView?.('help')}

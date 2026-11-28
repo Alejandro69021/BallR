@@ -300,6 +300,25 @@ function MainApp() {
     });
   };
 
+  const handleSwitchDemoRole = () => {
+    const nextRole = userRole === 'parent' ? 'coach' : 'parent';
+    setUserRole(nextRole);
+    const targetId = activePlayer.public_id || activePlayer.player_id || 'PLAYER-01';
+    if (nextRole === 'parent') {
+      navigate(`/pemain/${targetId}`);
+      setToastInfo({
+        title: 'Mode Portal Orang Tua Aktif',
+        subtext: 'Menampilkan tampilan rapor dan perkembangan yang dilihat wali atlet.'
+      });
+    } else {
+      navigate('/beranda');
+      setToastInfo({
+        title: 'Kembali ke Mode Pelatih',
+        subtext: 'Seluruh menu skuad, analisis laga, taktik, dan evaluasi aktif kembali.'
+      });
+    }
+  };
+
   const handleSwitchView = (view) => {
     const currentId = activePlayer.public_id || activePlayer.player_id || 'PLAYER-01';
 
@@ -372,6 +391,7 @@ function MainApp() {
           surface={surface}
           onToggleSurface={handleToggleSurface}
           onSwitchView={handleSwitchView}
+          onSwitchDemoRole={isDemoMode ? handleSwitchDemoRole : undefined}
           onOpenAuthModal={handleOpenAuthModal}
           onOpenTutorial={() => setIsTutorialOpen(true)}
           onLogout={handleLogout}
