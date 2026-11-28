@@ -993,7 +993,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
             <span className="block text-sm text-2 uppercase tracking-wider font-medium">Skor Akhir</span>
             {isFinal || (match.own_score != null && match.opponent_score != null) ? (
               <div className="mt-0.5 space-y-0.5">
-                <span className="block text-xl tabular-nums font-bold text-1">
+                <span className="block font-display text-2xl tabular-nums font-extrabold text-1">
                   {match.own_score} - {match.opponent_score}
                 </span>
                 {isCoach && !isFinal && (

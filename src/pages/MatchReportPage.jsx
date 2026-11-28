@@ -642,7 +642,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             </p>
           </div>
           <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-start gap-2 sm:gap-0 sm:text-right shrink-0">
-            <div className="text-2xl font-bold font-mono text-1 whitespace-nowrap tabular-nums">
+            <div className="text-2xl font-extrabold font-display text-1 whitespace-nowrap tabular-nums">
               {activeMatch.status === 'final'
                 ? `${activeMatch.own_score ?? 0} - ${activeMatch.opponent_score ?? 0}`
                 : 'Belum final'}
