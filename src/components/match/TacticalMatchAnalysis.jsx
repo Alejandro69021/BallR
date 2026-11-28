@@ -897,11 +897,25 @@ export default function TacticalMatchAnalysis({
         />
       </div>
 
-      {/* Identitas Tim & Perspektif Analisis */}
-      <div
-        className="p-3.5 rounded-control border border-line bg-app space-y-3"
-        data-testid="vision-team-perspective-panel"
+      {/* Pengaturan Video & Tim (ringkas otomatis saat data analisis sudah tampil) */}
+      <details
+        open={!activeEvents || activeEvents.length === 0 || showYoutubeForm}
+        className="rounded-control border border-line bg-app"
+        data-testid="vision-settings-collapsible"
       >
+        <summary className="px-3.5 py-2.5 text-sm font-semibold text-1 cursor-pointer select-none flex items-center justify-between gap-2 flex-wrap">
+          <span>Pengaturan Video &amp; Tim</span>
+          <span className="font-normal text-2">
+            {effectiveTeamA} vs {effectiveTeamB}
+            {half1Start || half1End ? ` · Babak 1 ${half1Start || '0:00'}–${half1End || 'selesai'}` : ''}
+          </span>
+        </summary>
+        <div className="px-3.5 pb-3.5 pt-1 space-y-3 border-t border-line">
+          {/* Identitas Tim & Perspektif Analisis */}
+          <div
+            className="space-y-3 pt-2"
+            data-testid="vision-team-perspective-panel"
+          >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <span className="text-sm font-semibold text-1">
             Tim dalam Video &amp; Perspektif Analisis
@@ -1073,6 +1087,8 @@ export default function TacticalMatchAnalysis({
           )}
         </div>
       </div>
+        </div>
+      </details>
 
       {browserAnalyzing && browserProgress && (
         <div

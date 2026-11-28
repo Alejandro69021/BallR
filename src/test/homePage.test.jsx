@@ -250,7 +250,7 @@ describe('Task UX-2: Coach Home ("Beranda") and UX Components', () => {
       expect(screen.getByText('Laporan laga yang bisa dicetak, dan kartu perkembangan pemain bila wali sudah setuju.')).toBeInTheDocument();
     });
 
-    it('renders side card "Mulai laga baru"', async () => {
+    it('renders primary "Laga Baru" button in page header', async () => {
       const mockMatches = [
         { id: 'm1', opponent_name: 'Lawan A', status: 'draft' }
       ];
@@ -259,9 +259,7 @@ describe('Task UX-2: Coach Home ("Beranda") and UX Components', () => {
 
       renderWithProviders(<HomePage userRole="coach" />);
 
-      expect(await screen.findByRole('heading', { name: 'Mulai laga baru' })).toBeInTheDocument();
-      expect(screen.getByText(/Isi nama lawan, tanggal, dan ukuran lapangan/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Buat laga baru/i })).toBeInTheDocument();
+      expect(await screen.findByRole('button', { name: /Laga Baru/i })).toBeInTheDocument();
     });
 
     it('renders up to 3 recent matches in "Laga terakhir" list with correct status chips', async () => {

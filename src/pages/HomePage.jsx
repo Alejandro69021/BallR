@@ -20,7 +20,7 @@ import WelcomeTour from '../components/ux/WelcomeTour';
 import CreateMatchDialog from '../components/matches/CreateMatchDialog';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
-import { PageHeader, PitchLines } from '../components/brand';
+import { PageHeader } from '../components/brand';
 
 /**
  * HomePage ("Beranda")
@@ -173,49 +173,9 @@ export default function HomePage({
         }
       />
 
-      {/* Hero Band: Pitch-green with PitchLines & bib primary button */}
-      <div className="relative bg-pitch text-chalk rounded-panel border-2 border-ink p-6 sm:p-8 overflow-hidden shadow-md">
-        <PitchLines variant="center" opacity={0.11} className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <p className="text-sm font-semibold tracking-wider uppercase text-bib">
-              Fokus Hari Ini
-            </p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-chalk tracking-tight">
-              Apa yang mau kamu kerjakan hari ini?
-            </h2>
-            {featuredMatch && (
-              <p className="text-sm text-mint">
-                {isDraftFeatured ? `Laga aktif: vs ${featuredMatch.opponent_name}` : `Laga terakhir: vs ${featuredMatch.opponent_name}`}
-              </p>
-            )}
-          </div>
-
-          <div className="shrink-0">
-            {featuredMatch ? (
-              <button
-                type="button"
-                onClick={() => navigate(isDraftFeatured ? `/pencatatan/${featuredMatch.id}` : `/laga/${featuredMatch.id}`)}
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-control bg-bib text-ink font-semibold text-base hover:opacity-90 active:opacity-95 transition-opacity min-h-[44px] select-none shadow-xs"
-                data-testid="hero-continue-action"
-              >
-                <Play className="w-4 h-4 fill-current" />
-                <span>Lanjutkan laga terakhir</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setIsCreateOpen(true)}
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-control bg-bib text-ink font-semibold text-base hover:opacity-90 active:opacity-95 transition-opacity min-h-[44px] select-none shadow-xs"
-                data-testid="hero-continue-action"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Mulai laga pertama</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+      <p className="text-sm text-2 -mt-3">
+        Apa yang mau kamu kerjakan hari ini?
+      </p>
 
       {/* First-Run Welcome Tour Banner & CoachMark */}
       <WelcomeTour forceStart={startTour} />
@@ -233,12 +193,10 @@ export default function HomePage({
           onAction={() => setIsCreateOpen(true)}
         />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch">
-          {/* Main Card: Lanjutkan Laga Terakhir or Laga Terakhir Selesai */}
-          <div
-            data-testid="continue-match-card"
-            className="lg:col-span-2 p-5 sm:p-6 rounded-panel border border-line bg-panel shadow-xs flex flex-col justify-between space-y-5"
-          >
+        <div
+          data-testid="continue-match-card"
+          className="p-5 sm:p-6 rounded-panel border border-line bg-panel shadow-xs flex flex-col justify-between space-y-5"
+        >
             <div className="space-y-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
@@ -341,41 +299,21 @@ export default function HomePage({
                 Lihat detail laga
               </Button>
             </div>
-          </div>
-
-          {/* Side Card: Mulai laga baru */}
-          <div className="p-5 sm:p-6 rounded-panel border border-line bg-panel shadow-xs flex flex-col justify-between space-y-4">
-            <div className="space-y-2">
-              <div className="w-10 h-10 rounded-full bg-accent-soft/50 text-brand flex items-center justify-center">
-                <Plus className="w-5 h-5" strokeWidth={2.5} />
-              </div>
-              <h2 className="text-lg font-semibold text-1">Mulai laga baru</h2>
-              <p className="text-sm text-2 leading-relaxed">
-                Isi nama lawan, tanggal, dan ukuran lapangan. Cukup satu menit, lalu kamu bisa langsung mencatat.
-              </p>
-            </div>
-
-            <Button
-              variant="secondary"
-              size="md"
-              icon={<Plus className="w-4 h-4" />}
-              onClick={() => setIsCreateOpen(true)}
-              className="w-full justify-center min-h-[44px]"
-              data-tour="new-match"
-            >
-              Buat laga baru
-            </Button>
-          </div>
         </div>
       )}
 
-      {/* Work-Order Cards (Five Cards per UX_SPEC) */}
-      <section aria-labelledby="work-order-heading" className="space-y-3 pt-2">
-        <h2 id="work-order-heading" className="text-lg font-semibold text-1">
-          Alur Kerja Pelatih
-        </h2>
+      {/* Work-Order Cards (dilipat agar Beranda bersih bagi pelatih yang sudah terbiasa) */}
+      <details
+        open={matches.length === 0}
+        className="rounded-panel border border-line bg-panel p-4"
+        data-testid="work-order-collapsible"
+      >
+        <summary className="text-base font-semibold text-1 cursor-pointer select-none flex items-center justify-between gap-2">
+          <span id="work-order-heading">Alur Kerja Pelatih</span>
+          <span className="text-sm font-normal text-2">Panduan cepat 5 langkah</span>
+        </summary>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 pt-3.5 mt-3 border-t border-line">
           {/* 1. Siapkan skuad */}
           <button
             type="button"
@@ -508,7 +446,7 @@ export default function HomePage({
             </span>
           </button>
         </div>
-      </section>
+      </details>
 
       {/* Recent Matches List (Max 3) */}
       {recentMatches.length > 0 && (

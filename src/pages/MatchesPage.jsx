@@ -511,108 +511,116 @@ export default function MatchesPage({ userRole = 'public', onToast, onOpenAuthMo
             </Field>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <Field label="Format pertandingan" id="match-format" required>
-              <Select
-                id="match-format"
-                value={format}
-                onChange={handleFormatChange}
-                options={[
-                  { value: '5v5', label: '5v5 (Futsal / Mini)' },
-                  { value: '7v7', label: '7v7 (Grassroots)' },
-                  { value: '9v9', label: '9v9 (Peralihan)' },
-                  { value: '11v11', label: '11v11 (Standar Penuh)' }
-                ]}
-              />
-            </Field>
+          <Field label="Format pertandingan" id="match-format" required>
+            <Select
+              id="match-format"
+              value={format}
+              onChange={handleFormatChange}
+              options={[
+                { value: '5v5', label: '5v5 (Futsal / Mini)' },
+                { value: '7v7', label: '7v7 (Grassroots)' },
+                { value: '9v9', label: '9v9 (Peralihan)' },
+                { value: '11v11', label: '11v11 (Standar Penuh)' }
+              ]}
+            />
+          </Field>
 
-            <Field label="Panjang lapangan (m)" id="pitch-length" required helper="Min 20 m, maks 120 m">
-              <input
-                id="pitch-length"
-                type="number"
-                min="20"
-                max="120"
-                step="0.5"
-                required
-                value={pitchLength}
-                onChange={(e) => setPitchLength(e.target.value)}
-                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
-              />
-            </Field>
-
-            <Field label="Lebar lapangan (m)" id="pitch-width" required helper="Min 15 m, maks 90 m">
-              <input
-                id="pitch-width"
-                type="number"
-                min="15"
-                max="90"
-                step="0.5"
-                required
-                value={pitchWidth}
-                onChange={(e) => setPitchWidth(e.target.value)}
-                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
-              />
-            </Field>
-          </div>
-
-          <p className="text-sm text-2">
-            Ukuran awal hanya contoh; isi sesuai lapangan sebenarnya (meter).
-          </p>
-
-          {/* Participants picker from roster */}
-          <div className="space-y-2 pt-2 border-t border-line">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-2">Pemain yang bertanding (skuad)</label>
-              <span className="text-sm text-2 tabular-nums">
-                {Object.values(selectedParticipants).filter((v) => v?.selected).length} terpilih
+          {/* Pengaturan Tambahan (Ukuran Lapangan & Skuad) dilipat agar form ringkas */}
+          <details className="rounded-control border border-line bg-app" data-testid="create-match-advanced">
+            <summary className="px-3 py-2.5 text-sm font-medium text-1 cursor-pointer select-none flex items-center justify-between gap-2">
+              <span>Pengaturan Tambahan (Opsional)</span>
+              <span className="text-2 font-normal tabular-nums">
+                {pitchLength}×{pitchWidth} m · {Object.values(selectedParticipants).filter((v) => v?.selected).length} pemain
               </span>
+            </summary>
+
+            <div className="px-3 pb-3 pt-2 space-y-3 border-t border-line">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Field label="Panjang lapangan (m)" id="pitch-length" required helper="Min 20 m, maks 120 m">
+                  <input
+                    id="pitch-length"
+                    type="number"
+                    min="20"
+                    max="120"
+                    step="0.5"
+                    required
+                    value={pitchLength}
+                    onChange={(e) => setPitchLength(e.target.value)}
+                    className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-panel border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                  />
+                </Field>
+
+                <Field label="Lebar lapangan (m)" id="pitch-width" required helper="Min 15 m, maks 90 m">
+                  <input
+                    id="pitch-width"
+                    type="number"
+                    min="15"
+                    max="90"
+                    step="0.5"
+                    required
+                    value={pitchWidth}
+                    onChange={(e) => setPitchWidth(e.target.value)}
+                    className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-panel border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                  />
+                </Field>
+              </div>
+
+              {/* Participants picker from roster */}
+              <div className="space-y-2 pt-2 border-t border-line">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-2">Pemain yang bertanding (skuad)</label>
+                  <span className="text-sm text-2 tabular-nums">
+                    {Object.values(selectedParticipants).filter((v) => v?.selected).length} terpilih
+                  </span>
+                </div>
+
+                <div className="max-h-48 overflow-y-auto divide-y divide-line border border-line rounded-control bg-panel p-2 space-y-1">
+                  {players && players.length > 0 ? (
+                    players.map((p) => {
+                      const pid = p.player_id || p.public_id;
+                      const part = selectedParticipants[pid] || { selected: false, started: false };
+                      const num = p.personal_info?.jersey_number ?? '-';
+                      const name = p.personal_info?.nickname || p.personal_info?.full_name || pid;
+                      const pos = p.personal_info?.position || '-';
+
+                      return (
+                        <div
+                          key={pid}
+                          className="flex items-center justify-between py-1 px-1.5 hover:bg-raised/40 rounded transition-colors text-sm"
+                        >
+                          <label className="flex items-center gap-2 cursor-pointer select-none min-w-0">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(part.selected)}
+                              onChange={() => handleToggleParticipant(pid)}
+                              className="rounded border-control text-brand focus:ring-brand"
+                            />
+                            <span className="font-mono text-2 w-6 text-right shrink-0">#{num}</span>
+                            <span className="font-medium text-1 truncate">{name}</span>
+                            <Badge variant="neutral" size="sm">{pos}</Badge>
+                          </label>
+
+                          {part.selected && (
+                            <label className="flex items-center gap-1.5 cursor-pointer text-2 hover:text-1 select-none">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(part.started)}
+                                onChange={() => handleToggleStarter(pid)}
+                                className="rounded border-control text-brand focus:ring-brand"
+                              />
+                              <span>Starter</span>
+                            </label>
+                          )}
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p className="text-sm text-2 py-2 text-center">Belum ada pemain di skuad</p>
+                  )}
+                </div>
+              </div>
             </div>
-
-            <div className="max-h-48 overflow-y-auto divide-y divide-line border border-line rounded-control bg-app p-2 space-y-1">
-              {players && players.length > 0 ? (
-                players.map((p) => {
-                  const pid = p.player_id || p.public_id;
-                  const part = selectedParticipants[pid] || { selected: false, started: false };
-                  const num = p.personal_info?.jersey_number ?? '-';
-                  const name = p.personal_info?.nickname || p.personal_info?.full_name || pid;
-                  const pos = p.personal_info?.position || '-';
-
-                  return (
-                    <div
-                      key={pid}
-                      className="flex items-center justify-between py-1 px-1.5 hover:bg-raised/40 rounded transition-colors text-sm"
-                    >
-                      <label className="flex items-center gap-2 cursor-pointer select-none min-w-0">
-                        <input
-                          type="checkbox"
-                          checked={Boolean(part.selected)}
-                          onChange={() => handleToggleParticipant(pid)}
-                          className="rounded border-control text-brand focus:ring-brand"
-                        />
-                        <span className="font-mono text-2 w-6 text-right shrink-0">#{num}</span>
-                        <span className="font-medium text-1 truncate">{name}</span>
-                        <Badge variant="neutral" size="sm">{pos}</Badge>
-                      </label>
-
-                      {part.selected && (
-                        <label className="flex items-center gap-1.5 cursor-pointer text-2 hover:text-1 select-none">
-                          <input
-                            type="checkbox"
-                            checked={Boolean(part.started)}
-                            onChange={() => handleToggleStarter(pid)}
-                            className="rounded border-control text-brand focus:ring-brand"
-                          />
-                          <span>Starter</span>
-                        </label>
-                      )}
-                    </div>
-                  );
-                })
-              ) : (
-                <p className="text-sm text-2 py-2 text-center">Belum ada pemain di skuad</p>
-              )}
-            </div>
-          </div>
+          </details>
         </div>
       </Dialog>
     </div>

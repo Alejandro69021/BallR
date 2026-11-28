@@ -201,19 +201,6 @@ export default function TopNav({
                     role="menuitem"
                     onClick={() => {
                       setIsAccountMenuOpen(false);
-                      onSwitchView?.('landing');
-                    }}
-                    className="w-full text-left px-3 py-2 text-sm text-1 hover:bg-raised flex items-center gap-2 cursor-pointer transition-colors"
-                  >
-                    <Home className="w-4 h-4 text-2" />
-                    <span>Halaman Depan</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      setIsAccountMenuOpen(false);
                       onOpenTutorial?.();
                     }}
                     className="w-full text-left px-3 py-2 text-sm text-2 hover:text-1 hover:bg-raised flex items-center gap-2 cursor-pointer transition-colors"
@@ -330,22 +317,6 @@ export default function TopNav({
           </div>
 
           <div className="pt-3 border-t border-line space-y-1">
-            <button
-              type="button"
-              onClick={() => onSwitchView?.('landing')}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-control text-sm text-2 hover:text-1 hover:bg-app transition-colors cursor-pointer text-left"
-            >
-              <Home className="w-4 h-4 shrink-0" />
-              <span>Kembali ke Halaman Depan</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onOpenTutorial?.()}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-control text-sm text-2 hover:text-1 hover:bg-app transition-colors cursor-pointer text-left"
-            >
-              <HelpCircle className="w-4 h-4 shrink-0 text-brand" />
-              <span>Ulangi Tutorial</span>
-            </button>
             <button
               type="button"
               onClick={() => onSwitchView?.('help')}

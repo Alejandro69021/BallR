@@ -1034,10 +1034,12 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         </div>
       </div>
 
-      {/* Stage Stepper */}
-      <div className="p-4 border border-line rounded-panel bg-panel">
-        <StageStepper steps={MATCH_STAGES} currentStep={currentStep} />
-      </div>
+      {/* Stage Stepper (tampil hanya saat laga masih draf manual agar layar analisis tidak penuh) */}
+      {!isFinal && !hasLoadedVisionPreview && (
+        <div className="p-4 border border-line rounded-panel bg-panel">
+          <StageStepper steps={MATCH_STAGES} currentStep={currentStep} />
+        </div>
+      )}
 
       {/* Next Step Panel (disembunyikan pada tab Analisis Taktis atau saat data video sudah dimuat di tab Peta/Daftar/Pemain) */}
       {isCoach &&
