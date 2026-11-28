@@ -38,11 +38,16 @@ export default function EventMap({
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   const isAutoVision = useMemo(() => {
-    return events.some(
+    const hasExplicitVision = events.some(
       (e) =>
         e.source === 'vision' ||
         String(e.id || '').startsWith('vision-') ||
         /otomatis|vision/i.test(String(e.note || ''))
+    );
+    if (hasExplicitVision) return true;
+    return (
+      events.length >= 100 &&
+      events.every((e) => !e.player_id && (e.player_number != null || e.opponent_number != null))
     );
   }, [events]);
 
