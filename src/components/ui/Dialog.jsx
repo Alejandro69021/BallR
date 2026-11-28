@@ -2,6 +2,25 @@ import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import IconButton from './IconButton';
 
+let openDialogCount = 0;
+let savedBodyOverflow = null;
+
+function acquireBodyScrollLock() {
+  if (openDialogCount === 0) {
+    savedBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+  }
+  openDialogCount += 1;
+}
+
+function releaseBodyScrollLock() {
+  openDialogCount = Math.max(0, openDialogCount - 1);
+  if (openDialogCount === 0) {
+    document.body.style.overflow = savedBodyOverflow ?? '';
+    savedBodyOverflow = null;
+  }
+}
+
 export default function Dialog({
   isOpen,
   onClose,
@@ -24,8 +43,7 @@ export default function Dialog({
   useEffect(() => {
     if (!isOpen) return;
 
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    acquireBodyScrollLock();
 
     const previouslyFocused = document.activeElement;
     const focusableSelector =
@@ -72,7 +90,7 @@ export default function Dialog({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.body.style.overflow = prevOverflow;
+      releaseBodyScrollLock();
       clearTimeout(timer);
       window.removeEventListener('keydown', handleKeyDown);
       if (previouslyFocused && typeof previouslyFocused.focus === 'function') {

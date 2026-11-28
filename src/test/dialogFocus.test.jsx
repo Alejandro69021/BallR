@@ -204,6 +204,29 @@ describe('Dialog layout & overflow contract', () => {
     unmount();
   });
 
+  it('restores document.body scroll when nested dialogs unmount simultaneously', () => {
+    document.body.style.overflow = 'auto';
+
+    function NestedHost() {
+      return (
+        <>
+          <Dialog isOpen={true} onClose={() => {}} title="Dialog Induk">
+            <p>Induk</p>
+          </Dialog>
+          <Dialog isOpen={true} onClose={() => {}} title="Dialog Anak">
+            <p>Anak</p>
+          </Dialog>
+        </>
+      );
+    }
+
+    const { unmount } = render(<NestedHost />);
+    expect(document.body.style.overflow).toBe('hidden');
+
+    unmount();
+    expect(document.body.style.overflow).toBe('auto');
+  });
+
   it('ensures role="dialog" and aria-modal="true" exist strictly in Dialog.jsx across src/', async () => {
     const fs = await import('node:fs');
     const path = await import('node:path');
