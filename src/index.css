@@ -382,7 +382,8 @@ html {
 
   h1,
   h2,
-  h3 {
+  h3,
+  .print-keep-with-next {
     break-after: avoid !important;
     page-break-after: avoid !important;
   }
@@ -396,7 +397,8 @@ html {
     page-break-inside: avoid !important;
   }
 
-  section {
+  section,
+  .print-allow-break {
     break-inside: auto !important;
     page-break-inside: auto !important;
   }

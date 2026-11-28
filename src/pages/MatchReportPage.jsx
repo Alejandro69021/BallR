@@ -10,7 +10,7 @@ import {
   FileText,
   Lock
 } from 'lucide-react';
-import { getMatch, listEvents, listParticipants, formatMatchError } from '../lib/matches';
+import { getMatch, listEvents, listParticipants, formatMatchError, EVENT_TYPE_LABELS } from '../lib/matches';
 import {
   loadPlayerSlotMap,
   loadSlotNameMap,
@@ -641,13 +641,13 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               Tanggal: {activeMatch.match_date || '-'} • Format: {activeMatch.format || '11v11'} • Lapangan: {activeMatch.pitch_length_m}&times;{activeMatch.pitch_width_m}m
             </p>
           </div>
-          <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-start gap-2 sm:gap-0 sm:text-right shrink-0">
-            <div className="text-2xl font-extrabold font-display text-1 whitespace-nowrap tabular-nums">
+          <div className="flex sm:flex-col items-baseline sm:items-center justify-between sm:justify-center gap-2 sm:gap-0 px-4 py-2 rounded-control bg-raised border border-line text-center shrink-0">
+            <span className="text-sm text-2 font-sans uppercase tracking-wider whitespace-nowrap">Skor Akhir</span>
+            <div className="text-2xl font-extrabold font-display text-1 whitespace-nowrap tabular-nums mt-0.5">
               {activeMatch.status === 'final'
                 ? `${activeMatch.own_score ?? 0} - ${activeMatch.opponent_score ?? 0}`
                 : 'Belum final'}
             </div>
-            <span className="text-sm text-2 font-mono whitespace-nowrap">Skor Akhir</span>
           </div>
         </div>
 
@@ -790,7 +790,11 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             </div>
             <div className="text-2 font-mono text-sm space-y-0.5">
               {activePpdaMetric.reason ? (
-                <div className="text-warning italic">{activePpdaMetric.reason}</div>
+                <div className="text-warning italic">
+                  {String(activePpdaMetric.reason).includes('0.4')
+                    ? 'Belum ada aksi bertahan di area pertahanan lawan'
+                    : activePpdaMetric.reason}
+                </div>
               ) : (
                 <div>Umpan lawan {activePpdaMetric.opponent_passes_in_zone} / Aksi bertahan {activePpdaMetric.defensive_actions_in_zone}</div>
               )}
@@ -809,19 +813,19 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </div>
           <div className="grid grid-cols-3 gap-2 text-center text-sm font-mono">
             <div className="p-2 rounded bg-app border border-line">
-              <span className="text-2 block">Pertahanan (x &lt; 1/3)</span>
+              <span className="text-2 font-sans block">Area Pertahanan</span>
               <span className="text-sm font-bold text-1">{activeOwnThirds.defensive.count} dari {activeOwnThirds.n} aksi</span>
-              <span className="text-2 block text-sm mt-0.5">({activeOwnThirds.defensive.value ?? 0}%)</span>
+              <span className="text-2 block text-sm mt-0.5">{activeOwnThirds.defensive.value ?? 0}%</span>
             </div>
             <div className="p-2 rounded bg-app border border-line">
-              <span className="text-2 block">Tengah (1/3 &le; x &lt; 2/3)</span>
+              <span className="text-2 font-sans block">Area Tengah</span>
               <span className="text-sm font-bold text-1">{activeOwnThirds.middle.count} dari {activeOwnThirds.n} aksi</span>
-              <span className="text-2 block text-sm mt-0.5">({activeOwnThirds.middle.value ?? 0}%)</span>
+              <span className="text-2 block text-sm mt-0.5">{activeOwnThirds.middle.value ?? 0}%</span>
             </div>
             <div className="p-2 rounded bg-app border border-line">
-              <span className="text-2 block">Akhir (x &ge; 2/3)</span>
+              <span className="text-2 font-sans block">Area Serang Akhir</span>
               <span className="text-sm font-bold text-1">{activeOwnThirds.final.count} dari {activeOwnThirds.n} aksi</span>
-              <span className="text-2 block text-sm mt-0.5">({activeOwnThirds.final.value ?? 0}%)</span>
+              <span className="text-2 block text-sm mt-0.5">{activeOwnThirds.final.value ?? 0}%</span>
             </div>
           </div>
           <div className="text-2 text-sm font-mono text-right">
@@ -941,9 +945,9 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                     ? row.player_name
                     : 'Pemain tanpa nama';
                 return (
-                  <div>
+                  <div className="font-sans">
                     <span className="font-semibold text-1 block">{name}</span>
-                    <span className="text-sm text-2 font-mono">
+                    <span className="text-sm text-2">
                       {formatPositionLabel(row.position).replace(/\s*\([^)]*\)/g, '')} • {row.name_source || (row.is_starter ? 'Starter' : 'Cadangan')}
                     </span>
                   </div>
@@ -953,21 +957,26 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             {
               key: 'minutes_played',
               header: 'Menit',
-              render: (_val, row) => (
-                <span className="font-mono text-sm text-2">{row.minutes_played}'</span>
-              )
+              render: (_val, row) => {
+                const minVal = Number(row.minutes_played);
+                return (
+                  <span className="font-mono text-sm text-2">
+                    {Number.isFinite(minVal) ? `${Math.round(minVal)}'` : `${row.minutes_played}'`}
+                  </span>
+                );
+              }
             },
             {
               key: 'counts_by_type',
               header: 'Rincian Aksi Tercatat',
               render: (_val, row) => {
                 const entries = Object.entries(row.counts_by_type || {}).filter(([, c]) => c > 0);
-                if (entries.length === 0) return <span className="text-sm text-2 italic">Tidak ada catatan aksi</span>;
+                if (entries.length === 0) return <span className="text-sm text-2 italic font-sans">Tidak ada catatan aksi</span>;
                 return (
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1 font-sans">
                     {entries.map(([type, count]) => (
-                      <span key={type} className="inline-block px-1.5 py-0.5 rounded bg-app border border-line text-sm font-mono">
-                        {type}: {count}
+                      <span key={type} className="inline-block px-1.5 py-0.5 rounded bg-app border border-line text-sm">
+                        {EVENT_TYPE_LABELS[type] || type}: <span className="font-mono font-semibold">{count}</span>
                       </span>
                     ))}
                   </div>
@@ -988,13 +997,14 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             }
           ]}
           data={reportPlayerRows}
+          stickyActions={false}
           emptyMessage="Belum ada data partisipasi pemain yang terdaftar."
         />
       </section>
 
       {/* SECTION 6: PETA KEJADIAN */}
       <section className="space-y-4 pb-6 border-b border-line">
-        <div>
+        <div className="print-keep-with-next">
           <span className="text-sm font-mono uppercase tracking-wider text-2">
             Bagian 6 • Distribusi Spasial
           </span>
@@ -1143,12 +1153,12 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         </div>
 
         {/* Ringkasan Analisis Taktis Berbasis Literatur */}
-        <div className="p-4 rounded-control bg-raised border border-line space-y-4" data-testid="report-tactical-summary">
-          <div className="flex items-center justify-between gap-2 flex-wrap border-b border-line pb-2">
+        <div className="p-4 rounded-control bg-raised border border-line space-y-4 print-allow-break" data-testid="report-tactical-summary">
+          <div className="flex items-center justify-between gap-2 flex-wrap border-b border-line pb-2 print-keep-with-next">
             <h3 className="text-sm font-semibold text-1">
               Analisis Taktis Terukur · {reportHomeTeam || 'Tim Kita'} vs {reportAwayTeam}
             </h3>
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-wrap print:hidden">
               <RefChip referenceId="fifa-football-language-2022" />
               <RefChip referenceId="sarmento-2014-match-analysis" />
               <RefChip referenceId="vogelbein-2014-defensive-transition" />
@@ -1156,8 +1166,8 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
-            <div className="p-2.5 rounded bg-app border border-line space-y-0.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 print:grid-cols-2 gap-3 text-sm">
+            <div className="p-2.5 rounded bg-app border border-line space-y-0.5 print-avoid-break">
               <span className="text-sm text-2 block">Dominasi Sepertiga Akhir</span>
               <span className="font-semibold text-1 tabular-nums block">
                 {tacticalSummary.field_tilt.own_pct != null
@@ -1167,30 +1177,30 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               <span className="text-sm text-2 tabular-nums">n = {tacticalSummary.field_tilt.n} umpan</span>
             </div>
 
-            <div className="p-2.5 rounded bg-app border border-line space-y-0.5">
+            <div className="p-2.5 rounded bg-app border border-line space-y-0.5 print-avoid-break">
               <span className="text-sm text-2 block">Tinggi Blok Bertahan</span>
               <span className="font-semibold text-1 block">
-                Kita: {tacticalSummary.own.def_line.avg_m != null ? `${tacticalSummary.own.def_line.avg_m} m (${tacticalSummary.own.def_line.block_label})` : '-'}
+                Kita: {tacticalSummary.own.def_line.avg_m != null ? `${tacticalSummary.own.def_line.avg_m} m · ${tacticalSummary.own.def_line.block_label}` : '-'}
               </span>
               <span className="text-sm text-2 block">
-                Lawan: {tacticalSummary.opponent.def_line.avg_m != null ? `${tacticalSummary.opponent.def_line.avg_m} m (${tacticalSummary.opponent.def_line.block_label})` : '-'}
+                Lawan: {tacticalSummary.opponent.def_line.avg_m != null ? `${tacticalSummary.opponent.def_line.avg_m} m · ${tacticalSummary.opponent.def_line.block_label}` : '-'}
               </span>
             </div>
 
-            <div className="p-2.5 rounded bg-app border border-line space-y-0.5">
+            <div className="p-2.5 rounded bg-app border border-line space-y-0.5 print-avoid-break">
               <span className="text-sm text-2 block">Tembakan Dalam Kotak</span>
               <span className="font-semibold text-1 tabular-nums block">
                 Kita: {tacticalSummary.own.shot_zones.inside_box.count}/{tacticalSummary.own.shot_zones.n}
-                {tacticalSummary.own.shot_zones.avg_distance_m != null ? ` (${tacticalSummary.own.shot_zones.avg_distance_m} m)` : ''}
+                {tacticalSummary.own.shot_zones.avg_distance_m != null ? ` · rata-rata ${tacticalSummary.own.shot_zones.avg_distance_m} m` : ''}
               </span>
               <span className="text-sm text-2 tabular-nums block">
                 Lawan: {tacticalSummary.opponent.shot_zones.inside_box.count}/{tacticalSummary.opponent.shot_zones.n}
-                {tacticalSummary.opponent.shot_zones.avg_distance_m != null ? ` (${tacticalSummary.opponent.shot_zones.avg_distance_m} m)` : ''}
+                {tacticalSummary.opponent.shot_zones.avg_distance_m != null ? ` · rata-rata ${tacticalSummary.opponent.shot_zones.avg_distance_m} m` : ''}
               </span>
             </div>
 
-            <div className="p-2.5 rounded bg-app border border-line space-y-0.5">
-              <span className="text-sm text-2 block">Transisi & Koridor Dominan</span>
+            <div className="p-2.5 rounded bg-app border border-line space-y-0.5 print-avoid-break">
+              <span className="text-sm text-2 block">Transisi &amp; Koridor Dominan</span>
               <span className="font-semibold text-1 tabular-nums block">
                 Rebut tinggi kita: {tacticalSummary.own.transitions.high_regains}
               </span>
@@ -1201,22 +1211,22 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </div>
 
           {/* Pembacaan Teknik Permainan & Strategi Lawan (Cetak A4) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm" data-testid="report-technique-and-strategy">
-            <div className="p-3 rounded bg-app border border-line space-y-1.5">
-              <h4 className="font-semibold text-1">Pembacaan Teknik Permainan (Tim Kita)</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-3 text-sm" data-testid="report-technique-and-strategy">
+            <div className="p-3 rounded bg-app border border-line space-y-1.5 print-avoid-break">
+              <h4 className="font-semibold text-1">Pembacaan Teknik Permainan · Tim Kita</h4>
               <p className="text-2">
-                <strong className="text-1">Gaya umpan:</strong> {tacticalSummary.technique.own.passing.style_label} (progresif: {tacticalSummary.technique.own.passing.progressive_count}, umpan kunci: {tacticalSummary.technique.own.passing.key_passes}).
+                <strong className="text-1">Gaya umpan:</strong> {tacticalSummary.technique.own.passing.style_label} · progresif {tacticalSummary.technique.own.passing.progressive_count}, umpan kunci {tacticalSummary.technique.own.passing.key_passes}.
               </p>
               <p className="text-2">
-                <strong className="text-1">Keamanan bola:</strong> {tacticalSummary.technique.own.ball_security.total_losses} kehilangan bola ({tacticalSummary.technique.own.ball_security.dangerous_losses} di sepertiga pertahanan sendiri).
+                <strong className="text-1">Keamanan bola:</strong> {tacticalSummary.technique.own.ball_security.total_losses} kehilangan bola, {tacticalSummary.technique.own.ball_security.dangerous_losses} di sepertiga pertahanan sendiri.
               </p>
               <p className="text-2">
-                <strong className="text-1">Bertahan & duel:</strong> Tekel {tacticalSummary.technique.own.defensive_technique.tackles}, intersepsi {tacticalSummary.technique.own.defensive_technique.interceptions}, sapuan {tacticalSummary.technique.own.defensive_technique.clearances}.
+                <strong className="text-1">Bertahan &amp; duel:</strong> Tekel {tacticalSummary.technique.own.defensive_technique.tackles}, intersepsi {tacticalSummary.technique.own.defensive_technique.interceptions}, sapuan {tacticalSummary.technique.own.defensive_technique.clearances}.
               </p>
             </div>
 
-            <div className="p-3 rounded bg-app border border-line space-y-1.5">
-              <h4 className="font-semibold text-1">Pembacaan Strategi Lawan ({activeMatch.opponent_name})</h4>
+            <div className="p-3 rounded bg-app border border-line space-y-1.5 print-avoid-break">
+              <h4 className="font-semibold text-1">Pembacaan Strategi Lawan · {reportAwayTeam}</h4>
               <p className="text-2">
                 <strong className="text-1">Blok bertahan:</strong> {tacticalSummary.opponent_strategy.defensive_title}.
               </p>
@@ -1233,18 +1243,20 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
           {/* Rekomendasi Kontra-Taktik Berbasis Rujukan (Cetak A4) */}
           {tacticalSummary.counter_tactics.length > 0 && (
-            <div className="p-3 rounded bg-app border border-line space-y-2 text-sm" data-testid="report-counter-tactics">
-              <h4 className="font-semibold text-1">Rekomendasi Kontra-Taktik & Fokus Latihan Berbasis Rujukan</h4>
+            <div className="p-3 rounded bg-app border border-line space-y-2 text-sm print-allow-break" data-testid="report-counter-tactics">
+              <h4 className="font-semibold text-1 print-keep-with-next">Rekomendasi Kontra-Taktik &amp; Fokus Latihan Berbasis Rujukan</h4>
               <div className="space-y-2">
                 {tacticalSummary.counter_tactics.map((ct) => (
-                  <div key={ct.id} className="p-2.5 rounded bg-raised border border-line space-y-1">
+                  <div key={ct.id} className="p-2.5 rounded bg-raised border border-line space-y-1 print-avoid-break">
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <span className="font-semibold text-1">{ct.title}</span>
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <Badge variant="neutral" size="sm">Prioritas {ct.priority}</Badge>
-                        {ct.reference_ids.map((rid) => (
-                          <RefChip key={rid} referenceId={rid} />
-                        ))}
+                        <span className="inline-flex items-center gap-1.5 print:hidden">
+                          {ct.reference_ids.map((rid) => (
+                            <RefChip key={rid} referenceId={rid} />
+                          ))}
+                        </span>
                       </div>
                     </div>
                     <p className="text-2">
@@ -1275,8 +1287,8 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       </section>
 
       {/* SECTION 7: SKEMA TAKTIK TERKAIT */}
-      <section className="space-y-3 pb-6 border-b border-line">
-        <div>
+      <section className="space-y-3 pb-6 border-b border-line print-avoid-break">
+        <div className="print-keep-with-next">
           <span className="text-sm font-mono uppercase tracking-wider text-2">
             Bagian 7 • Konteks Kurikulum
           </span>
@@ -1284,7 +1296,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         </div>
 
         {activePublishedScenarios.length === 0 ? (
-          <div className="p-4 rounded-control bg-raised border border-line text-sm text-2 text-center font-mono">
+          <div className="py-2.5 px-3 rounded-control bg-raised border border-line text-sm text-2 text-center font-mono">
             Tidak ada skema terbit terkait
           </div>
         ) : (
@@ -1313,32 +1325,32 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
       {/* SECTION 8: LAMPIRAN METODE */}
       <section className="space-y-3 pb-6 border-b border-line">
-        <div>
+        <div className="print-keep-with-next">
           <span className="text-sm font-mono uppercase tracking-wider text-2">
             Bagian 8 • Transparansi Metodologi
           </span>
           <h2 className="text-xl font-bold text-1">Lampiran Metode</h2>
           <p className="text-sm text-2">
-            Setiap rumus, batasan, dan rujukan dokumen terverifikasi yang mendasari analisis ini.
+            Ringkasan definisi metrik, batasan pencatatan, dan dasar analisis laporan ini.
           </p>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 print:space-y-0 print:grid print:grid-cols-2 print:gap-2">
           {METRIC_DEFINITIONS.map((m) => (
-            <div key={m.id} className="p-3 rounded-control bg-raised border border-line text-sm space-y-1.5">
+            <div key={m.id} className="p-3 print:p-2 rounded-control bg-raised border border-line text-sm space-y-1.5 print:space-y-1 print-avoid-break">
               <div className="flex items-center justify-between gap-2">
                 <span className="font-semibold text-1 text-sm">{m.name}</span>
-                <span className="font-mono text-2">Satuan: {m.unit}</span>
+                <span className="font-mono text-2 shrink-0">{m.unit}</span>
               </div>
-              <p className="text-2 leading-relaxed">{m.definition}</p>
-              <div className="font-mono text-sm bg-app p-2 rounded border border-line text-1">
+              <p className="text-2 leading-relaxed print:leading-snug">{m.definition}</p>
+              <div className="font-mono text-sm bg-app p-2 rounded border border-line text-1 print:hidden">
                 Rumus: {m.formula}
               </div>
-              <p className="text-sm text-2 italic">
+              <p className="text-sm text-2 italic print:leading-snug">
                 Batasan: {m.limitations}
               </p>
               {m.reference_ids && m.reference_ids.length > 0 && (
-                <div className="flex items-center gap-2 pt-1">
+                <div className="flex items-center gap-2 pt-1 print:hidden">
                   <span className="text-2 font-mono">Rujukan:</span>
                   {m.reference_ids.map((refId) => (
                     <RefChip key={refId} referenceId={refId} />
@@ -1351,8 +1363,8 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
       </section>
 
       {/* SECTION 9: INTEGRITAS */}
-      <section className="space-y-3 pb-6 border-b border-line">
-        <div>
+      <section className="space-y-3 pb-6 border-b border-line print-avoid-break">
+        <div className="print-keep-with-next">
           <span className="text-sm font-mono uppercase tracking-wider text-2">
             Bagian 9 • Kriptografi &amp; Keaslian
           </span>
@@ -1401,16 +1413,19 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
             bottom: 0;
             left: 0;
             right: 0;
-            font-size: 10pt;
+            font-size: 9pt;
+            background: var(--panel);
+            padding-top: 6px;
+            padding-bottom: 4px;
+            z-index: 50;
           }
           @page {
-            margin-bottom: 2cm;
+            size: A4 portrait;
+            margin: 12mm 12mm 18mm 12mm;
             @bottom-right {
               content: "Halaman " counter(page) " / " counter(pages);
+              font-size: 9pt;
             }
-          }
-          .report-content {
-            padding-bottom: 3cm;
           }
         }
       `}</style>
