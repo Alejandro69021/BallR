@@ -203,6 +203,7 @@ export default function TopNav({
                       type="button"
                       role="menuitem"
                       data-testid="switch-demo-role-menu"
+                      title="Tombol khusus simulasi demo, tidak tampil pada akun produksi"
                       onClick={() => {
                         setIsAccountMenuOpen(false);
                         onSwitchDemoRole();
@@ -210,7 +211,7 @@ export default function TopNav({
                       className="w-full text-left px-3 py-2 text-sm text-brand font-medium hover:bg-raised flex items-center gap-2 cursor-pointer transition-colors border-b border-line"
                     >
                       <ArrowLeftRight className="w-4 h-4 shrink-0" />
-                      <span>{isParent ? 'Kembali ke Pelatih' : 'Lihat Portal Orang Tua'}</span>
+                      <span>{isParent ? 'Simulasi: Mode Pelatih' : 'Simulasi: Portal Orang Tua'}</span>
                     </button>
                   )}
 
@@ -339,11 +340,12 @@ export default function TopNav({
               <button
                 type="button"
                 data-testid="switch-demo-role-sidebar"
+                title="Tombol khusus simulasi demo, tidak tampil pada akun produksi"
                 onClick={onSwitchDemoRole}
                 className="w-full min-h-[44px] flex items-center gap-2.5 px-3 py-2 rounded-control text-sm font-medium text-brand bg-brand/10 border border-brand/25 hover:bg-brand/15 transition-colors cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <ArrowLeftRight className="w-4 h-4 shrink-0" />
-                <span>{isParent ? 'Kembali ke Pelatih' : 'Lihat Portal Orang Tua'}</span>
+                <span>{isParent ? 'Simulasi: Mode Pelatih' : 'Simulasi: Portal Orang Tua'}</span>
               </button>
             )}
             <button

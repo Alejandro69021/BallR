@@ -1,4 +1,5 @@
 import { supabase, getCurrentUserProfile } from './supabase';
+import { playersRoster } from '../data/mockData';
 
 export const ALLOWED_EVENT_TYPES = [
   'pass',
@@ -1035,6 +1036,52 @@ export async function setParticipants(matchId, rows = []) {
   return data || [];
 }
 
+function enrichDemoParticipants(participantsList = []) {
+  const rosterLookup = {};
+  let customPlayers = [];
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      const raw = window.localStorage.getItem('ballr_custom_players_v1');
+      const parsed = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(parsed)) customPlayers = parsed;
+    } catch {
+      customPlayers = [];
+    }
+  }
+
+  [...playersRoster, ...customPlayers].forEach((p) => {
+    const info = {
+      player_name: p.personal_info?.full_name || p.personal_info?.nickname || '',
+      jersey_number: p.personal_info?.jersey_number ?? null,
+      position: p.personal_info?.position || ''
+    };
+    if (p.player_id) rosterLookup[p.player_id] = info;
+    if (p.public_id) rosterLookup[p.public_id] = info;
+    if (p.id) rosterLookup[p.id] = info;
+  });
+
+  return (participantsList || []).map((part) => {
+    const pid = part.player_id || part.id;
+    const matchInfo = pid ? rosterLookup[pid] : null;
+    const hasValidName =
+      Boolean(part.player_name) &&
+      !String(part.player_name).startsWith('WK-') &&
+      !String(part.player_name).startsWith('PLAYER-');
+    const hasValidJersey =
+      part.jersey_number != null &&
+      part.jersey_number !== '' &&
+      part.jersey_number !== '-';
+
+    return {
+      ...part,
+      player_name: hasValidName ? part.player_name : (matchInfo?.player_name || part.player_name || ''),
+      jersey_number: hasValidJersey ? part.jersey_number : (matchInfo?.jersey_number ?? part.jersey_number ?? null),
+      position: part.position || matchInfo?.position || '',
+      is_starter: part.is_starter ?? Boolean(part.started)
+    };
+  });
+}
+
 /**
  * List participants for a match.
  */
@@ -1043,7 +1090,7 @@ export async function listParticipants(matchId) {
 
   if (isDemoModeActive()) {
     const store = getDemoStore();
-    return store.participants[matchId] || [];
+    return enrichDemoParticipants(store.participants[matchId] || []);
   }
 
   if (!supabase) {

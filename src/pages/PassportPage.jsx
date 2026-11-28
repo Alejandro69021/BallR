@@ -47,7 +47,7 @@ export default function PassportPage({ userRole = 'public', onOpenShare, onToast
                 Pantau Perkembangan &amp; Privasi {player.personal_info?.full_name || 'Atlet'}
               </h2>
               <p className="text-sm text-2 max-w-2xl">
-                Anda masuk sebagai wali. Anda dapat memantau evaluasi pelatih, riwayat pertumbuhan fisik, mengunduh kartu perkembangan, dan mengatur izin privasi data anak.
+                Anda masuk sebagai wali terverifikasi. Di versi produksi, orang tua masuk lewat akun login terpisah khusus wali untuk memantau evaluasi pelatih, riwayat pertumbuhan fisik, mengunduh kartu perkembangan, dan mengatur izin privasi anak tanpa akses ke ruang kerja pelatih.
               </p>
             </div>
             <div className="flex items-center gap-2 flex-wrap shrink-0">
