@@ -314,6 +314,128 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
     );
   }
 
+  // Deteksi sumber data Vision & nama tim bersih untuk laporan A4
+  const isVisionData = (activeEvents || []).some(
+    (e) =>
+      e.source === 'vision' ||
+      String(e.id || '').startsWith('vision-') ||
+      /otomatis|vision/i.test(String(e.note || ''))
+  );
+
+  const rawOppName = String(activeMatch.opponent_name || '').trim();
+  const vsParenMatch = rawOppName.match(/\(\s*vs\.?\s+([^)]+)\)/i);
+  const reportHomeTeam =
+    String(activeMatch.home_team_name || '').trim() ||
+    (vsParenMatch ? vsParenMatch[1].trim() : '');
+  const reportAwayTeam = rawOppName
+    .replace(/\s*\([^)]*\)\s*/g, ' ')
+    .replace(/^(?:contoh:\s*)?(?:vs\.?\s*)?/i, '')
+    .trim();
+
+  // Fallback Bagian 5: bila data memakai slot deteksi video (#1–#11) tanpa player_id
+  const hasRosterEvents = (activePlayerStats?.rows || []).some((r) => r.n > 0);
+  const reportPlayerRows = (() => {
+    if (hasRosterEvents) return activePlayerStats.rows;
+    const ownVisionEvts = (activeEvents || []).filter(
+      (e) => e.team === 'own' && e.player_number != null
+    );
+    if (ownVisionEvts.length === 0) return activePlayerStats.rows;
+    const L = Number(activeMatch.pitch_length_m) || 90;
+    const W = Number(activeMatch.pitch_width_m) || 60;
+    const byNum = {};
+    ownVisionEvts.forEach((e) => {
+      const num = Number(e.player_number);
+      if (!byNum[num]) {
+        byNum[num] = {
+          player_id: `slot-${num}`,
+          jersey_number: num,
+          player_name: `Pemain #${num} (Deteksi Video)`,
+          position: 'Slot Video',
+          is_starter: true,
+          minutes_played: activeDq?.last_minute?.value || 45,
+          counts_by_type: {},
+          n: 0,
+          sx: 0,
+          sy: 0,
+          cn: 0
+        };
+      }
+      const row = byNum[num];
+      row.n += 1;
+      row.counts_by_type[e.event_type] = (row.counts_by_type[e.event_type] || 0) + 1;
+      if (e.x_m != null && e.y_m != null) {
+        row.sx += Number(e.x_m);
+        row.sy += Number(e.y_m);
+        row.cn += 1;
+      }
+    });
+    return Object.values(byNum)
+      .sort((a, b) => a.jersey_number - b.jersey_number)
+      .map((r) => {
+        let inferredRole = 'Slot Video';
+        if (r.cn > 0) {
+          const xPct = (r.sx / r.cn) / Math.max(1, L);
+          const yPct = (r.sy / r.cn) / Math.max(1, W);
+          if (xPct < 0.16) inferredRole = 'Kiper / Bek Dalam';
+          else if (xPct < 0.36) inferredRole = yPct < 0.25 ? 'Bek Kiri' : yPct > 0.75 ? 'Bek Kanan' : 'Bek Tengah';
+          else if (xPct < 0.68) inferredRole = yPct < 0.25 ? 'Sayap Kiri' : yPct > 0.75 ? 'Sayap Kanan' : 'Gelandang';
+          else inferredRole = yPct < 0.28 ? 'Penyerang Kiri' : yPct > 0.72 ? 'Penyerang Kanan' : 'Penyerang Tengah';
+        }
+        return {
+          ...r,
+          position: inferredRole,
+          small_sample: r.n < SMALL_SAMPLE_N
+        };
+      });
+  })();
+
+  const reportActivePlayersVal = hasRosterEvents
+    ? activeDq.players_with_events_count.value
+    : reportPlayerRows.filter((r) => r.n > 0).length;
+  const reportActivePlayersTotal = hasRosterEvents
+    ? activeDq.players_with_events_count.n
+    : reportPlayerRows.length;
+
+  // Penyaringan Gambar A & B agar tidak menjadi benang kusut pada data padat (> 100 kejadian)
+  const allOwnCoordEvents = (activeEvents || []).filter(
+    (e) => e.team === 'own' && e.x_m != null && e.y_m != null
+  );
+  const KEY_REPORT_TYPES = new Set([
+    'goal',
+    'shot',
+    'shot_on_target',
+    'tackle',
+    'interception',
+    'ball_recovery',
+    'ball_loss',
+    'foul'
+  ]);
+  const isDenseMapA = allOwnCoordEvents.length > 100;
+  const reportMapAPoints = isDenseMapA
+    ? allOwnCoordEvents.filter((e) => KEY_REPORT_TYPES.has(e.event_type)).slice(0, 120)
+    : allOwnCoordEvents;
+
+  const allOwnPassLines = (activeEvents || []).filter(
+    (e) =>
+      e.team === 'own' &&
+      (e.event_type === 'pass' || e.event_type === 'key_pass') &&
+      e.x_m != null &&
+      e.end_x_m != null
+  );
+  const isDenseMapB = allOwnPassLines.length > 50;
+  const reportMapBLines = isDenseMapB
+    ? [...allOwnPassLines]
+        .sort((a, b) => {
+          const aKey = a.event_type === 'key_pass' ? 1 : 0;
+          const bKey = b.event_type === 'key_pass' ? 1 : 0;
+          if (bKey !== aKey) return bKey - aKey;
+          const distA = Math.hypot(Number(a.end_x_m) - Number(a.x_m), Number(a.end_y_m) - Number(a.y_m));
+          const distB = Math.hypot(Number(b.end_x_m) - Number(b.x_m), Number(b.end_y_m) - Number(b.y_m));
+          return distB - distA;
+        })
+        .slice(0, 45)
+    : allOwnPassLines;
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto p-4 sm:p-6" data-surface="paper">
       {/* Non-print Action Bar */}
@@ -433,10 +555,8 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               Bagian 1 • Dokumen Resmi Pertandingan
             </span>
             <h1 className="text-2xl font-bold tracking-tight text-1 mt-0.5">
-              Laporan Pertandingan: {activeMatch.home_team_name ? `${activeMatch.home_team_name} vs ` : ''}
-              {activeMatch.opponent_name
-                ? activeMatch.opponent_name.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/^(?:contoh:\s*)?(?:vs\.?\s*)?/i, '').trim()
-                : ''}
+              Laporan Pertandingan: {reportHomeTeam ? `${reportHomeTeam} vs ` : ''}
+              {reportAwayTeam}
             </h1>
             <p className="text-sm text-2 font-mono mt-1">
               Tanggal: {activeMatch.match_date || '-'} • Format: {activeMatch.format || '11v11'} • Lapangan: {activeMatch.pitch_length_m}&times;{activeMatch.pitch_width_m}m
@@ -471,7 +591,9 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
         {/* Mandatory honesty statement */}
         <div className="p-3 rounded-control bg-raised border border-line text-sm text-2 italic">
-          {activeDq.statement}
+          {isVisionData
+            ? 'Data berasal dari analisis video otomatis (estimasi posisi & aksi lapangan); perlu tinjauan pelatih sebelum finalisasi.'
+            : activeDq.statement}
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm font-mono">
@@ -498,9 +620,11 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <div className="p-3 rounded-control bg-raised border border-line">
             <span className="text-2 block">Pemain Aktif Terdata:</span>
             <span className="text-base font-bold text-1">
-              {activeDq.players_with_events_count.value} / {activeDq.players_with_events_count.n}
+              {reportActivePlayersVal} / {reportActivePlayersTotal}
             </span>
-            <span className="text-2 block mt-0.5">Pemain dengan &ge;1 aksi</span>
+            <span className="text-2 block mt-0.5">
+              {hasRosterEvents ? 'Pemain dengan ≥1 aksi' : 'Slot deteksi video aktif'}
+            </span>
           </div>
         </div>
 
@@ -635,7 +759,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               Bagian 4 • Analisis Lawan
             </span>
             <h2 className="text-xl font-bold text-1">
-              Lawan ({activeMatch.opponent_name ? activeMatch.opponent_name.replace(/^(?:contoh:\s*)?(?:vs\.?\s*)?/i, '').trim() : ''})
+              Lawan ({reportAwayTeam})
             </h2>
           </div>
           <Badge variant="neutral" size="sm">
@@ -784,7 +908,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
               )
             }
           ]}
-          data={activePlayerStats.rows}
+          data={reportPlayerRows}
           emptyMessage="Belum ada data partisipasi pemain yang terdaftar."
         />
       </section>
@@ -797,7 +921,9 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </span>
           <h2 className="text-xl font-bold text-1">Peta Kejadian</h2>
           <p className="text-sm text-2 font-mono mt-0.5">
-            Data pencatatan manual; bukan pelacakan otomatis.
+            {isVisionData
+              ? 'Hasil deteksi otomatis dari video (estimasi posisi; disaring ke momen penting agar terbaca jelas).'
+              : 'Data pencatatan manual; bukan pelacakan otomatis.'}
           </p>
         </div>
 
@@ -805,67 +931,63 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           {/* Figure A: Aksi Tim Kita */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-2">
             <span className="font-semibold text-1 text-sm block">
-              Gambar A: Sebaran Titik Aksi Tim Kita (n={activeEvents.filter((e) => e.team === 'own' && e.x_m != null).length})
+              Gambar A: {isDenseMapA
+                ? `Momen Penting ${reportHomeTeam || 'Tim Kita'} (${reportMapAPoints.length} dari ${allOwnCoordEvents.length} aksi)`
+                : `Sebaran Titik Aksi ${reportHomeTeam || 'Tim Kita'} (n=${allOwnCoordEvents.length})`}
             </span>
             <PitchSvg
               pitchLengthM={activeMatch.pitch_length_m || 90}
               pitchWidthM={activeMatch.pitch_width_m || 60}
               orientation="horizontal"
             >
-              {activeEvents
-                .filter((e) => e.team === 'own' && e.x_m != null && e.y_m != null)
-                .map((e) => (
-                  <circle
-                    key={e.id || e.client_event_id}
-                    cx={Number(e.x_m)}
-                    cy={Number(e.y_m)}
-                    r="1.2"
-                    className={
-                      e.event_type === 'goal'
-                        ? 'fill-brand stroke-app'
-                        : e.event_type.includes('shot')
-                        ? 'fill-series-1'
-                        : 'fill-1 opacity-70'
-                    }
-                  />
-                ))}
+              {reportMapAPoints.map((e, idx) => (
+                <circle
+                  key={e.id || e.client_event_id || `mA-${idx}`}
+                  cx={Number(e.x_m)}
+                  cy={Number(e.y_m)}
+                  r={e.event_type === 'goal' ? '1.8' : e.event_type.includes('shot') ? '1.4' : '1.05'}
+                  className={
+                    e.event_type === 'goal'
+                      ? 'fill-brand stroke-app'
+                      : e.event_type.includes('shot')
+                      ? 'fill-series-1'
+                      : e.event_type === 'ball_loss' || e.event_type === 'foul'
+                      ? 'fill-warning opacity-85'
+                      : 'fill-1 opacity-75'
+                  }
+                />
+              ))}
             </PitchSvg>
             <div className="text-2 text-sm font-mono text-center">
-              Arah serang: Kiri &rarr; Kanan
+              Arah serang: Kiri &rarr; Kanan{isDenseMapA ? ' • Umpan minor disaring' : ''}
             </div>
           </div>
 
           {/* Figure B: Aliran Umpan dengan Titik Akhir */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-2">
             <span className="font-semibold text-1 text-sm block">
-              Gambar B: Aliran Umpan Tim Kita Berkoordinat Akhir
+              Gambar B: {isDenseMapB
+                ? `Umpan Kunci & Terpanjang (${reportMapBLines.length} dari ${allOwnPassLines.length} umpan)`
+                : `Aliran Umpan ${reportHomeTeam || 'Tim Kita'} Berkoordinat Akhir`}
             </span>
             <PitchSvg
               pitchLengthM={activeMatch.pitch_length_m || 90}
               pitchWidthM={activeMatch.pitch_width_m || 60}
               orientation="horizontal"
             >
-              {activeEvents
-                .filter(
-                  (e) =>
-                    e.team === 'own' &&
-                    (e.event_type === 'pass' || e.event_type === 'key_pass') &&
-                    e.x_m != null &&
-                    e.end_x_m != null
-                )
-                .map((e) => (
-                  <line
-                    key={e.id || e.client_event_id}
-                    x1={Number(e.x_m)}
-                    y1={Number(e.y_m)}
-                    x2={Number(e.end_x_m)}
-                    y2={Number(e.end_y_m)}
-                    className={e.outcome === 'success' ? 'stroke-brand' : 'stroke-danger'}
-                    strokeWidth="0.8"
-                    strokeDasharray={e.outcome === 'success' ? 'none' : '1.5,1.5'}
-                    opacity={0.8}
-                  />
-                ))}
+              {reportMapBLines.map((e, idx) => (
+                <line
+                  key={e.id || e.client_event_id || `mB-${idx}`}
+                  x1={Number(e.x_m)}
+                  y1={Number(e.y_m)}
+                  x2={Number(e.end_x_m)}
+                  y2={Number(e.end_y_m)}
+                  className={e.outcome === 'success' ? 'stroke-brand' : 'stroke-danger'}
+                  strokeWidth="0.7"
+                  strokeDasharray={e.outcome === 'success' ? 'none' : '1.5,1.5'}
+                  opacity={0.75}
+                />
+              ))}
             </PitchSvg>
             <div className="text-2 text-sm font-mono text-center">
               Solid: Sukses • Putus-putus: Gagal
@@ -877,7 +999,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         <div className="p-4 rounded-control bg-raised border border-line space-y-4" data-testid="report-tactical-summary">
           <div className="flex items-center justify-between gap-2 flex-wrap border-b border-line pb-2">
             <h3 className="text-sm font-semibold text-1">
-              Analisis Taktis Terukur (Tim Kita vs {activeMatch.opponent_name})
+              Analisis Taktis Terukur ({reportHomeTeam || 'Tim Kita'} vs {reportAwayTeam})
             </h3>
             <div className="flex items-center gap-1.5 flex-wrap">
               <RefChip referenceId="fifa-football-language-2022" />

@@ -38,7 +38,12 @@ export default function EventMap({
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   const isAutoVision = useMemo(() => {
-    return events.some((e) => e.source === 'vision' || String(e.id || '').startsWith('vision-'));
+    return events.some(
+      (e) =>
+        e.source === 'vision' ||
+        String(e.id || '').startsWith('vision-') ||
+        /otomatis|vision/i.test(String(e.note || ''))
+    );
   }, [events]);
 
   // Find max minute in events for range bounds
