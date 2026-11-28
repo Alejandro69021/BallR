@@ -197,7 +197,7 @@ export default function EventMap({
           <h2 className="text-base font-semibold text-1">Peta Kejadian Pertandingan</h2>
           <p className="text-sm text-2 mt-0.5">
             {isAutoVision
-              ? 'Hasil deteksi otomatis dari video (estimasi posisi — arahkan kursor atau klik titik untuk detail).'
+              ? 'Hasil deteksi otomatis dari video. Arahkan kursor atau klik titik untuk melihat detail.'
               : 'Data pencatatan manual; bukan pelacakan otomatis.'}
           </p>
         </div>
@@ -516,7 +516,7 @@ export default function EventMap({
                 <span className="w-3 h-3 rounded-xs bg-danger/80 border border-line inline-block" /> Paling Ramai
               </span>
               <span className="text-2">
-                (Total berkoordinat: {zoneData.total_with_coords})
+                · Total berkoordinat: {zoneData.total_with_coords}
               </span>
             </>
           )}
@@ -775,7 +775,7 @@ export default function EventMap({
       {/* Text Alternative Accessible Table */}
       <div className="space-y-2">
         <h3 className="text-sm font-semibold text-2 uppercase tracking-wider">
-          Daftar Rinci Kejadian Terpilih (Alternatif Teks Aksesibilitas)
+          Daftar Rinci Kejadian Terpilih
         </h3>
         <Table
           columns={[

@@ -351,7 +351,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         byNum[num] = {
           player_id: `slot-${num}`,
           jersey_number: num,
-          player_name: `Pemain #${num} (Deteksi Video)`,
+          player_name: `Pemain #${num} · Deteksi Video`,
           position: 'Slot Video',
           is_starter: true,
           minutes_played: activeDq?.last_minute?.value || 45,
@@ -628,7 +628,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         {/* Mandatory honesty statement */}
         <div className="p-3 rounded-control bg-raised border border-line text-sm text-2 italic">
           {isVisionData
-            ? 'Data berasal dari analisis video otomatis (estimasi posisi & aksi lapangan); perlu tinjauan pelatih sebelum finalisasi.'
+            ? 'Data berasal dari analisis video otomatis dengan estimasi posisi dan aksi lapangan. Tinjau ulang sebelum finalisasi.'
             : activeDq.statement}
         </div>
 
@@ -949,7 +949,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         />
       </section>
 
-      {/* SECTION 6: PETA KEJADIAN (SVG FIGURES) */}
+      {/* SECTION 6: PETA KEJADIAN */}
       <section className="space-y-4 pb-6 border-b border-line">
         <div>
           <span className="text-sm font-mono uppercase tracking-wider text-2">
@@ -958,18 +958,18 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <h2 className="text-xl font-bold text-1">Peta Kejadian</h2>
           <p className="text-sm text-2 font-mono mt-0.5">
             {isVisionData
-              ? 'Hasil deteksi otomatis dari video (estimasi posisi; disaring ke momen penting agar terbaca jelas).'
+              ? 'Hasil deteksi otomatis dari video. Tampilan disederhanakan agar langsung terbaca.'
               : 'Data pencatatan manual; bukan pelacakan otomatis.'}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Figure A: Peta Tembakan & Gol (data padat) atau Sebaran Titik Aksi (data manual ringkas) */}
+          {/* Figure A: Peta Tembakan & Gol atau Sebaran Titik Aksi */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-2">
             <span className="font-semibold text-1 text-sm block">
               Gambar A: {reportMapAIsShotMap
-                ? `Peta Tembakan & Gol ${reportHomeTeam || 'Tim Kita'} (${reportMapAPoints.length} tembakan)`
-                : `Sebaran Titik Aksi ${reportHomeTeam || 'Tim Kita'} (n=${allOwnCoordEvents.length})`}
+                ? `Peta Tembakan & Gol ${reportHomeTeam || 'Tim Kita'} · ${reportMapAPoints.length} tembakan`
+                : `Sebaran Titik Aksi ${reportHomeTeam || 'Tim Kita'} · n=${allOwnCoordEvents.length}`}
             </span>
             <PitchSvg
               pitchLengthM={pitchLenReport}
@@ -1016,7 +1016,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           <div className="p-3 rounded-control bg-raised border border-line space-y-2">
             <span className="font-semibold text-1 text-sm block">
               Gambar B: {isDenseMapB
-                ? `Area Aksi Terpadat ${reportHomeTeam || 'Tim Kita'} (Grid 3×3 · n=${reportZoneGrid.total})`
+                ? `Area Aksi Terpadat ${reportHomeTeam || 'Tim Kita'} · ${reportZoneGrid.total} aksi`
                 : `Aliran Umpan ${reportHomeTeam || 'Tim Kita'} Berkoordinat Akhir`}
             </span>
             <PitchSvg
@@ -1099,11 +1099,11 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </div>
         </div>
 
-        {/* Ringkasan Analisis Taktis Berbasis Literatur (Cetak A4) */}
+        {/* Ringkasan Analisis Taktis Berbasis Literatur */}
         <div className="p-4 rounded-control bg-raised border border-line space-y-4" data-testid="report-tactical-summary">
           <div className="flex items-center justify-between gap-2 flex-wrap border-b border-line pb-2">
             <h3 className="text-sm font-semibold text-1">
-              Analisis Taktis Terukur ({reportHomeTeam || 'Tim Kita'} vs {reportAwayTeam})
+              Analisis Taktis Terukur · {reportHomeTeam || 'Tim Kita'} vs {reportAwayTeam}
             </h3>
             <div className="flex items-center gap-1.5 flex-wrap">
               <RefChip referenceId="fifa-football-language-2022" />
@@ -1115,7 +1115,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
             <div className="p-2.5 rounded bg-app border border-line space-y-0.5">
-              <span className="text-sm text-2 block">Field Tilt (Sepertiga Akhir)</span>
+              <span className="text-sm text-2 block">Dominasi Sepertiga Akhir</span>
               <span className="font-semibold text-1 tabular-nums block">
                 {tacticalSummary.field_tilt.own_pct != null
                   ? `${tacticalSummary.field_tilt.own_pct}% vs ${tacticalSummary.field_tilt.opponent_pct}%`

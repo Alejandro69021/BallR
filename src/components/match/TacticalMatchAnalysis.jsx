@@ -1184,7 +1184,7 @@ export default function TacticalMatchAnalysis({
             </div>
             <div className="space-y-1">
               <label htmlFor="vision-yt-cookies" className="block text-sm text-2">
-                Cookies browser (opsional)
+                Cookies browser
               </label>
               <select
                 id="vision-yt-cookies"
@@ -1193,7 +1193,7 @@ export default function TacticalMatchAnalysis({
                 disabled={youtubeBusy}
                 className="w-full min-h-[44px] px-3 py-2 rounded-control bg-panel border border-control text-sm text-1"
               >
-                <option value="">Tidak pakai (disarankan)</option>
+                <option value="">Tidak pakai · Disarankan</option>
                 <option value="firefox">Firefox</option>
                 <option value="chrome">Chrome</option>
                 <option value="edge">Edge</option>

@@ -307,7 +307,7 @@ describe('Match Report & Event Map System (Phase 5d)', () => {
         />
       );
 
-      expect(screen.getByText(/Alternatif Teks Aksesibilitas/i)).toBeInTheDocument();
+      expect(screen.getByText(/Daftar Rinci Kejadian Terpilih/i)).toBeInTheDocument();
       expect(screen.getAllByText('Gol').length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText('(20m, 30m)')).toBeInTheDocument();
       expect(screen.getByText('Tanpa koordinat')).toBeInTheDocument();

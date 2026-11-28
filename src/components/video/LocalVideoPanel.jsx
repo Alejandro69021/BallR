@@ -644,7 +644,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
             />
           </div>
           <p className="text-sm text-2">
-            Video diputar langsung dari YouTube (mode tanpa cookie) dan tidak diunggah ke server BallR. Gunakan stopwatch di atas untuk mencatat menit kejadian.
+            Video diputar langsung dari YouTube tanpa cookie dan tidak diunggah ke server BallR. Gunakan stopwatch di atas untuk mencatat menit kejadian.
           </p>
         </div>
       ) : (
