@@ -107,7 +107,7 @@ export default function Dialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity duration-150 ease-out"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity duration-150 ease-out whitespace-normal text-left"
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'dialog-title' : undefined}

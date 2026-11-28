@@ -85,7 +85,7 @@ export default function StoryCardCanvas({
         <svg
           aria-hidden="true"
           viewBox="0 0 360 540"
-          className="absolute inset-0 w-full h-full pointer-events-none opacity-10 text-chalk"
+          className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.06] text-chalk"
         >
           <rect x="18" y="18" width="324" height="504" fill="none" stroke="currentColor" strokeWidth="1.5" />
           <line x1="18" y1="270" x2="342" y2="270" stroke="currentColor" strokeWidth="1.2" />

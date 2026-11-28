@@ -653,19 +653,41 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </div>
         </div>
 
-        {Array.isArray(activeMatch.official_events) && activeMatch.official_events.length > 0 && (
-          <div className="p-3 rounded-control bg-raised border border-line text-sm space-y-1.5 print-avoid-break">
-            <span className="font-semibold text-1 block">Lini Masa Resmi Pertandingan · Gol, Kartu &amp; Pergantian</span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 print:grid-cols-2 gap-x-4 gap-y-1 text-sm">
-              {activeMatch.official_events.map((ev, idx) => (
-                <div key={`off-${idx}`} className="flex items-start gap-2 text-2">
-                  <span className="font-mono font-semibold text-1 shrink-0 w-10">{ev.minute}</span>
-                  <span>{ev.text}</span>
+        {Array.isArray(activeMatch.official_events) && activeMatch.official_events.length > 0 && (() => {
+          const firstHalf = activeMatch.official_events.filter((ev) => {
+            const m = String(ev.minute || '');
+            return m === 'HT' || (parseInt(m, 10) || 0) <= 45;
+          });
+          const secondHalf = activeMatch.official_events.filter((ev) => {
+            const m = String(ev.minute || '');
+            return m !== 'HT' && (parseInt(m, 10) || 0) > 45;
+          });
+          return (
+            <div className="p-3.5 rounded-control bg-raised border border-line text-sm space-y-2.5 print-avoid-break">
+              <span className="font-semibold text-1 block">Lini Masa Resmi Pertandingan · Gol, Kartu &amp; Pergantian</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 print:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-1.5">
+                  <span className="text-sm font-semibold text-2 uppercase tracking-wider block border-b border-line pb-1">Babak 1</span>
+                  {firstHalf.map((ev, idx) => (
+                    <div key={`off-1-${idx}`} className="flex items-start gap-2 text-2">
+                      <span className="font-mono font-semibold text-1 shrink-0 w-10">{ev.minute}</span>
+                      <span className="leading-snug">{ev.text}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+                <div className="space-y-1.5">
+                  <span className="text-sm font-semibold text-2 uppercase tracking-wider block border-b border-line pb-1">Babak 2</span>
+                  {secondHalf.map((ev, idx) => (
+                    <div key={`off-2-${idx}`} className="flex items-start gap-2 text-2">
+                      <span className="font-mono font-semibold text-1 shrink-0 w-11">{ev.minute}</span>
+                      <span className="leading-snug">{ev.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {activeMatch.notes && (
           <div className="p-3 rounded-control bg-raised border border-line text-sm text-2 leading-relaxed">
@@ -745,66 +767,82 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
           {/* Umpan */}
-          <div className="p-3 rounded-control bg-raised border border-line space-y-1.5">
-            <div className="flex items-center justify-between gap-1">
-              <span className="font-semibold text-1 block">Akurasi Umpan</span>
-              {activeOwnPass.n < SMALL_SAMPLE_N && (
-                <Badge variant="warning" size="sm">sampel kecil</Badge>
-              )}
+          <div className="p-3.5 rounded-control bg-raised border border-line flex flex-col justify-between gap-2">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between gap-1">
+                <span className="font-semibold text-1 block">Akurasi Umpan</span>
+                {activeOwnPass.n < SMALL_SAMPLE_N && (
+                  <Badge variant="warning" size="sm">sampel kecil</Badge>
+                )}
+              </div>
+              <div className="text-xl font-bold font-mono text-1">
+                {activeOwnPass.total.value > 0
+                  ? `${activeOwnPass.value !== null ? activeOwnPass.value : 0}%`
+                  : 'Belum ada data'}
+              </div>
             </div>
-            <div className="text-base font-bold font-mono text-1">
-              {activeOwnPass.total.value > 0 ? (
-                <>
-                  <span>{activeOwnPass.successful.value} dari {activeOwnPass.total.value} umpan</span>
-                  <span className="text-sm text-2 font-normal font-sans ml-1.5">
-                    ({activeOwnPass.value !== null ? `${activeOwnPass.value}%` : '0%'})
-                  </span>
-                </>
-              ) : (
-                'Belum ada data'
-              )}
-            </div>
-            <div className="text-2 font-mono text-sm space-y-0.5">
-              <div>Sukses: {activeOwnPass.successful.value} umpan</div>
-              <div>Gagal: {activeOwnPass.failed.value} umpan</div>
-              <div>Total penyebut: {activeOwnPass.total.value} umpan (n={activeOwnPass.n})</div>
+            <div className="text-2 text-sm space-y-1 pt-2 border-t border-line">
+              <div className="flex items-center justify-between">
+                <span>Umpan sukses</span>
+                <span className="font-mono font-semibold text-1">{activeOwnPass.successful.value}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Umpan gagal</span>
+                <span className="font-mono font-semibold text-1">{activeOwnPass.failed.value}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Total umpan</span>
+                <span className="font-mono text-2">n={activeOwnPass.n}</span>
+              </div>
             </div>
           </div>
 
           {/* Tembakan */}
-          <div className="p-3 rounded-control bg-raised border border-line space-y-1.5">
-            <div className="flex items-center justify-between gap-1">
-              <span className="font-semibold text-1 block">Tembakan &amp; Sasaran</span>
-              {activeOwnShots.n < SMALL_SAMPLE_N && (
-                <Badge variant="warning" size="sm">sampel kecil</Badge>
-              )}
+          <div className="p-3.5 rounded-control bg-raised border border-line flex flex-col justify-between gap-2">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between gap-1">
+                <span className="font-semibold text-1 block">Tembakan &amp; Sasaran</span>
+                {activeOwnShots.n < SMALL_SAMPLE_N && (
+                  <Badge variant="warning" size="sm">sampel kecil</Badge>
+                )}
+              </div>
+              <div className="text-xl font-bold font-mono text-1">
+                {activeOwnShots.goals.value} Gol · {activeOwnShots.accuracy_pct.value ?? 0}%
+              </div>
             </div>
-            <div className="text-sm font-bold font-mono text-1">
-              {activeOwnShots.goals.value} gol dari {activeOwnShots.on_target.value} tembakan tepat sasaran; {activeOwnShots.off_target.value} meleset
-            </div>
-            <div className="text-2 font-mono text-sm space-y-0.5">
-              <div>Akurasi tepat sasaran: {activeOwnShots.accuracy_pct.value ?? 0}% (dari {activeOwnShots.total.value} tembakan)</div>
-              <div>Total tembakan dicatat: n={activeOwnShots.n}</div>
+            <div className="text-2 text-sm space-y-1 pt-2 border-t border-line">
+              <div className="flex items-center justify-between">
+                <span>Tepat sasaran</span>
+                <span className="font-mono font-semibold text-1">{activeOwnShots.on_target.value}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Meleset</span>
+                <span className="font-mono font-semibold text-1">{activeOwnShots.off_target.value}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Total tembakan</span>
+                <span className="font-mono text-2">n={activeOwnShots.n}</span>
+              </div>
             </div>
           </div>
 
           {/* PPDA */}
-          <div className="p-3 rounded-control bg-raised border border-line space-y-1.5">
-            <div className="space-y-1">
+          <div className="p-3.5 rounded-control bg-raised border border-line flex flex-col justify-between gap-2">
+            <div className="space-y-1.5">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="font-semibold text-1 block">PPDA (Intensitas Pressing)</span>
                 <Term
-                  explanation="Passes Allowed per Defensive Action: rasio umpan lawan sebelum aksi bertahan tim kita. Mengindikasikan intensitas tekanan, bukan ukuran mutlak kualitas tim."
+                  explanation="Passes Allowed per Defensive Action: rasio umpan lawan sebelum aksi bertahan tim kita. Nilai lebih kecil menunjukkan tekanan lebih rapat."
                 />
               </div>
-              <div className="w-full truncate">
+              <div className="print:hidden">
                 <RefChip referenceId="trainor-ppda-2014" />
               </div>
+              <div className="text-xl font-bold font-mono text-1">
+                {activePpdaMetric.value !== null ? activePpdaMetric.value : '-'}
+              </div>
             </div>
-            <div className="text-xl font-bold font-mono text-1">
-              {activePpdaMetric.value !== null ? activePpdaMetric.value : '-'}
-            </div>
-            <div className="text-2 font-mono text-sm space-y-0.5">
+            <div className="text-2 text-sm space-y-1 pt-2 border-t border-line">
               {activePpdaMetric.reason ? (
                 <div className="text-warning italic">
                   {String(activePpdaMetric.reason).includes('0.4')
@@ -812,9 +850,21 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
                     : activePpdaMetric.reason}
                 </div>
               ) : (
-                <div>Umpan lawan {activePpdaMetric.opponent_passes_in_zone} / Aksi bertahan {activePpdaMetric.defensive_actions_in_zone}</div>
+                <>
+                  <div className="flex items-center justify-between">
+                    <span>Umpan lawan di zona</span>
+                    <span className="font-mono font-semibold text-1">{activePpdaMetric.opponent_passes_in_zone}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Aksi bertahan kita</span>
+                    <span className="font-mono font-semibold text-1">{activePpdaMetric.defensive_actions_in_zone}</span>
+                  </div>
+                </>
               )}
-              <div>Sampel: n={activePpdaMetric.n} umpan lawan</div>
+              <div className="flex items-center justify-between">
+                <span>Sampel umpan lawan</span>
+                <span className="font-mono text-2">n={activePpdaMetric.n}</span>
+              </div>
             </div>
           </div>
         </div>

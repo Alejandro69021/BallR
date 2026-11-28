@@ -40,23 +40,23 @@ export default function RefChip({ referenceId, customLabel }) {
       <Dialog
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        size="sm"
+        size="md"
         icon={
           <div className="p-1.5 rounded-control bg-raised text-brand shrink-0">
             <ShieldCheck className="w-5 h-5" />
           </div>
         }
         title={
-          <div>
-            <div className="flex items-center gap-1.5">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-sm uppercase tracking-wider text-2">
                 Rujukan Dokumen
               </span>
-              <span className="text-sm uppercase px-1.5 py-0.2 rounded border bg-raised border-line text-2">
-                {ref.status || 'unverified'}
+              <span className="text-sm uppercase px-1.5 py-0.5 rounded border bg-raised border-line text-2 whitespace-nowrap">
+                {ref.status === 'verified' ? 'Terverifikasi' : ref.status === 'located' ? 'Tercatat' : 'Belum diverifikasi'}
               </span>
             </div>
-            <h3 id="ref-modal-title" className="text-sm font-semibold text-1 leading-snug mt-0.5">
+            <h3 id="ref-modal-title" className="text-sm font-semibold text-1 leading-snug mt-1 break-words">
               {ref.title}
             </h3>
           </div>

@@ -110,7 +110,7 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
         </div>
 
         <div className="flex items-center gap-2">
-          <Badge variant="neutral">Payload v2</Badge>
+          <Badge variant="neutral" className="whitespace-nowrap shrink-0">Payload v2</Badge>
           {regNumber && (
             <Badge variant="brand">
               Reg: {regNumber}
@@ -120,7 +120,7 @@ Tautan Verifikasi: ${window.location.origin}/verifikasi/${computedHash}`;
       </div>
 
       {/* Cryptographic Hash Details Card */}
-      <div className="rounded-panel border border-line bg-panel p-4 space-y-3">
+      <div className="rounded-panel border border-line bg-panel p-4 space-y-3 print-avoid-break">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
           <div>
             <span className="text-sm text-2 block">ID publik atlet</span>

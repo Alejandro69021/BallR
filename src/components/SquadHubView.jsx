@@ -4,7 +4,8 @@ import {
   LayoutList,
   LayoutGrid,
   Eye,
-  Edit3
+  Edit3,
+  Plus
 } from 'lucide-react';
 import ResponsiveList from './ui/ResponsiveList';
 import Badge from './ui/Badge';
@@ -265,6 +266,18 @@ export default function SquadHubView({
                 actions={
                   <div className="flex items-center gap-2 self-start sm:self-auto">
                     <Badge variant="brand">Akademi U-13</Badge>
+                    {isCoach && onAddPlayer && (
+                      <Button
+                        type="button"
+                        variant="primary"
+                        size="sm"
+                        icon={<Plus className="w-4 h-4" strokeWidth={1.75} />}
+                        onClick={onAddPlayer}
+                        className="whitespace-nowrap"
+                      >
+                        Tambah pemain
+                      </Button>
+                    )}
                     {/* View Mode Toggle */}
                     <div className="inline-flex rounded-control border border-control bg-raised p-0.5 gap-2">
                       <button

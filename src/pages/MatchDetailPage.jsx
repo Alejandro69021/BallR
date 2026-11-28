@@ -1421,9 +1421,10 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                 type="number"
                 min="0"
                 required
+                placeholder="0"
                 value={ownScoreInput}
                 onChange={(e) => setOwnScoreInput(e.target.value)}
-                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-9 bg-app border border-control rounded-control text-base font-mono font-semibold tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
 
@@ -1433,21 +1434,28 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                 type="number"
                 min="0"
                 required
+                placeholder="0"
                 value={oppScoreInput}
                 onChange={(e) => setOppScoreInput(e.target.value)}
-                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-8 bg-app border border-control rounded-control text-sm font-mono tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+                className="w-full px-3 min-h-[44px] sm:min-h-0 sm:h-9 bg-app border border-control rounded-control text-base font-mono font-semibold tabular-nums text-1 focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
               />
             </Field>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-control bg-raised border border-line text-sm">
-            <span className="text-2 tabular-nums">
-              Gol tercatat: {loggedGoals.own} / {loggedGoals.opp} (mungkin belum lengkap)
-            </span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-control bg-raised border border-line text-sm">
+            <div className="space-y-0.5 min-w-0">
+              <span className="text-1 font-medium block">
+                Gol tercatat: <span className="font-mono font-bold">{loggedGoals.own} - {loggedGoals.opp}</span>
+              </span>
+              <span className="text-2 text-sm block">
+                Periksa kembali bila ada gol yang belum tercatat
+              </span>
+            </div>
             <Button
               type="button"
               variant="secondary"
               size="sm"
+              className="whitespace-nowrap shrink-0"
               onClick={() => {
                 setOwnScoreInput(String(loggedGoals.own));
                 setOppScoreInput(String(loggedGoals.opp));

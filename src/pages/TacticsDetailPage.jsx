@@ -616,7 +616,7 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
   return (
     <div className="space-y-6">
       {/* Header & Actions Bar */}
-      <div className="space-y-3 pb-4 border-b border-line">
+      <div className="rounded-panel border border-line bg-panel p-4 sm:p-5 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <IconButton

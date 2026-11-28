@@ -125,10 +125,10 @@ export default function StoryFlexCardModal({
       onClose={onClose}
       title="Kartu Perkembangan"
       description="Ringkasan data atlet dari catatan akademi untuk pemantauan perkembangan."
-      className="max-w-md"
+      className="max-w-lg"
       footer={
-        <div className="flex flex-col sm:flex-row gap-2 w-full justify-end">
-          <Button variant="ghost" size="sm" onClick={onClose}>
+        <div className="flex flex-wrap items-center justify-end gap-2 w-full">
+          <Button variant="ghost" size="sm" onClick={onClose} className="whitespace-nowrap shrink-0">
             Tutup
           </Button>
           <Button
@@ -137,6 +137,7 @@ export default function StoryFlexCardModal({
             disabled={!canShare}
             onClick={handleCopySummary}
             icon={<Copy className="w-4 h-4" />}
+            className="whitespace-nowrap shrink-0"
           >
             Salin Ringkasan
           </Button>
@@ -147,8 +148,9 @@ export default function StoryFlexCardModal({
             loading={isExporting}
             onClick={handleDownload}
             icon={<Download className="w-4 h-4" />}
+            className="whitespace-nowrap shrink-0"
           >
-            Unduh Gambar (PNG)
+            {isExporting ? 'Mengunduh...' : 'Unduh Gambar'}
           </Button>
         </div>
       }
