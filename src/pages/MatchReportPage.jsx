@@ -963,7 +963,7 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-4">
           {/* Figure A: Peta Tembakan & Gol atau Sebaran Titik Aksi */}
           <div className="p-3 rounded-control bg-raised border border-line space-y-2">
             <span className="font-semibold text-1 text-sm block">

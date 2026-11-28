@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 @theme {
   --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
@@ -305,28 +315,35 @@
     margin: 12mm;
   }
 
+  :root,
+  :root[data-surface="dark"],
+  :root[data-surface="paper"],
   [data-surface="dark"],
-  [data-surface="paper"],
-  :root {
-    --app-bg: #FFFFFF;
-    --panel: #FFFFFF;
-    --raised: #FFFFFF;
-    --line: #DAD6CC;
-    --control-border: #788594;
-    --text-1: #14181F;
-    --text-2: #4A5360;
-    --brand: #2E7D5B;
-    --warning: #8A5B00;
-    --danger: #C2453D;
-    --success: #2E7D5B;
-    --series-1: #0072B2;
-    --series-2: #9E5B00;
-    --series-3: #007A59;
-    --series-4: #B34700;
-    --series-5: #9C4472;
+  [data-surface="paper"] {
+    --app-bg: #FFFFFF !important;
+    --panel: #FFFFFF !important;
+    --raised: #F8F9FA !important;
+    --line: #D5D9E0 !important;
+    --control-border: #788594 !important;
+    --text-1: #14181F !important;
+    --text-2: #4A5360 !important;
+    --brand: #1E6B4B !important;
+    --warning: #9A5B00 !important;
+    --danger: #C2453D !important;
+    --success: #1E6B4B !important;
+    --series-1: #0072B2 !important;
+    --series-2: #9E5B00 !important;
+    --series-3: #007A59 !important;
+    --series-4: #B34700 !important;
+    --series-5: #9C4472 !important;
+    --pitch-bg: #F3F7F4 !important;
+    --pitch-line: #4A6558 !important;
   }
 
-  body {
+  html,
+  body,
+  [data-surface="dark"],
+  [data-surface="paper"] {
     background-color: #FFFFFF !important;
     color: #14181F !important;
     -webkit-print-color-adjust: exact !important;
@@ -335,6 +352,7 @@
 
   header,
   nav,
+  aside,
   .no-print,
   button,
   input,
@@ -346,14 +364,30 @@
 
   main {
     max-width: 100% !important;
+    width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
   }
 
-  section,
+  h1,
+  h2,
+  h3 {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  .rounded-control,
+  tr,
+  svg,
   footer,
   .print-avoid-break {
     break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  section {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
   }
 }
 
