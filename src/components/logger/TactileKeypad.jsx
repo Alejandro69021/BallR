@@ -7,10 +7,14 @@ import {
   ArrowRight,
   MapPin,
   RotateCcw,
-  Users
+  Users,
+  Undo2,
+  ChevronDown,
+  CheckCircle2
 } from 'lucide-react';
 import PitchSvg from '../ui/PitchSvg';
 import Button from '../ui/Button';
+import { EVENT_TYPE_LABELS } from '../../lib/matches';
 
 export default function TactileKeypad({
   match,
@@ -18,6 +22,10 @@ export default function TactileKeypad({
   selectedPlayerId,
   onSelectPlayer,
   onLogEvent,
+  onUndoLast,
+  lastLoggedEvent = null,
+  totalEventsCount = 0,
+  playerMap = {},
   isReadOnly = false
 }) {
   const [team, setTeam] = useState('own'); // 'own' | 'opponent'
@@ -293,7 +301,60 @@ export default function TactileKeypad({
         </div>
       )}
 
-      {/* 3. Action Buttons Keypad (Tablet friendly >= 56px touch targets) */}
+      {/* 3. Instant Feedback Strip */}
+      <div
+        data-testid="keypad-feedback-strip"
+        className="px-3 py-2 rounded-control bg-raised border border-line flex flex-wrap items-center justify-between gap-2 text-sm"
+      >
+        {lastLoggedEvent ? (
+          <div className="flex items-center gap-2 min-w-0">
+            <CheckCircle2 className="w-4 h-4 text-brand shrink-0" strokeWidth={1.75} />
+            <span className="text-1 truncate">
+              <span className="text-2">Tercatat: </span>
+              <strong className="font-semibold text-1">
+                {lastLoggedEvent.team === 'own'
+                  ? (() => {
+                      const info = lastLoggedEvent.player_id ? playerMap[lastLoggedEvent.player_id] : null;
+                      return info ? `#${info.number} ${info.name}` : 'Tim kita';
+                    })()
+                  : `Lawan #${lastLoggedEvent.opponent_number || '-'}`}
+              </strong>
+              {' · '}
+              <span className="text-brand font-medium">
+                {lastLoggedEvent.note || EVENT_TYPE_LABELS[lastLoggedEvent.event_type] || lastLoggedEvent.event_type}
+              </span>
+              {' · '}
+              <span className="font-mono text-2 tabular-nums">
+                B{lastLoggedEvent.period || 1} {lastLoggedEvent.minute ?? 0}&apos;
+              </span>
+            </span>
+          </div>
+        ) : (
+          <span className="text-2">
+            Pilih pemain di atas, lalu tekan salah satu tombol aksi di bawah untuk mencatat kejadian.
+          </span>
+        )}
+
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="font-mono text-sm text-2 tabular-nums px-2 py-0.5 rounded-control bg-panel border border-line">
+            Total {totalEventsCount}
+          </span>
+          {!isReadOnly && totalEventsCount > 0 && onUndoLast && (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={onUndoLast}
+              icon={<Undo2 className="w-3.5 h-3.5" strokeWidth={1.5} />}
+              className="whitespace-nowrap shrink-0"
+            >
+              Batalkan
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* 4. Core Action Buttons Keypad (8 aksi inti paling sering dipakai) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         {/* Pass Accurate */}
         <button
@@ -306,7 +367,7 @@ export default function TactileKeypad({
             }`}
         >
           <div className="flex items-center gap-1.5 text-brand font-semibold text-sm">
-            <Check className="w-4 h-4" strokeWidth={1.5} />
+            <Check className="w-4 h-4 shrink-0" strokeWidth={1.5} />
             <span>Umpan akurat</span>
           </div>
           <span className="text-sm text-2 mt-0.5">Berhasil</span>
@@ -323,27 +384,10 @@ export default function TactileKeypad({
             }`}
         >
           <div className="flex items-center gap-1.5 text-danger font-semibold text-sm">
-            <X className="w-4 h-4" strokeWidth={1.5} />
+            <X className="w-4 h-4 shrink-0" strokeWidth={1.5} />
             <span>Umpan meleset</span>
           </div>
           <span className="text-sm text-2 mt-0.5">Meleset</span>
-        </button>
-
-        {/* Key Pass */}
-        <button
-          type="button"
-          disabled={isReadOnly}
-          onClick={() => triggerLog('key_pass', 'key_pass', 'success', 'Umpan kunci')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'key_pass'
-            ? 'bg-brand/20 border-brand text-brand'
-            : 'border-line hover:bg-raised text-1'
-            }`}
-        >
-          <div className="flex items-center gap-1.5 text-brand font-semibold text-sm">
-            <Target className="w-4 h-4" strokeWidth={1.5} />
-            <span>Umpan kunci</span>
-          </div>
-          <span className="text-sm text-2 mt-0.5">Peluang</span>
         </button>
 
         {/* Goal */}
@@ -357,7 +401,7 @@ export default function TactileKeypad({
             }`}
         >
           <div className="flex items-center gap-1.5 font-bold text-sm">
-            <Target className="w-4 h-4" strokeWidth={1.5} />
+            <Target className="w-4 h-4 shrink-0" strokeWidth={1.5} />
             <span>Gol</span>
           </div>
           <span className="text-sm mt-0.5">Masuk</span>
@@ -374,27 +418,10 @@ export default function TactileKeypad({
             }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-sm text-1">
-            <Target className="w-4 h-4 text-2" strokeWidth={1.5} />
+            <Target className="w-4 h-4 text-2 shrink-0" strokeWidth={1.5} />
             <span>Tepat sasaran</span>
           </div>
           <span className="text-sm text-2 mt-0.5">Ke gawang</span>
-        </button>
-
-        {/* Shot Off Target */}
-        <button
-          type="button"
-          disabled={isReadOnly}
-          onClick={() => triggerLog('shot_off', 'shot', 'fail', 'Tembakan meleset')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'shot_off'
-            ? 'bg-danger/20 border-danger text-danger'
-            : 'border-line hover:bg-raised text-1'
-            }`}
-        >
-          <div className="flex items-center gap-1.5 font-semibold text-sm text-danger">
-            <X className="w-4 h-4" strokeWidth={1.5} />
-            <span>Tembakan meleset</span>
-          </div>
-          <span className="text-sm text-2 mt-0.5">Meleset</span>
         </button>
 
         {/* Tackle Won */}
@@ -408,27 +435,10 @@ export default function TactileKeypad({
             }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-sm text-brand">
-            <Shield className="w-4 h-4" strokeWidth={1.5} />
+            <Shield className="w-4 h-4 shrink-0" strokeWidth={1.5} />
             <span>Tekel berhasil</span>
           </div>
           <span className="text-sm text-2 mt-0.5">Berhasil</span>
-        </button>
-
-        {/* Tackle Lost */}
-        <button
-          type="button"
-          disabled={isReadOnly}
-          onClick={() => triggerLog('tackle_lost', 'tackle', 'fail', 'Tekel gagal')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'tackle_lost'
-            ? 'bg-danger/20 border-danger text-danger'
-            : 'border-line hover:bg-raised text-1'
-            }`}
-        >
-          <div className="flex items-center gap-1.5 font-semibold text-sm text-danger">
-            <Shield className="w-4 h-4" strokeWidth={1.5} />
-            <span>Tekel gagal</span>
-          </div>
-          <span className="text-sm text-2 mt-0.5">Gagal</span>
         </button>
 
         {/* Interception */}
@@ -442,95 +452,10 @@ export default function TactileKeypad({
             }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-sm text-1">
-            <Shield className="w-4 h-4 text-brand" strokeWidth={1.5} />
+            <Shield className="w-4 h-4 text-brand shrink-0" strokeWidth={1.5} />
             <span>Intersepsi</span>
           </div>
           <span className="text-sm text-2 mt-0.5">Potong umpan</span>
-        </button>
-
-        {/* Clearance */}
-        <button
-          type="button"
-          disabled={isReadOnly}
-          onClick={() => triggerLog('clearance', 'clearance', 'success', 'Sapuan')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'clearance'
-            ? 'bg-brand/20 border-brand text-brand'
-            : 'border-line hover:bg-raised text-1'
-            }`}
-        >
-          <div className="flex items-center gap-1.5 font-semibold text-sm text-1">
-            <Shield className="w-4 h-4 text-2" strokeWidth={1.5} />
-            <span>Sapuan</span>
-          </div>
-          <span className="text-sm text-2 mt-0.5">Buang bola</span>
-        </button>
-
-        {/* Ball Recovery */}
-        <button
-          type="button"
-          disabled={isReadOnly}
-          onClick={() => triggerLog('ball_recovery', 'ball_recovery', 'success', 'Rebut bola')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'ball_recovery'
-            ? 'bg-brand/20 border-brand text-brand'
-            : 'border-line hover:bg-raised text-1'
-            }`}
-        >
-          <div className="flex items-center gap-1.5 font-semibold text-sm text-brand">
-            <Check className="w-4 h-4" strokeWidth={1.5} />
-            <span>Rebut bola</span>
-          </div>
-          <span className="text-sm text-2 mt-0.5">Penguasaan bola</span>
-        </button>
-
-        {/* Ball Loss */}
-        <button
-          type="button"
-          disabled={isReadOnly}
-          onClick={() => triggerLog('ball_loss', 'ball_loss', 'fail', 'Kehilangan bola')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'ball_loss'
-            ? 'bg-danger/20 border-danger text-danger'
-            : 'border-line hover:bg-raised text-1'
-            }`}
-        >
-          <div className="flex items-center gap-1.5 font-semibold text-sm text-danger">
-            <X className="w-4 h-4" strokeWidth={1.5} />
-            <span>Kehilangan bola</span>
-          </div>
-          <span className="text-sm text-2 mt-0.5">Terlepas</span>
-        </button>
-
-        {/* Foul Won */}
-        <button
-          type="button"
-          disabled={isReadOnly}
-          onClick={() => triggerLog('foul_won', 'foul_won', 'success', 'Pelanggaran didapat')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'foul_won'
-            ? 'bg-brand/20 border-brand text-brand'
-            : 'border-line hover:bg-raised text-1'
-            }`}
-        >
-          <div className="flex items-center gap-1.5 font-semibold text-sm text-1">
-            <Check className="w-4 h-4 text-brand" strokeWidth={1.5} />
-            <span>Pelanggaran didapat</span>
-          </div>
-          <span className="text-sm text-2 mt-0.5">Ditekel lawan</span>
-        </button>
-
-        {/* Foul Committed */}
-        <button
-          type="button"
-          disabled={isReadOnly}
-          onClick={() => triggerLog('foul_committed', 'foul_committed', 'fail', 'Pelanggaran dibuat')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'foul_committed'
-            ? 'bg-danger/20 border-danger text-danger'
-            : 'border-line hover:bg-raised text-1'
-            }`}
-        >
-          <div className="flex items-center gap-1.5 font-semibold text-sm text-danger">
-            <X className="w-4 h-4" strokeWidth={1.5} />
-            <span>Pelanggaran dibuat</span>
-          </div>
-          <span className="text-sm text-2 mt-0.5">Melanggar lawan</span>
         </button>
 
         {/* Save */}
@@ -544,29 +469,180 @@ export default function TactileKeypad({
             }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-sm text-brand">
-            <Shield className="w-4 h-4" strokeWidth={1.5} />
+            <Shield className="w-4 h-4 shrink-0" strokeWidth={1.5} />
             <span>Penyelamatan</span>
           </div>
           <span className="text-sm text-2 mt-0.5">Blok kiper</span>
         </button>
 
-        {/* Corner */}
+        {/* Foul Won */}
         <button
           type="button"
           disabled={isReadOnly}
-          onClick={() => triggerLog('corner', 'corner', null, 'Sepak pojok')}
-          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'corner'
+          onClick={() => triggerLog('foul_won', 'foul_won', 'success', 'Pelanggaran didapat')}
+          className={`min-h-[56px] p-3 rounded-control border bg-panel transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'foul_won'
             ? 'bg-brand/20 border-brand text-brand'
             : 'border-line hover:bg-raised text-1'
             }`}
         >
           <div className="flex items-center gap-1.5 font-semibold text-sm text-1">
-            <Target className="w-4 h-4 text-2" strokeWidth={1.5} />
-            <span>Sepak pojok</span>
+            <Check className="w-4 h-4 text-brand shrink-0" strokeWidth={1.5} />
+            <span>Pelanggaran didapat</span>
           </div>
-          <span className="text-sm text-2 mt-0.5">Tendangan sudut</span>
+          <span className="text-sm text-2 mt-0.5">Ditekel lawan</span>
         </button>
       </div>
+
+      {/* 5. Secondary / Advanced Actions (collapsible so main keypad stays clean) */}
+      <details className="group rounded-panel border border-line bg-panel">
+        <summary className="px-3.5 py-2.5 text-sm font-medium text-1 cursor-pointer select-none flex flex-wrap items-center justify-between gap-2 list-none">
+          <span className="flex items-center gap-2">
+            <ChevronDown className="w-4 h-4 text-2 transition-transform group-open:rotate-180 shrink-0" />
+            <span>Aksi lainnya</span>
+          </span>
+          <span className="text-sm text-2 font-normal">
+            Umpan kunci · Tembakan meleset · Sapuan · Sepak pojok
+          </span>
+        </summary>
+
+        <div className="p-3 pt-1 border-t border-line grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          {/* Key Pass */}
+          <button
+            type="button"
+            disabled={isReadOnly}
+            onClick={() => triggerLog('key_pass', 'key_pass', 'success', 'Umpan kunci')}
+            className={`min-h-[56px] p-3 rounded-control border bg-app transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'key_pass'
+              ? 'bg-brand/20 border-brand text-brand'
+              : 'border-line hover:bg-raised text-1'
+              }`}
+          >
+            <div className="flex items-center gap-1.5 text-brand font-semibold text-sm">
+              <Target className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+              <span>Umpan kunci</span>
+            </div>
+            <span className="text-sm text-2 mt-0.5">Peluang</span>
+          </button>
+
+          {/* Shot Off Target */}
+          <button
+            type="button"
+            disabled={isReadOnly}
+            onClick={() => triggerLog('shot_off', 'shot', 'fail', 'Tembakan meleset')}
+            className={`min-h-[56px] p-3 rounded-control border bg-app transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'shot_off'
+              ? 'bg-danger/20 border-danger text-danger'
+              : 'border-line hover:bg-raised text-1'
+              }`}
+          >
+            <div className="flex items-center gap-1.5 font-semibold text-sm text-danger">
+              <X className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+              <span>Tembakan meleset</span>
+            </div>
+            <span className="text-sm text-2 mt-0.5">Meleset</span>
+          </button>
+
+          {/* Tackle Lost */}
+          <button
+            type="button"
+            disabled={isReadOnly}
+            onClick={() => triggerLog('tackle_lost', 'tackle', 'fail', 'Tekel gagal')}
+            className={`min-h-[56px] p-3 rounded-control border bg-app transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'tackle_lost'
+              ? 'bg-danger/20 border-danger text-danger'
+              : 'border-line hover:bg-raised text-1'
+              }`}
+          >
+            <div className="flex items-center gap-1.5 font-semibold text-sm text-danger">
+              <Shield className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+              <span>Tekel gagal</span>
+            </div>
+            <span className="text-sm text-2 mt-0.5">Gagal</span>
+          </button>
+
+          {/* Clearance */}
+          <button
+            type="button"
+            disabled={isReadOnly}
+            onClick={() => triggerLog('clearance', 'clearance', 'success', 'Sapuan')}
+            className={`min-h-[56px] p-3 rounded-control border bg-app transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'clearance'
+              ? 'bg-brand/20 border-brand text-brand'
+              : 'border-line hover:bg-raised text-1'
+              }`}
+          >
+            <div className="flex items-center gap-1.5 font-semibold text-sm text-1">
+              <Shield className="w-4 h-4 text-2 shrink-0" strokeWidth={1.5} />
+              <span>Sapuan</span>
+            </div>
+            <span className="text-sm text-2 mt-0.5">Buang bola</span>
+          </button>
+
+          {/* Ball Recovery */}
+          <button
+            type="button"
+            disabled={isReadOnly}
+            onClick={() => triggerLog('ball_recovery', 'ball_recovery', 'success', 'Rebut bola')}
+            className={`min-h-[56px] p-3 rounded-control border bg-app transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'ball_recovery'
+              ? 'bg-brand/20 border-brand text-brand'
+              : 'border-line hover:bg-raised text-1'
+              }`}
+          >
+            <div className="flex items-center gap-1.5 font-semibold text-sm text-brand">
+              <Check className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+              <span>Rebut bola</span>
+            </div>
+            <span className="text-sm text-2 mt-0.5">Penguasaan bola</span>
+          </button>
+
+          {/* Ball Loss */}
+          <button
+            type="button"
+            disabled={isReadOnly}
+            onClick={() => triggerLog('ball_loss', 'ball_loss', 'fail', 'Kehilangan bola')}
+            className={`min-h-[56px] p-3 rounded-control border bg-app transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'ball_loss'
+              ? 'bg-danger/20 border-danger text-danger'
+              : 'border-line hover:bg-raised text-1'
+              }`}
+          >
+            <div className="flex items-center gap-1.5 font-semibold text-sm text-danger">
+              <X className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+              <span>Kehilangan bola</span>
+            </div>
+            <span className="text-sm text-2 mt-0.5">Terlepas</span>
+          </button>
+
+          {/* Foul Committed */}
+          <button
+            type="button"
+            disabled={isReadOnly}
+            onClick={() => triggerLog('foul_committed', 'foul_committed', 'fail', 'Pelanggaran dibuat')}
+            className={`min-h-[56px] p-3 rounded-control border bg-app transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'foul_committed'
+              ? 'bg-danger/20 border-danger text-danger'
+              : 'border-line hover:bg-raised text-1'
+              }`}
+          >
+            <div className="flex items-center gap-1.5 font-semibold text-sm text-danger">
+              <X className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+              <span>Pelanggaran dibuat</span>
+            </div>
+            <span className="text-sm text-2 mt-0.5">Melanggar lawan</span>
+          </button>
+
+          {/* Corner */}
+          <button
+            type="button"
+            disabled={isReadOnly}
+            onClick={() => triggerLog('corner', 'corner', null, 'Sepak pojok')}
+            className={`min-h-[56px] p-3 rounded-control border bg-app transition-colors duration-150 motion-reduce:transition-none flex flex-col items-center justify-center text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-40 disabled:cursor-not-allowed ${flashingKey === 'corner'
+              ? 'bg-brand/20 border-brand text-brand'
+              : 'border-line hover:bg-raised text-1'
+              }`}
+          >
+            <div className="flex items-center gap-1.5 font-semibold text-sm text-1">
+              <Target className="w-4 h-4 text-2 shrink-0" strokeWidth={1.5} />
+              <span>Sepak pojok</span>
+            </div>
+            <span className="text-sm text-2 mt-0.5">Tendangan sudut</span>
+          </button>
+        </div>
+      </details>
     </section>
   );
 }

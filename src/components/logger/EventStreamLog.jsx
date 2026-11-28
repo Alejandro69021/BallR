@@ -41,11 +41,16 @@ export default function EventStreamLog({
   const interceptionsTotal = allEvents.filter((e) => e.event_type === 'interception').length;
   const clearancesTotal = allEvents.filter((e) => e.event_type === 'clearance').length;
 
-  // Chronological stream (latest first)
-  const sortedStream = [...allEvents].sort((a, b) => {
-    if (a.period !== b.period) return b.period - a.period;
-    return Number(b.minute) - Number(a.minute);
-  });
+  // Chronological stream (latest first; break ties by latest insertion index)
+  const sortedStream = allEvents
+    .map((evt, idx) => ({ evt, idx }))
+    .sort((a, b) => {
+      if (a.evt.period !== b.evt.period) return b.evt.period - a.evt.period;
+      const minDiff = Number(b.evt.minute) - Number(a.evt.minute);
+      if (minDiff !== 0) return minDiff;
+      return b.idx - a.idx;
+    })
+    .map((item) => item.evt);
 
   const serverCount = events.length;
   const outboxCount = outbox.length;

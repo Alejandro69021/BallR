@@ -756,6 +756,19 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
               Ubah
             </button>
           </div>
+        ) : !videoSrc && !youtubeId && offsetP1Secs == null && offsetP2Secs == null && !userExpanded ? (
+          <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-control bg-app border border-line text-sm">
+            <span className="text-2 text-sm">
+              Otomatis memakai stopwatch sampai video dimuat
+            </span>
+            <button
+              type="button"
+              onClick={() => setUserExpanded(true)}
+              className="min-h-[44px] sm:min-h-7 px-2.5 py-0.5 rounded-control bg-raised border border-line hover:border-brand text-sm font-medium text-brand shrink-0 cursor-pointer transition-colors"
+            >
+              Atur offset
+            </button>
+          </div>
         ) : (
           <div className="space-y-2">
             {isCompleteForPeriod && (

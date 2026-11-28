@@ -479,6 +479,16 @@ export default function FastPitchLogger({
             selectedPlayerId={selectedPlayerId}
             onSelectPlayer={(pid) => setSelectedPlayerId(pid)}
             onLogEvent={handleLogEvent}
+            onUndoLast={handleUndo}
+            lastLoggedEvent={
+              outbox.length > 0
+                ? outbox[outbox.length - 1]
+                : serverEvents.length > 0
+                ? serverEvents[serverEvents.length - 1]
+                : null
+            }
+            totalEventsCount={serverEvents.length + outbox.length}
+            playerMap={playerMap}
             isReadOnly={isReadOnly}
           />
         </div>
