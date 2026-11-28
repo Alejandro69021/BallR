@@ -1,5 +1,6 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ShieldCheck, TrendingUp, Share2 } from 'lucide-react';
 import PlayerTabs from '../components/PlayerTabs';
 import PlayerHeader from '../components/PlayerHeader';
 import PerformanceRadar from '../components/PerformanceRadar';
@@ -12,6 +13,7 @@ import { usePlayers } from '../hooks/usePlayers';
 
 export default function PassportPage({ userRole = 'public', onOpenShare, onToast }) {
   const { publicId } = useParams();
+  const navigate = useNavigate();
   const { players, loading } = usePlayers();
 
   if (loading) return <LoadingSkeleton />;
@@ -29,6 +31,47 @@ export default function PassportPage({ userRole = 'public', onOpenShare, onToast
 
   return (
     <div className="space-y-8 divide-y divide-line text-1">
+      {/* Portal Orang Tua / Wali Banner (Football-themed editorial card) */}
+      {userRole === 'parent' && (
+        <div
+          data-testid="parent-portal-banner"
+          className="relative overflow-hidden rounded-panel border border-brand/40 bg-panel text-1 p-5 space-y-3"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-brand">
+                <ShieldCheck className="w-4 h-4" />
+                <span>Portal Orang Tua &amp; Wali</span>
+              </div>
+              <h2 className="font-display text-xl font-bold tracking-tight text-1">
+                Pantau Perkembangan &amp; Privasi {player.personal_info?.full_name || 'Atlet'}
+              </h2>
+              <p className="text-sm text-2 max-w-2xl">
+                Anda masuk sebagai wali. Anda dapat memantau evaluasi pelatih, riwayat pertumbuhan fisik, mengunduh kartu perkembangan, dan mengatur izin privasi data anak.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap shrink-0">
+              <button
+                type="button"
+                onClick={() => navigate(`/pemain/${player.public_id || player.player_id}/pertumbuhan`)}
+                className="min-h-[44px] px-3.5 py-2 rounded-control bg-brand text-app hover:bg-brand/90 text-sm font-semibold inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <TrendingUp className="w-4 h-4" />
+                <span>Pertumbuhan &amp; Privasi</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onOpenShare?.()}
+                className="min-h-[44px] px-3.5 py-2 rounded-control bg-raised border border-line hover:border-brand text-1 text-sm font-medium inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <Share2 className="w-4 h-4" />
+                <span>Kartu Perkembangan</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Shared Player Header & Navigation Tabs */}
       <PlayerTabs
         player={player}

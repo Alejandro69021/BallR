@@ -33,6 +33,11 @@ import {
   formatMatchError
 } from '../lib/matches';
 import { getLatestSnapshot } from '../lib/report';
+import {
+  loadPlayerSlotMap,
+  savePlayerSlotMap,
+  applyPlayerSlotMap
+} from '../lib/playerSlotMap';
 import { SMALL_SAMPLE_N } from '../lib/analysis/events';
 import Table from '../components/ui/Table';
 import Dialog from '../components/ui/Dialog';
@@ -61,8 +66,23 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   const [previewVisionEvents, setPreviewVisionEvents] = useState(null);
   const [previewVisionQuality, setPreviewVisionQuality] = useState(null);
   const [visionTeamNames, setVisionTeamNames] = useState(null);
-  const [playerSlotMap, setPlayerSlotMap] = useState({});
+  const [playerSlotMap, setPlayerSlotMap] = useState(() => loadPlayerSlotMap(matchId));
   const [participants, setParticipants] = useState([]);
+
+  useEffect(() => {
+    setPlayerSlotMap(loadPlayerSlotMap(matchId));
+  }, [matchId]);
+
+  const updatePlayerSlotMap = useCallback(
+    (updater) => {
+      setPlayerSlotMap((prev) => {
+        const next = typeof updater === 'function' ? updater(prev) : updater;
+        savePlayerSlotMap(matchId, next);
+        return next;
+      });
+    },
+    [matchId]
+  );
   const [snapshot, setSnapshot] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -221,24 +241,10 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
     [previewVisionEvents, events]
   );
 
-  const displayEvents = useMemo(() => {
-    const keys = Object.keys(playerSlotMap);
-    if (keys.length === 0) return rawDisplayEvents;
-    return rawDisplayEvents.map((evt) => {
-      if (evt.team === 'own' && !evt.player_id && evt.player_number != null) {
-        const mappedPid = playerSlotMap[String(evt.player_number)];
-        if (mappedPid) {
-          const info = playerMap[mappedPid];
-          return {
-            ...evt,
-            player_id: mappedPid,
-            player_number: info?.number != null && info.number !== '' ? Number(info.number) : evt.player_number
-          };
-        }
-      }
-      return evt;
-    });
-  }, [rawDisplayEvents, playerSlotMap, playerMap]);
+  const displayEvents = useMemo(
+    () => applyPlayerSlotMap(rawDisplayEvents, playerSlotMap, playerMap),
+    [rawDisplayEvents, playerSlotMap, playerMap]
+  );
 
   const inferSpatialRole = (avgX, avgY, L, W) => {
     if (avgX == null || avgY == null) return null;
@@ -740,11 +746,12 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
 
   const isFinal = match.status === 'final';
   const isReportFrozen = isFinal && Boolean(snapshot);
+  const hasLoadedVisionPreview = Array.isArray(previewVisionEvents) && previewVisionEvents.length > 0;
 
   // Stepper current step index (1-indexed: 1 = Laga dibuat, 2 = Catat kejadian, 3 = Selesaikan laga, 4 = Laporan)
   let currentStep = 2;
   if (!isFinal) {
-    currentStep = totalEvents === 0 ? 2 : 3;
+    currentStep = totalEvents === 0 && !hasLoadedVisionPreview ? 2 : 3;
   } else {
     currentStep = 4;
   }
@@ -756,7 +763,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
   let secondaryAction = null;
 
   if (!isFinal) {
-    if (totalEvents === 0) {
+    if (totalEvents === 0 && !hasLoadedVisionPreview) {
       nextStepTitle = 'Catat kejadian';
       nextStepDescription = 'Mulai mencatat dari pencatat laga. Bisa sambil memutar video.';
       primaryAction = {
@@ -766,6 +773,21 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         dataTour: 'record-events'
       };
       secondaryAction = null;
+    } else if (totalEvents === 0 && hasLoadedVisionPreview) {
+      nextStepTitle = 'Tinjau & simpan hasil analisis video';
+      nextStepDescription =
+        `${previewVisionEvents.length} kejadian otomatis sudah dimuat. Simpan ke data laga di tab Analisis Taktis atau langsung isi skor akhir untuk menyelesaikan laga.`;
+      primaryAction = {
+        label: 'Selesaikan laga',
+        onClick: handleOpenFinalise,
+        icon: <CheckCircle2 className="w-5 h-5" />,
+        dataTour: 'finish-match'
+      };
+      secondaryAction = {
+        label: 'Buka Analisis Taktis',
+        onClick: () => setActiveTab('tactical'),
+        icon: <Compass className="w-4 h-4" />
+      };
     } else {
       nextStepTitle = 'Selesaikan laga';
       nextStepDescription =
@@ -968,7 +990,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
 
           {/* Score display */}
           <div className="border border-line rounded-control bg-app px-4 py-2.5 text-center shrink-0 min-w-[160px]">
-            <span className="block text-xs text-2 uppercase tracking-wider font-medium">Skor Akhir</span>
+            <span className="block text-sm text-2 uppercase tracking-wider font-medium">Skor Akhir</span>
             {isFinal || (match.own_score != null && match.opponent_score != null) ? (
               <div className="mt-0.5 space-y-0.5">
                 <span className="block text-xl tabular-nums font-bold text-1">
@@ -978,7 +1000,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                   <button
                     type="button"
                     onClick={handleOpenFinalise}
-                    className="text-xs font-semibold text-brand hover:underline cursor-pointer bg-transparent border-none p-0"
+                    className="text-sm font-semibold text-brand hover:underline cursor-pointer bg-transparent border-none p-0"
                   >
                     Ubah skor
                   </button>
@@ -999,12 +1021,12 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                   <button
                     type="button"
                     onClick={handleOpenFinalise}
-                    className="text-xs font-semibold text-brand hover:underline cursor-pointer bg-transparent border-none p-0"
+                    className="text-sm font-semibold text-brand hover:underline cursor-pointer bg-transparent border-none p-0"
                   >
                     Isi skor akhir
                   </button>
                 ) : (
-                  <span className="text-xs text-2">Menunggu pelatih</span>
+                  <span className="text-sm text-2">Menunggu pelatih</span>
                 )}
               </div>
             )}
@@ -1017,8 +1039,10 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
         <StageStepper steps={MATCH_STAGES} currentStep={currentStep} />
       </div>
 
-      {/* Next Step Panel (disembunyikan pada tab Analisis Taktis agar tidak bertabrakan dengan kontrol analisis video) */}
-      {isCoach && activeTab !== 'tactical' && (
+      {/* Next Step Panel (disembunyikan pada tab Analisis Taktis atau saat data video sudah dimuat di tab Peta/Daftar/Pemain) */}
+      {isCoach &&
+        activeTab !== 'tactical' &&
+        !(hasLoadedVisionPreview && (activeTab === 'map' || activeTab === 'events' || activeTab === 'players')) && (
         <NextStepPanel
           title={nextStepTitle}
           description={nextStepDescription}
@@ -1148,6 +1172,8 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
             match={match}
             events={events}
             participants={participants}
+            playerSlotMap={playerSlotMap}
+            playerMap={playerMap}
             initialVisionEvents={previewVisionEvents}
             initialVisionQuality={previewVisionQuality}
             onSaveVisionEvents={handleSaveVisionEvents}
@@ -1251,12 +1277,12 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               <div className="p-3 rounded-control border border-line bg-app space-y-2.5">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-semibold text-1">{displayTeamA}</span>
-                  <span className="text-xs text-2 tabular-nums">
+                  <span className="text-sm text-2 tabular-nums">
                     {eventCountsByPlayer.ownList.length} pemain tercatat
                   </span>
                 </div>
                 {eventCountsByPlayer.ownList.length === 0 ? (
-                  <p className="text-xs text-2">Belum ada keterlibatan tercatat.</p>
+                  <p className="text-sm text-2">Belum ada keterlibatan tercatat.</p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
                     {eventCountsByPlayer.ownList.map((p) => (
@@ -1269,7 +1295,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                         </span>
                         <span className="text-1 font-medium">{p.name}</span>
                         {p.role && (
-                          <span className="text-xs text-2">· {p.role}</span>
+                          <span className="text-sm text-2">· {p.role}</span>
                         )}
                         <span className="tabular-nums text-brand font-semibold">{p.count} aksi</span>
                       </div>
@@ -1279,14 +1305,14 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
 
                 {isCoach && participants.length > 0 && eventCountsByPlayer.ownList.some((p) => p.slotNum != null) && (
                   <details className="pt-2 border-t border-line">
-                    <summary className="text-xs font-semibold text-1 cursor-pointer select-none">
+                    <summary className="text-sm font-semibold text-1 cursor-pointer select-none">
                       Hubungkan Nomor Deteksi Video ke Pemain Skuad
                     </summary>
                     <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {eventCountsByPlayer.ownList
                         .filter((p) => p.slotNum != null)
                         .map((p) => (
-                          <label key={`map-${p.slotNum}`} className="flex items-center justify-between gap-2 text-xs text-2">
+                          <label key={`map-${p.slotNum}`} className="flex items-center justify-between gap-2 text-sm text-2">
                             <span className="font-medium text-1 shrink-0">
                               #{p.slotNum} {p.role ? `· ${p.role}` : ''}
                             </span>
@@ -1294,14 +1320,14 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                               value={playerSlotMap[String(p.slotNum)] || ''}
                               onChange={(e) => {
                                 const val = e.target.value;
-                                setPlayerSlotMap((prev) => {
+                                updatePlayerSlotMap((prev) => {
                                   const next = { ...prev };
                                   if (val) next[String(p.slotNum)] = val;
                                   else delete next[String(p.slotNum)];
                                   return next;
                                 });
                               }}
-                              className="px-2 py-1 rounded-control bg-panel border border-control text-xs text-1 max-w-[160px]"
+                              className="px-2 py-1 rounded-control bg-panel border border-control text-sm text-1 max-w-[160px]"
                             >
                               <option value="">Biarkan #{p.slotNum}</option>
                               {participants.map((part) => {
@@ -1326,12 +1352,12 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
               <div className="p-3 rounded-control border border-line bg-app space-y-2.5">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-semibold text-1">{displayTeamB}</span>
-                  <span className="text-xs text-2 tabular-nums">
+                  <span className="text-sm text-2 tabular-nums">
                     {eventCountsByPlayer.opponentEvents} aksi
                   </span>
                 </div>
                 {eventCountsByPlayer.oppList.length === 0 ? (
-                  <p className="text-xs text-2">Belum ada keterlibatan tercatat.</p>
+                  <p className="text-sm text-2">Belum ada keterlibatan tercatat.</p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
                     {eventCountsByPlayer.oppList.map((p) => (
@@ -1342,7 +1368,7 @@ export default function MatchDetailPage({ userRole = 'public', onToast }) {
                         <span className="tabular-nums text-2">#{p.number}</span>
                         <span className="text-1 font-medium">{p.name}</span>
                         {p.role && (
-                          <span className="text-xs text-2">· {p.role}</span>
+                          <span className="text-sm text-2">· {p.role}</span>
                         )}
                         <span className="tabular-nums text-warning font-semibold">{p.count} aksi</span>
                       </div>

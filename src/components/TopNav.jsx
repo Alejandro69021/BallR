@@ -293,7 +293,7 @@ export default function TopNav({
           className="hidden md:flex fixed top-12 left-0 bottom-0 w-56 z-30 flex-col justify-between bg-panel border-r border-line p-3 select-none overflow-y-auto print:hidden"
         >
           <div className="space-y-3">
-            <div className="px-2.5 pt-1 text-xs font-medium text-2 tracking-wide">
+            <div className="px-2.5 pt-1 text-sm font-medium text-2 tracking-wide">
               {isCoach ? 'Menu Pelatih' : 'Portal Orang Tua'}
             </div>
             <nav
@@ -333,7 +333,7 @@ export default function TopNav({
             <button
               type="button"
               onClick={() => onSwitchView?.('landing')}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-control text-xs text-2 hover:text-1 hover:bg-app transition-colors cursor-pointer text-left"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-control text-sm text-2 hover:text-1 hover:bg-app transition-colors cursor-pointer text-left"
             >
               <Home className="w-4 h-4 shrink-0" />
               <span>Kembali ke Halaman Depan</span>
@@ -341,7 +341,7 @@ export default function TopNav({
             <button
               type="button"
               onClick={() => onOpenTutorial?.()}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-control text-xs text-2 hover:text-1 hover:bg-app transition-colors cursor-pointer text-left"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-control text-sm text-2 hover:text-1 hover:bg-app transition-colors cursor-pointer text-left"
             >
               <HelpCircle className="w-4 h-4 shrink-0 text-brand" />
               <span>Ulangi Tutorial</span>
@@ -349,7 +349,7 @@ export default function TopNav({
             <button
               type="button"
               onClick={() => onSwitchView?.('help')}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-control text-xs text-2 hover:text-1 hover:bg-app transition-colors cursor-pointer text-left"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-control text-sm text-2 hover:text-1 hover:bg-app transition-colors cursor-pointer text-left"
             >
               <HelpCircle className="w-4 h-4 shrink-0" />
               <span>Panduan Singkat</span>

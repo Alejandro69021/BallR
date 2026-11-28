@@ -99,13 +99,14 @@ describe('QA Integration: Live & Post-Match Tactical Analysis, YouTube & 3D Repl
     expect(screen.getByText('1 / 5 kejadian')).toBeInTheDocument();
   });
 
-  it('5. TacticalMatchAnalysis renders full opponent breakdown, replay, and JSON controls', () => {
+  it('5. TacticalMatchAnalysis renders full opponent breakdown, replay, and backup controls', () => {
     render(<TacticalMatchAnalysis match={SAMPLE_MATCH} events={SAMPLE_EVENTS} />);
 
     expect(screen.getByTestId('tactical-match-analysis')).toBeInTheDocument();
     expect(screen.getByTestId('match-visual-replay')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Ekspor JSON/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Impor Tracking JSON/i })).toBeInTheDocument();
+    expect(screen.getByText(/Opsi Lanjutan \/ Backup/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Simpan Backup Analisis/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Muat File Backup/i })).toBeInTheDocument();
     expect(screen.getByText(/Ringkasan Temuan Utama Laga/i)).toBeInTheDocument();
   });
 

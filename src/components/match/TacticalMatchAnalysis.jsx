@@ -19,6 +19,11 @@ import {
 import { buildTacticalSummary, SMALL_SAMPLE_N } from '../../lib/analysis/events';
 import { ALLOWED_EVENT_TYPES, generateUUID } from '../../lib/matches';
 import {
+  applyPlayerSlotMap,
+  loadGoalOverrides,
+  saveGoalOverrides
+} from '../../lib/playerSlotMap';
+import {
   analyzeVideoFileInBrowser,
   buildMatchSegments,
   formatSecondsToTimecode,
@@ -301,6 +306,8 @@ export default function TacticalMatchAnalysis({
   match,
   events = [],
   participants = [],
+  playerSlotMap = {},
+  playerMap = {},
   initialVisionEvents = null,
   initialVisionQuality = null,
   onSaveVisionEvents = null,
@@ -393,14 +400,54 @@ export default function TacticalMatchAnalysis({
     };
   }, [youtubeBusy]);
 
+  const [goalOverrides, setGoalOverrides] = useState(() => loadGoalOverrides(match?.id));
+
+  useEffect(() => {
+    setGoalOverrides(loadGoalOverrides(match?.id));
+  }, [match?.id]);
+
+  const handleToggleGoalStatus = (momentId, currentType) => {
+    if (!momentId) return;
+    const nextType = currentType === 'goal' ? 'shot_on_target' : 'goal';
+    setGoalOverrides((prev) => {
+      const next = { ...prev, [momentId]: nextType };
+      saveGoalOverrides(match?.id, next);
+      return next;
+    });
+    if (Array.isArray(importedEvents) && importedEvents.length > 0) {
+      const updated = importedEvents.map((evt, idx) => {
+        const eid = evt?.id || evt?.client_event_id || `moment-${idx}`;
+        if (eid === momentId) {
+          return {
+            ...evt,
+            event_type: nextType,
+            outcome: 'success'
+          };
+        }
+        return evt;
+      });
+      setImportedEvents(updated);
+      onVisionEventsChange?.(updated);
+    }
+  };
+
   const rawActiveEvents = importedEvents || events;
   const activeEvents = useMemo(() => {
-    if (!swapPerspective) return rawActiveEvents;
-    return (Array.isArray(rawActiveEvents) ? rawActiveEvents : []).map((evt) => ({
-      ...evt,
-      team: evt?.team === 'own' ? 'opponent' : 'own'
-    }));
-  }, [rawActiveEvents, swapPerspective]);
+    const base = Array.isArray(rawActiveEvents) ? rawActiveEvents : [];
+    const mapped = applyPlayerSlotMap(base, playerSlotMap, playerMap);
+    const hasOverrides = goalOverrides && Object.keys(goalOverrides).length > 0;
+    return mapped.map((evt, idx) => {
+      const eid = evt?.id || evt?.client_event_id || `moment-${idx}`;
+      const overriddenType = hasOverrides ? goalOverrides[eid] : null;
+      const nextTeam = swapPerspective ? (evt?.team === 'own' ? 'opponent' : 'own') : evt?.team;
+      if (!overriddenType && !swapPerspective) return evt;
+      return {
+        ...evt,
+        team: nextTeam,
+        ...(overriddenType ? { event_type: overriddenType, outcome: 'success' } : {})
+      };
+    });
+  }, [rawActiveEvents, swapPerspective, playerSlotMap, playerMap, goalOverrides]);
 
   const summary = useMemo(
     () => buildTacticalSummary(activeEvents, pitchLength, pitchWidth, effectiveTeamB),
@@ -779,23 +826,30 @@ export default function TacticalMatchAnalysis({
           <span>Muat Vision Terbaru</span>
         </button>
 
-        <button
-          type="button"
-          onClick={handleExportJson}
-          className="min-h-[44px] sm:min-h-[38px] px-3 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-sm font-medium text-1 inline-flex items-center gap-1.5 cursor-pointer"
-        >
-          <Download className="w-4 h-4 text-brand" />
-          <span>Ekspor JSON</span>
-        </button>
+        <details className="relative" data-testid="vision-backup-menu">
+          <summary className="min-h-[44px] sm:min-h-[38px] px-3 py-1.5 rounded-control bg-app border border-line hover:border-brand text-sm font-medium text-2 hover:text-1 inline-flex items-center gap-1.5 cursor-pointer select-none list-none">
+            <span>Opsi Lanjutan / Backup</span>
+          </summary>
+          <div className="mt-1.5 flex items-center gap-2 flex-wrap p-2 rounded-control bg-app border border-line">
+            <button
+              type="button"
+              onClick={handleExportJson}
+              className="min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-control bg-raised border border-line hover:border-brand text-sm font-medium text-1 inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <Download className="w-4 h-4 text-brand" />
+              <span>Simpan Backup Analisis</span>
+            </button>
 
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="min-h-[44px] sm:min-h-[38px] px-3 py-1.5 rounded-control bg-app border border-line hover:border-brand text-sm font-medium text-1 inline-flex items-center gap-1.5 cursor-pointer"
-        >
-          <Upload className="w-4 h-4 text-brand" />
-          <span>Impor Tracking JSON</span>
-        </button>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-control bg-panel border border-line hover:border-brand text-sm font-medium text-1 inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <Upload className="w-4 h-4 text-brand" />
+              <span>Muat File Backup</span>
+            </button>
+          </div>
+        </details>
 
         {importedEvents && typeof onSaveVisionEvents === 'function' && canSaveEvents && (
           <button
@@ -856,7 +910,7 @@ export default function TacticalMatchAnalysis({
             type="button"
             onClick={handleSwapTeamPerspective}
             disabled={browserAnalyzing || youtubeBusy}
-            className="min-h-[36px] px-2.5 py-1 rounded-control bg-panel border border-line hover:border-brand text-xs font-medium text-1 inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
+            className="min-h-[36px] px-2.5 py-1 rounded-control bg-panel border border-line hover:border-brand text-sm font-medium text-1 inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
           >
             <ArrowLeftRight className="w-3.5 h-3.5 text-brand" />
             <span>Tukar Perspektif Tim</span>
@@ -865,7 +919,7 @@ export default function TacticalMatchAnalysis({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div className="space-y-1">
-            <label htmlFor="vision-team-a" className="block text-xs text-2">
+            <label htmlFor="vision-team-a" className="block text-sm text-2">
               Tim A · Fokus Analisis
             </label>
             <input
@@ -879,7 +933,7 @@ export default function TacticalMatchAnalysis({
             />
           </div>
           <div className="space-y-1">
-            <label htmlFor="vision-team-b" className="block text-xs text-2">
+            <label htmlFor="vision-team-b" className="block text-sm text-2">
               Tim B · Lawan
             </label>
             <input
@@ -910,7 +964,7 @@ export default function TacticalMatchAnalysis({
               type="button"
               onClick={() => handleApplyHalf1Preset(2700)}
               disabled={browserAnalyzing || youtubeBusy}
-              className="px-2.5 py-1 rounded-control bg-panel border border-line hover:border-brand text-xs font-medium text-1 cursor-pointer disabled:opacity-60"
+              className="px-2.5 py-1 rounded-control bg-panel border border-line hover:border-brand text-sm font-medium text-1 cursor-pointer disabled:opacity-60"
             >
               Babak 1 Penuh 45 Menit
             </button>
@@ -918,7 +972,7 @@ export default function TacticalMatchAnalysis({
               type="button"
               onClick={() => handleApplyHalf1Preset(60)}
               disabled={browserAnalyzing || youtubeBusy}
-              className="px-2.5 py-1 rounded-control bg-panel border border-line hover:border-brand text-xs font-medium text-2 hover:text-1 cursor-pointer disabled:opacity-60"
+              className="px-2.5 py-1 rounded-control bg-panel border border-line hover:border-brand text-sm font-medium text-2 hover:text-1 cursor-pointer disabled:opacity-60"
             >
               Klip Cepat 1 Menit
             </button>
@@ -927,7 +981,7 @@ export default function TacticalMatchAnalysis({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
           <div className="space-y-1">
-            <label htmlFor="vision-h1-start" className="block text-xs text-2">
+            <label htmlFor="vision-h1-start" className="block text-sm text-2">
               Mulai Babak 1
             </label>
             <input
@@ -942,7 +996,7 @@ export default function TacticalMatchAnalysis({
             />
           </div>
           <div className="space-y-1">
-            <label htmlFor="vision-h1-end" className="block text-xs text-2">
+            <label htmlFor="vision-h1-end" className="block text-sm text-2">
               Selesai Babak 1
             </label>
             <input
@@ -960,7 +1014,7 @@ export default function TacticalMatchAnalysis({
           {enableHalf2 && (
             <>
               <div className="space-y-1">
-                <label htmlFor="vision-h2-start" className="block text-xs text-2">
+                <label htmlFor="vision-h2-start" className="block text-sm text-2">
                   Mulai Babak 2
                 </label>
                 <input
@@ -975,7 +1029,7 @@ export default function TacticalMatchAnalysis({
                 />
               </div>
               <div className="space-y-1">
-                <label htmlFor="vision-h2-end" className="block text-xs text-2">
+                <label htmlFor="vision-h2-end" className="block text-sm text-2">
                   Selesai Babak 2
                 </label>
                 <input
@@ -1060,7 +1114,7 @@ export default function TacticalMatchAnalysis({
               </span>
             </div>
             <div className="flex items-center gap-2.5">
-              <span className="text-xs font-mono text-2 tabular-nums">
+              <span className="text-sm font-mono text-2 tabular-nums">
                 {formatSecondsToTimecode(youtubeProgress.elapsedSec || 0)}
               </span>
               <span className="text-sm font-semibold text-1 tabular-nums">
@@ -1069,7 +1123,7 @@ export default function TacticalMatchAnalysis({
               <button
                 type="button"
                 onClick={handleCancelYoutubeVision}
-                className="min-h-[32px] px-2.5 py-1 rounded-control border border-danger/50 text-danger text-xs font-medium inline-flex items-center gap-1 cursor-pointer"
+                className="min-h-[32px] px-2.5 py-1 rounded-control border border-danger/50 text-danger text-sm font-medium inline-flex items-center gap-1 cursor-pointer"
               >
                 <span>Batal</span>
               </button>
@@ -1157,13 +1211,13 @@ export default function TacticalMatchAnalysis({
           {errorDetail && (
             <pre
               data-testid="vision-error-detail"
-              className="text-xs font-mono text-1 bg-app border border-line rounded-control p-2.5 overflow-x-auto whitespace-pre-wrap break-words"
+              className="text-sm font-mono text-1 bg-app border border-line rounded-control p-2.5 overflow-x-auto whitespace-pre-wrap break-words"
             >
               {errorDetail}
             </pre>
           )}
           {errorDetail && (
-            <p className="text-xs text-2">
+            <p className="text-sm text-2">
               Tips: Bila YouTube membatasi unduhan, coba pilih opsi <strong>Cookies browser</strong> atau gunakan tombol <strong>Analisis Video MP4/WebM</strong> dengan berkas video lokal.
             </p>
           )}
@@ -1251,7 +1305,7 @@ export default function TacticalMatchAnalysis({
               )}
             </div>
             {visionQuality.disclaimer && (
-              <p className="text-xs text-2">{visionQuality.disclaimer}</p>
+              <p className="text-sm text-2">{visionQuality.disclaimer}</p>
             )}
           </div>
         )}
@@ -1281,7 +1335,7 @@ export default function TacticalMatchAnalysis({
               <h2 className="text-sm font-semibold text-1">
                 Momen Gol &amp; Peluang Krusial
               </h2>
-              <p className="text-xs text-2">
+              <p className="text-sm text-2">
                 Menampilkan menit terciptanya gol atau tembakan berbahaya beserta rantai kesalahan dan proses terjadinya.
               </p>
             </div>
@@ -1314,28 +1368,41 @@ export default function TacticalMatchAnalysis({
                     <Badge variant={m.type === 'goal' ? 'brand' : m.type === 'shot_on_target' ? 'warning' : 'neutral'} size="sm">
                       {m.type === 'goal' ? 'GOL' : m.type === 'shot_on_target' ? 'Tepat Sasaran' : 'Peluang'}
                     </Badge>
-                    <span className="text-xs font-mono font-semibold text-1 tabular-nums">
+                    <span className="text-sm font-mono font-semibold text-1 tabular-nums">
                       Babak {m.period} · {m.minute}&apos;
                     </span>
-                    <span className="text-xs font-semibold text-1">
+                    <span className="text-sm font-semibold text-1">
                       {m.attackerTeam} · {m.actor}
                     </span>
                   </div>
-                  {m.hasCoords && (
+                  <div className="flex items-center gap-2 flex-wrap">
                     <button
                       type="button"
-                      onClick={() => {
-                        setReplayFocusKey({ id: m.id, ts: Date.now() });
-                        replaySectionRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'center' });
-                      }}
-                      className="text-xs font-semibold text-brand hover:underline cursor-pointer bg-transparent border-none p-0"
+                      onClick={() => handleToggleGoalStatus(m.id, m.type)}
+                      className={`min-h-[44px] sm:min-h-[30px] px-2.5 py-1 rounded-control border text-sm font-medium cursor-pointer transition-colors ${
+                        m.type === 'goal'
+                          ? 'bg-panel border-danger/50 text-danger hover:bg-danger/10'
+                          : 'bg-panel border-brand/50 text-brand hover:bg-brand/10'
+                      }`}
                     >
-                      Lihat di Replay
+                      {m.type === 'goal' ? 'Bukan Gol' : 'Tandai Gol'}
                     </button>
-                  )}
+                    {m.hasCoords && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setReplayFocusKey({ id: m.id, ts: Date.now() });
+                          replaySectionRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'center' });
+                        }}
+                        className="text-sm font-semibold text-brand hover:underline cursor-pointer bg-transparent border-none p-0"
+                      >
+                        Lihat di Replay
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <p className="text-xs font-semibold text-1">{m.causeTitle}</p>
-                <p className="text-xs text-2 leading-relaxed">{m.causeDetail}</p>
+                <p className="text-sm font-semibold text-1">{m.causeTitle}</p>
+                <p className="text-sm text-2 leading-relaxed">{m.causeDetail}</p>
               </div>
             ))}
           </div>
@@ -1374,41 +1441,41 @@ export default function TacticalMatchAnalysis({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div className="p-2.5 rounded-control bg-panel border border-line space-y-1">
-                  <span className="text-xs text-2 block">Progresi &amp; Gaya Umpan</span>
+                  <span className="text-sm text-2 block">Progresi &amp; Gaya Umpan</span>
                   <span className="font-semibold text-1 block">{teamBlock.data.passing.style_label}</span>
-                  <span className="text-xs text-2 block tabular-nums">
+                  <span className="text-sm text-2 block tabular-nums">
                     Akurasi {teamBlock.data.passing.accuracy_pct != null ? `${teamBlock.data.passing.accuracy_pct}%` : '-'} · Progresif {teamBlock.data.passing.progressive_count}
                     {teamBlock.data.passing.avg_distance_m != null ? ` · Rerata ${teamBlock.data.passing.avg_distance_m} m` : ''}
                   </span>
                 </div>
 
                 <div className="p-2.5 rounded-control bg-panel border border-line space-y-1">
-                  <span className="text-xs text-2 block">Keamanan Penguasaan Bola</span>
+                  <span className="text-sm text-2 block">Keamanan Penguasaan Bola</span>
                   <span className="font-semibold text-1 block tabular-nums">
                     {teamBlock.data.ball_security.total_losses} kehilangan bola
                   </span>
-                  <span className="text-xs text-2 block tabular-nums">
+                  <span className="text-sm text-2 block tabular-nums">
                     Area sendiri {teamBlock.data.ball_security.dangerous_losses} · Giringan {teamBlock.data.ball_security.dribble_attempts}
                     {teamBlock.data.ball_security.dribble_success_pct != null ? ` · ${teamBlock.data.ball_security.dribble_success_pct}% sukses` : ''}
                   </span>
                 </div>
 
                 <div className="p-2.5 rounded-control bg-panel border border-line space-y-1">
-                  <span className="text-xs text-2 block">Penyelesaian &amp; Peluang</span>
+                  <span className="text-sm text-2 block">Penyelesaian &amp; Peluang</span>
                   <span className="font-semibold text-1 block tabular-nums">
                     {teamBlock.data.finishing.shots_total} tembakan · {teamBlock.data.finishing.inside_box_count} dalam kotak
                   </span>
-                  <span className="text-xs text-2 block tabular-nums">
+                  <span className="text-sm text-2 block tabular-nums">
                     Umpan kunci {teamBlock.data.passing.key_passes} · Tepat sasaran {teamBlock.data.finishing.shots_on_target}
                   </span>
                 </div>
 
                 <div className="p-2.5 rounded-control bg-panel border border-line space-y-1">
-                  <span className="text-xs text-2 block">Teknik Bertahan &amp; Duel</span>
+                  <span className="text-sm text-2 block">Teknik Bertahan &amp; Duel</span>
                   <span className="font-semibold text-1 block tabular-nums">
                     Tekel {teamBlock.data.defensive_technique.tackles} · Intersepsi {teamBlock.data.defensive_technique.interceptions} · Sapuan {teamBlock.data.defensive_technique.clearances}
                   </span>
-                  <span className="text-xs text-2 block tabular-nums">
+                  <span className="text-sm text-2 block tabular-nums">
                     Rebut bola tinggi {teamBlock.data.defensive_technique.high_regains}/{teamBlock.data.defensive_technique.total_regains}
                     {teamBlock.data.defensive_technique.duel_win_pct != null ? ` · Duel ${teamBlock.data.defensive_technique.duel_win_pct}%` : ''}
                   </span>
@@ -1444,7 +1511,7 @@ export default function TacticalMatchAnalysis({
                   <h2 className="text-sm font-semibold text-1">
                     Pola Permainan · {activeStratTeam}
                   </h2>
-                  <p className="text-xs text-2">
+                  <p className="text-sm text-2">
                     Pilih tim untuk melihat kecenderungan permainan dan celah taktisnya.
                   </p>
                 </div>
@@ -1454,7 +1521,7 @@ export default function TacticalMatchAnalysis({
                   type="button"
                   onClick={() => setPatternFocus('teamA')}
                   aria-pressed={patternFocus === 'teamA'}
-                  className={`px-3 py-1 rounded-control text-xs font-semibold cursor-pointer transition-colors ${
+                  className={`px-3 py-1 rounded-control text-sm font-semibold cursor-pointer transition-colors ${
                     patternFocus === 'teamA' ? 'bg-brand text-app' : 'text-2 hover:text-1'
                   }`}
                 >
@@ -1464,7 +1531,7 @@ export default function TacticalMatchAnalysis({
                   type="button"
                   onClick={() => setPatternFocus('teamB')}
                   aria-pressed={patternFocus === 'teamB'}
-                  className={`px-3 py-1 rounded-control text-xs font-semibold cursor-pointer transition-colors ${
+                  className={`px-3 py-1 rounded-control text-sm font-semibold cursor-pointer transition-colors ${
                     patternFocus === 'teamB' ? 'bg-brand text-app' : 'text-2 hover:text-1'
                   }`}
                 >
@@ -1475,15 +1542,15 @@ export default function TacticalMatchAnalysis({
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
               <div className="p-3 rounded-control border border-line bg-app space-y-1">
-                <span className="text-xs text-2 block">Struktur Blok Bertahan</span>
+                <span className="text-sm text-2 block">Struktur Blok Bertahan</span>
                 <span className="font-semibold text-1 block">{stripParens(activeStrat.defensive_title)}</span>
               </div>
               <div className="p-3 rounded-control border border-line bg-app space-y-1">
-                <span className="text-xs text-2 block">Arah &amp; Jalur Dominan</span>
+                <span className="text-sm text-2 block">Arah &amp; Jalur Dominan</span>
                 <span className="font-semibold text-1 block">{stripParens(activeStrat.channel_pattern)}</span>
               </div>
               <div className="p-3 rounded-control border border-line bg-app space-y-1">
-                <span className="text-xs text-2 block">Gaya Sirkulasi Bola</span>
+                <span className="text-sm text-2 block">Gaya Sirkulasi Bola</span>
                 <span className="font-semibold text-1 block">{stripParens(activeStrat.buildup_style)}</span>
               </div>
             </div>
@@ -1529,7 +1596,7 @@ export default function TacticalMatchAnalysis({
                 <h2 className="text-sm font-semibold text-1">
                   Rekomendasi Taktik &amp; Latihan untuk {effectiveTeamA}
                 </h2>
-                <p className="text-xs text-2">
+                <p className="text-sm text-2">
                   Panduan bagi pelatih {effectiveTeamA} untuk meredam pola permainan dan memanfaatkan celah {effectiveTeamB}.
                 </p>
               </div>
@@ -1629,7 +1696,7 @@ export default function TacticalMatchAnalysis({
               </span>
               {summary.ppda.value != null && <span className="text-sm text-2">umpan lawan per aksi bertahan</span>}
             </div>
-            <p className="text-xs text-2">
+            <p className="text-sm text-2">
               {summary.ppda.reason
                 ? `${summary.ppda.reason} · saat ini ${summary.ppda.n} umpan lawan berkoordinat`
                 : `Area x >= 40% lapangan · ${summary.ppda.opponent_passes_in_zone} umpan lawan / ${summary.ppda.defensive_actions_in_zone} aksi bertahan`}
@@ -1648,27 +1715,27 @@ export default function TacticalMatchAnalysis({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <div className="p-3 rounded-control border border-line bg-app space-y-1">
-              <span className="text-xs text-2 block">{effectiveTeamA} · Tinggi Blok</span>
+              <span className="text-sm text-2 block">{effectiveTeamA} · Tinggi Blok</span>
               <span className="font-semibold text-1 block">
                 {summary.own.def_line.avg_m != null
                   ? `${summary.own.def_line.avg_m} m · ${summary.own.def_line.pct_of_pitch}%`
                   : 'Belum ada data'}
               </span>
               <Badge variant="neutral" size="sm">{summary.own.def_line.block_label}</Badge>
-              <span className="text-xs text-2 block pt-1 tabular-nums">
+              <span className="text-sm text-2 block pt-1 tabular-nums">
                 Rebut bola tinggi: <strong className="text-1">{summary.own.transitions.high_regains}</strong> · Hilang di area sendiri: <strong className="text-1">{summary.own.transitions.dangerous_losses}</strong>
               </span>
             </div>
 
             <div className="p-3 rounded-control border border-line bg-app space-y-1">
-              <span className="text-xs text-2 block">{effectiveTeamB} · Tinggi Blok</span>
+              <span className="text-sm text-2 block">{effectiveTeamB} · Tinggi Blok</span>
               <span className="font-semibold text-1 block">
                 {summary.opponent.def_line.avg_m != null
                   ? `${summary.opponent.def_line.avg_m} m · ${summary.opponent.def_line.pct_of_pitch}%`
                   : 'Belum ada data'}
               </span>
               <Badge variant="neutral" size="sm">{summary.opponent.def_line.block_label}</Badge>
-              <span className="text-xs text-2 block pt-1 tabular-nums">
+              <span className="text-sm text-2 block pt-1 tabular-nums">
                 Rebut bola tinggi: <strong className="text-1">{summary.opponent.transitions.high_regains}</strong> · Hilang di area sendiri: <strong className="text-1">{summary.opponent.transitions.dangerous_losses}</strong>
               </span>
             </div>
@@ -1684,29 +1751,29 @@ export default function TacticalMatchAnalysis({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <div className="p-3 rounded-control border border-line bg-app space-y-1">
-              <span className="text-xs text-2 block">{effectiveTeamA} · {summary.own.shot_zones.n} tembakan</span>
+              <span className="text-sm text-2 block">{effectiveTeamA} · {summary.own.shot_zones.n} tembakan</span>
               <span className="font-semibold text-1 block tabular-nums">
                 Dalam kotak: {summary.own.shot_zones.inside_box.count}
                 {summary.own.shot_zones.inside_box.pct != null ? ` · ${summary.own.shot_zones.inside_box.pct}%` : ''}
               </span>
-              <span className="text-xs text-2 block tabular-nums">
+              <span className="text-sm text-2 block tabular-nums">
                 Luar kotak: {summary.own.shot_zones.outside_box.count}
               </span>
-              <span className="text-xs text-2 block tabular-nums">
+              <span className="text-sm text-2 block tabular-nums">
                 Jarak rata-rata: {summary.own.shot_zones.avg_distance_m != null ? `${summary.own.shot_zones.avg_distance_m} m` : '-'}
               </span>
             </div>
 
             <div className="p-3 rounded-control border border-line bg-app space-y-1">
-              <span className="text-xs text-2 block">{effectiveTeamB} · {summary.opponent.shot_zones.n} tembakan</span>
+              <span className="text-sm text-2 block">{effectiveTeamB} · {summary.opponent.shot_zones.n} tembakan</span>
               <span className="font-semibold text-1 block tabular-nums">
                 Dalam kotak: {summary.opponent.shot_zones.inside_box.count}
                 {summary.opponent.shot_zones.inside_box.pct != null ? ` · ${summary.opponent.shot_zones.inside_box.pct}%` : ''}
               </span>
-              <span className="text-xs text-2 block tabular-nums">
+              <span className="text-sm text-2 block tabular-nums">
                 Luar kotak: {summary.opponent.shot_zones.outside_box.count}
               </span>
-              <span className="text-xs text-2 block tabular-nums">
+              <span className="text-sm text-2 block tabular-nums">
                 Jarak rata-rata: {summary.opponent.shot_zones.avg_distance_m != null ? `${summary.opponent.shot_zones.avg_distance_m} m` : '-'}
               </span>
             </div>
@@ -1721,7 +1788,7 @@ export default function TacticalMatchAnalysis({
             <Activity className="w-4 h-4 text-brand" />
             <h3 className="text-sm font-semibold text-1">Distribusi 5 Koridor Lebar Lapangan</h3>
           </div>
-          <span className="text-xs text-2">Arah serang {effectiveTeamA} dari kiri ke kanan</span>
+          <span className="text-sm text-2">Arah serang {effectiveTeamA} dari kiri ke kanan</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1732,7 +1799,7 @@ export default function TacticalMatchAnalysis({
             <div key={group.title} className="space-y-2 p-3 rounded-control border border-line bg-app">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-semibold text-1">{group.title}</span>
-                <span className="text-xs text-2 tabular-nums">{group.data.n} aksi berkoordinat</span>
+                <span className="text-sm text-2 tabular-nums">{group.data.n} aksi berkoordinat</span>
               </div>
               {group.data.corridors.map((c) => (
                 <div key={c.id} className="space-y-1">
@@ -1767,10 +1834,10 @@ export default function TacticalMatchAnalysis({
             <div key={b.id} className="p-2.5 rounded-control border border-line bg-app space-y-2 text-sm">
               <div className="flex items-center justify-between font-semibold text-1 tabular-nums">
                 <span>{b.label}</span>
-                <span className="text-xs text-2 font-normal">{b.n} aksi</span>
+                <span className="text-sm text-2 font-normal">{b.n} aksi</span>
               </div>
               <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center justify-between text-sm">
                   <span className="text-2 truncate pr-2">{effectiveTeamA}</span>
                   <span className="font-medium text-1 tabular-nums shrink-0">{b.own_events} · {b.own_shots} tembakan</span>
                 </div>
@@ -1780,7 +1847,7 @@ export default function TacticalMatchAnalysis({
                     style={{ width: `${Math.round((b.own_events / maxIntervalEvents) * 100)}%` }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-xs pt-0.5">
+                <div className="flex items-center justify-between text-sm pt-0.5">
                   <span className="text-2 truncate pr-2">{effectiveTeamB}</span>
                   <span className="font-medium text-2 tabular-nums shrink-0">{b.opp_events} · {b.opp_shots} tembakan</span>
                 </div>
@@ -1803,7 +1870,7 @@ export default function TacticalMatchAnalysis({
             <BookOpen className="w-4 h-4 text-brand shrink-0 mt-0.5" />
             <div>
               <h3 className="text-sm font-semibold text-1">Ringkasan Temuan Utama Laga</h3>
-              <p className="text-xs text-2">
+              <p className="text-sm text-2">
                 Kesimpulan otomatis dari seluruh angka di atas sebagai bahan evaluasi cepat pelatih dan laporan pertandingan.
               </p>
             </div>
@@ -1841,9 +1908,9 @@ export default function TacticalMatchAnalysis({
             <BookOpen className="w-4 h-4 text-brand" />
             <span>Referensi Ilmiah &amp; Metodologi</span>
           </span>
-          <span className="text-xs font-normal text-2">{allReferenceIds.length} rujukan</span>
+          <span className="text-sm font-normal text-2">{allReferenceIds.length} rujukan</span>
         </summary>
-        <p className="text-xs text-2 mt-2 mb-3">
+        <p className="text-sm text-2 mt-2 mb-3">
           Seluruh indikator analisis taktis dan rekomendasi latihan di halaman ini merujuk pada literatur berikut:
         </p>
         <div className="flex flex-wrap gap-2">

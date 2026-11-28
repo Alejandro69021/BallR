@@ -11,6 +11,7 @@ import {
   Lock
 } from 'lucide-react';
 import { getMatch, listEvents, listParticipants, formatMatchError } from '../lib/matches';
+import { loadPlayerSlotMap, applyPlayerSlotMap } from '../lib/playerSlotMap';
 import { listScenarios } from '../lib/scenarios';
 import {
   countsByPlayer,
@@ -84,7 +85,18 @@ export default function MatchReportPage({ userRole = 'public', onToast, onOpenAu
         getLatestSnapshot(matchId)
       ]);
 
-      setEvents(evts || []);
+      const savedSlotMap = loadPlayerSlotMap(matchId);
+      const partLookup = {};
+      (parts || []).forEach((part) => {
+        const pid = part.player_id || part.id;
+        if (pid) {
+          partLookup[pid] = {
+            name: part.player_name || part.full_name || '',
+            number: part.jersey_number != null ? part.jersey_number : null
+          };
+        }
+      });
+      setEvents(applyPlayerSlotMap(evts || [], savedSlotMap, partLookup));
       setParticipants(parts || []);
       setPublishedScenarios((scenList || []).filter((s) => s.status === 'published'));
       setLatestSnapshot(snap || null);

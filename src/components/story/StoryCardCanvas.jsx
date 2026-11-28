@@ -79,112 +79,130 @@ export default function StoryCardCanvas({
       <div
         ref={cardRef}
         data-testid="progress-card-canvas"
-        className="w-full max-w-[340px] bg-panel border border-line rounded-panel p-5 text-1 font-sans space-y-4 select-none"
+        className="relative w-full max-w-[360px] rounded-panel overflow-hidden text-white font-sans select-none shadow-lg border border-emerald-900/60"
+        style={{
+          background: 'linear-gradient(160deg, #0c1f17 0%, #123124 52%, #0a1812 100%)'
+        }}
       >
-        {/* Header - No internal player id in shareable card */}
-        <div className="pb-3 border-b border-line flex items-center justify-between gap-2">
-          <div>
-            <div className="text-sm uppercase tracking-wider text-2 font-medium">
-              Kartu Perkembangan
+        {/* Subtle Football Pitch Line Watermark (Editorial, Zero Neon) */}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 360 540"
+          className="absolute inset-0 w-full h-full pointer-events-none opacity-10"
+        >
+          <rect x="18" y="18" width="324" height="504" fill="none" stroke="#ffffff" strokeWidth="1.5" />
+          <line x1="18" y1="270" x2="342" y2="270" stroke="#ffffff" strokeWidth="1.2" />
+          <circle cx="180" cy="270" r="54" fill="none" stroke="#ffffff" strokeWidth="1.2" />
+          <rect x="86" y="18" width="188" height="72" fill="none" stroke="#ffffff" strokeWidth="1.2" />
+          <rect x="86" y="450" width="188" height="72" fill="none" stroke="#ffffff" strokeWidth="1.2" />
+        </svg>
+
+        <div className="relative z-10 p-5 space-y-4">
+          {/* Top Bar: Strava-style Matchday Header */}
+          <div className="flex items-start justify-between gap-2 pb-3 border-b border-white/15">
+            <div className="min-w-0">
+              <div className="text-sm uppercase tracking-[0.16em] text-emerald-300 font-semibold">
+                Kartu Perkembangan
+              </div>
+              <div className="text-sm font-semibold text-white/95 truncate mt-0.5">
+                {academyDisplay}
+              </div>
             </div>
-            <div className="text-sm font-semibold text-1 truncate">
-              {academyDisplay}
-            </div>
-          </div>
-          <div className="text-right">
-            <span className="inline-block px-2 py-0.5 rounded text-sm border border-line bg-raised text-2 font-medium">
+            <div className="shrink-0 px-2.5 py-1 rounded-control bg-white/10 border border-white/20 font-display text-lg font-bold leading-none tracking-tight text-emerald-300 tabular-nums">
               {personalInfo.jersey_number != null ? `#${personalInfo.jersey_number}` : ageGroupDisplay}
-            </span>
-          </div>
-        </div>
-
-        {/* Identitas Atlet */}
-        <div className="space-y-1">
-          <div className="text-lg font-bold text-1 tracking-tight">
-            {nameDisplay}
-          </div>
-          <div className="text-sm text-2 flex flex-wrap items-center gap-1.5">
-            <span className="text-brand font-medium">{positionDisplay}</span>
-            <span>•</span>
-            <span>{ageGroupDisplay}</span>
-            {preferredFootDisplay && preferredFootDisplay !== 'Belum ada data' && (
-              <>
-                <span>•</span>
-                <span>{preferredFootDisplay}</span>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Antropometri */}
-        <div className="p-3 rounded-control bg-raised border border-line space-y-2">
-          <div className="text-sm font-semibold text-2 uppercase tracking-wider">
-            Antropometri
-          </div>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div>
-              <span className="text-2 block">Tinggi Badan</span>
-              <span className="font-semibold text-1">{heightDisplay}</span>
-            </div>
-            <div>
-              <span className="text-2 block">Berat Badan</span>
-              <span className="font-semibold text-1">{weightDisplay}</span>
             </div>
           </div>
-          <div className="text-sm text-2 pt-1 border-t border-line">
-            Sumber: Pengukuran Staf Akademi
-          </div>
-        </div>
 
-        {/* Parameter Kebugaran Fisik */}
-        <div className="p-3 rounded-control bg-raised border border-line space-y-2">
-          <div className="text-sm font-semibold text-2 uppercase tracking-wider">
-            Kebugaran Fisik
-          </div>
-          <div className="grid grid-cols-3 gap-2 text-sm">
-            <div>
-              <span className="text-2 block">Lompatan</span>
-              <span className="font-semibold text-1">{jumpDisplay}</span>
+          {/* Athlete Hero Identity */}
+          <div className="space-y-1.5">
+            <div className="font-display text-2xl font-bold tracking-tight text-white leading-tight uppercase">
+              {nameDisplay}
             </div>
-            <div>
-              <span className="text-2 block">Sprint 20m</span>
-              <span className="font-semibold text-1">{sprintDisplay}</span>
-            </div>
-            <div>
-              <span className="text-2 block">Kelincahan</span>
-              <span className="font-semibold text-1">{shuttleDisplay}</span>
+            <div className="flex flex-wrap items-center gap-1.5 text-sm">
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 font-semibold">
+                {positionDisplay}
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-white/10 text-white/85 font-medium">
+                {ageGroupDisplay}
+              </span>
+              {preferredFootDisplay && preferredFootDisplay !== 'Belum ada data' && (
+                <span className="px-2 py-0.5 rounded-full bg-white/10 text-white/85 font-medium">
+                  {preferredFootDisplay}
+                </span>
+              )}
             </div>
           </div>
-          <div className="text-sm text-2 pt-1 border-t border-line">
-            Tanggal: {fitnessDate} • Sumber: Tes Fisik Berkala
-          </div>
-        </div>
 
-        {/* Catatan Evaluasi Pelatih */}
-        <div className="p-3 rounded-control bg-raised border border-line space-y-2">
-          <div className="text-sm font-semibold text-2 uppercase tracking-wider">
-            Evaluasi Pelatih
+          {/* Strava-Style Big Stat Grid: Antropometri */}
+          <div className="p-3.5 rounded-control bg-white/[0.06] border border-white/10 space-y-2">
+            <div className="text-sm font-semibold text-emerald-300 uppercase tracking-[0.14em]">
+              Antropometri
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <span className="text-sm text-white/65 block">Tinggi Badan</span>
+                <span className="font-display text-xl font-bold text-white tabular-nums">{heightDisplay}</span>
+              </div>
+              <div>
+                <span className="text-sm text-white/65 block">Berat Badan</span>
+                <span className="font-display text-xl font-bold text-white tabular-nums">{weightDisplay}</span>
+              </div>
+            </div>
+            <div className="text-sm text-white/55 pt-1.5 border-t border-white/10">
+              Sumber: Pengukuran Staf Akademi
+            </div>
           </div>
-          <p className="text-sm text-1 italic leading-relaxed">
-            "{coachNote}"
-          </p>
-          <div className="text-sm text-2 pt-1 border-t border-line">
-            Periode: {coachDisplay} • Sumber: Catatan Resmi Pelatih
-          </div>
-        </div>
 
-        {/* Footer - derived factual line, no "Data Terverifikasi" */}
-        <div className="pt-2 border-t border-line space-y-1 text-sm text-2">
-          <div className="flex items-center justify-between">
-            <span>Paspor Atlet BallR</span>
-            <span>
-              {isPublished
-                ? `Asesmen diterbitkan${evaluation.period ? ` ${evaluation.period}` : ''}`
-                : 'Asesmen belum diterbitkan'}
-            </span>
+          {/* Strava-Style Big Stat Grid: Kebugaran Fisik */}
+          <div className="p-3.5 rounded-control bg-white/[0.06] border border-white/10 space-y-2">
+            <div className="text-sm font-semibold text-emerald-300 uppercase tracking-[0.14em]">
+              Kebugaran Fisik
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <span className="text-sm text-white/65 block">Lompatan</span>
+                <span className="font-display text-lg font-bold text-white tabular-nums">{jumpDisplay}</span>
+              </div>
+              <div>
+                <span className="text-sm text-white/65 block">Sprint 20m</span>
+                <span className="font-display text-lg font-bold text-white tabular-nums">{sprintDisplay}</span>
+              </div>
+              <div>
+                <span className="text-sm text-white/65 block">Kelincahan</span>
+                <span className="font-display text-lg font-bold text-white tabular-nums">{shuttleDisplay}</span>
+              </div>
+            </div>
+            <div className="text-sm text-white/55 pt-1.5 border-t border-white/10">
+              Tanggal: {fitnessDate} • Sumber: Tes Fisik Berkala
+            </div>
           </div>
-          <div className="text-sm opacity-80 text-right">
-            Sumber: catatan akademi
+
+          {/* Catatan Evaluasi Pelatih */}
+          <div className="p-3.5 rounded-control bg-black/25 border-l-2 border-emerald-400 space-y-2">
+            <div className="text-sm font-semibold text-emerald-300 uppercase tracking-[0.14em]">
+              Evaluasi Pelatih
+            </div>
+            <p className="text-sm text-white/90 italic leading-relaxed">
+              "{coachNote}"
+            </p>
+            <div className="text-sm text-white/55 pt-1.5 border-t border-white/10">
+              Periode: {coachDisplay} • Sumber: Catatan Resmi Pelatih
+            </div>
+          </div>
+
+          {/* Footer - derived factual line */}
+          <div className="pt-2.5 border-t border-white/15 space-y-1 text-sm text-white/70">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-semibold text-white">Paspor Atlet BallR</span>
+              <span>
+                {isPublished
+                  ? `Asesmen diterbitkan${evaluation.period ? ` ${evaluation.period}` : ''}`
+                  : 'Asesmen belum diterbitkan'}
+              </span>
+            </div>
+            <div className="text-sm text-white/50 text-right">
+              Sumber: catatan akademi
+            </div>
           </div>
         </div>
       </div>

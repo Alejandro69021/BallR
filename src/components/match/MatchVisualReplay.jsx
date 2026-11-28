@@ -239,7 +239,7 @@ export default function MatchVisualReplay({
               type="button"
               onClick={() => setViewMode('3d')}
               aria-pressed={viewMode === '3d'}
-              className={`px-2.5 py-1 rounded-control text-xs font-semibold inline-flex items-center gap-1 cursor-pointer transition-colors ${
+              className={`px-2.5 py-1 rounded-control text-sm font-semibold inline-flex items-center gap-1 cursor-pointer transition-colors ${
                 viewMode === '3d' ? 'bg-brand text-app' : 'text-2 hover:text-1'
               }`}
             >
@@ -250,7 +250,7 @@ export default function MatchVisualReplay({
               type="button"
               onClick={() => setViewMode('2d')}
               aria-pressed={viewMode === '2d'}
-              className={`px-2.5 py-1 rounded-control text-xs font-semibold inline-flex items-center gap-1 cursor-pointer transition-colors ${
+              className={`px-2.5 py-1 rounded-control text-sm font-semibold inline-flex items-center gap-1 cursor-pointer transition-colors ${
                 viewMode === '2d' ? 'bg-brand text-app' : 'text-2 hover:text-1'
               }`}
             >
@@ -262,7 +262,7 @@ export default function MatchVisualReplay({
       </div>
 
       {/* Overlay Layer Toggles */}
-      <div className="flex items-center justify-between gap-2 flex-wrap text-xs">
+      <div className="flex items-center justify-between gap-2 flex-wrap text-sm">
         <div className="flex items-center gap-1.5 flex-wrap">
           <span className="text-2 inline-flex items-center gap-1 mr-1">
             <Layers className="w-3.5 h-3.5" />
@@ -640,7 +640,7 @@ export default function MatchVisualReplay({
         </div>
 
         {/* Active Event Callout Bar + Coaching Narrative */}
-        <div className="mt-3 p-3 rounded-control bg-panel/95 border border-line space-y-1.5 text-xs">
+        <div className="mt-3 p-3 rounded-control bg-panel/95 border border-line space-y-1.5 text-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant={activeEvt.team === 'own' ? 'brand' : 'neutral'} size="sm">
@@ -694,7 +694,7 @@ export default function MatchVisualReplay({
                 if (safeIndex >= replayEvents.length - 1) setCurrentIndex(0);
                 setIsPlaying((p) => !p);
               }}
-              className="min-h-[38px] px-3 py-1.5 rounded-control bg-brand text-app hover:bg-brand/90 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
+              className="min-h-[38px] px-3 py-1.5 rounded-control bg-brand text-app hover:bg-brand/90 text-sm font-semibold inline-flex items-center gap-1.5 cursor-pointer"
             >
               {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
               <span>{isPlaying ? 'Jeda' : 'Putar Replay'}</span>
@@ -742,7 +742,7 @@ export default function MatchVisualReplay({
                 key={s}
                 type="button"
                 onClick={() => setSpeed(s)}
-                className={`min-h-[36px] px-2 py-1 rounded-control text-xs font-mono cursor-pointer border ${
+                className={`min-h-[36px] px-2 py-1 rounded-control text-sm font-mono cursor-pointer border ${
                   speed === s
                     ? 'bg-raised border-brand text-brand font-semibold'
                     : 'bg-app border-line text-2 hover:text-1'

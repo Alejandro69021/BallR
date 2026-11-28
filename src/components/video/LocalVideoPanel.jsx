@@ -21,6 +21,7 @@ import {
 import Badge from '../ui/Badge';
 import { formatSecondsToTime } from '../../lib/calculations';
 import { getMatchVideoOffsets, updateMatchVideoOffsets } from '../../lib/matches';
+import { extractYouTubeVideoId, buildYouTubeEmbedUrl } from '../../lib/youtube';
 
 /**
  * Checks if a match has remembered video metadata in localStorage.
@@ -69,6 +70,7 @@ const PLAYBACK_SPEEDS = [0.5, 1, 1.5, 2];
 const LocalVideoPanel = forwardRef(function LocalVideoPanel(
   {
     matchId,
+    defaultYoutubeId = null,
     period = 1,
     onTimeUpdate,
     onVideoLoadedChange,
@@ -79,9 +81,25 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
   ref
 ) {
   const videoRef = useRef(null);
+  const ytIframeRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const [videoSrc, setVideoSrc] = useState(null);
+  const ytStorageKey = `ballr_youtube_id_${matchId}`;
+  const [youtubeId, setYoutubeId] = useState(() => {
+    if (typeof window !== 'undefined' && window.localStorage && matchId) {
+      try {
+        const stored = localStorage.getItem(`ballr_youtube_id_${matchId}`);
+        if (stored) return stored;
+      } catch {
+        // ignore
+      }
+    }
+    return defaultYoutubeId || null;
+  });
+  const [youtubeUrlInput, setYoutubeUrlInput] = useState('');
+  const [youtubeError, setYoutubeError] = useState(null);
+  const [youtubeStartSec, setYoutubeStartSec] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -581,8 +599,56 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
             </div>
           </div>
         </div>
+      ) : youtubeId ? (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <Badge variant="brand" size="sm">Pemutar YouTube</Badge>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="min-h-[36px] px-2.5 py-1 rounded-control bg-raised border border-line hover:border-brand text-sm font-medium text-1 cursor-pointer"
+              >
+                Ganti Video Lokal
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setYoutubeId(null);
+                  setYoutubeStartSec(0);
+                  try {
+                    if (matchId) localStorage.removeItem(ytStorageKey);
+                  } catch {
+                    // ignore
+                  }
+                }}
+                className="min-h-[36px] px-2.5 py-1 rounded-control bg-app border border-line hover:border-danger text-sm font-medium text-2 hover:text-danger cursor-pointer"
+              >
+                Tutup YouTube
+              </button>
+            </div>
+          </div>
+
+          <div
+            className={`relative aspect-video bg-black rounded-control overflow-hidden mx-auto transition-all ${
+              isMini ? 'max-h-[28vh]' : 'max-h-[40vh]'
+            }`}
+          >
+            <iframe
+              ref={ytIframeRef}
+              src={buildYouTubeEmbedUrl(youtubeId, youtubeStartSec)}
+              title="Pemutar YouTube Pertandingan"
+              className="w-full h-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+          <p className="text-sm text-2">
+            Video diputar langsung dari YouTube (mode tanpa cookie) dan tidak diunggah ke server BallR. Gunakan stopwatch di atas untuk mencatat menit kejadian.
+          </p>
+        </div>
       ) : (
-        <div className="p-4 sm:p-5 rounded-control bg-app border border-dashed border-line text-center space-y-2.5">
+        <div className="p-4 sm:p-5 rounded-control bg-app border border-dashed border-line text-center space-y-3">
           <Video className="w-6 h-6 text-2 mx-auto" />
           <div className="space-y-0.5">
             <p className="text-sm font-medium text-1">
@@ -591,7 +657,7 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
                 : 'Belum ada video pertandingan yang dimuat'}
             </p>
             <p className="text-sm text-2 max-w-sm mx-auto">
-              Pilih berkas video dari komputer Anda untuk memutar dan menyinkronkan penandaan kejadian.
+              Pilih berkas video dari komputer Anda atau tempel tautan YouTube / YouTube Live untuk memutar sambil mencatat kejadian.
             </p>
           </div>
           <button
@@ -602,6 +668,46 @@ const LocalVideoPanel = forwardRef(function LocalVideoPanel(
             <Video className="w-4 h-4 text-brand" />
             <span>Pilih video laga dari perangkat</span>
           </button>
+
+          <div className="pt-2 border-t border-line max-w-md mx-auto space-y-1.5">
+            <div className="flex items-center gap-1.5">
+              <input
+                type="url"
+                value={youtubeUrlInput}
+                onChange={(e) => {
+                  setYoutubeUrlInput(e.target.value);
+                  if (youtubeError) setYoutubeError(null);
+                }}
+                placeholder="Tempel tautan YouTube / YouTube Live..."
+                aria-label="Tautan YouTube pertandingan"
+                className="flex-1 min-h-[40px] px-3 py-1.5 rounded-control bg-panel border border-line text-sm text-1 placeholder:text-2 focus:outline-none focus:border-brand"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const id = extractYouTubeVideoId(youtubeUrlInput);
+                  if (!id) {
+                    setYoutubeError('Tautan YouTube tidak valid. Gunakan link youtube.com/watch, youtube.com/live, atau youtu.be.');
+                    return;
+                  }
+                  setYoutubeId(id);
+                  setYoutubeStartSec(0);
+                  setYoutubeError(null);
+                  try {
+                    if (matchId) localStorage.setItem(ytStorageKey, id);
+                  } catch {
+                    // ignore
+                  }
+                }}
+                className="min-h-[40px] px-3 py-1.5 rounded-control bg-brand text-app hover:bg-brand/90 text-sm font-semibold cursor-pointer shrink-0"
+              >
+                Muat YouTube
+              </button>
+            </div>
+            {youtubeError && (
+              <p className="text-sm text-danger text-left">{youtubeError}</p>
+            )}
+          </div>
         </div>
       )}
 

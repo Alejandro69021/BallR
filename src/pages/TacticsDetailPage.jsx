@@ -60,6 +60,8 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
   const [selectedItem, setSelectedItem] = useState(null); // { type: 'player' | 'ball', id }
   const [drawingArrowKind, setDrawingArrowKind] = useState(null); // null | 'pass' | 'run' | 'press' | 'cover'
   const [snapToGrid, setSnapToGrid] = useState(false);
+  const [boardViewMode, setBoardViewMode] = useState('2d');
+  const [showGhostLayer, setShowGhostLayer] = useState(false);
 
   // Playback state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -862,7 +864,56 @@ export default function TacticsDetailPage({ userRole = 'public', onToast, onOpen
         )}
 
         {/* Main Tactical Pitch */}
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-panel bg-panel border border-line text-sm">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-2 font-medium">Sudut pandang:</span>
+            <button
+              type="button"
+              onClick={() => setBoardViewMode('2d')}
+              aria-pressed={boardViewMode === '2d'}
+              className={`min-h-[36px] px-2.5 py-1 rounded-control border cursor-pointer transition-colors ${
+                boardViewMode === '2d'
+                  ? 'bg-raised border-brand text-brand font-semibold'
+                  : 'bg-app border-line text-2 hover:text-1'
+              }`}
+            >
+              2D Atas
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setDrawingArrowKind(null);
+                setBoardViewMode('3d');
+              }}
+              aria-pressed={boardViewMode === '3d'}
+              className={`min-h-[36px] px-2.5 py-1 rounded-control border cursor-pointer transition-colors ${
+                boardViewMode === '3d'
+                  ? 'bg-raised border-brand text-brand font-semibold'
+                  : 'bg-app border-line text-2 hover:text-1'
+              }`}
+            >
+              3D Perspektif
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowGhostLayer((prev) => !prev)}
+            aria-pressed={showGhostLayer}
+            disabled={frames.length < 2}
+            className={`min-h-[36px] px-2.5 py-1 rounded-control border cursor-pointer transition-colors disabled:opacity-50 ${
+              showGhostLayer
+                ? 'bg-raised border-brand text-brand font-semibold'
+                : 'bg-app border-line text-2 hover:text-1'
+            }`}
+          >
+            Bayangan Posisi Awal: {showGhostLayer ? 'Aktif' : 'Nonaktif'}
+          </button>
+        </div>
+
         <TacticalBoard
+          ghostFrame={showGhostLayer && frames.length >= 2 ? frames[0] : null}
+          viewMode={drawingArrowKind ? '2d' : boardViewMode}
           scenario={scenario}
           frame={currentFrame}
           isEditing={isEditing}
