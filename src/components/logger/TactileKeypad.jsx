@@ -25,6 +25,7 @@ export default function TactileKeypad({
   onUndoLast,
   lastLoggedEvent = null,
   totalEventsCount = 0,
+  loggedEvents = [],
   playerMap = {},
   isReadOnly = false
 }) {
@@ -36,6 +37,11 @@ export default function TactileKeypad({
 
   const pitchLength = match?.pitch_length_m || 90;
   const pitchWidth = match?.pitch_width_m || 60;
+
+  const spatialEvents = loggedEvents.filter(
+    (evt) => evt && evt.x_m !== null && evt.x_m !== undefined && evt.y_m !== null && evt.y_m !== undefined
+  );
+  const recentSpatialEvents = spatialEvents.slice(-20);
 
   // Selected player for own team
   const activeParticipant =
@@ -254,6 +260,55 @@ export default function TactileKeypad({
             onPitchClick={handlePitchClick}
             className="max-h-48 sm:max-h-60"
           >
+            {/* Subtle ghost trail of previously logged spatial events */}
+            {recentSpatialEvents.map((evt, idx) => {
+              const hasEnd =
+                evt.end_x_m !== null &&
+                evt.end_x_m !== undefined &&
+                evt.end_y_m !== null &&
+                evt.end_y_m !== undefined;
+              const dotClass =
+                evt.outcome === 'fail'
+                  ? 'fill-danger'
+                  : evt.team === 'own'
+                  ? 'fill-brand'
+                  : 'fill-warning';
+              const lineClass = evt.team === 'own' ? 'stroke-brand' : 'stroke-warning';
+
+              return (
+                <g key={evt.client_event_id || evt.id || `ghost-${idx}`} className="pointer-events-none">
+                  {hasEnd && (
+                    <>
+                      <line
+                        x1={evt.x_m}
+                        y1={evt.y_m}
+                        x2={evt.end_x_m}
+                        y2={evt.end_y_m}
+                        className={lineClass}
+                        strokeWidth="0.6"
+                        strokeDasharray="1.2,1.2"
+                        opacity="0.35"
+                      />
+                      <circle
+                        cx={evt.end_x_m}
+                        cy={evt.end_y_m}
+                        r="1.1"
+                        className="fill-series-1"
+                        opacity="0.4"
+                      />
+                    </>
+                  )}
+                  <circle
+                    cx={evt.x_m}
+                    cy={evt.y_m}
+                    r="1.35"
+                    className={dotClass}
+                    opacity="0.45"
+                  />
+                </g>
+              );
+            })}
+
             {/* Start marker */}
             {coords.x_m !== null && coords.y_m !== null && (
               <g>
@@ -298,6 +353,20 @@ export default function TactileKeypad({
               </g>
             )}
           </PitchSvg>
+
+          <div
+            data-testid="spatial-events-summary"
+            className="flex flex-wrap items-center justify-between gap-2 text-sm text-2 pt-0.5"
+          >
+            <span className="tabular-nums">
+              {spatialEvents.length > 0
+                ? `${spatialEvents.length} titik koordinat tercatat di laga ini`
+                : 'Belum ada titik koordinat tercatat'}
+            </span>
+            <span>
+              Pola lengkap tampil di Detail Laga · Peta lapangan &amp; Analisis Taktis
+            </span>
+          </div>
         </div>
       )}
 

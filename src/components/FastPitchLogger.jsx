@@ -488,6 +488,7 @@ export default function FastPitchLogger({
                 : null
             }
             totalEventsCount={serverEvents.length + outbox.length}
+            loggedEvents={[...serverEvents, ...outbox]}
             playerMap={playerMap}
             isReadOnly={isReadOnly}
           />
