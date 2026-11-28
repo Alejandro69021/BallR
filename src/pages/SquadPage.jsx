@@ -23,12 +23,15 @@ const EMPTY_FORM = {
 
 export default function SquadPage({ userRole, onOpenAuthModal, onOpenPinModal, onToast }) {
   const navigate = useNavigate();
-  const { players, loading, addPlayer } = usePlayers();
+  const { players, loading, addPlayer, updatePlayer, deletePlayer } = usePlayers();
   const openModal = onOpenAuthModal || onOpenPinModal;
 
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editingPlayer, setEditingPlayer] = useState(null);
+  const [deletingPlayer, setDeletingPlayer] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [formError, setFormError] = useState('');
 
   if (loading) return <LoadingSkeleton />;
@@ -50,7 +53,31 @@ export default function SquadPage({ userRole, onOpenAuthModal, onOpenPinModal, o
   };
 
   const handleOpenAdd = () => {
+    setEditingPlayer(null);
     setForm(EMPTY_FORM);
+    setFormError('');
+    setIsAddOpen(true);
+  };
+
+  const handleOpenEdit = (player) => {
+    const info = player?.personal_info || {};
+    const rawPos = String(info.position || 'CM');
+    const normalizedPos = ['GK', 'CB', 'RB', 'LB', 'CDM', 'CM', 'CAM', 'RW', 'LW', 'ST'].find((code) =>
+      rawPos.toUpperCase().includes(code)
+    ) || 'CM';
+    setEditingPlayer(player);
+    setForm({
+      full_name: info.full_name || '',
+      nickname: info.nickname || '',
+      jersey_number: info.jersey_number != null ? String(info.jersey_number) : '',
+      position: normalizedPos,
+      preferred_foot: info.preferred_foot || 'Kanan',
+      age: info.age != null ? String(info.age) : '13',
+      age_group: info.age_group || 'U-13',
+      height_cm: info.height_cm != null ? String(info.height_cm) : '',
+      weight_kg: info.weight_kg != null ? String(info.weight_kg) : '',
+      team_name: info.academy?.name || 'Mataram Putra Football Academy'
+    });
     setFormError('');
     setIsAddOpen(true);
   };
@@ -64,16 +91,48 @@ export default function SquadPage({ userRole, onOpenAuthModal, onOpenPinModal, o
     setSaving(true);
     setFormError('');
     try {
-      const created = await addPlayer(form);
-      setIsAddOpen(false);
-      onToast?.({
-        title: 'Pemain ditambahkan',
-        subtext: `${created.personal_info.full_name} berhasil masuk ke direktori skuad.`
-      });
+      if (editingPlayer) {
+        const updated = await updatePlayer(editingPlayer.player_id, form);
+        setIsAddOpen(false);
+        setEditingPlayer(null);
+        onToast?.({
+          title: 'Data pemain diperbarui',
+          subtext: `${updated?.personal_info?.full_name || form.full_name} kini berposisi ${form.position}.`
+        });
+      } else {
+        const created = await addPlayer(form);
+        setIsAddOpen(false);
+        onToast?.({
+          title: 'Pemain ditambahkan',
+          subtext: `${created.personal_info.full_name} berhasil masuk ke direktori skuad.`
+        });
+      }
     } catch (err) {
-      setFormError(err?.message || 'Gagal menambahkan pemain baru.');
+      setFormError(err?.message || 'Gagal menyimpan data pemain.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingPlayer) return;
+    setDeleting(true);
+    try {
+      const targetName = deletingPlayer.personal_info?.full_name || 'Pemain';
+      await deletePlayer(deletingPlayer.player_id);
+      setDeletingPlayer(null);
+      onToast?.({
+        title: 'Pemain dihapus dari skuad',
+        subtext: `${targetName} telah dihapus dari daftar skuad.`
+      });
+    } catch (err) {
+      onToast?.({
+        title: 'Gagal menghapus pemain',
+        subtext: err?.message || 'Terjadi kendala saat menghapus pemain.',
+        variant: 'error'
+      });
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -85,13 +144,22 @@ export default function SquadPage({ userRole, onOpenAuthModal, onOpenPinModal, o
         onViewPassport={handleViewPassport}
         onEvaluatePlayer={handleEvaluatePlayer}
         onAddPlayer={handleOpenAdd}
+        onEditPlayer={handleOpenEdit}
+        onDeletePlayer={(player) => setDeletingPlayer(player)}
       />
 
       <Dialog
         isOpen={isAddOpen}
-        onClose={() => setIsAddOpen(false)}
-        title="Tambah Pemain ke Skuad"
-        description="Masukkan data pemain dan nama tim akademi secara manual."
+        onClose={() => {
+          setIsAddOpen(false);
+          setEditingPlayer(null);
+        }}
+        title={editingPlayer ? 'Ubah Data & Posisi Pemain' : 'Tambah Pemain ke Skuad'}
+        description={
+          editingPlayer
+            ? 'Sesuaikan posisi rotasi, nomor punggung, atau profil pemain.'
+            : 'Masukkan data pemain dan nama tim akademi secara manual.'
+        }
         onSubmit={handleSavePlayer}
         footer={
           <>
@@ -99,7 +167,10 @@ export default function SquadPage({ userRole, onOpenAuthModal, onOpenPinModal, o
               type="button"
               variant="secondary"
               size="sm"
-              onClick={() => setIsAddOpen(false)}
+              onClick={() => {
+                setIsAddOpen(false);
+                setEditingPlayer(null);
+              }}
             >
               Batal
             </Button>
@@ -110,7 +181,7 @@ export default function SquadPage({ userRole, onOpenAuthModal, onOpenPinModal, o
               loading={saving}
               disabled={!form.full_name.trim()}
             >
-              Simpan pemain
+              {editingPlayer ? 'Simpan perubahan' : 'Simpan pemain'}
             </Button>
           </>
         }
@@ -241,6 +312,39 @@ export default function SquadPage({ userRole, onOpenAuthModal, onOpenPinModal, o
             </Field>
           </div>
         </div>
+      </Dialog>
+
+      <Dialog
+        isOpen={Boolean(deletingPlayer)}
+        onClose={() => setDeletingPlayer(null)}
+        title="Hapus Pemain dari Skuad"
+        description={`Apakah Anda yakin ingin menghapus ${deletingPlayer?.personal_info?.full_name || 'pemain ini'} dari daftar skuad?`}
+        footer={
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setDeletingPlayer(null)}
+              disabled={deleting}
+            >
+              Batal
+            </Button>
+            <Button
+              type="button"
+              variant="danger"
+              size="sm"
+              loading={deleting}
+              onClick={handleConfirmDelete}
+            >
+              Hapus pemain
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm text-2">
+          Data evaluasi dan catatan laga lama tetap aman, namun pemain ini tidak lagi muncul di direktori skuad aktif maupun pilihan peserta laga baru.
+        </p>
       </Dialog>
     </>
   );

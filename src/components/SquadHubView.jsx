@@ -5,11 +5,14 @@ import {
   LayoutGrid,
   Eye,
   Edit3,
-  Plus
+  Plus,
+  SlidersHorizontal,
+  Trash2
 } from 'lucide-react';
 import ResponsiveList from './ui/ResponsiveList';
 import Badge from './ui/Badge';
 import Button from './ui/Button';
+import IconButton from './ui/IconButton';
 import Field from './ui/Field';
 import Select from './ui/Select';
 import EmptyState from './ux/EmptyState';
@@ -22,7 +25,9 @@ export default function SquadHubView({
   userRole = 'public',
   onViewPassport,
   onEvaluatePlayer,
-  onAddPlayer
+  onAddPlayer,
+  onEditPlayer,
+  onDeletePlayer
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPosition, setSelectedPosition] = useState('ALL');
@@ -251,6 +256,24 @@ export default function SquadHubView({
               Evaluasi
             </Button>
           )}
+          {isCoach && onEditPlayer && (
+            <IconButton
+              icon={<SlidersHorizontal className="w-4 h-4" strokeWidth={1.5} />}
+              label={`Ubah posisi & data ${row.personal_info?.full_name || 'pemain'}`}
+              variant="secondary"
+              size="sm"
+              onClick={() => onEditPlayer(row)}
+            />
+          )}
+          {isCoach && onDeletePlayer && (
+            <IconButton
+              icon={<Trash2 className="w-4 h-4 text-danger" strokeWidth={1.5} />}
+              label={`Hapus ${row.personal_info?.full_name || 'pemain'}`}
+              variant="ghost"
+              size="sm"
+              onClick={() => onDeletePlayer(row)}
+            />
+          )}
         </div>
       )
     }
@@ -434,6 +457,8 @@ export default function SquadHubView({
                     userRole={userRole}
                     onViewPassport={onViewPassport}
                     onEvaluatePlayer={onEvaluatePlayer}
+                    onEditPlayer={onEditPlayer}
+                    onDeletePlayer={onDeletePlayer}
                   />
                 )}
               />
@@ -446,6 +471,8 @@ export default function SquadHubView({
                     userRole={userRole}
                     onViewPassport={onViewPassport}
                     onEvaluatePlayer={onEvaluatePlayer}
+                    onEditPlayer={onEditPlayer}
+                    onDeletePlayer={onDeletePlayer}
                   />
                 ))}
               </div>

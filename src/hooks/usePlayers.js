@@ -14,7 +14,10 @@ export function usePlayers() {
     setSelectedPlayerId: context.setSelectedPlayerId,
     refreshPlayers: context.refreshPlayers,
     saveAssessment: context.saveAssessment,
-    recordFitness: context.recordFitness
+    recordFitness: context.recordFitness,
+    addPlayer: context.addPlayer,
+    updatePlayer: context.updatePlayer,
+    deletePlayer: context.deletePlayer
   };
 }
 

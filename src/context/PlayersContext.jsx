@@ -10,16 +10,42 @@ const PlayersContext = createContext(null);
 const isDemoMode = import.meta.env?.VITE_DEMO_MODE === 'true';
 
 const DEMO_CUSTOM_PLAYERS_KEY = 'ballr_custom_players_v1';
+const DEMO_PLAYER_OVERRIDES_KEY = 'ballr_player_overrides_v1';
+const DEMO_DELETED_PLAYERS_KEY = 'ballr_deleted_players_v1';
+
+function loadJsonStorage(key, fallback) {
+  if (typeof window === 'undefined' || !window.localStorage) return fallback;
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return parsed ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function saveJsonStorage(key, value) {
+  if (typeof window === 'undefined' || !window.localStorage) return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // ignore storage quota errors
+  }
+}
 
 function loadCustomDemoPlayers() {
-  if (typeof window === 'undefined' || !window.localStorage) return [];
-  try {
-    const raw = window.localStorage.getItem(DEMO_CUSTOM_PLAYERS_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+  const parsed = loadJsonStorage(DEMO_CUSTOM_PLAYERS_KEY, []);
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+function derivePositionGroup(position) {
+  const pos = String(position || 'CM').trim();
+  const lower = pos.toLowerCase();
+  if (pos.includes('GK') || lower.includes('kiper') || lower.includes('goalkeeper')) return 'GK';
+  if (pos.includes('CB') || pos.includes('RB') || pos.includes('LB') || lower.includes('bek') || lower.includes('back')) return 'DEF';
+  if (pos.includes('ST') || pos.includes('RW') || pos.includes('LW') || lower.includes('penyerang') || lower.includes('sayap') || lower.includes('forward') || lower.includes('winger')) return 'FWD';
+  return 'MID';
 }
 
 export function PlayersProvider({ children }) {
@@ -37,7 +63,24 @@ export function PlayersProvider({ children }) {
         // Dynamic import to avoid bundling mockData in production / non-demo mode
         const { playersRoster } = await import('../data/mockData.js');
         const customPlayers = loadCustomDemoPlayers();
-        const combined = [...playersRoster, ...customPlayers];
+        const overrides = loadJsonStorage(DEMO_PLAYER_OVERRIDES_KEY, {});
+        const deletedRaw = loadJsonStorage(DEMO_DELETED_PLAYERS_KEY, []);
+        const deletedSet = new Set(Array.isArray(deletedRaw) ? deletedRaw : []);
+
+        const combined = [...playersRoster, ...customPlayers]
+          .filter((p) => !deletedSet.has(p.player_id))
+          .map((p) => {
+            const ov = overrides && typeof overrides === 'object' ? overrides[p.player_id] : null;
+            if (!ov) return p;
+            return {
+              ...p,
+              ...ov,
+              personal_info: {
+                ...p.personal_info,
+                ...(ov.personal_info || {})
+              }
+            };
+          });
         setPlayers(combined);
         if (combined.length > 0 && !selectedPlayerId) {
           const dimas = combined.find(
@@ -116,13 +159,7 @@ export function PlayersProvider({ children }) {
     const num = Number(draft.jersey_number) || 99;
     const id = `WK-2026-${String(Date.now()).slice(-4)}`;
     const pos = String(draft.position || 'CM').trim();
-    const posGroup = pos.includes('GK') || pos.toLowerCase().includes('kiper')
-      ? 'GK'
-      : pos.includes('CB') || pos.includes('RB') || pos.includes('LB') || pos.toLowerCase().includes('bek')
-        ? 'DEF'
-        : pos.includes('ST') || pos.includes('RW') || pos.includes('LW') || pos.toLowerCase().includes('penyerang') || pos.toLowerCase().includes('sayap')
-          ? 'FWD'
-          : 'MID';
+    const posGroup = derivePositionGroup(pos);
 
     const newPlayer = {
       player_id: id,
@@ -168,16 +205,90 @@ export function PlayersProvider({ children }) {
     };
 
     setPlayers((prev) => [...prev, newPlayer]);
-    if (typeof window !== 'undefined' && window.localStorage) {
-      try {
-        const existing = loadCustomDemoPlayers();
-        window.localStorage.setItem(DEMO_CUSTOM_PLAYERS_KEY, JSON.stringify([...existing, newPlayer]));
-      } catch {
-        // ignore storage quota errors
-      }
-    }
+    const existing = loadCustomDemoPlayers();
+    saveJsonStorage(DEMO_CUSTOM_PLAYERS_KEY, [...existing, newPlayer]);
     return newPlayer;
   }, []);
+
+  // Mutation: update / rotate player position or profile in squad
+  const updatePlayer = useCallback(async (playerId, draft) => {
+    if (!playerId) throw new Error('ID pemain tidak ditemukan.');
+    const pos = String(draft.position || 'CM').trim();
+    const posGroup = derivePositionGroup(pos);
+    const fullName = String(draft.full_name || '').trim();
+    const nickname = String(draft.nickname || '').trim() || fullName.split(' ')[0];
+    const jerseyNum = draft.jersey_number !== '' && draft.jersey_number != null ? Number(draft.jersey_number) : null;
+
+    let updatedPlayer = null;
+    setPlayers((prev) =>
+      prev.map((p) => {
+        if (p.player_id !== playerId && p.public_id !== playerId) return p;
+        const nextInfo = {
+          ...p.personal_info,
+          ...(fullName ? { full_name: fullName } : {}),
+          ...(nickname ? { nickname } : {}),
+          ...(jerseyNum != null && !Number.isNaN(jerseyNum) ? { jersey_number: jerseyNum } : {}),
+          position: pos,
+          position_group: posGroup,
+          ...(draft.age ? { age: Number(draft.age) } : {}),
+          ...(draft.preferred_foot ? { preferred_foot: draft.preferred_foot } : {}),
+          height_cm: draft.height_cm !== '' && draft.height_cm != null ? Number(draft.height_cm) : null,
+          weight_kg: draft.weight_kg !== '' && draft.weight_kg != null ? Number(draft.weight_kg) : null,
+          academy: {
+            ...(p.personal_info?.academy || {}),
+            name: draft.team_name?.trim() || p.personal_info?.academy?.name || 'Mataram Putra Football Academy'
+          }
+        };
+        updatedPlayer = { ...p, personal_info: nextInfo };
+        return updatedPlayer;
+      })
+    );
+
+    const existingCustom = loadCustomDemoPlayers();
+    const customIdx = existingCustom.findIndex((p) => p.player_id === playerId || p.public_id === playerId);
+    if (customIdx >= 0 && updatedPlayer) {
+      const nextCustom = [...existingCustom];
+      nextCustom[customIdx] = updatedPlayer;
+      saveJsonStorage(DEMO_CUSTOM_PLAYERS_KEY, nextCustom);
+    } else if (updatedPlayer) {
+      const overrides = loadJsonStorage(DEMO_PLAYER_OVERRIDES_KEY, {});
+      const safeOverrides = overrides && typeof overrides === 'object' ? overrides : {};
+      safeOverrides[updatedPlayer.player_id] = {
+        personal_info: updatedPlayer.personal_info
+      };
+      saveJsonStorage(DEMO_PLAYER_OVERRIDES_KEY, safeOverrides);
+    }
+
+    return updatedPlayer;
+  }, []);
+
+  // Mutation: delete player from squad
+  const deletePlayer = useCallback(async (playerId) => {
+    if (!playerId) throw new Error('ID pemain tidak ditemukan.');
+
+    setPlayers((prev) => {
+      const next = prev.filter((p) => p.player_id !== playerId && p.public_id !== playerId);
+      if (selectedPlayerId === playerId) {
+        setSelectedPlayerId(next[0]?.player_id || null);
+      }
+      return next;
+    });
+
+    const existingCustom = loadCustomDemoPlayers();
+    const isCustom = existingCustom.some((p) => p.player_id === playerId || p.public_id === playerId);
+    if (isCustom) {
+      saveJsonStorage(
+        DEMO_CUSTOM_PLAYERS_KEY,
+        existingCustom.filter((p) => p.player_id !== playerId && p.public_id !== playerId)
+      );
+    } else {
+      const deletedRaw = loadJsonStorage(DEMO_DELETED_PLAYERS_KEY, []);
+      const deletedList = Array.isArray(deletedRaw) ? deletedRaw : [];
+      if (!deletedList.includes(playerId)) {
+        saveJsonStorage(DEMO_DELETED_PLAYERS_KEY, [...deletedList, playerId]);
+      }
+    }
+  }, [selectedPlayerId]);
 
   const value = {
     players,
@@ -189,7 +300,9 @@ export function PlayersProvider({ children }) {
     refreshPlayers: loadPlayers,
     saveAssessment,
     recordFitness,
-    addPlayer
+    addPlayer,
+    updatePlayer,
+    deletePlayer
   };
 
   return <PlayersContext.Provider value={value}>{children}</PlayersContext.Provider>;

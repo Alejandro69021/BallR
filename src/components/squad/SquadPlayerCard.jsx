@@ -1,7 +1,8 @@
 import React from 'react';
-import { Eye, Edit3 } from 'lucide-react';
+import { Eye, Edit3, SlidersHorizontal, Trash2 } from 'lucide-react';
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
+import IconButton from '../ui/IconButton';
 import { JerseyTile } from '../brand';
 import { formatPositionLabel, formatPreferredFoot } from '../../lib/displayLabels';
 
@@ -9,7 +10,9 @@ export default function SquadPlayerCard({
   player,
   userRole,
   onViewPassport,
-  onEvaluatePlayer
+  onEvaluatePlayer,
+  onEditPlayer,
+  onDeletePlayer
 }) {
   const { personal_info, radar_attributes, player_id } = player || {};
 
@@ -108,29 +111,57 @@ export default function SquadPlayerCard({
       </div>
 
       {/* Card Actions */}
-      <div className={`mt-4 pt-3 border-t border-line grid ${isCoach ? 'grid-cols-2' : 'grid-cols-1'} gap-2`}>
-        <Button
-          type="button"
-          variant="secondary"
-          size="sm"
-          onClick={() => onViewPassport(player_id)}
-          icon={<Eye className="w-4 h-4" strokeWidth={1.5} />}
-          className="w-full justify-center min-h-[44px]"
-        >
-          Paspor
-        </Button>
-
-        {isCoach && (
+      <div className="mt-4 pt-3 border-t border-line space-y-2">
+        <div className={`grid ${isCoach ? 'grid-cols-2' : 'grid-cols-1'} gap-2`}>
           <Button
             type="button"
-            variant="primary"
+            variant="secondary"
             size="sm"
-            onClick={() => onEvaluatePlayer(player_id)}
-            icon={<Edit3 className="w-4 h-4" strokeWidth={1.5} />}
+            onClick={() => onViewPassport(player_id)}
+            icon={<Eye className="w-4 h-4" strokeWidth={1.5} />}
             className="w-full justify-center min-h-[44px]"
           >
-            Evaluasi
+            Paspor
           </Button>
+
+          {isCoach && (
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={() => onEvaluatePlayer(player_id)}
+              icon={<Edit3 className="w-4 h-4" strokeWidth={1.5} />}
+              className="w-full justify-center min-h-[44px]"
+            >
+              Evaluasi
+            </Button>
+          )}
+        </div>
+
+        {isCoach && (onEditPlayer || onDeletePlayer) && (
+          <div className="flex items-center justify-between gap-2">
+            {onEditPlayer && (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => onEditPlayer(player)}
+                icon={<SlidersHorizontal className="w-3.5 h-3.5" strokeWidth={1.5} />}
+                className="flex-1 justify-center"
+              >
+                Ubah posisi
+              </Button>
+            )}
+            {onDeletePlayer && (
+              <IconButton
+                icon={<Trash2 className="w-4 h-4 text-danger" strokeWidth={1.5} />}
+                label={`Hapus ${personal_info?.full_name || 'pemain'}`}
+                variant="secondary"
+                size="sm"
+                onClick={() => onDeletePlayer(player)}
+              />
+            )}
+          </div>
         )}
       </div>
     </div>

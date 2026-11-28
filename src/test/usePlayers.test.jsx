@@ -18,5 +18,8 @@ describe('usePlayers & usePlayer hooks', () => {
     expect(result.current).toHaveProperty('loading');
     expect(result.current).toHaveProperty('players');
     expect(result.current).toHaveProperty('saveAssessment');
+    expect(typeof result.current.addPlayer).toBe('function');
+    expect(typeof result.current.updatePlayer).toBe('function');
+    expect(typeof result.current.deletePlayer).toBe('function');
   });
 });
